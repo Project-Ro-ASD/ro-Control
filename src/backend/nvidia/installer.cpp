@@ -1,0 +1,1 @@
+// Surucu kurulum / kaldırma
