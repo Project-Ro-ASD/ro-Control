@@ -1,1 +1,162 @@
-## Teknik mimari
+# Architecture
+
+ro-Control follows a strict **C++ Backend / QML Frontend** separation. The two layers communicate exclusively through Qt's property and signal/slot system — QML never calls system commands directly.
+
+---
+
+## High-Level Overview
+
+```
+┌─────────────────────────────────────────────────┐
+│                   QML Frontend                  │
+│   Main.qml · DriverPage · MonitorPage · ...     │
+│   (Declarative UI, binds to C++ properties)     │
+└───────────────────┬─────────────────────────────┘
+                    │  Q_PROPERTY / signals / slots
+┌───────────────────▼─────────────────────────────┐
+│                  C++ Backend                    │
+│   NvidiaDetector · Installer · GpuMonitor · ... │
+│   (Business logic, system calls, DNF, Polkit)   │
+└───────────────────┬─────────────────────────────┘
+                    │  Shell commands / D-Bus
+┌───────────────────▼─────────────────────────────┐
+│                Linux System                     │
+│   sysfs · nvidia-smi · dnf · pkexec · GRUB      │
+└─────────────────────────────────────────────────┘
+```
+
+---
+
+## Layer Responsibilities
+
+### QML Frontend (`src/qml/`)
+
+- Renders the UI using Qt Quick Controls 2 with KDE Plasma styling
+- Binds to C++ properties — it reads state but never writes to the system directly
+- Emits user actions (button clicks) which trigger C++ slots
+- No business logic lives here
+
+### C++ Backend (`src/backend/`)
+
+Divided into three modules:
+
+#### `nvidia/` — Driver Management
+| File | Responsibility |
+|------|---------------|
+| `detector.cpp` | Detect installed GPU, current driver version, kernel module status |
+| `installer.cpp` | Install / remove drivers via DNF (`akmod-nvidia`) |
+| `updater.cpp` | Check GitHub Releases for new versions, trigger update |
+
+#### `monitor/` — Live Statistics
+| File | Responsibility |
+|------|---------------|
+| `gpumonitor.cpp` | Poll GPU temperature, load, VRAM via `nvidia-smi` or sysfs |
+| `cpumonitor.cpp` | Poll CPU load and temperature via `/proc/stat` and hwmon |
+| `rammonitor.cpp` | Poll RAM usage via `/proc/meminfo` |
+
+#### `system/` — System Integration
+| File | Responsibility |
+|------|---------------|
+| `commandrunner.cpp` | Execute shell commands, capture stdout/stderr |
+| `dnfmanager.cpp` | Wrap DNF commands for install/remove/update |
+| `polkit.cpp` | Privilege escalation via `pkexec` / PolicyKit D-Bus |
+
+---
+
+## C++ ↔ QML Communication
+
+Qt's `QObject` system is the bridge. A C++ class exposes data to QML via `Q_PROPERTY`:
+
+```cpp
+// C++ side — gpumonitor.h
+class GpuMonitor : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(int temperature READ temperature NOTIFY temperatureChanged)
+    Q_PROPERTY(int load        READ load        NOTIFY loadChanged)
+
+public:
+    int temperature() const { return m_temperature; }
+    int load()        const { return m_load; }
+
+signals:
+    void temperatureChanged();
+    void loadChanged();
+
+private:
+    int m_temperature = 0;
+    int m_load = 0;
+};
+```
+
+```qml
+// QML side — MonitorPage.qml
+Text {
+    text: GpuMonitor.temperature + "°C"  // auto-updates via signal
+}
+```
+
+No manual refresh needed — when C++ emits `temperatureChanged()`, QML re-renders automatically.
+
+---
+
+## Privilege Escalation
+
+Driver operations (install, remove, GRUB edit) require root. We use **PolicyKit (pkexec)** — never `sudo` in a GUI app.
+
+```
+User clicks "Install Driver"
+        │
+        ▼
+C++ calls pkexec with a PolicyKit action ID
+        │
+        ▼
+System shows a Plasma authentication dialog
+        │
+        ▼
+Privileged operation runs as root
+        │
+        ▼
+Result emitted back to QML via signal
+```
+
+The PolicyKit action definition lives in `data/polkit/`.
+
+---
+
+## Build System
+
+CMake 3.22+ with `qt_add_qml_module` for QML resource embedding. All QML files are compiled into the binary at build time — no loose `.qml` files needed at runtime.
+
+See [BUILDING.md](BUILDING.md) for full build instructions.
+
+---
+
+## Directory Structure
+
+```
+src/
+├── backend/
+│   ├── nvidia/
+│   │   ├── detector.h / detector.cpp
+│   │   ├── installer.h / installer.cpp
+│   │   └── updater.h / updater.cpp
+│   ├── monitor/
+│   │   ├── gpumonitor.h / gpumonitor.cpp
+│   │   ├── cpumonitor.h / cpumonitor.cpp
+│   │   └── rammonitor.h / rammonitor.cpp
+│   └── system/
+│       ├── commandrunner.h / commandrunner.cpp
+│       ├── dnfmanager.h / dnfmanager.cpp
+│       └── polkit.h / polkit.cpp
+├── qml/
+│   ├── Main.qml
+│   ├── pages/
+│   │   ├── DriverPage.qml
+│   │   ├── MonitorPage.qml
+│   │   └── SettingsPage.qml
+│   └── components/
+│       ├── StatCard.qml
+│       ├── SidebarMenu.qml
+│       └── ProgressBar.qml
+└── main.cpp
+```

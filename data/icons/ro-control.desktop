@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Name=ro-Control
+Name[tr]=ro-Control
+GenericName=NVIDIA Driver Manager
+GenericName[tr]=NVIDIA Sürücü Yöneticisi
+Comment=Smart NVIDIA driver manager and system monitor for Linux
+Comment[tr]=Linux için akıllı NVIDIA sürücü yöneticisi ve sistem monitörü
+Exec=ro-control
+Icon=ro-control
+Terminal=false
+Categories=System;Settings;HardwareSettings;
+Keywords=nvidia;driver;gpu;monitor;system;fedora;
+Keywords[tr]=nvidia;sürücü;gpu;monitör;sistem;fedora;
+StartupNotify=true
+StartupWMClass=ro-control
