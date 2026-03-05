@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "NvidiaInstaller",
+            "lineNumber": 6,
+            "object": true,
+            "qualifiedClassName": "NvidiaInstaller",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "installer.h",
+    "outputRevision": 69
+}

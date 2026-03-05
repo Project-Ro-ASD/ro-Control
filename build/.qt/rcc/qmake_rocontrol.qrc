@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/rocontrol">
+    <file alias="qmldir">/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/rocontrol/qmldir</file>
+  </qresource>
+</RCC>
+

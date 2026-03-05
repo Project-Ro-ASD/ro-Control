@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "DnfManager",
+            "lineNumber": 6,
+            "object": true,
+            "qualifiedClassName": "DnfManager",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "dnfmanager.h",
+    "outputRevision": 69
+}

@@ -1,0 +1,11 @@
+module rocontrol
+typeinfo ro-control.qmltypes
+prefer :/rocontrol/
+Main 1.0 src/qml/Main.qml
+DriverPage 1.0 src/qml/pages/DriverPage.qml
+MonitorPage 1.0 src/qml/pages/MonitorPage.qml
+SettingsPage 1.0 src/qml/pages/SettingsPage.qml
+StatCard 1.0 src/qml/components/StatCard.qml
+SidebarMenu 1.0 src/qml/components/SidebarMenu.qml
+depends QtQuick
+

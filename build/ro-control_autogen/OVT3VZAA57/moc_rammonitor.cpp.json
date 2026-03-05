@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "RamMonitor",
+            "lineNumber": 6,
+            "object": true,
+            "qualifiedClassName": "RamMonitor",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "rammonitor.h",
+    "outputRevision": 69
+}

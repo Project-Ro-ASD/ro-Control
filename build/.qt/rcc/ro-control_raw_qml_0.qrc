@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="/rocontrol/">
+    <file alias="src/qml/Main.qml">/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/src/qml/Main.qml</file>
+    <file alias="src/qml/pages/DriverPage.qml">/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/src/qml/pages/DriverPage.qml</file>
+    <file alias="src/qml/pages/MonitorPage.qml">/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/src/qml/pages/MonitorPage.qml</file>
+    <file alias="src/qml/pages/SettingsPage.qml">/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/src/qml/pages/SettingsPage.qml</file>
+    <file alias="src/qml/components/StatCard.qml">/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/src/qml/components/StatCard.qml</file>
+    <file alias="src/qml/components/SidebarMenu.qml">/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/src/qml/components/SidebarMenu.qml</file>
+  </qresource>
+</RCC>
+

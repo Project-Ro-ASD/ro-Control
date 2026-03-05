@@ -1,0 +1,14 @@
+-rootPath
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control
+-cmake-output
+-output-file
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/.qt/qml_imports/ro-control_conf.cmake
+-importPath
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build
+-importPath
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/rocontrol
+-importPath
+/opt/homebrew/share/qt/qml
+-qrcFiles
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/.qt/rcc/qmake_rocontrol.qrc
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/.qt/rcc/ro-control_raw_qml_0.qrc

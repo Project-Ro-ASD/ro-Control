@@ -1,0 +1,33 @@
+{
+    "classes": [
+        {
+            "className": "CommandRunner",
+            "lineNumber": 8,
+            "object": true,
+            "qualifiedClassName": "CommandRunner",
+            "signals": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "line",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 0,
+                    "lineNumber": 27,
+                    "name": "outputLine",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "commandrunner.h",
+    "outputRevision": 69
+}

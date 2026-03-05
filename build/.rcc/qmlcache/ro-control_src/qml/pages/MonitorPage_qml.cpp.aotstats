@@ -1,0 +1,23 @@
+{
+    "formatRevision": 1,
+    "modules": [
+        {
+            "moduleFiles": [
+                {
+                    "entries": [
+                        {
+                            "codegenResult": 0,
+                            "column": 27,
+                            "durationMicroseconds": 0,
+                            "functionName": "centerIn",
+                            "line": 7,
+                            "message": ""
+                        }
+                    ],
+                    "filePath": "/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/src/qml/pages/MonitorPage.qml"
+                }
+            ],
+            "moduleId": "rocontrol(ro-control)"
+        }
+    ]
+}

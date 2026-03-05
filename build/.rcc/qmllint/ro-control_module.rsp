@@ -1,0 +1,14 @@
+-I
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build
+-I
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/rocontrol
+-I
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build
+-I
+/opt/homebrew/share/qt/qml
+--resource
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/.qt/rcc/qmake_rocontrol.qrc
+--resource
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/.qt/rcc/ro-control_raw_qml_0.qrc
+--module
+rocontrol

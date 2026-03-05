@@ -1,0 +1,10 @@
+--resource
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/.qt/rcc/qmake_rocontrol.qrc
+--resource
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/.qt/rcc/ro-control_raw_qml_0.qrc
+/rocontrol/src/qml/Main.qml
+/rocontrol/src/qml/pages/DriverPage.qml
+/rocontrol/src/qml/pages/MonitorPage.qml
+/rocontrol/src/qml/pages/SettingsPage.qml
+/rocontrol/src/qml/components/StatCard.qml
+/rocontrol/src/qml/components/SidebarMenu.qml

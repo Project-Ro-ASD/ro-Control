@@ -1,0 +1,15 @@
+{
+    "formatRevision": 1,
+    "modules": [
+        {
+            "moduleFiles": [
+                {
+                    "entries": [
+                    ],
+                    "filePath": "/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/src/qml/components/StatCard.qml"
+                }
+            ],
+            "moduleId": "rocontrol(ro-control)"
+        }
+    ]
+}

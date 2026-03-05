@@ -1,0 +1,9 @@
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/ro-control_autogen/include/../56C6NWTBME/moc_commandrunner.cpp.json
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/ro-control_autogen/include/../56C6NWTBME/moc_dnfmanager.cpp.json
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/ro-control_autogen/include/../56C6NWTBME/moc_polkit.cpp.json
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/ro-control_autogen/include/../OVT3VZAA57/moc_cpumonitor.cpp.json
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/ro-control_autogen/include/../OVT3VZAA57/moc_gpumonitor.cpp.json
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/ro-control_autogen/include/../OVT3VZAA57/moc_rammonitor.cpp.json
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/ro-control_autogen/include/../QXVKHFL5QL/moc_detector.cpp.json
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/ro-control_autogen/include/../QXVKHFL5QL/moc_installer.cpp.json
+/Volumes/NeuralSilicon/OSDEV/Topluluk/ro-Control/build/ro-control_autogen/include/../QXVKHFL5QL/moc_updater.cpp.json

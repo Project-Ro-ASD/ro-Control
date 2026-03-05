@@ -1,0 +1,18 @@
+{
+    "classes": [
+        {
+            "className": "PolkitHelper",
+            "lineNumber": 6,
+            "object": true,
+            "qualifiedClassName": "PolkitHelper",
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "polkit.h",
+    "outputRevision": 69
+}
