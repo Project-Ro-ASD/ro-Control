@@ -2,27 +2,31 @@
 
 #include <QObject>
 #include <QString>
+#include <QStringList>
 
-// CommandRunner: Shell komutlarını çalıştırır, stdout/stderr döner.
-// Tüm backend modülleri bu sınıfı kullanır — doğrudan sistem() çağrısı yapılmaz.
+// CommandRunner: Tüm backend modüllerinin kullandığı shell komut çalıştırıcı.
+// Hiçbir modül doğrudan sistem çağrısı yapmaz — hepsi bu sınıfı kullanır.
 class CommandRunner : public QObject
 {
     Q_OBJECT
 
 public:
     struct Result {
-        int     exitCode;   // 0 = başarılı
-        QString stdout;     // Komut çıktısı
-        QString stderr;     // Hata çıktısı
-        bool    success() const { return exitCode == 0; }
+        int     exitCode;
+        QString stdout;
+        QString stderr;
+        bool success() const { return exitCode == 0; }
     };
 
     explicit CommandRunner(QObject *parent = nullptr);
 
-    // Komutu çalıştır ve sonucu döndür (bloklayan)
-    Result run(const QString &command, const QStringList &args = {});
+    // Bloklayan komut — sonuç dönene kadar bekler
+    Result run(const QString &program, const QStringList &args = {});
+
+    // Root gerektiren komut — pkexec ile çalıştırır
+    Result runAsRoot(const QString &program, const QStringList &args = {});
 
 signals:
-    // Uzun süren işlemler için anlık çıktı satırı
+    // Uzun işlemler için anlık çıktı (DNF install vb.)
     void outputLine(const QString &line);
 };
