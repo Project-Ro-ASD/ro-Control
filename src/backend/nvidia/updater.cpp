@@ -8,6 +8,9 @@
 NvidiaUpdater::NvidiaUpdater(QObject *parent) : QObject(parent) {}
 
 void NvidiaUpdater::checkForUpdate() {
+  emit progressMessage(
+      QStringLiteral("Guncelleme kontrolu baslatildi..."));
+
   // Mevcut kurulu sürücü versiyonu
   NvidiaDetector detector;
   const QString current = detector.installedDriverVersion();
@@ -23,6 +26,8 @@ void NvidiaUpdater::checkForUpdate() {
       m_updateAvailable = false;
       emit updateAvailableChanged();
     }
+    emit progressMessage(
+        QStringLiteral("Kurulu NVIDIA surucusu bulunamadi."));
     return;
   }
 
@@ -53,11 +58,32 @@ void NvidiaUpdater::checkForUpdate() {
       m_updateAvailable = true;
       emit updateAvailableChanged();
     }
+
+    if (!m_latestVersion.isEmpty()) {
+      emit progressMessage(
+          QStringLiteral("Guncelleme bulundu: %1").arg(m_latestVersion));
+    } else {
+      emit progressMessage(
+          QStringLiteral("Guncelleme bulundu (surum ayrintisi alinamadi)."));
+    }
+  } else if (result.exitCode == 0) {
+    if (m_updateAvailable) {
+      m_updateAvailable = false;
+      emit updateAvailableChanged();
+    }
+
+    emit progressMessage(
+        QStringLiteral("Surucu guncel. Yeni surum bulunamadi."));
   } else {
     if (m_updateAvailable) {
       m_updateAvailable = false;
       emit updateAvailableChanged();
     }
+
+    emit progressMessage(QStringLiteral("Guncelleme kontrolu basarisiz: %1")
+                             .arg(result.stderr.trimmed().isEmpty()
+                                      ? result.stdout.trimmed()
+                                      : result.stderr.trimmed()));
   }
 }
 

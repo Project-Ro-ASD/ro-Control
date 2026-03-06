@@ -1,6 +1,7 @@
 #include "rammonitor.h"
 
 #include <QFile>
+#include <QRegularExpression>
 #include <QTextStream>
 
 #include <algorithm>
@@ -36,32 +37,54 @@ void RamMonitor::refresh() {
 
   qint64 memTotalKiB = -1;
   qint64 memAvailableKiB = -1;
+  qint64 memFreeKiB = -1;
+  qint64 buffersKiB = -1;
+  qint64 cachedKiB = -1;
+  qint64 sReclaimableKiB = -1;
+  qint64 shmemKiB = -1;
+
+  static const QRegularExpression lineRe(
+      QStringLiteral(R"(^([A-Za-z_]+):\s+(\d+))"));
 
   QTextStream stream(&meminfo);
   while (!stream.atEnd()) {
     const QString line = stream.readLine();
 
-    if (line.startsWith("MemTotal:")) {
-      const QString value =
-          line.section(':', 1, 1).trimmed().section(' ', 0, 0);
-      bool ok = false;
-      memTotalKiB = value.toLongLong(&ok);
-      if (!ok) {
-        memTotalKiB = -1;
-      }
-    } else if (line.startsWith("MemAvailable:")) {
-      const QString value =
-          line.section(':', 1, 1).trimmed().section(' ', 0, 0);
-      bool ok = false;
-      memAvailableKiB = value.toLongLong(&ok);
-      if (!ok) {
-        memAvailableKiB = -1;
-      }
+    const auto match = lineRe.match(line);
+    if (!match.hasMatch()) {
+      continue;
     }
 
-    if (memTotalKiB >= 0 && memAvailableKiB >= 0) {
-      break;
+    bool ok = false;
+    const qint64 value = match.captured(2).toLongLong(&ok);
+    if (!ok) {
+      continue;
     }
+
+    const QString key = match.captured(1);
+    if (key == QStringLiteral("MemTotal")) {
+      memTotalKiB = value;
+    } else if (key == QStringLiteral("MemAvailable")) {
+      memAvailableKiB = value;
+    } else if (key == QStringLiteral("MemFree")) {
+      memFreeKiB = value;
+    } else if (key == QStringLiteral("Buffers")) {
+      buffersKiB = value;
+    } else if (key == QStringLiteral("Cached")) {
+      cachedKiB = value;
+    } else if (key == QStringLiteral("SReclaimable")) {
+      sReclaimableKiB = value;
+    } else if (key == QStringLiteral("Shmem")) {
+      shmemKiB = value;
+    }
+  }
+
+  // Some kernels/environments may not expose MemAvailable.
+  if (memAvailableKiB < 0 && memFreeKiB >= 0 && buffersKiB >= 0 &&
+      cachedKiB >= 0) {
+    const qint64 reclaimable = sReclaimableKiB > 0 ? sReclaimableKiB : 0;
+    const qint64 shmem = shmemKiB > 0 ? shmemKiB : 0;
+    memAvailableKiB = memFreeKiB + buffersKiB + cachedKiB + reclaimable - shmem;
   }
 
   if (memTotalKiB <= 0 || memAvailableKiB < 0 ||

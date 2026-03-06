@@ -32,8 +32,8 @@ Item {
         }
 
         Label {
-            text: "Secure Boot: " + (nvidiaDetector.secureBootEnabled ? "Acik" : "Kapali/Bilinmiyor")
-            color: nvidiaDetector.secureBootEnabled ? "#c43a3a" : "#2b8a3e"
+            text: "Secure Boot: " + (nvidiaDetector.secureBootKnown ? (nvidiaDetector.secureBootEnabled ? "Acik" : "Kapali") : "Bilinmiyor")
+            color: !nvidiaDetector.secureBootKnown ? "#8a6500" : (nvidiaDetector.secureBootEnabled ? "#c43a3a" : "#2b8a3e")
             font.bold: true
         }
 
@@ -91,8 +91,11 @@ Item {
             }
 
             Button {
-                text: "Acik Kaynak Surucu Kur (Nouveau)"
-                onClicked: nvidiaInstaller.installOpenSource()
+                text: "Nouveau Surucusu Kur"
+                onClicked: {
+                    logArea.append("Nouveau surucusu kurulumu baslatildi...");
+                    nvidiaInstaller.installOpenSource();
+                }
             }
 
             Button {
@@ -106,7 +109,10 @@ Item {
 
             Button {
                 text: "Guncelleme Kontrol Et"
-                onClicked: nvidiaUpdater.checkForUpdate()
+                onClicked: {
+                    logArea.append("Guncelleme kontrolu istendi...");
+                    nvidiaUpdater.checkForUpdate();
+                }
             }
 
             Button {
@@ -128,8 +134,11 @@ Item {
             Button {
                 text: "Yeniden Tara"
                 onClicked: {
+                    logArea.append("Sistem yeniden taraniyor...");
                     nvidiaDetector.refresh();
                     nvidiaInstaller.refreshProprietaryAgreement();
+                    nvidiaUpdater.checkForUpdate();
+                    logArea.append("Yeniden tarama tamamlandi.");
                 }
             }
 
