@@ -45,7 +45,7 @@ Divided into three modules:
 |------|---------------|
 | `detector.cpp` | Detect installed GPU, current driver version, kernel module status |
 | `installer.cpp` | Install / remove drivers via DNF (`akmod-nvidia`) |
-| `updater.cpp` | Check GitHub Releases for new versions, trigger update |
+| `updater.cpp` | Check DNF updates for `akmod-nvidia`, trigger update |
 
 #### `monitor/` — Live Statistics
 | File | Responsibility |
@@ -156,7 +156,6 @@ src/
 │   │   └── SettingsPage.qml
 │   └── components/
 │       ├── StatCard.qml
-│       ├── SidebarMenu.qml
-│       └── ProgressBar.qml
+│       └── SidebarMenu.qml
 └── main.cpp
 ```
