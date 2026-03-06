@@ -15,13 +15,32 @@ void NvidiaInstaller::install()
 
     emit progressMessage(QStringLiteral("RPM Fusion deposu kontrol ediliyor..."));
 
+    // Fedora sürümünü al — QProcess shell expansion yapmaz,
+    // bu yüzden $(rpm -E %fedora) çalışmaz, önce manual alıyoruz
+    CommandRunner rpmRunner;
+    const auto fedoraResult = rpmRunner.run(
+        QStringLiteral("rpm"),
+        { QStringLiteral("-E"), QStringLiteral("%fedora") }
+    );
+
+    const QString fedoraVer = fedoraResult.stdout.trimmed();
+    if (fedoraVer.isEmpty()) {
+        emit installFinished(false, QStringLiteral("Fedora sürümü tespit edilemedi."));
+        return;
+    }
+
     // Adım 1: RPM Fusion reposunu etkinleştir
     auto result = runner.runAsRoot(
         QStringLiteral("dnf"),
         { QStringLiteral("install"), QStringLiteral("-y"),
-          QStringLiteral("https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"),
-          QStringLiteral("https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm") }
+          QStringLiteral("https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-%1.noarch.rpm").arg(fedoraVer),
+          QStringLiteral("https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-%1.noarch.rpm").arg(fedoraVer) }
     );
+
+    if (!result.success()) {
+        emit installFinished(false, QStringLiteral("RPM Fusion deposu eklenemedi: ") + result.stderr);
+        return;
+    }
 
     emit progressMessage(QStringLiteral("NVIDIA sürücüsü kuruluyor (akmod-nvidia)..."));
 
