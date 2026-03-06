@@ -1,0 +1,18 @@
+---
+# ro-Control clang-format configuration
+# CI bu dosyayı kullanır — değişiklik yapılırsa tüm kaynak dosyalar yeniden formatlanmalı.
+# Kullanım: find src/ -name "*.cpp" -o -name "*.h" | xargs clang-format -i
+
+BasedOnStyle: LLVM
+Language: Cpp
+ColumnLimit: 80
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+BreakBeforeBraces: Attach
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+SortIncludes: true
+IncludeBlocks: Preserve
+...
