@@ -10,10 +10,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial project skeleton with C++20 and Qt6/QML
-- Project directory structure and build system foundation
-- GitHub Actions CI/CD workflows
-- Branch protection and contribution guidelines
+- NVIDIA detection pipeline with driver/module verification report
+- Secure Boot detection and session type (Wayland/X11) detection
+- Driver install flows for proprietary and open-source (nouveau) options
+- Session-aware post-install and post-update handling for Wayland/X11
+- Real system monitors for CPU, GPU, and RAM with live QML bindings
+- Driver update check/apply flow and deep-clean operation support
+- Fedora build and test workflow with CMake + Qt6
+
+### Changed
+- Driver management UI is wired to backend operations instead of placeholders
+- Documentation updated for current architecture and build instructions
+- Test suite expanded to cover monitor metric ranges and detector reporting
+
+### Fixed
+- Command execution path preserves stdout reliably
+- RPM Fusion URL resolution and repository failure handling improved
+- Updater API/header alignment and monitor test compatibility issues resolved
+- Repository cleanup for stray macOS metadata files
 
 ---
 

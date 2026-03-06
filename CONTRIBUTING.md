@@ -122,7 +122,7 @@ make -j$(nproc)
 
 ```bash
 # Format your code (clang-format)
-find src/ -name "*.cpp" -o -name "*.h" | xargs clang-format -i
+find src \( -name "*.cpp" -o -name "*.h" \) -print0 | xargs -0 clang-format -i
 
 # Run tests
 cd build && ctest --output-on-failure
@@ -146,13 +146,15 @@ cd build && ctest --output-on-failure
 
 ## Translations
 
-ro-Control supports multiple languages via `.po` files in the `po/` directory.
+Current UI strings are maintained directly in QML/C++ and translated manually (Turkish/English).
 
-To add a new language:
+To add a new language now:
 
-1. Copy `po/en.po` to `po/<lang_code>.po` (e.g., `po/de.po`)
-2. Translate the strings
-3. Submit a PR with the new file
+1. Add translated strings in relevant QML/C++ files.
+2. Verify layout does not break with longer text.
+3. Submit a PR to `dev` with screenshots for changed pages.
+
+A dedicated Qt Linguist (`.ts/.qm`) localization pipeline is planned for a future release.
 
 ---
 

@@ -3,6 +3,7 @@
 #include "system/commandrunner.h"
 
 #include <QRegularExpression>
+#include <QtGlobal>
 
 NvidiaUpdater::NvidiaUpdater(QObject *parent) : QObject(parent) {}
 
@@ -81,6 +82,16 @@ void NvidiaUpdater::applyUpdate() {
   emit progressMessage(QStringLiteral("Kernel modülü yeniden derleniyor..."));
 
   runner.runAsRoot(QStringLiteral("akmods"), {QStringLiteral("--force")});
+
+  const QString sessionType =
+      qEnvironmentVariable("XDG_SESSION_TYPE").trimmed().toLower();
+  if (sessionType == QStringLiteral("wayland")) {
+    emit progressMessage(QStringLiteral(
+        "Wayland tespit edildi: nvidia-drm.modeset=1 ayari guncelleniyor..."));
+    runner.runAsRoot(QStringLiteral("grubby"),
+                     {QStringLiteral("--update-kernel=ALL"),
+                      QStringLiteral("--args=nvidia-drm.modeset=1")});
+  }
 
   // Güncelleme sonrası durumu yenile
   m_updateAvailable = false;

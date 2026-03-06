@@ -1,4 +1,5 @@
 #include "commandrunner.h"
+
 #include <QProcess>
 
 CommandRunner::CommandRunner(QObject *parent) : QObject(parent) {}
@@ -6,11 +7,14 @@ CommandRunner::CommandRunner(QObject *parent) : QObject(parent) {}
 CommandRunner::Result CommandRunner::run(const QString &program,
                                          const QStringList &args) {
   QProcess process;
+  QByteArray stdoutBuffer;
 
-  // Stdout'u anlık olarak sinyal olarak ilet
+  // Stdout'u anlik olarak yayinla ve sonucu korumak icin buffer'a biriktir.
   connect(&process, &QProcess::readyReadStandardOutput, this, [&]() {
-    const QString line =
-        QString::fromUtf8(process.readAllStandardOutput()).trimmed();
+    const QByteArray chunk = process.readAllStandardOutput();
+    stdoutBuffer.append(chunk);
+
+    const QString line = QString::fromUtf8(chunk).trimmed();
     if (!line.isEmpty())
       emit outputLine(line);
   });
@@ -26,17 +30,17 @@ CommandRunner::Result CommandRunner::run(const QString &program,
   }
 
   process.waitForFinished(-1);
+  stdoutBuffer.append(process.readAllStandardOutput());
 
   return Result{
       .exitCode = process.exitCode(),
-      .stdout = QString::fromUtf8(process.readAllStandardOutput()),
+      .stdout = QString::fromUtf8(stdoutBuffer),
       .stderr = QString::fromUtf8(process.readAllStandardError()),
   };
 }
 
 CommandRunner::Result CommandRunner::runAsRoot(const QString &program,
                                                const QStringList &args) {
-  // pkexec ile privilege escalation — sudo yerine PolicyKit kullanıyoruz
   QStringList pkexecArgs;
   pkexecArgs << program << args;
   return run(QStringLiteral("pkexec"), pkexecArgs);

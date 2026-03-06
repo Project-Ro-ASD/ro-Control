@@ -3,47 +3,59 @@
 #include <QObject>
 #include <QTimer>
 
-// GpuMonitor: nvidia-smi üzerinden gerçek zamanlı GPU istatistikleri.
-// QML bu sınıfın property'lerine bağlanır — otomatik güncellenir.
-class GpuMonitor : public QObject {
-  Q_OBJECT
-
-  // QML'den okunabilir property'ler
-  Q_PROPERTY(int temperature READ temperature NOTIFY temperatureChanged)
-  Q_PROPERTY(int load READ load NOTIFY loadChanged)
-  Q_PROPERTY(int vramUsed READ vramUsed NOTIFY vramUsedChanged)
-  Q_PROPERTY(int vramTotal READ vramTotal NOTIFY vramTotalChanged)
-  Q_PROPERTY(bool available READ available NOTIFY availableChanged)
+// Gercek zamanli GPU istatistikleri
+class GpuMonitor : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(bool available READ available NOTIFY availableChanged)
+    Q_PROPERTY(bool running READ running NOTIFY runningChanged)
+    Q_PROPERTY(QString gpuName READ gpuName NOTIFY gpuNameChanged)
+    Q_PROPERTY(int temperatureC READ temperatureC NOTIFY temperatureCChanged)
+    Q_PROPERTY(int utilizationPercent READ utilizationPercent NOTIFY utilizationPercentChanged)
+    Q_PROPERTY(int memoryUsedMiB READ memoryUsedMiB NOTIFY memoryUsedMiBChanged)
+    Q_PROPERTY(int memoryTotalMiB READ memoryTotalMiB NOTIFY memoryTotalMiBChanged)
+    Q_PROPERTY(int memoryUsagePercent READ memoryUsagePercent NOTIFY memoryUsagePercentChanged)
+    Q_PROPERTY(int updateInterval READ updateInterval WRITE setUpdateInterval NOTIFY updateIntervalChanged)
 
 public:
-  explicit GpuMonitor(QObject *parent = nullptr);
+    explicit GpuMonitor(QObject *parent = nullptr);
 
-  int temperature() const { return m_temperature; }
-  int load() const { return m_load; }
-  int vramUsed() const { return m_vramUsed; }
-  int vramTotal() const { return m_vramTotal; }
-  bool available() const { return m_available; }
+    bool available() const;
+    bool running() const;
+    QString gpuName() const;
+    int temperatureC() const;
+    int utilizationPercent() const;
+    int memoryUsedMiB() const;
+    int memoryTotalMiB() const;
+    int memoryUsagePercent() const;
+    int updateInterval() const;
 
-  // Polling'i başlat/durdur (ms cinsinden interval)
-  Q_INVOKABLE void start(int intervalMs = 1000);
-  Q_INVOKABLE void stop();
+    Q_INVOKABLE void refresh();
+    Q_INVOKABLE void start();
+    Q_INVOKABLE void stop();
+    void setUpdateInterval(int intervalMs);
 
 signals:
-  void temperatureChanged();
-  void loadChanged();
-  void vramUsedChanged();
-  void vramTotalChanged();
-  void availableChanged();
-
-private slots:
-  void poll();
+    void availableChanged();
+    void runningChanged();
+    void gpuNameChanged();
+    void temperatureCChanged();
+    void utilizationPercentChanged();
+    void memoryUsedMiBChanged();
+    void memoryTotalMiBChanged();
+    void memoryUsagePercentChanged();
+    void updateIntervalChanged();
 
 private:
-  QTimer m_timer;
+    void clearMetrics();
+    void setAvailable(bool value);
 
-  int m_temperature = 0;
-  int m_load = 0;
-  int m_vramUsed = 0;
-  int m_vramTotal = 0;
-  bool m_available = false;
+    QTimer m_timer;
+    bool m_available = false;
+    QString m_gpuName;
+    int m_temperatureC = 0;
+    int m_utilizationPercent = 0;
+    int m_memoryUsedMiB = 0;
+    int m_memoryTotalMiB = 0;
+    int m_memoryUsagePercent = 0;
 };

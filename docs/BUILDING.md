@@ -109,10 +109,8 @@ ctest --output-on-failure
 
 ## Uninstall
 
-```bash
-cd build
-sudo make uninstall
-```
+`make uninstall` target'i su an projede tanimli degil.
+Sistemden kaldirmak icin paket yoneticisini veya install manifest'i kullanin.
 
 ---
 

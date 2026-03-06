@@ -3,8 +3,7 @@
 #include <QObject>
 #include <QString>
 
-// NvidiaUpdater: Kurulu sürücü ile mevcut en güncel sürümü karşılaştırır,
-// güncelleme varsa bildirir ve uygular.
+// NvidiaUpdater: Kurulu surucu ile mevcut en guncel surumu karsilastirir.
 class NvidiaUpdater : public QObject {
   Q_OBJECT
 
@@ -22,10 +21,7 @@ public:
   QString currentVersion() const { return m_currentVersion; }
   QString latestVersion() const { return m_latestVersion; }
 
-  // DNF'den güncelleme olup olmadığını kontrol et
   Q_INVOKABLE void checkForUpdate();
-
-  // Güncellemeyi uygula (root gerektirir)
   Q_INVOKABLE void applyUpdate();
 
 signals:
