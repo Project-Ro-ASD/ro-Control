@@ -6,30 +6,30 @@
 // PolkitHelper: PolicyKit D-Bus arayüzü üzerinden yetki kontrolü.
 // Komut çalıştırmaz — sadece yetkinin verilip verilmediğini kontrol eder.
 // Gerçek komut yürütme CommandRunner::runAsRoot() ile yapılır.
-class PolkitHelper : public QObject
-{
-    Q_OBJECT
+class PolkitHelper : public QObject {
+  Q_OBJECT
 
-    Q_PROPERTY(bool authorized READ isAuthorized NOTIFY authorizedChanged)
+  Q_PROPERTY(bool authorized READ isAuthorized NOTIFY authorizedChanged)
 
 public:
-    // ro-Control için tanımlı PolicyKit action ID
-    static constexpr auto ActionId = "com.github.AcikKaynakGelistirmeToplulugu.rocontrol.manage-drivers";
+  // ro-Control için tanımlı PolicyKit action ID
+  static constexpr auto ActionId =
+      "com.github.AcikKaynakGelistirmeToplulugu.rocontrol.manage-drivers";
 
-    explicit PolkitHelper(QObject *parent = nullptr);
+  explicit PolkitHelper(QObject *parent = nullptr);
 
-    // Mevcut kullanıcının yetki durumunu sorgula
-    bool isAuthorized() const { return m_authorized; }
+  // Mevcut kullanıcının yetki durumunu sorgula
+  bool isAuthorized() const { return m_authorized; }
 
-    // PolicyKit üzerinden yetki iste (D-Bus CheckAuthorization)
-    Q_INVOKABLE bool requestAuthorization();
+  // PolicyKit üzerinden yetki iste (D-Bus CheckAuthorization)
+  Q_INVOKABLE bool requestAuthorization();
 
-    // Mevcut yetkiyi kontrol et (dialog göstermeden)
-    Q_INVOKABLE bool checkAuthorization();
+  // Mevcut yetkiyi kontrol et (dialog göstermeden)
+  Q_INVOKABLE bool checkAuthorization();
 
 signals:
-    void authorizedChanged();
+  void authorizedChanged();
 
 private:
-    bool m_authorized = false;
+  bool m_authorized = false;
 };
