@@ -25,6 +25,20 @@ ApplicationWindow {
                 anchors.fill: parent
                 anchors.margins: 8
 
+                Image {
+                    source: "qrc:/qt/qml/rocontrol/assets/ro-control-logo.svg"
+                    sourceSize.width: 30
+                    sourceSize.height: 30
+                    fillMode: Image.PreserveAspectFit
+                    Layout.preferredWidth: 30
+                    Layout.preferredHeight: 30
+                }
+
+                Item {
+                    Layout.preferredWidth: 8
+                    Layout.preferredHeight: 1
+                }
+
                 Label {
                     text: "ro-Control"
                     font.pixelSize: 20

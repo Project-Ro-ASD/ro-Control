@@ -30,12 +30,26 @@ Rectangle {
             width: parent.width
             height: 70
 
-            Label {
+            Row {
                 anchors.centerIn: parent
-                text: "ro-Control"
-                font.pixelSize: 22
-                font.bold: true
-                color: "#cdd6f4"
+                spacing: 10
+
+                Image {
+                    source: "qrc:/qt/qml/rocontrol/assets/ro-control-logo.svg"
+                    sourceSize.width: 28
+                    sourceSize.height: 28
+                    width: 28
+                    height: 28
+                    fillMode: Image.PreserveAspectFit
+                }
+
+                Label {
+                    text: "ro-Control"
+                    font.pixelSize: 22
+                    font.bold: true
+                    color: "#cdd6f4"
+                    anchors.verticalCenter: parent.verticalCenter
+                }
             }
         }
 

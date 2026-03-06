@@ -61,6 +61,10 @@ set(APP_SOURCES
 # ─── QML Resources ────────────────────────────────────────────────────────────
 qt_add_executable(ro-control ${APP_SOURCES})
 
+set_source_files_properties(src/qml/assets/ro-control-logo.svg PROPERTIES
+    QT_RESOURCE_ALIAS "assets/ro-control-logo.svg"
+)
+
 qt_add_qml_module(ro-control
     URI "rocontrol"
     VERSION 1.0
@@ -71,6 +75,8 @@ qt_add_qml_module(ro-control
         src/qml/pages/SettingsPage.qml
         src/qml/components/StatCard.qml
         src/qml/components/SidebarMenu.qml
+    RESOURCES
+        src/qml/assets/ro-control-logo.svg
 )
 
 if(Qt6LinguistTools_FOUND)
