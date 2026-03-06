@@ -97,7 +97,7 @@ install(TARGETS ro-control
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-install(FILES data/ro-control.desktop
+install(FILES data/icons/ro-control.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
 )
 
@@ -105,8 +105,12 @@ install(DIRECTORY data/icons/
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons
 )
 
-install(FILES data/ro-control.metainfo.xml
+install(FILES data/icons/ro-control.metainfo.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
+)
+
+install(FILES data/polkit/com.github.AcikKaynakGelistirmeToplulugu.rocontrol.policy
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/actions
 )
 
 # ─── Tests ───────────────────────────────────────────────────────────────────

@@ -12,7 +12,7 @@ Item {
 
         ColumnLayout {
             width: parent.width
-            spacing: 14
+            spacing: 12
 
             Label {
                 text: "Ayarlar"
@@ -22,14 +22,14 @@ Item {
 
             Rectangle {
                 Layout.fillWidth: true
-                radius: 10
                 border.width: 1
-                border.color: settingsPage.darkMode ? "#4f5f82" : "#c4ccdd"
+                border.color: settingsPage.darkMode ? "#4f5f82" : "#c6cfdf"
                 color: "transparent"
-                implicitHeight: aboutColumn.implicitHeight + 20
+                radius: 8
+                implicitHeight: aboutCol.implicitHeight + 20
 
                 ColumnLayout {
-                    id: aboutColumn
+                    id: aboutCol
                     anchors.fill: parent
                     anchors.margins: 10
                     spacing: 8
@@ -42,21 +42,21 @@ Item {
 
                     Label {
                         text: "Uygulama: " + Qt.application.name + " (" + Qt.application.version + ")"
-                        wrapMode: Text.Wrap
                     }
 
                     Label {
-                        text: "Tema modu: " + (settingsPage.darkMode ? "Sistem Koyu" : "Sistem Acik")
+                        text: "Tema: " + (settingsPage.darkMode ? "Sistem Koyu" : "Sistem Acik")
                     }
 
                     Label {
-                        text: "Son iyilestirmeler:"
+                        text: "Iyilestirmeler:"
                         font.bold: true
                     }
 
                     Label {
-                        text: "- Secure Boot kontrolu eklendi\n" + "- Surucu versiyonu teyit raporu eklendi\n" + "- CommandRunner stdout kaybi duzeltildi\n" + "- RPM Fusion URL olusturma duzeltildi"
+                        text: "- Secure Boot kontrolu\n- Surucu versiyonu teyit raporu\n- CommandRunner stdout duzeltmesi\n- RPM Fusion URL duzeltmesi"
                         wrapMode: Text.Wrap
+                        Layout.fillWidth: true
                     }
                 }
             }

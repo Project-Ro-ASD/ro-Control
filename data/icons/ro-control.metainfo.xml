@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+	<id>ro-control.desktop</id>
+	<name>ro-Control</name>
+	<summary>NVIDIA driver manager and system monitor for Fedora</summary>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>GPL-3.0-or-later</project_license>
+
+	<description>
+		<p>
+			ro-Control helps Fedora users detect NVIDIA GPUs, install or update
+			drivers via DNF, and monitor system metrics from a Qt desktop UI.
+		</p>
+	</description>
+
+	<launchable type="desktop-id">ro-control.desktop</launchable>
+	<provides>
+		<binary>ro-control</binary>
+	</provides>
+
+	<developer id="com.github.AcikKaynakGelistirmeToplulugu">
+		<name>Acik Kaynak Gelistirme Toplulugu</name>
+	</developer>
+
+	<url type="homepage">https://github.com/Acik-Kaynak-Gelistirme-Toplulugu/ro-Control</url>
+</component>

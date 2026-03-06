@@ -8,9 +8,8 @@ ApplicationWindow {
     width: 980
     height: 640
     title: "ro-Control"
-
     readonly property bool darkMode: Qt.styleHints.colorScheme === Qt.Dark
-    color: darkMode ? "#141822" : "#f3f5fa"
+    color: darkMode ? "#141822" : "#f4f6fb"
 
     ColumnLayout {
         anchors.fill: parent
@@ -30,7 +29,7 @@ ApplicationWindow {
                     text: "ro-Control"
                     font.pixelSize: 20
                     font.bold: true
-                    color: root.darkMode ? "#e9eefc" : "#101520"
+                    color: root.darkMode ? "#e8edfb" : "#121825"
                 }
 
                 Item {
@@ -39,7 +38,7 @@ ApplicationWindow {
 
                 Label {
                     text: root.darkMode ? "Tema: Sistem (Koyu)" : "Tema: Sistem (Acik)"
-                    color: root.darkMode ? "#c9d1e8" : "#2b364b"
+                    color: root.darkMode ? "#c8d0e7" : "#36435f"
                 }
             }
         }
