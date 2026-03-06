@@ -21,6 +21,7 @@ private slots:
     QVERIFY(info.driverVersion.isEmpty());
     QCOMPARE(info.driverLoaded, false);
     QCOMPARE(info.nouveauActive, false);
+    QCOMPARE(info.secureBootEnabled, false);
   }
 
   // detect() çağrılabiliyor mu? (donanım olmadan bile çökmemeli)
