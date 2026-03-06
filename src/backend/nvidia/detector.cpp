@@ -18,6 +18,7 @@ NvidiaDetector::GpuInfo NvidiaDetector::detect() const
     info.driverVersion  = detectDriverVersion();
     info.driverLoaded   = isModuleLoaded(QStringLiteral("nvidia"));
     info.nouveauActive  = isModuleLoaded(QStringLiteral("nouveau"));
+    info.secureBootEnabled = detectSecureBoot();
 
     return info;
 }
@@ -117,4 +118,30 @@ bool NvidiaDetector::isModuleLoaded(const QString &moduleName) const
     }
 
     return false;
+}
+
+bool NvidiaDetector::detectSecureBoot() const
+{
+    // mokutil --sb-state: Secure Boot durumunu raporlar
+    // "SecureBoot enabled" veya "SecureBoot disabled" döner
+    CommandRunner runner;
+    const auto result = runner.run(
+        QStringLiteral("mokutil"),
+        { QStringLiteral("--sb-state") }
+    );
+
+    if (result.success() || result.exitCode == 1) {
+        // mokutil çıktısı "enabled" içeriyorsa Secure Boot açık
+        return result.stdout.contains(QStringLiteral("enabled"),
+                                      Qt::CaseInsensitive);
+    }
+
+    // mokutil yoksa durum bilinmez — kullanıcıyı uyarmayız
+    return false;
+}
+
+void NvidiaDetector::refresh()
+{
+    m_info = detect();
+    emit infoChanged();
 }
