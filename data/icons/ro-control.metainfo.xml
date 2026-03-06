@@ -13,6 +13,18 @@
 		</p>
 	</description>
 
+	<categories>
+		<category>System</category>
+		<category>Settings</category>
+		<category>HardwareSettings</category>
+	</categories>
+
+	<screenshots>
+		<screenshot type="default">
+			<image>https://raw.githubusercontent.com/Acik-Kaynak-Gelistirme-Toplulugu/ro-Control/main/docs/screenshots/monitor-overview.svg</image>
+		</screenshot>
+	</screenshots>
+
 	<launchable type="desktop-id">ro-control.desktop</launchable>
 	<provides>
 		<binary>ro-control</binary>

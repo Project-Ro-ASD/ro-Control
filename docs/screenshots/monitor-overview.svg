@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-label="ro-Control monitor overview placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f1c33"/>
+      <stop offset="100%" stop-color="#233b63"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect x="80" y="80" width="1120" height="560" rx="18" fill="#f4f6fb"/>
+  <rect x="110" y="120" width="220" height="480" rx="12" fill="#18243f"/>
+  <rect x="360" y="120" width="810" height="90" rx="12" fill="#dde5f5"/>
+  <rect x="360" y="230" width="810" height="110" rx="12" fill="#ffffff"/>
+  <rect x="360" y="360" width="810" height="110" rx="12" fill="#ffffff"/>
+  <rect x="360" y="490" width="810" height="110" rx="12" fill="#ffffff"/>
+  <text x="120" y="165" font-family="sans-serif" font-size="28" fill="#dfe7fb">ro-Control</text>
+  <text x="390" y="172" font-family="sans-serif" font-size="28" fill="#22345c">System Monitoring</text>
+  <text x="390" y="295" font-family="sans-serif" font-size="24" fill="#304a7a">CPU Usage: 42%</text>
+  <text x="390" y="425" font-family="sans-serif" font-size="24" fill="#304a7a">GPU Usage: 36%</text>
+  <text x="390" y="555" font-family="sans-serif" font-size="24" fill="#304a7a">RAM Usage: 58%</text>
+</svg>

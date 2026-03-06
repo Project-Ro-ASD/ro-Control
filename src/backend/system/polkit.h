@@ -1,35 +1,25 @@
 #pragma once
 
 #include <QObject>
-#include <QString>
+#include <QStringList>
 
-// PolkitHelper: PolicyKit D-Bus arayüzü üzerinden yetki kontrolü.
-// Komut çalıştırmaz — sadece yetkinin verilip verilmediğini kontrol eder.
-// Gerçek komut yürütme CommandRunner::runAsRoot() ile yapılır.
+#include "commandrunner.h"
+
+// PolicyKit yetki yükseltme
 class PolkitHelper : public QObject {
   Q_OBJECT
 
-  Q_PROPERTY(bool authorized READ isAuthorized NOTIFY authorizedChanged)
-
 public:
-  // ro-Control için tanımlı PolicyKit action ID
-  static constexpr auto ActionId =
-      "com.github.AcikKaynakGelistirmeToplulugu.rocontrol.manage-drivers";
-
   explicit PolkitHelper(QObject *parent = nullptr);
 
-  // Mevcut kullanıcının yetki durumunu sorgula
-  bool isAuthorized() const { return m_authorized; }
-
-  // PolicyKit üzerinden yetki iste (D-Bus CheckAuthorization)
-  Q_INVOKABLE bool requestAuthorization();
-
-  // Mevcut yetkiyi kontrol et (dialog göstermeden)
-  Q_INVOKABLE bool checkAuthorization();
+  Q_INVOKABLE bool isPkexecAvailable() const;
+  Q_INVOKABLE CommandRunner::Result runPrivileged(const QString &program,
+                                                  const QStringList &args = {});
+  Q_INVOKABLE bool canAcquirePrivilege();
 
 signals:
-  void authorizedChanged();
+  void progressMessage(const QString &message);
 
 private:
-  bool m_authorized = false;
+  CommandRunner m_runner;
 };

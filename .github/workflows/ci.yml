@@ -52,3 +52,52 @@ jobs:
 
       - name: Run tests
         run: ctest --test-dir build --output-on-failure
+
+  package-rpm:
+    name: RPM Build Check
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:41
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install RPM tooling and dependencies
+        run: |
+          dnf install -y \
+            git \
+            rpm-build \
+            rpmlint \
+            cmake \
+            extra-cmake-modules \
+            gcc-c++ \
+            qt6-qtbase-devel \
+            qt6-qtdeclarative-devel \
+            qt6-qtwayland-devel \
+            kf6-qqc2-desktop-style \
+            polkit-devel
+
+      - name: Prepare source tarball
+        run: |
+          VERSION="$(awk '/^Version:/ {print $2}' packaging/rpm/ro-control.spec)"
+          if [[ -z "${VERSION}" ]]; then
+            echo "Failed to read Version from packaging/rpm/ro-control.spec" >&2
+            exit 1
+          fi
+          ARCHIVE_BASENAME="ro-control-${VERSION}"
+          mkdir -p ~/rpmbuild/SOURCES
+          STAGE_DIR="$(mktemp -d)"
+          cp -a . "${STAGE_DIR}/${ARCHIVE_BASENAME}"
+          rm -rf "${STAGE_DIR}/${ARCHIVE_BASENAME}/.git" "${STAGE_DIR}/${ARCHIVE_BASENAME}/build"
+          tar -C "${STAGE_DIR}" -czf "${HOME}/rpmbuild/SOURCES/${ARCHIVE_BASENAME}.tar.gz" "${ARCHIVE_BASENAME}"
+          rm -rf "${STAGE_DIR}"
+
+      - name: Build RPM
+        run: |
+          rpmbuild -ba packaging/rpm/ro-control.spec \
+            --define "_topdir %(echo ~/rpmbuild)"
+
+      - name: Lint built RPMs
+        run: |
+          rpmlint ~/rpmbuild/RPMS/*/*.rpm || true

@@ -106,6 +106,8 @@ ro-Control/
 ## Katkıda Bulunma
 
 Katkılarınızı bekliyoruz! Pull request göndermeden önce lütfen [CONTRIBUTING.md](CONTRIBUTING.md) dosyasını okuyun.
+Surum akis detaylari icin [docs/RELEASE.md](docs/RELEASE.md) dosyasina bakin.
+Yerellestirme altyapisi icin [i18n/README.md](i18n/README.md) dosyasini inceleyin.
 
 Hızlı katkı akışı:
 

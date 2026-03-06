@@ -1,92 +1,45 @@
+// Yetki yukseltme
+
 #include "polkit.h"
 
-#include <QDBusArgument>
-#include <QDBusConnection>
-#include <QDBusInterface>
-#include <QDBusReply>
-#include <QVariantMap>
+#include <QStandardPaths>
 
-#include <unistd.h> // getpid()
-
-PolkitHelper::PolkitHelper(QObject *parent) : QObject(parent) {}
-
-bool PolkitHelper::checkAuthorization() {
-  QDBusInterface polkit(QStringLiteral("org.freedesktop.PolicyKit1"),
-                        QStringLiteral("/org/freedesktop/PolicyKit1/Authority"),
-                        QStringLiteral("org.freedesktop.PolicyKit1.Authority"),
-                        QDBusConnection::systemBus());
-
-  if (!polkit.isValid())
-    return false;
-
-  // Subject: mevcut prosesin PID'si
-  QVariantMap subject;
-  subject[QStringLiteral("pid")] = static_cast<quint32>(getpid());
-  subject[QStringLiteral("start-time")] = static_cast<quint64>(0);
-
-  QDBusArgument subjectArg;
-  subjectArg.beginStructure();
-  subjectArg << QStringLiteral("unix-process") << subject;
-  subjectArg.endStructure();
-
-  // CheckAuthorization çağrısı — interactivity 0 = dialog gösterme
-  QDBusReply<QVariantMap> reply = polkit.call(
-      QStringLiteral("CheckAuthorization"), QVariant::fromValue(subjectArg),
-      QString::fromLatin1(ActionId),
-      QVariantMap(),           // details
-      static_cast<quint32>(0), // AllowUserInteraction = 0 (check only)
-      QString()                // cancellation id
-  );
-
-  if (!reply.isValid())
-    return false;
-
-  const bool authorized =
-      reply.value().value(QStringLiteral("is-authorized")).toBool();
-
-  if (authorized != m_authorized) {
-    m_authorized = authorized;
-    emit authorizedChanged();
-  }
-
-  return m_authorized;
+PolkitHelper::PolkitHelper(QObject *parent) : QObject(parent) {
+  connect(&m_runner, &CommandRunner::outputLine, this,
+          &PolkitHelper::progressMessage);
+  connect(&m_runner, &CommandRunner::errorLine, this,
+          &PolkitHelper::progressMessage);
 }
 
-bool PolkitHelper::requestAuthorization() {
-  QDBusInterface polkit(QStringLiteral("org.freedesktop.PolicyKit1"),
-                        QStringLiteral("/org/freedesktop/PolicyKit1/Authority"),
-                        QStringLiteral("org.freedesktop.PolicyKit1.Authority"),
-                        QDBusConnection::systemBus());
+bool PolkitHelper::isPkexecAvailable() const {
+  return !QStandardPaths::findExecutable(QStringLiteral("pkexec")).isEmpty();
+}
 
-  if (!polkit.isValid())
-    return false;
-
-  QVariantMap subject;
-  subject[QStringLiteral("pid")] = static_cast<quint32>(getpid());
-  subject[QStringLiteral("start-time")] = static_cast<quint64>(0);
-
-  QDBusArgument subjectArg;
-  subjectArg.beginStructure();
-  subjectArg << QStringLiteral("unix-process") << subject;
-  subjectArg.endStructure();
-
-  // AllowUserInteraction = 1 → kullanıcıya parola dialogu gösterilir
-  QDBusReply<QVariantMap> reply = polkit.call(
-      QStringLiteral("CheckAuthorization"), QVariant::fromValue(subjectArg),
-      QString::fromLatin1(ActionId), QVariantMap(),
-      static_cast<quint32>(1), // AllowUserInteraction
-      QString());
-
-  if (!reply.isValid())
-    return false;
-
-  const bool authorized =
-      reply.value().value(QStringLiteral("is-authorized")).toBool();
-
-  if (authorized != m_authorized) {
-    m_authorized = authorized;
-    emit authorizedChanged();
+CommandRunner::Result PolkitHelper::runPrivileged(const QString &program,
+                                                  const QStringList &args) {
+  if (!isPkexecAvailable()) {
+    return CommandRunner::Result{.exitCode = -1,
+                                 .stdout = {},
+                                 .stderr = QStringLiteral("pkexec not found.")};
   }
 
-  return m_authorized;
+  return m_runner.runAsRoot(program, args);
+}
+
+bool PolkitHelper::canAcquirePrivilege() {
+  if (!isPkexecAvailable()) {
+    return false;
+  }
+
+  CommandRunner::RunOptions options;
+  options.timeoutMs = 4000;
+  const auto result = m_runner.run(
+      QStringLiteral("pkexec"),
+      {QStringLiteral("--disable-internal-agent"), QStringLiteral("true")},
+      options);
+
+  // Success means privilege is available, but interactive-denied/auth-failed
+  // cases can return non-zero and still indicate pkexec is functional.
+  return result.exitCode == 0 || result.exitCode == 126 ||
+         result.exitCode == 127;
 }

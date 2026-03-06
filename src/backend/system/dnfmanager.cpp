@@ -1,98 +1,60 @@
+// DNF paket yoneticisi
+
 #include "dnfmanager.h"
 #include "commandrunner.h"
 
-DnfManager::DnfManager(QObject *parent) : QObject(parent) {}
+#include <QStandardPaths>
 
-bool DnfManager::isInstalled(const QString &packageName) const {
-  CommandRunner runner;
-
-  const auto result =
-      runner.run(QStringLiteral("rpm"), {QStringLiteral("-q"), packageName});
-
-  return result.success();
+DnfManager::DnfManager(QObject *parent) : QObject(parent) {
+  connect(&m_runner, &CommandRunner::outputLine, this,
+          &DnfManager::progressMessage);
+  connect(&m_runner, &CommandRunner::errorLine, this,
+          &DnfManager::progressMessage);
 }
 
-bool DnfManager::install(const QString &packageName) {
-  return install(QStringList{packageName});
+bool DnfManager::isAvailable() const {
+  return !QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty();
 }
 
-bool DnfManager::install(const QStringList &packages) {
-  CommandRunner runner;
-
-  connect(&runner, &CommandRunner::outputLine, this, &DnfManager::outputLine);
-
-  QStringList args;
-  args << QStringLiteral("install") << QStringLiteral("-y") << packages;
-
-  const auto result = runner.runAsRoot(QStringLiteral("dnf"), args);
-  return result.success();
+CommandRunner::Result DnfManager::checkUpdates(const QStringList &packages) {
+  QStringList args{QStringLiteral("check-update")};
+  args << packages;
+  return m_runner.run(QStringLiteral("dnf"), args);
 }
 
-bool DnfManager::remove(const QString &packageName) {
-  return remove(QStringList{packageName});
-}
-
-bool DnfManager::remove(const QStringList &packages) {
-  CommandRunner runner;
-
-  connect(&runner, &CommandRunner::outputLine, this, &DnfManager::outputLine);
-
-  QStringList args;
-  args << QStringLiteral("remove") << QStringLiteral("-y") << packages;
-
-  const auto result = runner.runAsRoot(QStringLiteral("dnf"), args);
-  return result.success();
-}
-
-bool DnfManager::enableRepo(const QString &repoUrl) {
-  CommandRunner runner;
-
-  connect(&runner, &CommandRunner::outputLine, this, &DnfManager::outputLine);
-
-  const auto result =
-      runner.runAsRoot(QStringLiteral("dnf"), {QStringLiteral("install"),
-                                               QStringLiteral("-y"), repoUrl});
-
-  return result.success();
-}
-
-DnfManager::PackageInfo
-DnfManager::queryPackage(const QString &packageName) const {
-  CommandRunner runner;
-
-  // rpm -qi ile paket bilgisini al
-  const auto result =
-      runner.run(QStringLiteral("rpm"), {QStringLiteral("-qi"), packageName});
-
-  PackageInfo info;
-  if (!result.success())
-    return info;
-
-  info.name = packageName;
-
-  const QStringList lines = result.stdout.split(QLatin1Char('\n'));
-  for (const QString &line : lines) {
-    if (line.startsWith(QStringLiteral("Version"))) {
-      const int colon = line.indexOf(QLatin1Char(':'));
-      if (colon >= 0)
-        info.version = line.mid(colon + 1).trimmed();
-    } else if (line.startsWith(QStringLiteral("Summary"))) {
-      const int colon = line.indexOf(QLatin1Char(':'));
-      if (colon >= 0)
-        info.summary = line.mid(colon + 1).trimmed();
-    }
+CommandRunner::Result DnfManager::installPackages(const QStringList &packages) {
+  if (packages.isEmpty()) {
+    return CommandRunner::Result{
+        .exitCode = -1,
+        .stdout = {},
+        .stderr = QStringLiteral("No packages provided for install.")};
   }
 
-  return info;
+  QStringList args{QStringLiteral("install"), QStringLiteral("-y")};
+  args << packages;
+  return m_runner.runAsRoot(QStringLiteral("dnf"), args);
 }
 
-bool DnfManager::cleanCache() {
-  CommandRunner runner;
+CommandRunner::Result DnfManager::removePackages(const QStringList &packages) {
+  if (packages.isEmpty()) {
+    return CommandRunner::Result{
+        .exitCode = -1,
+        .stdout = {},
+        .stderr = QStringLiteral("No packages provided for remove.")};
+  }
 
-  connect(&runner, &CommandRunner::outputLine, this, &DnfManager::outputLine);
+  QStringList args{QStringLiteral("remove"), QStringLiteral("-y")};
+  args << packages;
+  return m_runner.runAsRoot(QStringLiteral("dnf"), args);
+}
 
-  const auto result = runner.runAsRoot(
-      QStringLiteral("dnf"), {QStringLiteral("clean"), QStringLiteral("all")});
+CommandRunner::Result DnfManager::updatePackages(const QStringList &packages) {
+  QStringList args{QStringLiteral("update"), QStringLiteral("-y")};
+  args << packages;
+  return m_runner.runAsRoot(QStringLiteral("dnf"), args);
+}
 
-  return result.success();
+CommandRunner::Result DnfManager::cleanAll() {
+  return m_runner.runAsRoot(QStringLiteral("dnf"),
+                            {QStringLiteral("clean"), QStringLiteral("all")});
 }

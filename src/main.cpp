@@ -39,16 +39,13 @@ int main(int argc, char *argv[]) {
   engine.rootContext()->setContextProperty("gpuMonitor", &gpuMonitor);
   engine.rootContext()->setContextProperty("ramMonitor", &ramMonitor);
 
-  // Ana QML dosyasını yükle
-  using namespace Qt::StringLiterals;
-  const QUrl url(u"qrc:/rocontrol/src/qml/Main.qml"_s);
-
   // QML yüklenemezse uygulamayı kapat
   QObject::connect(
       &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
       []() { QCoreApplication::exit(-1); }, Qt::QueuedConnection);
 
-  engine.load(url);
+  // QML modülünden yüklemek, qrc prefix/policy farklarından etkilenmez.
+  engine.loadFromModule("rocontrol", "Main");
 
   return app.exec();
 }

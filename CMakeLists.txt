@@ -31,7 +31,14 @@ find_package(Qt6 REQUIRED COMPONENTS
     DBus           # System D-Bus communication
 )
 
+find_package(Qt6 QUIET COMPONENTS LinguistTools)
+
 qt_standard_project_setup()
+
+if(COMMAND qt_policy)
+    qt_policy(SET QTP0001 NEW)
+    qt_policy(SET QTP0004 NEW)
+endif()
 
 # ─── Source Files ─────────────────────────────────────────────────────────────
 set(BACKEND_SOURCES
@@ -65,6 +72,17 @@ qt_add_qml_module(ro-control
         src/qml/components/StatCard.qml
         src/qml/components/SidebarMenu.qml
 )
+
+if(Qt6LinguistTools_FOUND)
+    set(TS_FILES
+        i18n/ro-control_en.ts
+        i18n/ro-control_tr.ts
+    )
+
+    qt_add_translations(ro-control
+        TS_FILES ${TS_FILES}
+    )
+endif()
 
 # ─── Include Directories ──────────────────────────────────────────────────────
 target_include_directories(ro-control PRIVATE
@@ -101,8 +119,8 @@ install(FILES data/icons/ro-control.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
 )
 
-install(DIRECTORY data/icons/
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons
+install(DIRECTORY data/icons/hicolor/
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor
 )
 
 install(FILES data/icons/ro-control.metainfo.xml

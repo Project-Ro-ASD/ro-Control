@@ -21,4 +21,18 @@
         </defaults>
     </action>
 
+      <action id="com.github.AcikKaynakGelistirmeToplulugu.rocontrol.pkexec">
+        <description>Execute privileged ro-Control operations</description>
+        <description xml:lang="tr">Ayricalikli ro-Control islemlerini calistir</description>
+        <message>Authentication is required to perform privileged system operations</message>
+        <message xml:lang="tr">Ayricalikli sistem islemleri icin kimlik dogrulama gerekli</message>
+        <icon_name>ro-control</icon_name>
+        <defaults>
+          <allow_any>auth_admin</allow_any>
+          <allow_inactive>auth_admin</allow_inactive>
+          <allow_active>auth_admin_keep</allow_active>
+        </defaults>
+        <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+      </action>
+
 </policyconfig>
