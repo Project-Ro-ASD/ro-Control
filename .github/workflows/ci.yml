@@ -29,17 +29,21 @@ jobs:
             qt6-qtwayland-devel \
             kf6-qqc2-desktop-style \
             polkit-devel \
-            clang-tools-extra
+            clang-tools-extra \
+            qt6-qtbase-private-devel
 
       - name: Configure (CMake)
         run: |
           cmake -B build \
             -GNinja \
             -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_TESTS=OFF
+            -DBUILD_TESTS=ON
 
       - name: Build
         run: cmake --build build --parallel
+
+      - name: Run tests
+        run: cd build && ctest --output-on-failure
 
       - name: Check formatting (clang-format)
         run: |
