@@ -106,6 +106,8 @@ ro-Control/
 ## Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
+For release flow details, see [docs/RELEASE.md](docs/RELEASE.md).
+For localization scaffolding, see [i18n/README.md](i18n/README.md).
 
 Quick contribution flow:
 

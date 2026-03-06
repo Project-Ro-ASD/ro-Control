@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="ro-Control icon">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1b2f52"/>
+      <stop offset="100%" stop-color="#2f67a8"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#g)"/>
+  <circle cx="128" cy="128" r="74" fill="#f4f7ff"/>
+  <path d="M87 152c14-25 28-37 41-37 12 0 24 9 39 30" fill="none" stroke="#2f67a8" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="104" cy="102" r="9" fill="#2f67a8"/>
+  <circle cx="152" cy="102" r="9" fill="#2f67a8"/>
+</svg>

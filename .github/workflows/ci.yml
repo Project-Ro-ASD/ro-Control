@@ -48,3 +48,41 @@ jobs:
 
       - name: Run tests
         run: ctest --test-dir build --output-on-failure
+
+  package-rpm:
+    name: RPM Build Check
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:41
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install RPM tooling and dependencies
+        run: |
+          dnf install -y \
+            rpm-build \
+            rpmlint \
+            cmake \
+            extra-cmake-modules \
+            gcc-c++ \
+            qt6-qtbase-devel \
+            qt6-qtdeclarative-devel \
+            qt6-qtwayland-devel \
+            kf6-qqc2-desktop-style \
+            polkit-devel
+
+      - name: Prepare source tarball
+        run: |
+          mkdir -p ~/rpmbuild/SOURCES
+          git archive --format=tar.gz --output=~/rpmbuild/SOURCES/ro-control-0.1.0.tar.gz HEAD
+
+      - name: Build RPM
+        run: |
+          rpmbuild -ba packaging/rpm/ro-control.spec \
+            --define "_topdir %(echo ~/rpmbuild)"
+
+      - name: Lint built RPMs
+        run: |
+          rpmlint ~/rpmbuild/RPMS/*/*.rpm || true

@@ -16,7 +16,8 @@ class NvidiaDetector : public QObject {
   Q_PROPERTY(QString sessionType READ sessionType NOTIFY infoChanged)
   Q_PROPERTY(bool waylandSession READ waylandSession NOTIFY infoChanged)
   Q_PROPERTY(QString activeDriver READ activeDriver NOTIFY infoChanged)
-  Q_PROPERTY(QString verificationReport READ verificationReport NOTIFY infoChanged)
+  Q_PROPERTY(
+      QString verificationReport READ verificationReport NOTIFY infoChanged)
 
 public:
   struct GpuInfo {

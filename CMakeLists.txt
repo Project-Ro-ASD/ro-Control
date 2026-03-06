@@ -31,6 +31,8 @@ find_package(Qt6 REQUIRED COMPONENTS
     DBus           # System D-Bus communication
 )
 
+find_package(Qt6 QUIET COMPONENTS LinguistTools)
+
 qt_standard_project_setup()
 
 # ─── Source Files ─────────────────────────────────────────────────────────────
@@ -65,6 +67,17 @@ qt_add_qml_module(ro-control
         src/qml/components/StatCard.qml
         src/qml/components/SidebarMenu.qml
 )
+
+if(Qt6LinguistTools_FOUND)
+    set(TS_FILES
+        i18n/ro-control_en.ts
+        i18n/ro-control_tr.ts
+    )
+
+    qt_add_translations(ro-control
+        TS_FILES ${TS_FILES}
+    )
+endif()
 
 # ─── Include Directories ──────────────────────────────────────────────────────
 target_include_directories(ro-control PRIVATE

@@ -21,7 +21,9 @@ public:
   bool proprietaryAgreementRequired() const {
     return m_proprietaryAgreementRequired;
   }
-  QString proprietaryAgreementText() const { return m_proprietaryAgreementText; }
+  QString proprietaryAgreementText() const {
+    return m_proprietaryAgreementText;
+  }
 
   // Sozlesme durumunu yeniden kontrol et
   Q_INVOKABLE void refreshProprietaryAgreement();

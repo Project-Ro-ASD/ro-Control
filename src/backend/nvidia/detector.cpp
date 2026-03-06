@@ -3,9 +3,9 @@
 #include "system/commandrunner.h"
 
 #include <QFile>
-#include <QtGlobal>
 #include <QRegularExpression>
 #include <QTextStream>
+#include <QtGlobal>
 
 NvidiaDetector::NvidiaDetector(QObject *parent) : QObject(parent) {}
 
@@ -146,15 +146,17 @@ bool NvidiaDetector::detectSecureBoot() const {
 }
 
 QString NvidiaDetector::detectSessionType() const {
-  const QString envType = qEnvironmentVariable("XDG_SESSION_TYPE").trimmed().toLower();
+  const QString envType =
+      qEnvironmentVariable("XDG_SESSION_TYPE").trimmed().toLower();
   if (!envType.isEmpty())
     return envType;
 
   CommandRunner runner;
-  const auto loginctl = runner.run(
-      QStringLiteral("loginctl"),
-      {QStringLiteral("show-session"), qEnvironmentVariable("XDG_SESSION_ID"),
-       QStringLiteral("-p"), QStringLiteral("Type"), QStringLiteral("--value")});
+  const auto loginctl =
+      runner.run(QStringLiteral("loginctl"),
+                 {QStringLiteral("show-session"),
+                  qEnvironmentVariable("XDG_SESSION_ID"), QStringLiteral("-p"),
+                  QStringLiteral("Type"), QStringLiteral("--value")});
 
   if (loginctl.success()) {
     const QString type = loginctl.stdout.trimmed().toLower();
