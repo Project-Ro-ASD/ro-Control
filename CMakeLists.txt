@@ -35,6 +35,11 @@ find_package(Qt6 QUIET COMPONENTS LinguistTools)
 
 qt_standard_project_setup()
 
+if(COMMAND qt_policy)
+    qt_policy(SET QTP0001 NEW)
+    qt_policy(SET QTP0004 NEW)
+endif()
+
 # ─── Source Files ─────────────────────────────────────────────────────────────
 set(BACKEND_SOURCES
     src/backend/nvidia/detector.cpp
