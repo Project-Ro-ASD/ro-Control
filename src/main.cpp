@@ -1,7 +1,8 @@
-#include <QApplication>
-#include <QQmlApplicationEngine>
-#include <QQmlContext>
-#include <QIcon>
+#include <QApplication>\n#include <QQmlApplicationEngine>\n#include <QQmlContext>\n#include <QIcon>
+
+#include "backend/nvidia/detector.h"
+#include "backend/nvidia/installer.h"
+#include "backend/nvidia/updater.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,13 +17,22 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("github.com/Acik-Kaynak-Gelistirme-Toplulugu");
     app.setWindowIcon(QIcon::fromTheme("ro-control"));
 
+    // Backend nesneleri
+    NvidiaDetector detector;
+    NvidiaInstaller installer;
+    NvidiaUpdater updater;
+
     // QML motorunu başlat
     QQmlApplicationEngine engine;
+
+    // Backend'i QML'e aç
+    engine.rootContext()->setContextProperty("nvidiaDetector", &detector);
+    engine.rootContext()->setContextProperty("nvidiaInstaller", &installer);
+    engine.rootContext()->setContextProperty("nvidiaUpdater", &updater);
 
     // Ana QML dosyasını yükle
     using namespace Qt::StringLiterals;
     const QUrl url(u"qrc:/rocontrol/src/qml/Main.qml"_s);
-    
 
     // QML yüklenemezse uygulamayı kapat
     QObject::connect(

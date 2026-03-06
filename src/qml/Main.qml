@@ -1,17 +1,34 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
-// Ana pencere — ilerleyen branch'lerde sidebar + sayfa navigasyonu eklenecek
 ApplicationWindow {
     id: root
     visible: true
-    width: 900
-    height: 600
+    width: 1000
+    height: 650
+    minimumWidth: 800
+    minimumHeight: 500
     title: "ro-Control"
+    color: "#11111b"
 
-    Text {
-        anchors.centerIn: parent
-        text: "ro-Control — cmake-setup ✓"
-        font.pixelSize: 24
+    Row {
+        anchors.fill: parent
+
+        SidebarMenu {
+            id: sidebar
+            height: parent.height
+        }
+
+        StackLayout {
+            id: stack
+            width: parent.width - sidebar.width
+            height: parent.height
+            currentIndex: sidebar.currentIndex
+
+            DriverPage {}
+            MonitorPage {}
+            SettingsPage {}
+        }
     }
 }
