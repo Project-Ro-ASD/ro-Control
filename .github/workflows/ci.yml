@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev, feature/**, fix/**]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:41
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          dnf install -y \
+            cmake \
+            extra-cmake-modules \
+            gcc-c++ \
+            ninja-build \
+            qt6-qtbase-devel \
+            qt6-qtdeclarative-devel \
+            qt6-qtwayland-devel \
+            kf6-qqc2-desktop-style \
+            polkit-devel \
+            clang-tools-extra \
+            qt6-qtbase-private-devel
+
+      - name: Configure (CMake)
+        run: |
+          cmake -B build \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Run tests
+        run: cd build && ctest --output-on-failure
+
+      - name: Check formatting (clang-format)
+        run: |
+          find src \( -name "*.cpp" -o -name "*.h" \) -print0 | \
+          xargs -0 clang-format --dry-run --Werror
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure

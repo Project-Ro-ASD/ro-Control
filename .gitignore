@@ -1,0 +1,103 @@
+# Build directories
+build/
+build-*/
+cmake-build-*/
+out/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# Compiled binaries
+*.o
+*.a
+*.so
+*.so.*
+*.dylib
+*.exe
+ro-control
+
+# Qt / MOC generated files
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qmlc
+*.jsc
+
+# Qt Creator
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+CMakeLists.txt.user
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# CLion / JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Packaging artifacts
+*.rpm
+*.deb
+*.tar.gz
+*.tar.xz
+*.AppImage
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+\#*\#
+
+# Test output
+Testing/
+test_results/
+
+# Translation compiled files
+*.mo
+
+# Valgrind
+vgcore.*
+callgrind.out.*
+massif.out.*
+
+# Build
+build/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Qt
+*_autogen/
+moc_*
+qmltypes
+
+# Binary
+*.o
+*.so
+*.a
+.DS_Store
