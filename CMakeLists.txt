@@ -109,6 +109,10 @@ install(FILES data/ro-control.metainfo.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
 )
 
+install(FILES data/polkit/com.github.AcikKaynakGelistirmeToplulugu.rocontrol.policy
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/actions
+)
+
 # ─── Tests ───────────────────────────────────────────────────────────────────
 option(BUILD_TESTS "Build unit tests" OFF)
 
