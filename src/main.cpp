@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
   app.setApplicationName("ro-control");
   app.setApplicationDisplayName("ro-Control");
   app.setApplicationVersion("0.1.0");
-  app.setOrganizationName("Acik-Kaynak-Gelistirme-Toplulugu");
-  app.setOrganizationDomain("github.com/Acik-Kaynak-Gelistirme-Toplulugu");
+  app.setOrganizationName("Project-Ro-ASD");
+  app.setOrganizationDomain("github.com/Project-Ro-ASD");
   app.setWindowIcon(
       QIcon::fromTheme("ro-control",
                        QIcon(":/qt/qml/rocontrol/assets/ro-control-logo.svg")));
