@@ -24,9 +24,8 @@ int main(int argc, char *argv[]) {
   app.setApplicationVersion("0.1.0");
   app.setOrganizationName("Project-Ro-ASD");
   app.setOrganizationDomain("github.com/Project-Ro-ASD");
-  app.setWindowIcon(
-      QIcon::fromTheme("ro-control",
-                       QIcon(":/qt/qml/rocontrol/assets/ro-control-logo.svg")));
+  app.setWindowIcon(QIcon::fromTheme(
+      "ro-control", QIcon(":/qt/qml/rocontrol/assets/ro-control-logo.svg")));
 
   NvidiaDetector detector;
   NvidiaInstaller installer;

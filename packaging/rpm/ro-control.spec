@@ -42,6 +42,7 @@ manage NVIDIA drivers and monitor core system metrics.
 %{_bindir}/ro-control
 %{_datadir}/applications/ro-control.desktop
 %{_datadir}/metainfo/ro-control.metainfo.xml
+%{_datadir}/icons/hicolor/256x256/apps/ro-control.png
 %{_datadir}/icons/hicolor/scalable/apps/ro-control.svg
 %{_datadir}/polkit-1/actions/com.github.AcikKaynakGelistirmeToplulugu.rocontrol.policy
 
