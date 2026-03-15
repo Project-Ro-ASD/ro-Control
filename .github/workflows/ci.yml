@@ -76,7 +76,9 @@ jobs:
             cmake \
             extra-cmake-modules \
             gcc-c++ \
+            ninja-build \
             qt6-qtbase-devel \
+            qt6-qtbase-private-devel \
             qt6-qtdeclarative-devel \
             qt6-qtwayland-devel \
             kf6-qqc2-desktop-style \

@@ -10,7 +10,9 @@ Source0:        %{name}-%{version}.tar.gz
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  extra-cmake-modules
+BuildRequires:  ninja-build
 BuildRequires:  qt6-qtbase-devel
+BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  qt6-qtdeclarative-devel
 BuildRequires:  qt6-qtwayland-devel
 BuildRequires:  kf6-qqc2-desktop-style
