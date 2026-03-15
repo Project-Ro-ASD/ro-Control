@@ -91,7 +91,7 @@ sudo make install
 This installs:
 - Binary → `/usr/local/bin/ro-control`
 - Desktop entry → `/usr/local/share/applications/`
-- Icons → `/usr/local/share/icons/`
+- Icons → `/usr/local/share/icons/hicolor/`
 - PolicyKit policy → `/usr/share/polkit-1/actions/`
 
 ---

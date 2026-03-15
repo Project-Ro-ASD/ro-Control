@@ -3,7 +3,28 @@
 #include "system/commandrunner.h"
 
 #include <QRegularExpression>
+#include <QStandardPaths>
 #include <QtGlobal>
+
+namespace {
+
+QString commandError(const CommandRunner::Result &result,
+                     const QString &fallback) {
+  const QString stderrText = result.stderr.trimmed();
+  const QString stdoutText = result.stdout.trimmed();
+
+  if (!stderrText.isEmpty()) {
+    return stderrText;
+  }
+
+  if (!stdoutText.isEmpty()) {
+    return stdoutText;
+  }
+
+  return fallback;
+}
+
+} // namespace
 
 NvidiaUpdater::NvidiaUpdater(QObject *parent) : QObject(parent) {}
 
@@ -34,6 +55,18 @@ void NvidiaUpdater::checkForUpdate() {
   // TR: DNF cikis kodlari: 100=guncelleme var, 0=yok, digeri=hata.
   // EN: DNF exit codes: 100=updates available, 0=none, others=error.
   CommandRunner runner;
+  if (QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty()) {
+    if (m_updateAvailable) {
+      m_updateAvailable = false;
+      emit updateAvailableChanged();
+    }
+    if (!m_latestVersion.isEmpty()) {
+      m_latestVersion.clear();
+      emit latestVersionChanged();
+    }
+    emit progressMessage(QStringLiteral("dnf bulunamadi."));
+    return;
+  }
 
   const auto result =
       runner.run(QStringLiteral("dnf"), {QStringLiteral("check-update"),
@@ -72,6 +105,10 @@ void NvidiaUpdater::checkForUpdate() {
       m_updateAvailable = false;
       emit updateAvailableChanged();
     }
+    if (!m_latestVersion.isEmpty()) {
+      m_latestVersion.clear();
+      emit latestVersionChanged();
+    }
 
     emit progressMessage(
         QStringLiteral("Surucu guncel. Yeni surum bulunamadi."));
@@ -96,30 +133,49 @@ void NvidiaUpdater::applyUpdate() {
 
   // TR: Uzun surebilecek adimlar oncesinde kullaniciya ilerleme bilgisi ver.
   // EN: Emit progress updates before long-running operations.
+  if (QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty()) {
+    emit updateFinished(false, QStringLiteral("dnf bulunamadi."));
+    return;
+  }
+
   emit progressMessage(QStringLiteral("NVIDIA sürücüsü güncelleniyor..."));
 
-  const auto result = runner.runAsRoot(
+  auto result = runner.runAsRoot(
       QStringLiteral("dnf"), {QStringLiteral("update"), QStringLiteral("-y"),
                               QStringLiteral("akmod-nvidia")});
 
   if (!result.success()) {
-    emit updateFinished(false, QStringLiteral("Güncelleme başarısız: ") +
-                                   result.stderr);
+    emit updateFinished(
+        false, QStringLiteral("Guncelleme basarisiz: ") +
+                   commandError(result, QStringLiteral("bilinmeyen hata")));
     return;
   }
 
   emit progressMessage(QStringLiteral("Kernel modülü yeniden derleniyor..."));
 
-  runner.runAsRoot(QStringLiteral("akmods"), {QStringLiteral("--force")});
+  result =
+      runner.runAsRoot(QStringLiteral("akmods"), {QStringLiteral("--force")});
+  if (!result.success()) {
+    emit updateFinished(
+        false, QStringLiteral("Kernel modulu derlenemedi: ") +
+                   commandError(result, QStringLiteral("bilinmeyen hata")));
+    return;
+  }
 
   const QString sessionType =
       qEnvironmentVariable("XDG_SESSION_TYPE").trimmed().toLower();
   if (sessionType == QStringLiteral("wayland")) {
     emit progressMessage(QStringLiteral(
         "Wayland tespit edildi: nvidia-drm.modeset=1 ayari guncelleniyor..."));
-    runner.runAsRoot(QStringLiteral("grubby"),
-                     {QStringLiteral("--update-kernel=ALL"),
-                      QStringLiteral("--args=nvidia-drm.modeset=1")});
+    result = runner.runAsRoot(QStringLiteral("grubby"),
+                              {QStringLiteral("--update-kernel=ALL"),
+                               QStringLiteral("--args=nvidia-drm.modeset=1")});
+    if (!result.success()) {
+      emit updateFinished(
+          false, QStringLiteral("Wayland kernel parametresi guncellenemedi: ") +
+                     commandError(result, QStringLiteral("bilinmeyen hata")));
+      return;
+    }
   }
 
   // Güncelleme sonrası durumu yenile

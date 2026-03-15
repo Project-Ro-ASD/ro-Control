@@ -91,11 +91,11 @@ jobs:
           fi
           ARCHIVE_BASENAME="ro-control-${VERSION}"
           mkdir -p ~/rpmbuild/SOURCES
-          STAGE_DIR="$(mktemp -d)"
-          cp -a . "${STAGE_DIR}/${ARCHIVE_BASENAME}"
-          rm -rf "${STAGE_DIR}/${ARCHIVE_BASENAME}/.git" "${STAGE_DIR}/${ARCHIVE_BASENAME}/build"
-          tar -C "${STAGE_DIR}" -czf "${HOME}/rpmbuild/SOURCES/${ARCHIVE_BASENAME}.tar.gz" "${ARCHIVE_BASENAME}"
-          rm -rf "${STAGE_DIR}"
+          git archive \
+            --format=tar.gz \
+            --prefix="${ARCHIVE_BASENAME}/" \
+            --output="${HOME}/rpmbuild/SOURCES/${ARCHIVE_BASENAME}.tar.gz" \
+            HEAD
 
       - name: Build RPM
         run: |

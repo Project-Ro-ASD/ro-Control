@@ -2,7 +2,44 @@
 
 #include "system/commandrunner.h"
 
+#include <QRegularExpression>
+#include <QStandardPaths>
 #include <QtGlobal>
+
+namespace {
+
+const QStringList kManagedNvidiaPackages = {
+    QStringLiteral("akmod-nvidia"),
+    QStringLiteral("xorg-x11-drv-nvidia"),
+    QStringLiteral("xorg-x11-drv-nvidia-libs"),
+    QStringLiteral("xorg-x11-drv-nvidia-cuda"),
+    QStringLiteral("xorg-x11-drv-nvidia-cuda-libs"),
+    QStringLiteral("nvidia-modprobe"),
+    QStringLiteral("nvidia-persistenced"),
+    QStringLiteral("nvidia-settings"),
+};
+
+QString commandError(const CommandRunner::Result &result,
+                     const QString &fallback) {
+  const QString stderrText = result.stderr.trimmed();
+  const QString stdoutText = result.stdout.trimmed();
+
+  if (!stderrText.isEmpty()) {
+    return stderrText;
+  }
+
+  if (!stdoutText.isEmpty()) {
+    return stdoutText;
+  }
+
+  return fallback;
+}
+
+bool hasExecutable(const QString &program) {
+  return !QStandardPaths::findExecutable(program).isEmpty();
+}
+
+} // namespace
 
 NvidiaInstaller::NvidiaInstaller(QObject *parent) : QObject(parent) {
   refreshProprietaryAgreement();
@@ -21,6 +58,11 @@ void NvidiaInstaller::setProprietaryAgreement(bool required,
 }
 
 void NvidiaInstaller::refreshProprietaryAgreement() {
+  if (!hasExecutable(QStringLiteral("dnf"))) {
+    setProprietaryAgreement(false, QString());
+    return;
+  }
+
   CommandRunner runner;
   const auto info =
       runner.run(QStringLiteral("dnf"),
@@ -79,11 +121,21 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
   emit progressMessage(QStringLiteral("RPM Fusion deposu kontrol ediliyor..."));
 
   CommandRunner rpmRunner;
+  if (!hasExecutable(QStringLiteral("dnf")) ||
+      !hasExecutable(QStringLiteral("rpm"))) {
+    emit installFinished(
+        false, QStringLiteral(
+                   "Kurulum icin gerekli sistem araclari eksik (dnf/rpm)."));
+    return;
+  }
+
   const auto fedoraResult = rpmRunner.run(
       QStringLiteral("rpm"), {QStringLiteral("-E"), QStringLiteral("%fedora")});
 
   const QString fedoraVersion = fedoraResult.stdout.trimmed();
-  if (fedoraVersion.isEmpty()) {
+  static const QRegularExpression fedoraVersionPattern(
+      QStringLiteral("^\\d+$"));
+  if (!fedoraVersionPattern.match(fedoraVersion).hasMatch()) {
     emit installFinished(false,
                          QStringLiteral("Fedora surumu tespit edilemedi."));
     return;
@@ -100,8 +152,9 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
            .arg(fedoraVersion)});
 
   if (!result.success()) {
-    emit installFinished(false, QStringLiteral("RPM Fusion repo eklenemedi: ") +
-                                    result.stderr);
+    emit installFinished(
+        false, QStringLiteral("RPM Fusion repo eklenemedi: ") +
+                   commandError(result, QStringLiteral("bilinmeyen hata")));
     return;
   }
 
@@ -113,14 +166,22 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
                              QStringLiteral("akmod-nvidia")});
 
   if (!result.success()) {
-    emit installFinished(false,
-                         QStringLiteral("Kurulum basarisiz: ") + result.stderr);
+    emit installFinished(
+        false, QStringLiteral("Kurulum basarisiz: ") +
+                   commandError(result, QStringLiteral("bilinmeyen hata")));
     return;
   }
 
   emit progressMessage(
       QStringLiteral("Kernel modulu derleniyor (akmods --force)..."));
-  runner.runAsRoot(QStringLiteral("akmods"), {QStringLiteral("--force")});
+  result =
+      runner.runAsRoot(QStringLiteral("akmods"), {QStringLiteral("--force")});
+  if (!result.success()) {
+    emit installFinished(
+        false, QStringLiteral("Kernel modulu derlenemedi: ") +
+                   commandError(result, QStringLiteral("bilinmeyen hata")));
+    return;
+  }
 
   const QString sessionType = detectSessionType();
   QString sessionError;
@@ -146,13 +207,13 @@ void NvidiaInstaller::installOpenSource() {
   // Once kapali kaynak paketleri kaldir.
   auto result = runner.runAsRoot(
       QStringLiteral("dnf"),
-      {QStringLiteral("remove"), QStringLiteral("-y"),
-       QStringLiteral("akmod-nvidia"), QStringLiteral("xorg-x11-drv-nvidia*")});
+      QStringList{QStringLiteral("remove"), QStringLiteral("-y")} +
+          kManagedNvidiaPackages);
 
   if (!result.success()) {
     emit installFinished(
         false, QStringLiteral("Kapali kaynak paket kaldirma basarisiz: ") +
-                   result.stderr);
+                   commandError(result, QStringLiteral("bilinmeyen hata")));
     return;
   }
 
@@ -165,11 +226,18 @@ void NvidiaInstaller::installOpenSource() {
   if (!result.success()) {
     emit installFinished(
         false, QStringLiteral("Acik kaynak surucu kurulumu basarisiz: ") +
-                   result.stderr);
+                   commandError(result, QStringLiteral("bilinmeyen hata")));
     return;
   }
 
-  runner.runAsRoot(QStringLiteral("dracut"), {QStringLiteral("--force")});
+  result =
+      runner.runAsRoot(QStringLiteral("dracut"), {QStringLiteral("--force")});
+  if (!result.success()) {
+    emit installFinished(
+        false, QStringLiteral("Initramfs guncellenemedi: ") +
+                   commandError(result, QStringLiteral("bilinmeyen hata")));
+    return;
+  }
 
   emit installFinished(true,
                        QStringLiteral("Acik kaynak surucu (Nouveau) kuruldu. "
@@ -185,14 +253,15 @@ void NvidiaInstaller::remove() {
 
   const auto result = runner.runAsRoot(
       QStringLiteral("dnf"),
-      {QStringLiteral("remove"), QStringLiteral("-y"),
-       QStringLiteral("akmod-nvidia"), QStringLiteral("xorg-x11-drv-nvidia*")});
+      QStringList{QStringLiteral("remove"), QStringLiteral("-y")} +
+          kManagedNvidiaPackages);
 
-  emit removeFinished(result.success(),
-                      result.success()
-                          ? QStringLiteral("Surucu basariyla kaldirildi.")
-                          : QStringLiteral("Kaldirma basarisiz: ") +
-                                result.stderr);
+  emit removeFinished(
+      result.success(),
+      result.success()
+          ? QStringLiteral("Surucu basariyla kaldirildi.")
+          : QStringLiteral("Kaldirma basarisiz: ") +
+                commandError(result, QStringLiteral("bilinmeyen hata")));
 }
 
 void NvidiaInstaller::deepClean() {
@@ -203,12 +272,23 @@ void NvidiaInstaller::deepClean() {
   emit progressMessage(
       QStringLiteral("Eski surucu kalintilari temizleniyor..."));
 
-  runner.runAsRoot(QStringLiteral("dnf"),
-                   {QStringLiteral("remove"), QStringLiteral("-y"),
-                    QStringLiteral("*nvidia*"), QStringLiteral("*akmod*")});
+  const auto removeResult = runner.runAsRoot(
+      QStringLiteral("dnf"),
+      QStringList{QStringLiteral("remove"), QStringLiteral("-y")} +
+          kManagedNvidiaPackages);
+  if (!removeResult.success()) {
+    emit progressMessage(
+        QStringLiteral("Deep clean kaldirma adimi hata verdi: ") +
+        commandError(removeResult, QStringLiteral("bilinmeyen hata")));
+  }
 
-  runner.runAsRoot(QStringLiteral("dnf"),
-                   {QStringLiteral("clean"), QStringLiteral("all")});
+  const auto cleanResult = runner.runAsRoot(
+      QStringLiteral("dnf"), {QStringLiteral("clean"), QStringLiteral("all")});
+  if (!cleanResult.success()) {
+    emit progressMessage(
+        QStringLiteral("DNF cache temizligi hata verdi: ") +
+        commandError(cleanResult, QStringLiteral("bilinmeyen hata")));
+  }
 
   emit progressMessage(QStringLiteral("Deep clean tamamlandi."));
 }
@@ -251,7 +331,7 @@ bool NvidiaInstaller::applySessionSpecificSetup(CommandRunner &runner,
       if (errorMessage) {
         *errorMessage =
             QStringLiteral("Wayland icin kernel parametresi uygulanamadi: ") +
-            result.stderr;
+            commandError(result, QStringLiteral("bilinmeyen hata"));
       }
       return false;
     }
@@ -270,7 +350,7 @@ bool NvidiaInstaller::applySessionSpecificSetup(CommandRunner &runner,
     if (!result.success()) {
       if (errorMessage) {
         *errorMessage = QStringLiteral("X11 NVIDIA paketi kurulurken hata: ") +
-                        result.stderr;
+                        commandError(result, QStringLiteral("bilinmeyen hata"));
       }
       return false;
     }

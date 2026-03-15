@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <QIcon>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
 #include <QVariant>
 
 #include "backend/monitor/cpumonitor.h"
@@ -48,13 +47,6 @@ int main(int argc, char *argv[]) {
       {"gpuMonitor", QVariant::fromValue(&gpuMonitor)},
       {"ramMonitor", QVariant::fromValue(&ramMonitor)},
   });
-
-  engine.rootContext()->setContextProperty("nvidiaDetector", &detector);
-  engine.rootContext()->setContextProperty("nvidiaInstaller", &installer);
-  engine.rootContext()->setContextProperty("nvidiaUpdater", &updater);
-  engine.rootContext()->setContextProperty("cpuMonitor", &cpuMonitor);
-  engine.rootContext()->setContextProperty("gpuMonitor", &gpuMonitor);
-  engine.rootContext()->setContextProperty("ramMonitor", &ramMonitor);
 
   // TR: Ana bileşen olusmazsa uygulamayi kontrollu sekilde sonlandir.
   // EN: Exit gracefully if the root QML component cannot be created.

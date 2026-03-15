@@ -15,6 +15,14 @@ private slots:
     QCOMPARE(result.exitCode, 0);
   }
 
+  void testCommandRunnerMissingExecutable() {
+    CommandRunner runner;
+    const auto result =
+        runner.run(QStringLiteral("definitely-not-a-real-command"));
+    QCOMPARE(result.exitCode, -1);
+    QVERIFY(result.stderr.contains(QStringLiteral("Executable not found")));
+  }
+
   void testDnfManagerAvailabilityAndVersion() {
     DnfManager dnf;
     if (!dnf.isAvailable()) {
@@ -22,8 +30,8 @@ private slots:
     }
 
     CommandRunner runner;
-    const auto result = runner.run(QStringLiteral("dnf"),
-                                   {QStringLiteral("--version")});
+    const auto result =
+        runner.run(QStringLiteral("dnf"), {QStringLiteral("--version")});
     QVERIFY(result.success());
   }
 
@@ -40,7 +48,8 @@ private slots:
   }
 
   void testNvidiaSmiOptionalProbe() {
-    if (QStandardPaths::findExecutable(QStringLiteral("nvidia-smi")).isEmpty()) {
+    if (QStandardPaths::findExecutable(QStringLiteral("nvidia-smi"))
+            .isEmpty()) {
       QSKIP("nvidia-smi is not available on this host.");
     }
 
