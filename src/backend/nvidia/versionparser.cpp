@@ -47,4 +47,16 @@ QString packageSpecForVersion(const QString &packageName,
   return QStringLiteral("%1-%2").arg(packageName, trimmedVersion);
 }
 
+QStringList buildVersionedPackageSpecs(const QStringList &packageNames,
+                                       const QString &version) {
+  QStringList specs;
+  specs.reserve(packageNames.size());
+
+  for (const QString &packageName : packageNames) {
+    specs << packageSpecForVersion(packageName, version);
+  }
+
+  return specs;
+}
+
 } // namespace NvidiaVersionParser

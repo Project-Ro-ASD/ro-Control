@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#include <functional>
 
 class CommandRunner;
 
@@ -18,6 +19,7 @@ class NvidiaUpdater : public QObject {
       QString latestVersion READ latestVersion NOTIFY latestVersionChanged)
   Q_PROPERTY(QStringList availableVersions READ availableVersions NOTIFY
                  availableVersionsChanged)
+  Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
 
 public:
   explicit NvidiaUpdater(QObject *parent = nullptr);
@@ -26,6 +28,7 @@ public:
   QString currentVersion() const { return m_currentVersion; }
   QString latestVersion() const { return m_latestVersion; }
   QStringList availableVersions() const { return m_availableVersions; }
+  bool busy() const { return m_busy; }
 
   Q_INVOKABLE void checkForUpdate();
   Q_INVOKABLE void applyUpdate();
@@ -37,10 +40,13 @@ signals:
   void currentVersionChanged();
   void latestVersionChanged();
   void availableVersionsChanged();
+  void busyChanged();
   void progressMessage(const QString &message);
   void updateFinished(bool success, const QString &message);
 
 private:
+  void setBusy(bool busy);
+  void runAsyncTask(const std::function<void()> &task);
   void setLatestVersion(const QString &version);
   void setAvailableVersions(const QStringList &versions);
   QStringList buildDriverTargets(const QString &version,
@@ -52,4 +58,5 @@ private:
   QString m_currentVersion;
   QString m_latestVersion;
   QStringList m_availableVersions;
+  bool m_busy = false;
 };

@@ -2,8 +2,11 @@
 
 #include "system/commandrunner.h"
 
+#include <QMetaObject>
+#include <QPointer>
 #include <QRegularExpression>
 #include <QStandardPaths>
+#include <QThread>
 #include <QtGlobal>
 
 namespace {
@@ -43,6 +46,32 @@ bool hasExecutable(const QString &program) {
 
 NvidiaInstaller::NvidiaInstaller(QObject *parent) : QObject(parent) {
   refreshProprietaryAgreement();
+}
+
+void NvidiaInstaller::setBusy(bool busy) {
+  if (m_busy == busy) {
+    return;
+  }
+
+  m_busy = busy;
+  emit busyChanged();
+}
+
+void NvidiaInstaller::runAsyncTask(const std::function<void()> &task) {
+  if (m_busy) {
+    emit progressMessage(
+        QStringLiteral("Baska bir surucu islemi zaten calisiyor."));
+    return;
+  }
+
+  setBusy(true);
+
+  QThread *thread = QThread::create(task);
+  connect(thread, &QThread::finished, this, [this, thread]() {
+    setBusy(false);
+    thread->deleteLater();
+  });
+  thread->start();
 }
 
 void NvidiaInstaller::setProprietaryAgreement(bool required,
@@ -113,184 +142,414 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
     return;
   }
 
-  CommandRunner runner;
+  QPointer<NvidiaInstaller> guard(this);
+  runAsyncTask([guard]() {
+    if (!guard) {
+      return;
+    }
 
-  connect(&runner, &CommandRunner::outputLine, this,
-          &NvidiaInstaller::progressMessage);
+    CommandRunner runner;
+    QObject::connect(&runner, &CommandRunner::outputLine, guard,
+                     [guard](const QString &message) {
+                       if (!guard) {
+                         return;
+                       }
+                       QMetaObject::invokeMethod(
+                           guard,
+                           [guard, message]() {
+                             if (guard) {
+                               emit guard->progressMessage(message);
+                             }
+                           },
+                           Qt::QueuedConnection);
+                     });
 
-  emit progressMessage(QStringLiteral("RPM Fusion deposu kontrol ediliyor..."));
+    QMetaObject::invokeMethod(
+        guard,
+        [guard]() {
+          if (guard) {
+            emit guard->progressMessage(
+                QStringLiteral("RPM Fusion deposu kontrol ediliyor..."));
+          }
+        },
+        Qt::QueuedConnection);
 
-  CommandRunner rpmRunner;
-  if (!hasExecutable(QStringLiteral("dnf")) ||
-      !hasExecutable(QStringLiteral("rpm"))) {
-    emit installFinished(
-        false, QStringLiteral(
-                   "Kurulum icin gerekli sistem araclari eksik (dnf/rpm)."));
-    return;
-  }
+    CommandRunner rpmRunner;
+    if (!hasExecutable(QStringLiteral("dnf")) ||
+        !hasExecutable(QStringLiteral("rpm"))) {
+      QMetaObject::invokeMethod(
+          guard,
+          [guard]() {
+            if (guard) {
+              emit guard->installFinished(
+                  false,
+                  QStringLiteral(
+                      "Kurulum icin gerekli sistem araclari eksik (dnf/rpm)."));
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  const auto fedoraResult = rpmRunner.run(
-      QStringLiteral("rpm"), {QStringLiteral("-E"), QStringLiteral("%fedora")});
+    const auto fedoraResult =
+        rpmRunner.run(QStringLiteral("rpm"),
+                      {QStringLiteral("-E"), QStringLiteral("%fedora")});
+    const QString fedoraVersion = fedoraResult.stdout.trimmed();
+    static const QRegularExpression fedoraVersionPattern(
+        QStringLiteral("^\\d+$"));
+    if (!fedoraVersionPattern.match(fedoraVersion).hasMatch()) {
+      QMetaObject::invokeMethod(
+          guard,
+          [guard]() {
+            if (guard) {
+              emit guard->installFinished(
+                  false, QStringLiteral("Fedora surumu tespit edilemedi."));
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  const QString fedoraVersion = fedoraResult.stdout.trimmed();
-  static const QRegularExpression fedoraVersionPattern(
-      QStringLiteral("^\\d+$"));
-  if (!fedoraVersionPattern.match(fedoraVersion).hasMatch()) {
-    emit installFinished(false,
-                         QStringLiteral("Fedora surumu tespit edilemedi."));
-    return;
-  }
+    auto result = runner.runAsRoot(
+        QStringLiteral("dnf"),
+        {QStringLiteral("install"), QStringLiteral("-y"),
+         QStringLiteral("https://mirrors.rpmfusion.org/free/fedora/"
+                        "rpmfusion-free-release-%1.noarch.rpm")
+             .arg(fedoraVersion),
+         QStringLiteral("https://mirrors.rpmfusion.org/nonfree/fedora/"
+                        "rpmfusion-nonfree-release-%1.noarch.rpm")
+             .arg(fedoraVersion)});
+    if (!result.success()) {
+      const QString error =
+          QStringLiteral("RPM Fusion repo eklenemedi: ") +
+          commandError(result, QStringLiteral("bilinmeyen hata"));
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, error]() {
+            if (guard) {
+              emit guard->installFinished(false, error);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  auto result = runner.runAsRoot(
-      QStringLiteral("dnf"),
-      {QStringLiteral("install"), QStringLiteral("-y"),
-       QStringLiteral("https://mirrors.rpmfusion.org/free/fedora/"
-                      "rpmfusion-free-release-%1.noarch.rpm")
-           .arg(fedoraVersion),
-       QStringLiteral("https://mirrors.rpmfusion.org/nonfree/fedora/"
-                      "rpmfusion-nonfree-release-%1.noarch.rpm")
-           .arg(fedoraVersion)});
+    QMetaObject::invokeMethod(
+        guard,
+        [guard]() {
+          if (guard) {
+            emit guard->progressMessage(QStringLiteral(
+                "Kapali kaynak NVIDIA surucusu kuruluyor (akmod-nvidia)..."));
+          }
+        },
+        Qt::QueuedConnection);
 
-  if (!result.success()) {
-    emit installFinished(
-        false, QStringLiteral("RPM Fusion repo eklenemedi: ") +
-                   commandError(result, QStringLiteral("bilinmeyen hata")));
-    return;
-  }
+    result = runner.runAsRoot(QStringLiteral("dnf"),
+                              {QStringLiteral("install"), QStringLiteral("-y"),
+                               QStringLiteral("akmod-nvidia")});
+    if (!result.success()) {
+      const QString error =
+          QStringLiteral("Kurulum basarisiz: ") +
+          commandError(result, QStringLiteral("bilinmeyen hata"));
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, error]() {
+            if (guard) {
+              emit guard->installFinished(false, error);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  emit progressMessage(QStringLiteral(
-      "Kapali kaynak NVIDIA surucusu kuruluyor (akmod-nvidia)..."));
+    QMetaObject::invokeMethod(
+        guard,
+        [guard]() {
+          if (guard) {
+            emit guard->progressMessage(
+                QStringLiteral("Kernel modulu derleniyor (akmods --force)..."));
+          }
+        },
+        Qt::QueuedConnection);
 
-  result = runner.runAsRoot(QStringLiteral("dnf"),
-                            {QStringLiteral("install"), QStringLiteral("-y"),
-                             QStringLiteral("akmod-nvidia")});
+    result =
+        runner.runAsRoot(QStringLiteral("akmods"), {QStringLiteral("--force")});
+    if (!result.success()) {
+      const QString error =
+          QStringLiteral("Kernel modulu derlenemedi: ") +
+          commandError(result, QStringLiteral("bilinmeyen hata"));
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, error]() {
+            if (guard) {
+              emit guard->installFinished(false, error);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  if (!result.success()) {
-    emit installFinished(
-        false, QStringLiteral("Kurulum basarisiz: ") +
-                   commandError(result, QStringLiteral("bilinmeyen hata")));
-    return;
-  }
+    const QString sessionType = guard->detectSessionType();
+    QString sessionError;
+    if (!guard->applySessionSpecificSetup(runner, sessionType, &sessionError)) {
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, sessionError]() {
+            if (guard) {
+              emit guard->installFinished(false, sessionError);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  emit progressMessage(
-      QStringLiteral("Kernel modulu derleniyor (akmods --force)..."));
-  result =
-      runner.runAsRoot(QStringLiteral("akmods"), {QStringLiteral("--force")});
-  if (!result.success()) {
-    emit installFinished(
-        false, QStringLiteral("Kernel modulu derlenemedi: ") +
-                   commandError(result, QStringLiteral("bilinmeyen hata")));
-    return;
-  }
-
-  const QString sessionType = detectSessionType();
-  QString sessionError;
-  if (!applySessionSpecificSetup(runner, sessionType, &sessionError)) {
-    emit installFinished(false, sessionError);
-    return;
-  }
-
-  emit installFinished(
-      true, QStringLiteral("Kapali kaynak NVIDIA surucusu basariyla kuruldu. "
-                           "Lutfen sistemi yeniden baslatin."));
+    QMetaObject::invokeMethod(
+        guard,
+        [guard]() {
+          if (guard) {
+            emit guard->installFinished(
+                true, QStringLiteral(
+                          "Kapali kaynak NVIDIA surucusu basariyla kuruldu. "
+                          "Lutfen sistemi yeniden baslatin."));
+          }
+        },
+        Qt::QueuedConnection);
+  });
 }
 
 void NvidiaInstaller::installOpenSource() {
-  CommandRunner runner;
+  QPointer<NvidiaInstaller> guard(this);
+  runAsyncTask([guard]() {
+    if (!guard) {
+      return;
+    }
 
-  connect(&runner, &CommandRunner::outputLine, this,
-          &NvidiaInstaller::progressMessage);
+    CommandRunner runner;
+    QObject::connect(&runner, &CommandRunner::outputLine, guard,
+                     [guard](const QString &message) {
+                       if (!guard) {
+                         return;
+                       }
+                       QMetaObject::invokeMethod(
+                           guard,
+                           [guard, message]() {
+                             if (guard) {
+                               emit guard->progressMessage(message);
+                             }
+                           },
+                           Qt::QueuedConnection);
+                     });
 
-  emit progressMessage(
-      QStringLiteral("Acik kaynak surucuye gecis baslatiliyor..."));
+    QMetaObject::invokeMethod(
+        guard,
+        [guard]() {
+          if (guard) {
+            emit guard->progressMessage(
+                QStringLiteral("Acik kaynak surucuye gecis baslatiliyor..."));
+          }
+        },
+        Qt::QueuedConnection);
 
-  // Once kapali kaynak paketleri kaldir.
-  auto result = runner.runAsRoot(
-      QStringLiteral("dnf"),
-      QStringList{QStringLiteral("remove"), QStringLiteral("-y")} +
-          kManagedNvidiaPackages);
+    auto result = runner.runAsRoot(
+        QStringLiteral("dnf"),
+        QStringList{QStringLiteral("remove"), QStringLiteral("-y")} +
+            kManagedNvidiaPackages);
+    if (!result.success()) {
+      const QString error =
+          QStringLiteral("Kapali kaynak paket kaldirma basarisiz: ") +
+          commandError(result, QStringLiteral("bilinmeyen hata"));
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, error]() {
+            if (guard) {
+              emit guard->installFinished(false, error);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  if (!result.success()) {
-    emit installFinished(
-        false, QStringLiteral("Kapali kaynak paket kaldirma basarisiz: ") +
-                   commandError(result, QStringLiteral("bilinmeyen hata")));
-    return;
-  }
+    result = runner.runAsRoot(QStringLiteral("dnf"),
+                              {QStringLiteral("install"), QStringLiteral("-y"),
+                               QStringLiteral("xorg-x11-drv-nouveau"),
+                               QStringLiteral("mesa-dri-drivers")});
+    if (!result.success()) {
+      const QString error =
+          QStringLiteral("Acik kaynak surucu kurulumu basarisiz: ") +
+          commandError(result, QStringLiteral("bilinmeyen hata"));
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, error]() {
+            if (guard) {
+              emit guard->installFinished(false, error);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  // Nouveau ve temel Mesa paketlerini garanti altina al.
-  result = runner.runAsRoot(QStringLiteral("dnf"),
-                            {QStringLiteral("install"), QStringLiteral("-y"),
-                             QStringLiteral("xorg-x11-drv-nouveau"),
-                             QStringLiteral("mesa-dri-drivers")});
+    result =
+        runner.runAsRoot(QStringLiteral("dracut"), {QStringLiteral("--force")});
+    if (!result.success()) {
+      const QString error =
+          QStringLiteral("Initramfs guncellenemedi: ") +
+          commandError(result, QStringLiteral("bilinmeyen hata"));
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, error]() {
+            if (guard) {
+              emit guard->installFinished(false, error);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  if (!result.success()) {
-    emit installFinished(
-        false, QStringLiteral("Acik kaynak surucu kurulumu basarisiz: ") +
-                   commandError(result, QStringLiteral("bilinmeyen hata")));
-    return;
-  }
-
-  result =
-      runner.runAsRoot(QStringLiteral("dracut"), {QStringLiteral("--force")});
-  if (!result.success()) {
-    emit installFinished(
-        false, QStringLiteral("Initramfs guncellenemedi: ") +
-                   commandError(result, QStringLiteral("bilinmeyen hata")));
-    return;
-  }
-
-  emit installFinished(true,
-                       QStringLiteral("Acik kaynak surucu (Nouveau) kuruldu. "
-                                      "Lutfen sistemi yeniden baslatin."));
+    QMetaObject::invokeMethod(
+        guard,
+        [guard]() {
+          if (guard) {
+            emit guard->installFinished(
+                true,
+                QStringLiteral("Acik kaynak surucu (Nouveau) kuruldu. Lutfen "
+                               "sistemi yeniden baslatin."));
+          }
+        },
+        Qt::QueuedConnection);
+  });
 }
 
 void NvidiaInstaller::remove() {
-  CommandRunner runner;
-  connect(&runner, &CommandRunner::outputLine, this,
-          &NvidiaInstaller::progressMessage);
+  QPointer<NvidiaInstaller> guard(this);
+  runAsyncTask([guard]() {
+    if (!guard) {
+      return;
+    }
 
-  emit progressMessage(QStringLiteral("NVIDIA surucusu kaldiriliyor..."));
+    CommandRunner runner;
+    QObject::connect(&runner, &CommandRunner::outputLine, guard,
+                     [guard](const QString &message) {
+                       if (!guard) {
+                         return;
+                       }
+                       QMetaObject::invokeMethod(
+                           guard,
+                           [guard, message]() {
+                             if (guard) {
+                               emit guard->progressMessage(message);
+                             }
+                           },
+                           Qt::QueuedConnection);
+                     });
 
-  const auto result = runner.runAsRoot(
-      QStringLiteral("dnf"),
-      QStringList{QStringLiteral("remove"), QStringLiteral("-y")} +
-          kManagedNvidiaPackages);
+    QMetaObject::invokeMethod(
+        guard,
+        [guard]() {
+          if (guard) {
+            emit guard->progressMessage(
+                QStringLiteral("NVIDIA surucusu kaldiriliyor..."));
+          }
+        },
+        Qt::QueuedConnection);
 
-  emit removeFinished(
-      result.success(),
-      result.success()
-          ? QStringLiteral("Surucu basariyla kaldirildi.")
-          : QStringLiteral("Kaldirma basarisiz: ") +
-                commandError(result, QStringLiteral("bilinmeyen hata")));
+    const auto result = runner.runAsRoot(
+        QStringLiteral("dnf"),
+        QStringList{QStringLiteral("remove"), QStringLiteral("-y")} +
+            kManagedNvidiaPackages);
+    const bool success = result.success();
+    const QString message =
+        success ? QStringLiteral("Surucu basariyla kaldirildi.")
+                : QStringLiteral("Kaldirma basarisiz: ") +
+                      commandError(result, QStringLiteral("bilinmeyen hata"));
+    QMetaObject::invokeMethod(
+        guard,
+        [guard, success, message]() {
+          if (guard) {
+            emit guard->removeFinished(success, message);
+          }
+        },
+        Qt::QueuedConnection);
+  });
 }
 
 void NvidiaInstaller::deepClean() {
-  CommandRunner runner;
-  connect(&runner, &CommandRunner::outputLine, this,
-          &NvidiaInstaller::progressMessage);
+  QPointer<NvidiaInstaller> guard(this);
+  runAsyncTask([guard]() {
+    if (!guard) {
+      return;
+    }
 
-  emit progressMessage(
-      QStringLiteral("Eski surucu kalintilari temizleniyor..."));
+    CommandRunner runner;
+    QObject::connect(&runner, &CommandRunner::outputLine, guard,
+                     [guard](const QString &message) {
+                       if (!guard) {
+                         return;
+                       }
+                       QMetaObject::invokeMethod(
+                           guard,
+                           [guard, message]() {
+                             if (guard) {
+                               emit guard->progressMessage(message);
+                             }
+                           },
+                           Qt::QueuedConnection);
+                     });
 
-  const auto removeResult = runner.runAsRoot(
-      QStringLiteral("dnf"),
-      QStringList{QStringLiteral("remove"), QStringLiteral("-y")} +
-          kManagedNvidiaPackages);
-  if (!removeResult.success()) {
-    emit progressMessage(
-        QStringLiteral("Deep clean kaldirma adimi hata verdi: ") +
-        commandError(removeResult, QStringLiteral("bilinmeyen hata")));
-  }
+    QMetaObject::invokeMethod(
+        guard,
+        [guard]() {
+          if (guard) {
+            emit guard->progressMessage(
+                QStringLiteral("Eski surucu kalintilari temizleniyor..."));
+          }
+        },
+        Qt::QueuedConnection);
 
-  const auto cleanResult = runner.runAsRoot(
-      QStringLiteral("dnf"), {QStringLiteral("clean"), QStringLiteral("all")});
-  if (!cleanResult.success()) {
-    emit progressMessage(
-        QStringLiteral("DNF cache temizligi hata verdi: ") +
-        commandError(cleanResult, QStringLiteral("bilinmeyen hata")));
-  }
+    const auto removeResult = runner.runAsRoot(
+        QStringLiteral("dnf"),
+        QStringList{QStringLiteral("remove"), QStringLiteral("-y")} +
+            kManagedNvidiaPackages);
+    if (!removeResult.success()) {
+      const QString error =
+          QStringLiteral("Deep clean kaldirma adimi hata verdi: ") +
+          commandError(removeResult, QStringLiteral("bilinmeyen hata"));
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, error]() {
+            if (guard) {
+              emit guard->progressMessage(error);
+            }
+          },
+          Qt::QueuedConnection);
+    }
 
-  emit progressMessage(QStringLiteral("Deep clean tamamlandi."));
+    const auto cleanResult =
+        runner.runAsRoot(QStringLiteral("dnf"),
+                         {QStringLiteral("clean"), QStringLiteral("all")});
+    if (!cleanResult.success()) {
+      const QString error =
+          QStringLiteral("DNF cache temizligi hata verdi: ") +
+          commandError(cleanResult, QStringLiteral("bilinmeyen hata"));
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, error]() {
+            if (guard) {
+              emit guard->progressMessage(error);
+            }
+          },
+          Qt::QueuedConnection);
+    }
+
+    QMetaObject::invokeMethod(
+        guard,
+        [guard]() {
+          if (guard) {
+            emit guard->progressMessage(
+                QStringLiteral("Deep clean tamamlandi."));
+          }
+        },
+        Qt::QueuedConnection);
+  });
 }
 
 QString NvidiaInstaller::detectSessionType() const {

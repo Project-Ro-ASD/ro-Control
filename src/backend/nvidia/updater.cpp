@@ -3,10 +3,27 @@
 #include "system/commandrunner.h"
 #include "versionparser.h"
 
+#include <QMetaObject>
+#include <QPointer>
 #include <QStandardPaths>
+#include <QThread>
 #include <QtGlobal>
 
 namespace {
+
+const QStringList kVersionLockedDriverPackages = {
+    QStringLiteral("akmod-nvidia"),
+    QStringLiteral("xorg-x11-drv-nvidia"),
+    QStringLiteral("xorg-x11-drv-nvidia-libs"),
+    QStringLiteral("xorg-x11-drv-nvidia-cuda"),
+    QStringLiteral("xorg-x11-drv-nvidia-cuda-libs"),
+};
+
+const QStringList kFloatingDriverPackages = {
+    QStringLiteral("nvidia-modprobe"),
+    QStringLiteral("nvidia-persistenced"),
+    QStringLiteral("nvidia-settings"),
+};
 
 QString commandError(const CommandRunner::Result &result,
                      const QString &fallback) {
@@ -24,29 +41,15 @@ QString commandError(const CommandRunner::Result &result,
   return fallback;
 }
 
-} // namespace
+struct UpdateStatusSnapshot {
+  QString currentVersion;
+  QString latestVersion;
+  QStringList availableVersions;
+  bool updateAvailable = false;
+  QString message;
+};
 
-NvidiaUpdater::NvidiaUpdater(QObject *parent) : QObject(parent) {}
-
-void NvidiaUpdater::setLatestVersion(const QString &version) {
-  if (m_latestVersion == version) {
-    return;
-  }
-
-  m_latestVersion = version;
-  emit latestVersionChanged();
-}
-
-void NvidiaUpdater::setAvailableVersions(const QStringList &versions) {
-  if (m_availableVersions == versions) {
-    return;
-  }
-
-  m_availableVersions = versions;
-  emit availableVersionsChanged();
-}
-
-QString NvidiaUpdater::detectSessionType() const {
+QString detectSessionTypeImpl() {
   const QString envType =
       qEnvironmentVariable("XDG_SESSION_TYPE").trimmed().toLower();
   if (!envType.isEmpty()) {
@@ -70,17 +73,118 @@ QString NvidiaUpdater::detectSessionType() const {
   return QStringLiteral("unknown");
 }
 
+UpdateStatusSnapshot collectUpdateStatus() {
+  UpdateStatusSnapshot snapshot;
+  NvidiaDetector detector;
+  snapshot.currentVersion = detector.installedDriverVersion();
+
+  if (QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty()) {
+    snapshot.message = QStringLiteral("dnf bulunamadi.");
+    return snapshot;
+  }
+
+  CommandRunner runner;
+  const auto listResult =
+      runner.run(QStringLiteral("dnf"),
+                 {QStringLiteral("list"), QStringLiteral("--showduplicates"),
+                  QStringLiteral("akmod-nvidia")});
+
+  if (listResult.success()) {
+    snapshot.availableVersions =
+        NvidiaVersionParser::parseAvailablePackageVersions(
+            listResult.stdout, QStringLiteral("akmod-nvidia"));
+  }
+
+  if (snapshot.currentVersion.isEmpty()) {
+    snapshot.message = QStringLiteral("Kurulu NVIDIA surucusu bulunamadi.");
+    return snapshot;
+  }
+
+  const auto checkResult =
+      runner.run(QStringLiteral("dnf"), {QStringLiteral("check-update"),
+                                         QStringLiteral("akmod-nvidia")});
+
+  if (checkResult.exitCode == 100) {
+    snapshot.latestVersion = NvidiaVersionParser::parseCheckUpdateVersion(
+        checkResult.stdout, QStringLiteral("akmod-nvidia"));
+    snapshot.updateAvailable = true;
+    snapshot.message =
+        snapshot.latestVersion.isEmpty()
+            ? QStringLiteral("Guncelleme bulundu (surum ayrintisi alinamadi).")
+            : QStringLiteral("Guncelleme bulundu: %1")
+                  .arg(snapshot.latestVersion);
+  } else if (checkResult.exitCode == 0) {
+    snapshot.message = QStringLiteral("Surucu guncel. Yeni surum bulunamadi.");
+  } else {
+    snapshot.message = QStringLiteral("Guncelleme kontrolu basarisiz: %1")
+                           .arg(checkResult.stderr.trimmed().isEmpty()
+                                    ? checkResult.stdout.trimmed()
+                                    : checkResult.stderr.trimmed());
+  }
+
+  return snapshot;
+}
+
+} // namespace
+
+NvidiaUpdater::NvidiaUpdater(QObject *parent) : QObject(parent) {}
+
+void NvidiaUpdater::setBusy(bool busy) {
+  if (m_busy == busy) {
+    return;
+  }
+
+  m_busy = busy;
+  emit busyChanged();
+}
+
+void NvidiaUpdater::runAsyncTask(const std::function<void()> &task) {
+  if (m_busy) {
+    emit progressMessage(
+        QStringLiteral("Baska bir surucu islemi zaten calisiyor."));
+    return;
+  }
+
+  setBusy(true);
+
+  QThread *thread = QThread::create(task);
+  connect(thread, &QThread::finished, this, [this, thread]() {
+    setBusy(false);
+    thread->deleteLater();
+  });
+  thread->start();
+}
+
+void NvidiaUpdater::setLatestVersion(const QString &version) {
+  if (m_latestVersion == version) {
+    return;
+  }
+
+  m_latestVersion = version;
+  emit latestVersionChanged();
+}
+
+void NvidiaUpdater::setAvailableVersions(const QStringList &versions) {
+  if (m_availableVersions == versions) {
+    return;
+  }
+
+  m_availableVersions = versions;
+  emit availableVersionsChanged();
+}
+
+QString NvidiaUpdater::detectSessionType() const {
+  return detectSessionTypeImpl();
+}
+
 QStringList
 NvidiaUpdater::buildDriverTargets(const QString &version,
                                   const QString &sessionType) const {
+  Q_UNUSED(sessionType);
   QStringList targets;
-  targets << NvidiaVersionParser::packageSpecForVersion(
-      QStringLiteral("akmod-nvidia"), version);
-
-  if (sessionType == QStringLiteral("x11")) {
-    targets << NvidiaVersionParser::packageSpecForVersion(
-        QStringLiteral("xorg-x11-drv-nvidia"), version);
-  }
+  targets << NvidiaVersionParser::buildVersionedPackageSpecs(
+      kVersionLockedDriverPackages, version);
+  targets << kFloatingDriverPackages;
 
   return targets;
 }
@@ -118,37 +222,29 @@ bool NvidiaUpdater::finalizeDriverChange(CommandRunner &runner,
 }
 
 void NvidiaUpdater::refreshAvailableVersions() {
-  if (QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty()) {
-    setAvailableVersions({});
-    emit progressMessage(QStringLiteral("dnf bulunamadi."));
-    return;
-  }
+  QPointer<NvidiaUpdater> guard(this);
+  runAsyncTask([guard]() {
+    if (!guard) {
+      return;
+    }
 
-  CommandRunner runner;
-  const auto result =
-      runner.run(QStringLiteral("dnf"),
-                 {QStringLiteral("list"), QStringLiteral("--showduplicates"),
-                  QStringLiteral("akmod-nvidia")});
+    UpdateStatusSnapshot snapshot = collectUpdateStatus();
+    QMetaObject::invokeMethod(
+        guard,
+        [guard, snapshot]() {
+          if (!guard) {
+            return;
+          }
 
-  if (!result.success()) {
-    setAvailableVersions({});
-    emit progressMessage(
-        QStringLiteral("Surum listesi alinamadi: %1")
-            .arg(commandError(result, QStringLiteral("bilinmeyen hata"))));
-    return;
-  }
-
-  const QStringList versions =
-      NvidiaVersionParser::parseAvailablePackageVersions(
-          result.stdout, QStringLiteral("akmod-nvidia"));
-  setAvailableVersions(versions);
-
-  if (!versions.isEmpty()) {
-    emit progressMessage(
-        QStringLiteral("Kullanilabilir surum sayisi: %1").arg(versions.size()));
-  } else {
-    emit progressMessage(QStringLiteral("Kullanilabilir surum bulunamadi."));
-  }
+          guard->setAvailableVersions(snapshot.availableVersions);
+          emit guard->progressMessage(
+              snapshot.availableVersions.isEmpty()
+                  ? QStringLiteral("Kullanilabilir surum bulunamadi.")
+                  : QStringLiteral("Kullanilabilir surum sayisi: %1")
+                        .arg(snapshot.availableVersions.size()));
+        },
+        Qt::QueuedConnection);
+  });
 }
 
 void NvidiaUpdater::checkForUpdate() {
@@ -156,158 +252,196 @@ void NvidiaUpdater::checkForUpdate() {
   // EN: Always emit a visible start message for each check request.
   emit progressMessage(QStringLiteral("Guncelleme kontrolu baslatildi..."));
 
-  refreshAvailableVersions();
-
-  // Mevcut kurulu sürücü versiyonu
-  NvidiaDetector detector;
-  const QString current = detector.installedDriverVersion();
-
-  if (current != m_currentVersion) {
-    m_currentVersion = current;
-    emit currentVersionChanged();
-  }
-
-  if (m_currentVersion.isEmpty()) {
-    // Sürücü kurulu değil — güncelleme kontrolü anlamsız
-    if (m_updateAvailable) {
-      m_updateAvailable = false;
-      emit updateAvailableChanged();
-    }
-    setLatestVersion({});
-    emit progressMessage(QStringLiteral("Kurulu NVIDIA surucusu bulunamadi."));
-    return;
-  }
-
-  // TR: DNF cikis kodlari: 100=guncelleme var, 0=yok, digeri=hata.
-  // EN: DNF exit codes: 100=updates available, 0=none, others=error.
-  CommandRunner runner;
-  if (QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty()) {
-    if (m_updateAvailable) {
-      m_updateAvailable = false;
-      emit updateAvailableChanged();
-    }
-    setLatestVersion({});
-    emit progressMessage(QStringLiteral("dnf bulunamadi."));
-    return;
-  }
-
-  const auto result =
-      runner.run(QStringLiteral("dnf"), {QStringLiteral("check-update"),
-                                         QStringLiteral("akmod-nvidia")});
-
-  // dnf check-update: exit code 100 = güncelleme var, 0 = yok
-  if (result.exitCode == 100) {
-    const QString latest = NvidiaVersionParser::parseCheckUpdateVersion(
-        result.stdout, QStringLiteral("akmod-nvidia"));
-    setLatestVersion(latest);
-
-    if (!m_updateAvailable) {
-      m_updateAvailable = true;
-      emit updateAvailableChanged();
+  QPointer<NvidiaUpdater> guard(this);
+  runAsyncTask([guard]() {
+    if (!guard) {
+      return;
     }
 
-    if (!m_latestVersion.isEmpty()) {
-      emit progressMessage(
-          QStringLiteral("Guncelleme bulundu: %1").arg(m_latestVersion));
-    } else {
-      emit progressMessage(
-          QStringLiteral("Guncelleme bulundu (surum ayrintisi alinamadi)."));
-    }
-  } else if (result.exitCode == 0) {
-    if (m_updateAvailable) {
-      m_updateAvailable = false;
-      emit updateAvailableChanged();
-    }
-    setLatestVersion({});
+    const UpdateStatusSnapshot snapshot = collectUpdateStatus();
+    QMetaObject::invokeMethod(
+        guard,
+        [guard, snapshot]() {
+          if (!guard) {
+            return;
+          }
 
-    emit progressMessage(
-        QStringLiteral("Surucu guncel. Yeni surum bulunamadi."));
-  } else {
-    if (m_updateAvailable) {
-      m_updateAvailable = false;
-      emit updateAvailableChanged();
-    }
-    setLatestVersion({});
+          if (guard->m_currentVersion != snapshot.currentVersion) {
+            guard->m_currentVersion = snapshot.currentVersion;
+            emit guard->currentVersionChanged();
+          }
 
-    emit progressMessage(QStringLiteral("Guncelleme kontrolu basarisiz: %1")
-                             .arg(result.stderr.trimmed().isEmpty()
-                                      ? result.stdout.trimmed()
-                                      : result.stderr.trimmed()));
-  }
+          if (guard->m_updateAvailable != snapshot.updateAvailable) {
+            guard->m_updateAvailable = snapshot.updateAvailable;
+            emit guard->updateAvailableChanged();
+          }
+
+          guard->setLatestVersion(snapshot.latestVersion);
+          guard->setAvailableVersions(snapshot.availableVersions);
+          emit guard->progressMessage(snapshot.message);
+        },
+        Qt::QueuedConnection);
+  });
 }
 
 void NvidiaUpdater::applyUpdate() { applyVersion(QString()); }
 
 void NvidiaUpdater::applyVersion(const QString &version) {
-  CommandRunner runner;
-
-  connect(&runner, &CommandRunner::outputLine, this,
-          &NvidiaUpdater::progressMessage);
-
-  // TR: Uzun surebilecek adimlar oncesinde kullaniciya ilerleme bilgisi ver.
-  // EN: Emit progress updates before long-running operations.
-  if (QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty()) {
-    emit updateFinished(false, QStringLiteral("dnf bulunamadi."));
-    return;
-  }
-
-  NvidiaDetector detector;
-  const QString installedVersion = detector.installedDriverVersion();
-  const QString sessionType = detectSessionType();
   const QString trimmedVersion = version.trimmed();
-  const QStringList packageTargets =
-      buildDriverTargets(trimmedVersion, sessionType);
+  const QStringList knownVersions = m_availableVersions;
+  QPointer<NvidiaUpdater> guard(this);
 
-  if (!trimmedVersion.isEmpty() &&
-      !m_availableVersions.contains(trimmedVersion)) {
-    emit updateFinished(
-        false, QStringLiteral("Secilen surum repo listesinde bulunamadi."));
-    return;
-  }
+  runAsyncTask([guard, trimmedVersion, knownVersions]() {
+    if (!guard) {
+      return;
+    }
 
-  emit progressMessage(
-      trimmedVersion.isEmpty()
-          ? QStringLiteral("NVIDIA surucusu en son surume guncelleniyor...")
-          : QStringLiteral("NVIDIA surucusu secilen surume geciriliyor: %1")
-                .arg(trimmedVersion));
+    CommandRunner runner;
+    QObject::connect(&runner, &CommandRunner::outputLine, guard,
+                     [guard](const QString &message) {
+                       if (!guard) {
+                         return;
+                       }
+                       QMetaObject::invokeMethod(
+                           guard,
+                           [guard, message]() {
+                             if (guard) {
+                               emit guard->progressMessage(message);
+                             }
+                           },
+                           Qt::QueuedConnection);
+                     });
 
-  auto args =
-      QStringList{(trimmedVersion.isEmpty() && !installedVersion.isEmpty())
-                      ? QStringLiteral("update")
-                      : QStringLiteral("install"),
-                  QStringLiteral("-y")};
-  args << packageTargets;
+    if (QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty()) {
+      QMetaObject::invokeMethod(
+          guard,
+          [guard]() {
+            if (guard) {
+              emit guard->updateFinished(false,
+                                         QStringLiteral("dnf bulunamadi."));
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  auto result = runner.runAsRoot(QStringLiteral("dnf"), args);
+    NvidiaDetector detector;
+    const QString installedVersion = detector.installedDriverVersion();
+    const QString sessionType = detectSessionTypeImpl();
 
-  if (!result.success()) {
-    emit updateFinished(
-        false, QStringLiteral("Guncelleme basarisiz: ") +
-                   commandError(result, QStringLiteral("bilinmeyen hata")));
-    return;
-  }
+    if (!trimmedVersion.isEmpty() && !knownVersions.contains(trimmedVersion)) {
+      QMetaObject::invokeMethod(
+          guard,
+          [guard]() {
+            if (guard) {
+              emit guard->updateFinished(
+                  false,
+                  QStringLiteral("Secilen surum repo listesinde bulunamadi."));
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  emit progressMessage(QStringLiteral("Kernel modülü yeniden derleniyor..."));
+    QMetaObject::invokeMethod(
+        guard,
+        [guard, trimmedVersion]() {
+          if (!guard) {
+            return;
+          }
 
-  QString finalizeError;
-  if (!finalizeDriverChange(runner, sessionType, &finalizeError)) {
-    emit updateFinished(false, finalizeError);
-    return;
-  }
+          emit guard->progressMessage(
+              trimmedVersion.isEmpty()
+                  ? QStringLiteral(
+                        "NVIDIA surucusu en son surume guncelleniyor...")
+                  : QStringLiteral(
+                        "NVIDIA surucusu secilen surume geciriliyor: %1")
+                        .arg(trimmedVersion));
+        },
+        Qt::QueuedConnection);
 
-  // Güncelleme sonrası durumu yenile
-  m_updateAvailable = false;
-  emit updateAvailableChanged();
+    const QStringList packageTargets =
+        guard->buildDriverTargets(trimmedVersion, sessionType);
+    auto args = QStringList{
+        trimmedVersion.isEmpty()
+            ? (installedVersion.isEmpty() ? QStringLiteral("install")
+                                          : QStringLiteral("update"))
+            : (installedVersion.isEmpty() ? QStringLiteral("install")
+                                          : QStringLiteral("distro-sync")),
+        QStringLiteral("-y"), QStringLiteral("--allowerasing")};
+    args << packageTargets;
 
-  checkForUpdate();
+    auto result = runner.runAsRoot(QStringLiteral("dnf"), args);
+    if (!result.success()) {
+      const QString error =
+          QStringLiteral("Guncelleme basarisiz: ") +
+          commandError(result, QStringLiteral("bilinmeyen hata"));
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, error]() {
+            if (guard) {
+              emit guard->updateFinished(false, error);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
 
-  emit updateFinished(
-      true, trimmedVersion.isEmpty()
-                ? (installedVersion.isEmpty()
-                       ? QStringLiteral("En son surum basariyla kuruldu. "
-                                        "Lutfen sistemi yeniden baslatin.")
-                       : QStringLiteral("Surucu basariyla guncellendi. Lutfen "
-                                        "sistemi yeniden baslatin."))
-                : QStringLiteral("Secilen surum basariyla uygulandi. Lutfen "
-                                 "sistemi yeniden baslatin."));
+    QMetaObject::invokeMethod(
+        guard,
+        [guard]() {
+          if (guard) {
+            emit guard->progressMessage(
+                QStringLiteral("Kernel modulu yeniden derleniyor..."));
+          }
+        },
+        Qt::QueuedConnection);
+
+    QString finalizeError;
+    if (!guard->finalizeDriverChange(runner, sessionType, &finalizeError)) {
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, finalizeError]() {
+            if (guard) {
+              emit guard->updateFinished(false, finalizeError);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
+
+    const UpdateStatusSnapshot snapshot = collectUpdateStatus();
+    const QString successMessage =
+        trimmedVersion.isEmpty()
+            ? (installedVersion.isEmpty()
+                   ? QStringLiteral("En son surum basariyla kuruldu. Lutfen "
+                                    "sistemi yeniden baslatin.")
+                   : QStringLiteral("Surucu basariyla guncellendi. Lutfen "
+                                    "sistemi yeniden baslatin."))
+            : QStringLiteral(
+                  "Secilen surum basariyla uygulandi. Lutfen sistemi "
+                  "yeniden baslatin.");
+
+    QMetaObject::invokeMethod(
+        guard,
+        [guard, snapshot, successMessage]() {
+          if (!guard) {
+            return;
+          }
+
+          if (guard->m_currentVersion != snapshot.currentVersion) {
+            guard->m_currentVersion = snapshot.currentVersion;
+            emit guard->currentVersionChanged();
+          }
+          if (guard->m_updateAvailable != snapshot.updateAvailable) {
+            guard->m_updateAvailable = snapshot.updateAvailable;
+            emit guard->updateAvailableChanged();
+          }
+          guard->setLatestVersion(snapshot.latestVersion);
+          guard->setAvailableVersions(snapshot.availableVersions);
+          emit guard->progressMessage(snapshot.message);
+          emit guard->updateFinished(true, successMessage);
+        },
+        Qt::QueuedConnection);
+  });
 }

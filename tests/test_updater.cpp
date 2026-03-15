@@ -40,6 +40,17 @@ private slots:
                  QStringLiteral("3:570.153.02-1.fc42")),
              QStringLiteral("akmod-nvidia-3:570.153.02-1.fc42"));
   }
+
+  void testBuildVersionedPackageSpecs() {
+    const QStringList specs = NvidiaVersionParser::buildVersionedPackageSpecs(
+        {QStringLiteral("akmod-nvidia"), QStringLiteral("xorg-x11-drv-nvidia")},
+        QStringLiteral("3:570.153.02-1.fc42"));
+
+    QCOMPARE(specs.size(), 2);
+    QCOMPARE(specs.at(0), QStringLiteral("akmod-nvidia-3:570.153.02-1.fc42"));
+    QCOMPARE(specs.at(1),
+             QStringLiteral("xorg-x11-drv-nvidia-3:570.153.02-1.fc42"));
+  }
 };
 
 QTEST_MAIN(TestUpdater)

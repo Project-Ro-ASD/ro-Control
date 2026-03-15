@@ -89,12 +89,13 @@ Item {
 
             Button {
                 text: "Kapali Kaynak Surucu Kur"
-                enabled: !page.nvidiaInstaller.proprietaryAgreementRequired || eulaAccept.checked
+                enabled: (!page.nvidiaInstaller.proprietaryAgreementRequired || eulaAccept.checked) && !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: page.nvidiaInstaller.installProprietary(eulaAccept.checked)
             }
 
             Button {
                 text: "Nouveau Surucusu Kur"
+                enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: {
                     logArea.append("Nouveau surucusu kurulumu baslatildi...");
                     page.nvidiaInstaller.installOpenSource();
@@ -103,6 +104,7 @@ Item {
 
             Button {
                 text: "Deep Clean"
+                enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: page.nvidiaInstaller.deepClean()
             }
         }
@@ -114,6 +116,7 @@ Item {
             // EN: Manual check button writes status into the on-screen log.
             Button {
                 text: "Guncelleme Kontrol Et"
+                enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: {
                     logArea.append("Guncelleme kontrolu istendi...");
                     page.nvidiaUpdater.checkForUpdate();
@@ -122,7 +125,7 @@ Item {
 
             Button {
                 text: "Guncellemeyi Uygula"
-                enabled: page.nvidiaUpdater.updateAvailable
+                enabled: page.nvidiaUpdater.updateAvailable && !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: page.nvidiaUpdater.applyUpdate()
             }
 
@@ -169,11 +172,12 @@ Item {
                         id: versionSelector
                         Layout.fillWidth: true
                         model: page.nvidiaUpdater.availableVersions
-                        enabled: model.length > 0
+                        enabled: model.length > 0 && !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                     }
 
                     Button {
                         text: "Surumleri Yenile"
+                        enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                         onClicked: {
                             logArea.append("Repo surum listesi yenileniyor...");
                             page.nvidiaUpdater.refreshAvailableVersions();
@@ -182,7 +186,7 @@ Item {
 
                     Button {
                         text: "Secili Surumu Uygula"
-                        enabled: versionSelector.currentIndex >= 0 && page.nvidiaUpdater.availableVersions.length > 0
+                        enabled: versionSelector.currentIndex >= 0 && page.nvidiaUpdater.availableVersions.length > 0 && !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                         onClicked: {
                             const selectedVersion = versionSelector.currentText;
                             logArea.append("Secilen surum uygulanacak: " + selectedVersion);
@@ -200,6 +204,7 @@ Item {
             // EN: Rescan refreshes detector state, agreement state, and update check.
             Button {
                 text: "Yeniden Tara"
+                enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: {
                     logArea.append("Sistem yeniden taraniyor...");
                     page.nvidiaDetector.refresh();
@@ -263,7 +268,6 @@ Item {
     Component.onCompleted: {
         page.nvidiaDetector.refresh();
         page.nvidiaUpdater.checkForUpdate();
-        page.nvidiaUpdater.refreshAvailableVersions();
         page.nvidiaInstaller.refreshProprietaryAgreement();
     }
 }
