@@ -1,3 +1,4 @@
+#include <QStandardPaths>
 #include <QTest>
 
 #include "monitor/cpumonitor.h"
@@ -23,11 +24,21 @@ private slots:
     GpuMonitor gpu;
     gpu.refresh();
 
+    if (QStandardPaths::findExecutable(QStringLiteral("nvidia-smi"))
+            .isEmpty()) {
+      QCOMPARE(gpu.available(), false);
+      QCOMPARE(gpu.temperatureC(), 0);
+      QCOMPARE(gpu.utilizationPercent(), 0);
+      QCOMPARE(gpu.memoryUsagePercent(), 0);
+      return;
+    }
+
     QVERIFY(gpu.temperatureC() >= 0);
     QVERIFY(gpu.utilizationPercent() >= 0);
     QVERIFY(gpu.utilizationPercent() <= 100);
     QVERIFY(gpu.memoryUsagePercent() >= 0);
     QVERIFY(gpu.memoryUsagePercent() <= 100);
+    QVERIFY(!gpu.gpuName().isEmpty());
   }
 
   void testRamConstruction() {

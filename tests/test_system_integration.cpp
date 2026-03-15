@@ -23,9 +23,22 @@ private slots:
     QVERIFY(result.stderr.contains(QStringLiteral("Executable not found")));
   }
 
+  void testCommandRunnerTimeout() {
+    CommandRunner runner;
+    CommandRunner::RunOptions options;
+    options.timeoutMs = 1;
+
+    const auto result =
+        runner.run(QStringLiteral("sleep"), {QStringLiteral("1")}, options);
+    QVERIFY(result.exitCode == -2 || result.exitCode == -1);
+  }
+
   void testDnfManagerAvailabilityAndVersion() {
     DnfManager dnf;
     if (!dnf.isAvailable()) {
+      const auto result = dnf.checkUpdates();
+      QCOMPARE(result.exitCode, -1);
+      QVERIFY(result.stderr.contains(QStringLiteral("dnf not found")));
       QSKIP("dnf is not available on this host.");
     }
 

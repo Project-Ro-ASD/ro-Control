@@ -32,6 +32,7 @@ signals:
   void updateFinished(bool success, const QString &message);
 
 private:
+  QString detectSessionType() const;
   bool m_updateAvailable = false;
   QString m_currentVersion;
   QString m_latestVersion;

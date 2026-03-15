@@ -28,6 +28,30 @@ QString commandError(const CommandRunner::Result &result,
 
 NvidiaUpdater::NvidiaUpdater(QObject *parent) : QObject(parent) {}
 
+QString NvidiaUpdater::detectSessionType() const {
+  const QString envType =
+      qEnvironmentVariable("XDG_SESSION_TYPE").trimmed().toLower();
+  if (!envType.isEmpty()) {
+    return envType;
+  }
+
+  CommandRunner runner;
+  const auto loginctl =
+      runner.run(QStringLiteral("loginctl"),
+                 {QStringLiteral("show-session"),
+                  qEnvironmentVariable("XDG_SESSION_ID"), QStringLiteral("-p"),
+                  QStringLiteral("Type"), QStringLiteral("--value")});
+
+  if (loginctl.success()) {
+    const QString type = loginctl.stdout.trimmed().toLower();
+    if (!type.isEmpty()) {
+      return type;
+    }
+  }
+
+  return QStringLiteral("unknown");
+}
+
 void NvidiaUpdater::checkForUpdate() {
   // TR: Her kontrol denemesinde UI'ye gorunur bir baslangic mesaji gonder.
   // EN: Always emit a visible start message for each check request.
@@ -47,6 +71,10 @@ void NvidiaUpdater::checkForUpdate() {
     if (m_updateAvailable) {
       m_updateAvailable = false;
       emit updateAvailableChanged();
+    }
+    if (!m_latestVersion.isEmpty()) {
+      m_latestVersion.clear();
+      emit latestVersionChanged();
     }
     emit progressMessage(QStringLiteral("Kurulu NVIDIA surucusu bulunamadi."));
     return;
@@ -117,6 +145,10 @@ void NvidiaUpdater::checkForUpdate() {
       m_updateAvailable = false;
       emit updateAvailableChanged();
     }
+    if (!m_latestVersion.isEmpty()) {
+      m_latestVersion.clear();
+      emit latestVersionChanged();
+    }
 
     emit progressMessage(QStringLiteral("Guncelleme kontrolu basarisiz: %1")
                              .arg(result.stderr.trimmed().isEmpty()
@@ -162,8 +194,7 @@ void NvidiaUpdater::applyUpdate() {
     return;
   }
 
-  const QString sessionType =
-      qEnvironmentVariable("XDG_SESSION_TYPE").trimmed().toLower();
+  const QString sessionType = detectSessionType();
   if (sessionType == QStringLiteral("wayland")) {
     emit progressMessage(QStringLiteral(
         "Wayland tespit edildi: nvidia-drm.modeset=1 ayari guncelleniyor..."));

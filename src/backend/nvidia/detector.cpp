@@ -85,7 +85,10 @@ QString NvidiaDetector::detectGpuName() const {
   const QStringList lines = result.stdout.split(QLatin1Char('\n'));
   for (const QString &line : lines) {
     if (line.contains(QStringLiteral("NVIDIA"), Qt::CaseInsensitive) &&
-        line.contains(QStringLiteral("VGA"), Qt::CaseInsensitive)) {
+        (line.contains(QStringLiteral("VGA"), Qt::CaseInsensitive) ||
+         line.contains(QStringLiteral("3D controller"), Qt::CaseInsensitive) ||
+         line.contains(QStringLiteral("Display controller"),
+                       Qt::CaseInsensitive))) {
       static const QRegularExpression re(QStringLiteral("\"([^\"]+)\""));
       auto it = re.globalMatch(line);
       QStringList parts;
