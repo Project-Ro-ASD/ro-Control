@@ -12,12 +12,15 @@ NvidiaDetector::NvidiaDetector(QObject *parent) : QObject(parent) {}
 NvidiaDetector::GpuInfo NvidiaDetector::detect() const {
   GpuInfo info;
 
+  // TR: Tespit adimlari olabildigince bagimsiz tutulur; biri fail etse digeri
+  // devam eder. EN: Detection steps are independent so one failure does not
+  // block others.
   info.name = detectGpuName();
   info.found = !info.name.isEmpty();
   info.driverVersion = detectDriverVersion();
   info.driverLoaded = isModuleLoaded(QStringLiteral("nvidia"));
   info.nouveauActive = isModuleLoaded(QStringLiteral("nouveau"));
-  info.secureBootEnabled = detectSecureBoot();
+  info.secureBootEnabled = detectSecureBoot(&info.secureBootKnown);
   info.sessionType = detectSessionType();
 
   return info;
@@ -37,11 +40,13 @@ QString NvidiaDetector::activeDriver() const {
   if (m_info.driverLoaded)
     return QStringLiteral("Kapali Kaynak (NVIDIA)");
   if (m_info.nouveauActive)
-    return QStringLiteral("Acik Kaynak (Nouveau)");
+    return QStringLiteral("Nouveau (Topluluk Surucusu)");
   return QStringLiteral("Yuklu Degil/Bilinmiyor");
 }
 
 QString NvidiaDetector::verificationReport() const {
+  // TR: UI icin tek yerde ozet tanilama metni uret.
+  // EN: Produce a single consolidated diagnostic text for the UI.
   const QString gpuText = m_info.found ? m_info.name : QStringLiteral("Yok");
   const QString versionText = m_info.driverVersion.isEmpty()
                                   ? QStringLiteral("Yok")
@@ -51,8 +56,10 @@ QString NvidiaDetector::verificationReport() const {
              "GPU: %1\nSurucu Versiyonu: %2\nSecure Boot: %3\nOturum: %4\n"
              "NVIDIA Modulu: %5\nNouveau: %6")
       .arg(gpuText, versionText,
-           m_info.secureBootEnabled ? QStringLiteral("Acik")
-                                    : QStringLiteral("Kapali/Bilinmiyor"),
+           m_info.secureBootKnown
+               ? (m_info.secureBootEnabled ? QStringLiteral("Acik")
+                                           : QStringLiteral("Kapali"))
+               : QStringLiteral("Bilinmiyor"),
            m_info.sessionType.isEmpty() ? QStringLiteral("Bilinmiyor")
                                         : m_info.sessionType,
            m_info.driverLoaded ? QStringLiteral("Yuklu")
@@ -78,7 +85,10 @@ QString NvidiaDetector::detectGpuName() const {
   const QStringList lines = result.stdout.split(QLatin1Char('\n'));
   for (const QString &line : lines) {
     if (line.contains(QStringLiteral("NVIDIA"), Qt::CaseInsensitive) &&
-        line.contains(QStringLiteral("VGA"), Qt::CaseInsensitive)) {
+        (line.contains(QStringLiteral("VGA"), Qt::CaseInsensitive) ||
+         line.contains(QStringLiteral("3D controller"), Qt::CaseInsensitive) ||
+         line.contains(QStringLiteral("Display controller"),
+                       Qt::CaseInsensitive))) {
       static const QRegularExpression re(QStringLiteral("\"([^\"]+)\""));
       auto it = re.globalMatch(line);
       QStringList parts;
@@ -103,6 +113,8 @@ QString NvidiaDetector::detectDriverVersion() const {
   if (result.success())
     return result.stdout.trimmed();
 
+  // TR: nvidia-smi yoksa modinfo ile surum fallback'i dene.
+  // EN: If nvidia-smi is unavailable, fall back to modinfo.
   const auto modinfo =
       runner.run(QStringLiteral("modinfo"), {QStringLiteral("nvidia")});
 
@@ -132,14 +144,24 @@ bool NvidiaDetector::isModuleLoaded(const QString &moduleName) const {
   return false;
 }
 
-bool NvidiaDetector::detectSecureBoot() const {
+bool NvidiaDetector::detectSecureBoot(bool *known) const {
+  // TR: mokutil yoksa "kapali" degil "bilinmiyor" olarak siniflandir.
+  // EN: If mokutil is unavailable, classify as "unknown" rather than
+  // "disabled".
   CommandRunner runner;
   const auto result =
       runner.run(QStringLiteral("mokutil"), {QStringLiteral("--sb-state")});
 
   if (result.success() || result.exitCode == 1) {
+    if (known != nullptr) {
+      *known = true;
+    }
     return result.stdout.contains(QStringLiteral("enabled"),
                                   Qt::CaseInsensitive);
+  }
+
+  if (known != nullptr) {
+    *known = false;
   }
 
   return false;

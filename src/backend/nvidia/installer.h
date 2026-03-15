@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QString>
+#include <functional>
 
 class CommandRunner;
 
@@ -14,6 +15,7 @@ class NvidiaInstaller : public QObject {
                  NOTIFY proprietaryAgreementChanged)
   Q_PROPERTY(QString proprietaryAgreementText READ proprietaryAgreementText
                  NOTIFY proprietaryAgreementChanged)
+  Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
 
 public:
   explicit NvidiaInstaller(QObject *parent = nullptr);
@@ -24,6 +26,7 @@ public:
   QString proprietaryAgreementText() const {
     return m_proprietaryAgreementText;
   }
+  bool busy() const { return m_busy; }
 
   // Sozlesme durumunu yeniden kontrol et
   Q_INVOKABLE void refreshProprietaryAgreement();
@@ -48,12 +51,15 @@ signals:
   void progressMessage(const QString &message);
 
   void proprietaryAgreementChanged();
+  void busyChanged();
 
   // İşlem tamamlandı
   void installFinished(bool success, const QString &message);
   void removeFinished(bool success, const QString &message);
 
 private:
+  void setBusy(bool busy);
+  void runAsyncTask(const std::function<void()> &task);
   void setProprietaryAgreement(bool required, const QString &text);
   QString detectSessionType() const;
   bool applySessionSpecificSetup(CommandRunner &runner,
@@ -62,4 +68,5 @@ private:
 
   bool m_proprietaryAgreementRequired = false;
   QString m_proprietaryAgreementText;
+  bool m_busy = false;
 };

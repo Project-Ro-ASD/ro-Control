@@ -6,7 +6,7 @@
 <policyconfig>
 
     <vendor>ro-Control</vendor>
-    <vendor_url>https://github.com/Acik-Kaynak-Gelistirme-Toplulugu/ro-Control</vendor_url>
+    <vendor_url>https://github.com/Project-Ro-ASD/ro-Control</vendor_url>
 
     <action id="com.github.AcikKaynakGelistirmeToplulugu.rocontrol.manage-drivers">
         <description>Manage NVIDIA drivers</description>

@@ -1,6 +1,7 @@
 #include "rammonitor.h"
 
 #include <QFile>
+#include <QRegularExpression>
 #include <QTextStream>
 
 #include <algorithm>
@@ -27,6 +28,8 @@ int RamMonitor::usagePercent() const { return m_usagePercent; }
 int RamMonitor::updateInterval() const { return m_timer.interval(); }
 
 void RamMonitor::refresh() {
+  // TR: Linux RAM metrikleri /proc/meminfo uzerinden okunur.
+  // EN: Linux memory metrics are read from /proc/meminfo.
   QFile meminfo("/proc/meminfo");
   if (!meminfo.open(QIODevice::ReadOnly | QIODevice::Text)) {
     setAvailable(false);
@@ -36,34 +39,62 @@ void RamMonitor::refresh() {
 
   qint64 memTotalKiB = -1;
   qint64 memAvailableKiB = -1;
+  qint64 memFreeKiB = -1;
+  qint64 buffersKiB = -1;
+  qint64 cachedKiB = -1;
+  qint64 sReclaimableKiB = -1;
+  qint64 shmemKiB = -1;
+
+  // TR: "Anahtar: deger" satirlarini guvenli sekilde ayriştir.
+  // EN: Safely parse "Key: value" lines.
+  static const QRegularExpression lineRe(
+      QStringLiteral(R"(^([A-Za-z_]+):\s+(\d+))"));
 
   QTextStream stream(&meminfo);
   while (!stream.atEnd()) {
     const QString line = stream.readLine();
 
-    if (line.startsWith("MemTotal:")) {
-      const QString value =
-          line.section(':', 1, 1).trimmed().section(' ', 0, 0);
-      bool ok = false;
-      memTotalKiB = value.toLongLong(&ok);
-      if (!ok) {
-        memTotalKiB = -1;
-      }
-    } else if (line.startsWith("MemAvailable:")) {
-      const QString value =
-          line.section(':', 1, 1).trimmed().section(' ', 0, 0);
-      bool ok = false;
-      memAvailableKiB = value.toLongLong(&ok);
-      if (!ok) {
-        memAvailableKiB = -1;
-      }
+    const auto match = lineRe.match(line);
+    if (!match.hasMatch()) {
+      continue;
     }
 
-    if (memTotalKiB >= 0 && memAvailableKiB >= 0) {
-      break;
+    bool ok = false;
+    const qint64 value = match.captured(2).toLongLong(&ok);
+    if (!ok) {
+      continue;
+    }
+
+    const QString key = match.captured(1);
+    if (key == QStringLiteral("MemTotal")) {
+      memTotalKiB = value;
+    } else if (key == QStringLiteral("MemAvailable")) {
+      memAvailableKiB = value;
+    } else if (key == QStringLiteral("MemFree")) {
+      memFreeKiB = value;
+    } else if (key == QStringLiteral("Buffers")) {
+      buffersKiB = value;
+    } else if (key == QStringLiteral("Cached")) {
+      cachedKiB = value;
+    } else if (key == QStringLiteral("SReclaimable")) {
+      sReclaimableKiB = value;
+    } else if (key == QStringLiteral("Shmem")) {
+      shmemKiB = value;
     }
   }
 
+  // TR: Bazi kernel/ortamlarda MemAvailable olmayabilir; yaklasik deger
+  // hesapla. EN: Some kernels/environments do not expose MemAvailable; compute
+  // a fallback.
+  if (memAvailableKiB < 0 && memFreeKiB >= 0 && buffersKiB >= 0 &&
+      cachedKiB >= 0) {
+    const qint64 reclaimable = sReclaimableKiB > 0 ? sReclaimableKiB : 0;
+    const qint64 shmem = shmemKiB > 0 ? shmemKiB : 0;
+    memAvailableKiB = memFreeKiB + buffersKiB + cachedKiB + reclaimable - shmem;
+  }
+
+  // TR: Tutarsiz veri geldiyse metrikleri sifirla ve "unavailable" olarak isle.
+  // EN: If metrics are inconsistent, clear values and mark monitor unavailable.
   if (memTotalKiB <= 0 || memAvailableKiB < 0 ||
       memAvailableKiB > memTotalKiB) {
     setAvailable(false);

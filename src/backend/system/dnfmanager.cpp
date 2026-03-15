@@ -5,6 +5,18 @@
 
 #include <QStandardPaths>
 
+namespace {
+
+CommandRunner::Result dnfUnavailableResult() {
+  return CommandRunner::Result{
+      .exitCode = -1,
+      .stdout = {},
+      .stderr = QStringLiteral("dnf not found."),
+  };
+}
+
+} // namespace
+
 DnfManager::DnfManager(QObject *parent) : QObject(parent) {
   connect(&m_runner, &CommandRunner::outputLine, this,
           &DnfManager::progressMessage);
@@ -17,12 +29,20 @@ bool DnfManager::isAvailable() const {
 }
 
 CommandRunner::Result DnfManager::checkUpdates(const QStringList &packages) {
+  if (!isAvailable()) {
+    return dnfUnavailableResult();
+  }
+
   QStringList args{QStringLiteral("check-update")};
   args << packages;
   return m_runner.run(QStringLiteral("dnf"), args);
 }
 
 CommandRunner::Result DnfManager::installPackages(const QStringList &packages) {
+  if (!isAvailable()) {
+    return dnfUnavailableResult();
+  }
+
   if (packages.isEmpty()) {
     return CommandRunner::Result{
         .exitCode = -1,
@@ -36,6 +56,10 @@ CommandRunner::Result DnfManager::installPackages(const QStringList &packages) {
 }
 
 CommandRunner::Result DnfManager::removePackages(const QStringList &packages) {
+  if (!isAvailable()) {
+    return dnfUnavailableResult();
+  }
+
   if (packages.isEmpty()) {
     return CommandRunner::Result{
         .exitCode = -1,
@@ -49,12 +73,20 @@ CommandRunner::Result DnfManager::removePackages(const QStringList &packages) {
 }
 
 CommandRunner::Result DnfManager::updatePackages(const QStringList &packages) {
+  if (!isAvailable()) {
+    return dnfUnavailableResult();
+  }
+
   QStringList args{QStringLiteral("update"), QStringLiteral("-y")};
   args << packages;
   return m_runner.runAsRoot(QStringLiteral("dnf"), args);
 }
 
 CommandRunner::Result DnfManager::cleanAll() {
+  if (!isAvailable()) {
+    return dnfUnavailableResult();
+  }
+
   return m_runner.runAsRoot(QStringLiteral("dnf"),
                             {QStringLiteral("clean"), QStringLiteral("all")});
 }

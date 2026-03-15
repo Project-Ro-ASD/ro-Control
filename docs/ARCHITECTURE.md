@@ -34,6 +34,7 @@ ro-Control follows a strict **C++ Backend / QML Frontend** separation. The two l
 - Renders the UI using Qt Quick Controls 2 with KDE Plasma styling
 - Binds to C++ properties — it reads state but never writes to the system directly
 - Emits user actions (button clicks) which trigger C++ slots
+- Bundles shared assets and `qmldir` metadata with the QML module
 - No business logic lives here
 
 ### C++ Backend (`src/backend/`)
@@ -65,7 +66,7 @@ Divided into three modules:
 
 ## C++ ↔ QML Communication
 
-Qt's `QObject` system is the bridge. A C++ class exposes data to QML via `Q_PROPERTY`:
+Qt's `QObject` system is the bridge. Backend objects are injected at startup from `main.cpp`, and their `Q_PROPERTY` values are then consumed by QML:
 
 ```cpp
 // C++ side — gpumonitor.h
@@ -134,28 +135,41 @@ See [BUILDING.md](BUILDING.md) for full build instructions.
 ## Directory Structure
 
 ```
-src/
-├── backend/
-│   ├── nvidia/
-│   │   ├── detector.h / detector.cpp
-│   │   ├── installer.h / installer.cpp
-│   │   └── updater.h / updater.cpp
-│   ├── monitor/
-│   │   ├── gpumonitor.h / gpumonitor.cpp
-│   │   ├── cpumonitor.h / cpumonitor.cpp
-│   │   └── rammonitor.h / rammonitor.cpp
-│   └── system/
-│       ├── commandrunner.h / commandrunner.cpp
-│       ├── dnfmanager.h / dnfmanager.cpp
-│       └── polkit.h / polkit.cpp
-├── qml/
-│   ├── Main.qml
-│   ├── pages/
-│   │   ├── DriverPage.qml
-│   │   ├── MonitorPage.qml
-│   │   └── SettingsPage.qml
-│   └── components/
-│       ├── StatCard.qml
-│       └── SidebarMenu.qml
-└── main.cpp
+ro-Control/
+├── src/
+│   ├── backend/
+│   │   ├── nvidia/
+│   │   │   ├── detector.h / detector.cpp
+│   │   │   ├── installer.h / installer.cpp
+│   │   │   └── updater.h / updater.cpp
+│   │   ├── monitor/
+│   │   │   ├── gpumonitor.h / gpumonitor.cpp
+│   │   │   ├── cpumonitor.h / cpumonitor.cpp
+│   │   │   └── rammonitor.h / rammonitor.cpp
+│   │   └── system/
+│   │       ├── commandrunner.h / commandrunner.cpp
+│   │       ├── dnfmanager.h / dnfmanager.cpp
+│   │       └── polkit.h / polkit.cpp
+│   ├── qml/
+│   │   ├── assets/
+│   │   │   ├── ro-control-logo.png
+│   │   │   └── ro-control-logo.svg
+│   │   ├── components/
+│   │   │   ├── SidebarMenu.qml
+│   │   │   ├── StatCard.qml
+│   │   │   └── qmldir
+│   │   ├── pages/
+│   │   │   ├── DriverPage.qml
+│   │   │   ├── MonitorPage.qml
+│   │   │   ├── SettingsPage.qml
+│   │   │   └── qmldir
+│   │   └── Main.qml
+│   └── main.cpp
+├── data/
+│   ├── icons/
+│   └── polkit/
+├── docs/
+├── i18n/
+├── packaging/rpm/
+└── tests/
 ```

@@ -59,6 +59,7 @@ private slots:
     }
   }
 
+  // verificationReport() en azından temel güvenlik bilgisini döndürmeli.
   void testVerificationReport() {
     NvidiaDetector detector;
     detector.refresh();

@@ -2,6 +2,7 @@
 
 #include <QElapsedTimer>
 #include <QProcess>
+#include <QStandardPaths>
 #include <QThread>
 
 #include <algorithm>
@@ -34,6 +35,18 @@ CommandRunner::Result CommandRunner::run(const QString &program,
   return lastResult;
 }
 
+QString CommandRunner::resolveProgram(const QString &program) const {
+  if (program.isEmpty()) {
+    return {};
+  }
+
+  if (program.contains(QLatin1Char('/'))) {
+    return program;
+  }
+
+  return QStandardPaths::findExecutable(program);
+}
+
 CommandRunner::Result CommandRunner::runOnce(const QString &program,
                                              const QStringList &args,
                                              const RunOptions &options,
@@ -45,6 +58,19 @@ CommandRunner::Result CommandRunner::runOnce(const QString &program,
 
   emit commandStarted(program, args, attempt);
   timer.start();
+
+  const QString resolvedProgram = resolveProgram(program);
+  if (resolvedProgram.isEmpty()) {
+    const Result result{
+        .exitCode = -1,
+        .stdout = {},
+        .stderr = QStringLiteral("Executable not found: %1").arg(program),
+        .attempt = attempt,
+    };
+    emit commandFinished(program, result.exitCode, attempt,
+                         static_cast<int>(timer.elapsed()));
+    return result;
+  }
 
   // Stdout'u anlik olarak yayinla ve sonucu korumak icin buffer'a biriktir.
   connect(&process, &QProcess::readyReadStandardOutput, this, [&]() {
@@ -65,7 +91,7 @@ CommandRunner::Result CommandRunner::runOnce(const QString &program,
       emit errorLine(line);
   });
 
-  process.start(program, args);
+  process.start(resolvedProgram, args);
 
   if (!process.waitForStarted(options.startTimeoutMs)) {
     const Result result{

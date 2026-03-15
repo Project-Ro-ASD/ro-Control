@@ -1,8 +1,6 @@
 #include "gpumonitor.h"
 #include "system/commandrunner.h"
 
-#include <QProcess>
-
 #include <algorithm>
 
 GpuMonitor::GpuMonitor(QObject *parent) : QObject(parent) {
@@ -33,20 +31,25 @@ int GpuMonitor::memoryUsagePercent() const { return m_memoryUsagePercent; }
 int GpuMonitor::updateInterval() const { return m_timer.interval(); }
 
 void GpuMonitor::refresh() {
-  QProcess process;
-  process.start("nvidia-smi",
-                {"--query-gpu=name,temperature.gpu,utilization.gpu,memory.used,"
-                 "memory.total",
-                 "--format=csv,noheader,nounits"});
+  CommandRunner runner;
+  CommandRunner::RunOptions options;
+  options.timeoutMs = 1500;
 
-  if (!process.waitForFinished(1500) ||
-      process.exitStatus() != QProcess::NormalExit || process.exitCode() != 0) {
+  const auto result = runner.run(
+      QStringLiteral("nvidia-smi"),
+      {QStringLiteral(
+           "--query-gpu=name,temperature.gpu,utilization.gpu,memory.used,"
+           "memory.total"),
+       QStringLiteral("--format=csv,noheader,nounits")},
+      options);
+
+  if (!result.success()) {
     setAvailable(false);
     clearMetrics();
     return;
   }
 
-  const QString stdoutText = QString::fromUtf8(process.readAllStandardOutput());
+  const QString stdoutText = result.stdout;
   const QString firstLine = stdoutText.split('\n', Qt::SkipEmptyParts).value(0);
   const QStringList fields = firstLine.split(',', Qt::KeepEmptyParts);
 

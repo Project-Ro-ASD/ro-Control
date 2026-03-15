@@ -4,13 +4,15 @@ Release:        1%{?dist}
 Summary:        Smart NVIDIA driver manager and system monitor for Fedora
 
 License:        GPL-3.0-or-later
-URL:            https://github.com/Acik-Kaynak-Gelistirme-Toplulugu/ro-Control
+URL:            https://github.com/Project-Ro-ASD/ro-Control
 Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  extra-cmake-modules
+BuildRequires:  ninja-build
 BuildRequires:  qt6-qtbase-devel
+BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  qt6-qtdeclarative-devel
 BuildRequires:  qt6-qtwayland-devel
 BuildRequires:  kf6-qqc2-desktop-style
@@ -42,6 +44,7 @@ manage NVIDIA drivers and monitor core system metrics.
 %{_bindir}/ro-control
 %{_datadir}/applications/ro-control.desktop
 %{_datadir}/metainfo/ro-control.metainfo.xml
+%{_datadir}/icons/hicolor/256x256/apps/ro-control.png
 %{_datadir}/icons/hicolor/scalable/apps/ro-control.svg
 %{_datadir}/polkit-1/actions/com.github.AcikKaynakGelistirmeToplulugu.rocontrol.policy
 

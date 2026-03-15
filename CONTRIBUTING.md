@@ -110,7 +110,7 @@ sudo dnf install cmake extra-cmake-modules gcc-c++ \
 ### Build
 
 ```bash
-git clone https://github.com/Acik-Kaynak-Gelistirme-Toplulugu/ro-Control.git
+git clone https://github.com/Project-Ro-ASD/ro-Control.git
 cd ro-Control
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Debug
@@ -146,15 +146,17 @@ cd build && ctest --output-on-failure
 
 ## Translations
 
-Current UI strings are maintained directly in QML/C++ and translated manually (Turkish/English).
+Translations are tracked with Qt Linguist source files in `i18n/`.
 
 To add a new language now:
 
-1. Add translated strings in relevant QML/C++ files.
-2. Verify layout does not break with longer text.
-3. Submit a PR to `dev` with screenshots for changed pages.
+1. Add or update the relevant `.ts` file in `i18n/`.
+2. Reconfigure/build so Qt translation targets regenerate `.qm` outputs.
+3. Use Qt Linguist tools (`lupdate`, `linguist`, `lrelease`) as needed.
+4. Verify layout does not break with longer text.
+5. Submit a PR to `dev` with screenshots for changed pages when UI text changes.
 
-A dedicated Qt Linguist (`.ts/.qm`) localization pipeline is planned for a future release.
+Current translation coverage is partial and expanded incrementally. See [i18n/README.md](i18n/README.md) for the active workflow.
 
 ---
 

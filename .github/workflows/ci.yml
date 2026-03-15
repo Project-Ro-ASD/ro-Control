@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [main, dev]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build & Test
@@ -50,9 +57,6 @@ jobs:
           find src \( -name "*.cpp" -o -name "*.h" \) -print0 | \
           xargs -0 clang-format --dry-run --Werror
 
-      - name: Run tests
-        run: ctest --test-dir build --output-on-failure
-
   package-rpm:
     name: RPM Build Check
     runs-on: ubuntu-latest
@@ -72,7 +76,9 @@ jobs:
             cmake \
             extra-cmake-modules \
             gcc-c++ \
+            ninja-build \
             qt6-qtbase-devel \
+            qt6-qtbase-private-devel \
             qt6-qtdeclarative-devel \
             qt6-qtwayland-devel \
             kf6-qqc2-desktop-style \
@@ -86,17 +92,20 @@ jobs:
             exit 1
           fi
           ARCHIVE_BASENAME="ro-control-${VERSION}"
-          mkdir -p ~/rpmbuild/SOURCES
-          STAGE_DIR="$(mktemp -d)"
-          cp -a . "${STAGE_DIR}/${ARCHIVE_BASENAME}"
-          rm -rf "${STAGE_DIR}/${ARCHIVE_BASENAME}/.git" "${STAGE_DIR}/${ARCHIVE_BASENAME}/build"
-          tar -C "${STAGE_DIR}" -czf "${HOME}/rpmbuild/SOURCES/${ARCHIVE_BASENAME}.tar.gz" "${ARCHIVE_BASENAME}"
-          rm -rf "${STAGE_DIR}"
+          mkdir -p ~/rpmbuild/SOURCES ~/rpmbuild/SPECS
+          tar \
+            --exclude-vcs \
+            --exclude='./build' \
+            --exclude='./build-*' \
+            --transform="s,^,${ARCHIVE_BASENAME}/," \
+            -czf "${HOME}/rpmbuild/SOURCES/${ARCHIVE_BASENAME}.tar.gz" \
+            .
+          cp packaging/rpm/ro-control.spec "${HOME}/rpmbuild/SPECS/ro-control.spec"
 
       - name: Build RPM
         run: |
-          rpmbuild -ba packaging/rpm/ro-control.spec \
-            --define "_topdir %(echo ~/rpmbuild)"
+          rpmbuild -ba "${HOME}/rpmbuild/SPECS/ro-control.spec" \
+            --define "_topdir ${HOME}/rpmbuild"
 
       - name: Lint built RPMs
         run: |

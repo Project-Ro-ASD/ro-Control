@@ -13,6 +13,7 @@ class NvidiaDetector : public QObject {
   Q_PROPERTY(bool driverLoaded READ driverLoaded NOTIFY infoChanged)
   Q_PROPERTY(bool nouveauActive READ nouveauActive NOTIFY infoChanged)
   Q_PROPERTY(bool secureBootEnabled READ secureBootEnabled NOTIFY infoChanged)
+  Q_PROPERTY(bool secureBootKnown READ secureBootKnown NOTIFY infoChanged)
   Q_PROPERTY(QString sessionType READ sessionType NOTIFY infoChanged)
   Q_PROPERTY(bool waylandSession READ waylandSession NOTIFY infoChanged)
   Q_PROPERTY(QString activeDriver READ activeDriver NOTIFY infoChanged)
@@ -28,6 +29,7 @@ public:
     bool driverLoaded = false;
     bool nouveauActive = false;
     bool secureBootEnabled = false;
+    bool secureBootKnown = false;
     QString sessionType;
   };
 
@@ -39,6 +41,7 @@ public:
   bool driverLoaded() const { return m_info.driverLoaded; }
   bool nouveauActive() const { return m_info.nouveauActive; }
   bool secureBootEnabled() const { return m_info.secureBootEnabled; }
+  bool secureBootKnown() const { return m_info.secureBootKnown; }
   QString sessionType() const { return m_info.sessionType; }
   bool waylandSession() const {
     return m_info.sessionType.compare(QStringLiteral("wayland"),
@@ -61,7 +64,7 @@ private:
   QString detectGpuName() const;
   QString detectDriverVersion() const;
   bool isModuleLoaded(const QString &moduleName) const;
-  bool detectSecureBoot() const;
+  bool detectSecureBoot(bool *known = nullptr) const;
   QString detectSessionType() const;
 
   GpuInfo m_info;

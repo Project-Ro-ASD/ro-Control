@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![ro-Control Logo](data/icons/hicolor/scalable/apps/ro-control.svg)
+<img src="data/icons/hicolor/256x256/apps/ro-control.png" alt="ro-Control Logo" width="120" height="120"/>
 
 **Linux için Akıllı NVIDIA Sürücü Yöneticisi & Sistem Monitörü**
 
@@ -52,7 +52,7 @@ ro-Control, **C++20** ve **Qt6/QML** ile geliştirilmiş, Fedora Linux üzerinde
 
 ### Fedora (RPM) — Önerilen
 
-[Releases](https://github.com/Acik-Kaynak-Gelistirme-Toplulugu/ro-Control/releases) sayfasından en son `.rpm` dosyasını indirin:
+[Releases](https://github.com/Project-Ro-ASD/ro-Control/releases) sayfasından en son `.rpm` dosyasını indirin:
 
 ```bash
 sudo dnf install ./ro-control-*.rpm
@@ -73,7 +73,7 @@ sudo dnf install cmake extra-cmake-modules gcc-c++ \
   kf6-qqc2-desktop-style
 
 # Klonla ve derle
-git clone https://github.com/Acik-Kaynak-Gelistirme-Toplulugu/ro-Control.git
+git clone https://github.com/Project-Ro-ASD/ro-Control.git
 cd ro-Control
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
@@ -87,20 +87,25 @@ sudo make install
 
 ```
 ro-Control/
+├── .github/              # CI, issue template'leri, PR şablonu
 ├── src/
 │   ├── backend/          # C++ iş mantığı
 │   │   ├── nvidia/       # Sürücü tespiti, kurulum, güncelleme
 │   │   ├── monitor/      # GPU/CPU/RAM istatistikleri
 │   │   └── system/       # Polkit, DNF, komut çalıştırıcı
 │   ├── qml/              # Qt Quick arayüzü
-│   │   ├── pages/        # Ana uygulama sayfaları
-│   │   └── components/   # Tekrar kullanılabilir UI bileşenleri
+│   │   ├── assets/       # Gömülü logo ve arayüz varlıkları
+│   │   ├── components/   # Tekrar kullanılabilir UI bileşenleri + qmldir
+│   │   └── pages/        # Ana uygulama sayfaları + qmldir
 │   └── main.cpp
-├── data/                 # İkonlar, .desktop, PolicyKit, AppStream
+├── data/                 # İkonlar, desktop dosyası, PolicyKit, AppStream
+├── docs/                 # Mimari, derleme, tasarım, sürüm dokümanları
+├── i18n/                 # Qt Linguist çeviri kaynakları (.ts)
 ├── packaging/rpm/        # Fedora RPM spec
-├── docs/                 # Mimari ve derleme dökümanları
 ├── tests/                # Birim testleri
-└── CMakeLists.txt
+├── CMakeLists.txt
+├── SECURITY.md
+└── SUPPORT.md
 ```
 
 ## Katkıda Bulunma

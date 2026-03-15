@@ -47,6 +47,7 @@ signals:
                        int elapsedMs);
 
 private:
+  QString resolveProgram(const QString &program) const;
   Result runOnce(const QString &program, const QStringList &args,
                  const RunOptions &options, int attempt);
 };

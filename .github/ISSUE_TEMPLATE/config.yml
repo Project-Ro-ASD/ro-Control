@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and general support
+    url: https://github.com/Project-Ro-ASD/ro-Control/discussions
+    about: Ask questions and get usage help in Discussions.
+  - name: Security vulnerability reporting
+    url: https://github.com/Project-Ro-ASD/ro-Control/security/policy
+    about: Please report security vulnerabilities using the security policy.

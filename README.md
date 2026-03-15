@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![ro-Control Logo](data/icons/hicolor/scalable/apps/ro-control.svg)
+<img src="data/icons/hicolor/256x256/apps/ro-control.png" alt="ro-Control Logo" width="120" height="120"/>
 
 **Smart NVIDIA Driver Manager & System Monitor for Linux**
 
@@ -52,7 +52,7 @@ ro-Control is a native KDE Plasma desktop application built with **C++20** and *
 
 ### Fedora (RPM) — Recommended
 
-Download the latest `.rpm` from [Releases](https://github.com/Acik-Kaynak-Gelistirme-Toplulugu/ro-Control/releases):
+Download the latest `.rpm` from [Releases](https://github.com/Project-Ro-ASD/ro-Control/releases):
 
 ```bash
 sudo dnf install ./ro-control-*.rpm
@@ -73,7 +73,7 @@ sudo dnf install cmake extra-cmake-modules gcc-c++ \
   kf6-qqc2-desktop-style
 
 # Clone and build
-git clone https://github.com/Acik-Kaynak-Gelistirme-Toplulugu/ro-Control.git
+git clone https://github.com/Project-Ro-ASD/ro-Control.git
 cd ro-Control
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
@@ -87,20 +87,25 @@ sudo make install
 
 ```
 ro-Control/
+├── .github/              # CI, issue templates, PR template
 ├── src/
 │   ├── backend/          # C++ business logic
 │   │   ├── nvidia/       # Driver detection, install, update
 │   │   ├── monitor/      # GPU/CPU/RAM statistics
 │   │   └── system/       # Polkit, DNF, command runner
 │   ├── qml/              # Qt Quick UI
-│   │   ├── pages/        # Main application pages
-│   │   └── components/   # Reusable UI components
+│   │   ├── assets/       # Embedded logos and UI assets
+│   │   ├── components/   # Reusable UI components + qmldir
+│   │   └── pages/        # Main application pages + qmldir
 │   └── main.cpp
-├── data/                 # Icons, .desktop, PolicyKit, AppStream
+├── data/                 # Icons, desktop file, PolicyKit, AppStream
+├── docs/                 # Architecture, build, design, release docs
+├── i18n/                 # Qt Linguist translation sources (.ts)
 ├── packaging/rpm/        # Fedora RPM spec
-├── docs/                 # Architecture and build docs
 ├── tests/                # Unit tests
-└── CMakeLists.txt
+├── CMakeLists.txt
+├── SECURITY.md
+└── SUPPORT.md
 ```
 
 ## Contributing
@@ -133,4 +138,3 @@ git push origin feature/your-feature-name
 ## License
 
 This project is licensed under the [GNU General Public License v3.0](LICENSE).
-

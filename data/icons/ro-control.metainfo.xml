@@ -21,7 +21,7 @@
 
 	<screenshots>
 		<screenshot type="default">
-			<image>https://raw.githubusercontent.com/Acik-Kaynak-Gelistirme-Toplulugu/ro-Control/main/docs/screenshots/monitor-overview.svg</image>
+			<image>https://raw.githubusercontent.com/Project-Ro-ASD/ro-Control/main/docs/screenshots/monitor-overview.svg</image>
 		</screenshot>
 	</screenshots>
 
@@ -34,5 +34,5 @@
 		<name>Acik Kaynak Gelistirme Toplulugu</name>
 	</developer>
 
-	<url type="homepage">https://github.com/Acik-Kaynak-Gelistirme-Toplulugu/ro-Control</url>
+	<url type="homepage">https://github.com/Project-Ro-ASD/ro-Control</url>
 </component>
