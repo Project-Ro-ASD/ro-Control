@@ -42,6 +42,15 @@ bool hasExecutable(const QString &program) {
   return !QStandardPaths::findExecutable(program).isEmpty();
 }
 
+QStringList buildLatestDriverTargets(const QString &sessionType) {
+  QStringList targets = kManagedNvidiaPackages;
+  if (sessionType != QStringLiteral("x11")) {
+    targets.removeAll(QStringLiteral("xorg-x11-drv-nvidia"));
+  }
+
+  return targets;
+}
+
 } // namespace
 
 NvidiaInstaller::NvidiaInstaller(QObject *parent) : QObject(parent) {
@@ -244,9 +253,12 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
         },
         Qt::QueuedConnection);
 
-    result = runner.runAsRoot(QStringLiteral("dnf"),
-                              {QStringLiteral("install"), QStringLiteral("-y"),
-                               QStringLiteral("akmod-nvidia")});
+    const QString sessionType = guard->detectSessionType();
+    result = runner.runAsRoot(
+        QStringLiteral("dnf"),
+        QStringList{QStringLiteral("install"), QStringLiteral("-y"),
+                    QStringLiteral("--allowerasing")} +
+            buildLatestDriverTargets(sessionType));
     if (!result.success()) {
       const QString error =
           QStringLiteral("Kurulum basarisiz: ") +
@@ -288,8 +300,6 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
           Qt::QueuedConnection);
       return;
     }
-
-    const QString sessionType = guard->detectSessionType();
     QString sessionError;
     if (!guard->applySessionSpecificSetup(runner, sessionType, &sessionError)) {
       QMetaObject::invokeMethod(

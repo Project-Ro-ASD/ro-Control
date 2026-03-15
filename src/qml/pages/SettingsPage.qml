@@ -12,7 +12,7 @@ Item {
         spacing: 12
 
         Label {
-            text: "Ayarlar"
+            text: qsTr("Settings")
             font.pixelSize: 24
             font.bold: true
         }
@@ -32,17 +32,17 @@ Item {
                 spacing: 8
 
                 Label {
-                    text: "Hakkinda"
+                    text: qsTr("About")
                     font.pixelSize: 20
                     font.bold: true
                 }
 
                 Label {
-                    text: "Uygulama: " + Qt.application.name + " (" + Qt.application.version + ")"
+                    text: qsTr("Application: ") + Qt.application.name + " (" + Qt.application.version + ")"
                 }
 
                 Label {
-                    text: "Tema: " + (settingsPage.darkMode ? "Sistem Koyu" : "Sistem Acik")
+                    text: qsTr("Theme: ") + (settingsPage.darkMode ? qsTr("System Dark") : qsTr("System Light"))
                 }
             }
         }

@@ -8,45 +8,53 @@ Item {
     required property var nvidiaInstaller
     required property var nvidiaUpdater
 
+    function appendLog(message) {
+        const maxLines = 200
+        const nextText = (logArea.text.length > 0 ? logArea.text + "\n" : "") + message
+        const lines = nextText.split("\n")
+        logArea.text = lines.length > maxLines ? lines.slice(lines.length - maxLines).join("\n") : nextText
+        logArea.cursorPosition = logArea.text.length
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
         spacing: 12
 
         Label {
-            text: "Surucu Yonetimi"
+            text: qsTr("Driver Management")
             font.pixelSize: 24
             font.bold: true
         }
 
         Label {
-            text: "GPU: " + (page.nvidiaDetector.gpuFound ? page.nvidiaDetector.gpuName : "Tespit edilmedi")
+            text: qsTr("GPU: ") + (page.nvidiaDetector.gpuFound ? page.nvidiaDetector.gpuName : qsTr("Not detected"))
             wrapMode: Text.Wrap
             Layout.fillWidth: true
         }
 
         Label {
-            text: "Aktif surucu: " + page.nvidiaDetector.activeDriver
+            text: qsTr("Active driver: ") + page.nvidiaDetector.activeDriver
             wrapMode: Text.Wrap
         }
 
         Label {
-            text: "Surucu versiyonu: " + (page.nvidiaDetector.driverVersion.length > 0 ? page.nvidiaDetector.driverVersion : "Yok")
+            text: qsTr("Driver version: ") + (page.nvidiaDetector.driverVersion.length > 0 ? page.nvidiaDetector.driverVersion : qsTr("None"))
         }
 
         Label {
-            text: "Secure Boot: " + (page.nvidiaDetector.secureBootKnown ? (page.nvidiaDetector.secureBootEnabled ? "Acik" : "Kapali") : "Bilinmiyor")
+            text: qsTr("Secure Boot: ") + (page.nvidiaDetector.secureBootKnown ? (page.nvidiaDetector.secureBootEnabled ? qsTr("Enabled") : qsTr("Disabled")) : qsTr("Unknown"))
             color: !page.nvidiaDetector.secureBootKnown ? "#8a6500" : (page.nvidiaDetector.secureBootEnabled ? "#c43a3a" : "#2b8a3e")
             font.bold: true
         }
 
         Label {
-            text: "Oturum altyapisi: " + page.nvidiaDetector.sessionType
+            text: qsTr("Session type: ") + page.nvidiaDetector.sessionType
             font.bold: true
         }
 
         Label {
-            text: page.nvidiaDetector.waylandSession ? "Wayland icin nvidia-drm.modeset=1 parametresi otomatik uygulanir." : "X11 icin xorg-x11-drv-nvidia paketi kontrol edilip kurulur."
+            text: page.nvidiaDetector.waylandSession ? qsTr("For Wayland, the nvidia-drm.modeset=1 parameter is applied automatically.") : qsTr("For X11, the xorg-x11-drv-nvidia package is checked and installed.")
             wrapMode: Text.Wrap
             Layout.fillWidth: true
             color: "#6d7384"
@@ -80,7 +88,7 @@ Item {
         CheckBox {
             id: eulaAccept
             visible: page.nvidiaInstaller.proprietaryAgreementRequired
-            text: "Lisans/sozlesme kosullarini kabul ediyorum"
+            text: qsTr("I accept the license/agreement terms")
         }
 
         RowLayout {
@@ -88,22 +96,22 @@ Item {
             spacing: 8
 
             Button {
-                text: "Kapali Kaynak Surucu Kur"
+                text: qsTr("Install Proprietary Driver")
                 enabled: (!page.nvidiaInstaller.proprietaryAgreementRequired || eulaAccept.checked) && !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: page.nvidiaInstaller.installProprietary(eulaAccept.checked)
             }
 
             Button {
-                text: "Nouveau Surucusu Kur"
+                text: qsTr("Install Nouveau Driver")
                 enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: {
-                    logArea.append("Nouveau surucusu kurulumu baslatildi...");
+                    page.appendLog(qsTr("Nouveau driver installation started..."));
                     page.nvidiaInstaller.installOpenSource();
                 }
             }
 
             Button {
-                text: "Deep Clean"
+                text: qsTr("Deep Clean")
                 enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: page.nvidiaInstaller.deepClean()
             }
@@ -115,23 +123,23 @@ Item {
             // TR: Manuel kontrol butonu, sonucu log alanina yazar.
             // EN: Manual check button writes status into the on-screen log.
             Button {
-                text: "Guncelleme Kontrol Et"
+                text: qsTr("Check for Updates")
                 enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: {
-                    logArea.append("Guncelleme kontrolu istendi...");
+                    page.appendLog(qsTr("Update check requested..."));
                     page.nvidiaUpdater.checkForUpdate();
                 }
             }
 
             Button {
-                text: "Guncellemeyi Uygula"
+                text: qsTr("Apply Latest Update")
                 enabled: page.nvidiaUpdater.updateAvailable && !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: page.nvidiaUpdater.applyUpdate()
             }
 
             Label {
                 visible: page.nvidiaUpdater.updateAvailable
-                text: "Yeni surum: " + page.nvidiaUpdater.latestVersion
+                text: qsTr("New version: ") + page.nvidiaUpdater.latestVersion
                 color: "#8a6500"
             }
         }
@@ -151,14 +159,14 @@ Item {
                 spacing: 8
 
                 Label {
-                    text: "Belirli Surum Uygula"
+                    text: qsTr("Apply Specific Version")
                     font.bold: true
                 }
 
                 Label {
                     text: page.nvidiaUpdater.availableVersions.length > 0
-                          ? "Repo surumleri listelendi. Secilen surum kurulabilir/guncellenebilir."
-                          : "Repo surum listesi henuz yuklenmedi veya surum bulunamadi."
+                          ? qsTr("Repository versions were listed. The selected version can be installed or synced.")
+                          : qsTr("Repository version list is not loaded yet or no version was found.")
                     wrapMode: Text.Wrap
                     Layout.fillWidth: true
                     color: "#6d7384"
@@ -176,20 +184,20 @@ Item {
                     }
 
                     Button {
-                        text: "Surumleri Yenile"
+                        text: qsTr("Refresh Versions")
                         enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                         onClicked: {
-                            logArea.append("Repo surum listesi yenileniyor...");
+                            page.appendLog(qsTr("Refreshing repository version list..."));
                             page.nvidiaUpdater.refreshAvailableVersions();
                         }
                     }
 
                     Button {
-                        text: "Secili Surumu Uygula"
+                        text: qsTr("Apply Selected Version")
                         enabled: versionSelector.currentIndex >= 0 && page.nvidiaUpdater.availableVersions.length > 0 && !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                         onClicked: {
                             const selectedVersion = versionSelector.currentText;
-                            logArea.append("Secilen surum uygulanacak: " + selectedVersion);
+                            page.appendLog(qsTr("Applying selected version: ") + selectedVersion);
                             page.nvidiaUpdater.applyVersion(selectedVersion);
                         }
                     }
@@ -203,19 +211,19 @@ Item {
             // TR: Yeniden Tara; detector + lisans durumu + update kontrolunu tazeler.
             // EN: Rescan refreshes detector state, agreement state, and update check.
             Button {
-                text: "Yeniden Tara"
+                text: qsTr("Rescan")
                 enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
                 onClicked: {
-                    logArea.append("Sistem yeniden taraniyor...");
+                    page.appendLog(qsTr("Rescanning system..."));
                     page.nvidiaDetector.refresh();
                     page.nvidiaInstaller.refreshProprietaryAgreement();
                     page.nvidiaUpdater.checkForUpdate();
-                    logArea.append("Yeniden tarama tamamlandi.");
+                    page.appendLog(qsTr("Rescan completed."));
                 }
             }
 
             Label {
-                text: "Mevcut nvidia surumu: " + page.nvidiaUpdater.currentVersion
+                text: qsTr("Installed NVIDIA version: ") + page.nvidiaUpdater.currentVersion
                 visible: page.nvidiaUpdater.currentVersion.length > 0
             }
         }
@@ -236,16 +244,16 @@ Item {
     Connections {
         target: page.nvidiaInstaller
         function onProgressMessage(message) {
-            logArea.append(message);
+            page.appendLog(message);
         }
         function onInstallFinished(success, message) {
-            logArea.append(message);
+            page.appendLog(message);
             page.nvidiaDetector.refresh();
             page.nvidiaUpdater.checkForUpdate();
             page.nvidiaInstaller.refreshProprietaryAgreement();
         }
         function onRemoveFinished(success, message) {
-            logArea.append(message);
+            page.appendLog(message);
             page.nvidiaDetector.refresh();
             page.nvidiaInstaller.refreshProprietaryAgreement();
         }
@@ -256,10 +264,10 @@ Item {
         // TR: Updater backend mesajlarini canli log olarak UI'ye aktar.
         // EN: Stream updater backend messages into the live UI log.
         function onProgressMessage(message) {
-            logArea.append(message);
+            page.appendLog(message);
         }
         function onUpdateFinished(success, message) {
-            logArea.append(message);
+            page.appendLog(message);
             page.nvidiaDetector.refresh();
             page.nvidiaUpdater.checkForUpdate();
         }

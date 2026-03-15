@@ -1,6 +1,8 @@
 #include <QApplication>
 #include <QIcon>
+#include <QLocale>
 #include <QQmlApplicationEngine>
+#include <QTranslator>
 #include <QVariant>
 
 #include "backend/monitor/cpumonitor.h"
@@ -25,6 +27,16 @@ int main(int argc, char *argv[]) {
   app.setOrganizationDomain("github.com/Project-Ro-ASD");
   app.setWindowIcon(QIcon::fromTheme(
       "ro-control", QIcon(":/qt/qml/rocontrol/assets/ro-control-logo.svg")));
+
+  QTranslator translator;
+  const QString localeName =
+      QLocale::system().name().startsWith(QStringLiteral("tr"))
+          ? QStringLiteral("tr")
+          : QStringLiteral("en");
+  if (translator.load(
+          QStringLiteral(":/i18n/ro-control_%1.qm").arg(localeName))) {
+    app.installTranslator(&translator);
+  }
 
   NvidiaDetector detector;
   NvidiaInstaller installer;

@@ -59,7 +59,7 @@ ApplicationWindow {
                 }
 
                 Label {
-                    text: root.darkMode ? "Tema: Sistem (Koyu)" : "Tema: Sistem (Acik)"
+                    text: root.darkMode ? qsTr("Theme: System (Dark)") : qsTr("Theme: System (Light)")
                     color: root.darkMode ? "#c8d0e7" : "#36435f"
                 }
             }
@@ -70,13 +70,13 @@ ApplicationWindow {
             Layout.fillWidth: true
 
             TabButton {
-                text: "Surucu"
+                text: qsTr("Driver")
             }
             TabButton {
-                text: "Izleme"
+                text: qsTr("Monitor")
             }
             TabButton {
-                text: "Ayarlar"
+                text: qsTr("Settings")
             }
         }
 
