@@ -1,242 +1,441 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import "../components"
 
 Item {
     id: page
     required property var nvidiaDetector
     required property var nvidiaInstaller
     required property var nvidiaUpdater
+    required property var theme
+    property bool darkMode: true
+    readonly property bool operationsBusy: nvidiaInstaller.busy || nvidiaUpdater.busy
 
     function appendLog(message) {
-        const maxLines = 200
+        const maxLines = 180
         const nextText = (logArea.text.length > 0 ? logArea.text + "\n" : "") + message
         const lines = nextText.split("\n")
         logArea.text = lines.length > maxLines ? lines.slice(lines.length - maxLines).join("\n") : nextText
         logArea.cursorPosition = logArea.text.length
     }
 
-    ColumnLayout {
+    ScrollView {
         anchors.fill: parent
-        anchors.margins: 20
-        spacing: 12
+        clip: true
 
-        Label {
-            text: qsTr("Driver Management")
-            font.pixelSize: 24
-            font.bold: true
-        }
+        ColumnLayout {
+            width: parent.width
+            spacing: 18
 
-        Label {
-            text: qsTr("GPU: ") + (page.nvidiaDetector.gpuFound ? page.nvidiaDetector.gpuName : qsTr("Not detected"))
-            wrapMode: Text.Wrap
-            Layout.fillWidth: true
-        }
+            Rectangle {
+                Layout.fillWidth: true
+                radius: 28
+                color: Qt.tint(page.theme.panel, page.darkMode ? "#22ff8a3d" : "#14f47b20")
+                border.width: 1
+                border.color: page.theme.border
+                implicitHeight: heroLayout.implicitHeight + 28
 
-        Label {
-            text: qsTr("Active driver: ") + page.nvidiaDetector.activeDriver
-            wrapMode: Text.Wrap
-        }
+                ColumnLayout {
+                    id: heroLayout
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    spacing: 16
 
-        Label {
-            text: qsTr("Driver version: ") + (page.nvidiaDetector.driverVersion.length > 0 ? page.nvidiaDetector.driverVersion : qsTr("None"))
-        }
+                    Label {
+                        text: qsTr("NVIDIA Driver Workspace")
+                        font.pixelSize: 30
+                        font.bold: true
+                        color: page.theme.text
+                    }
 
-        Label {
-            text: qsTr("Secure Boot: ") + (page.nvidiaDetector.secureBootKnown ? (page.nvidiaDetector.secureBootEnabled ? qsTr("Enabled") : qsTr("Disabled")) : qsTr("Unknown"))
-            color: !page.nvidiaDetector.secureBootKnown ? "#8a6500" : (page.nvidiaDetector.secureBootEnabled ? "#c43a3a" : "#2b8a3e")
-            font.bold: true
-        }
-
-        Label {
-            text: qsTr("Session type: ") + page.nvidiaDetector.sessionType
-            font.bold: true
-        }
-
-        Label {
-            text: page.nvidiaDetector.waylandSession ? qsTr("For Wayland, the nvidia-drm.modeset=1 parameter is applied automatically.") : qsTr("For X11, the xorg-x11-drv-nvidia package is checked and installed.")
-            wrapMode: Text.Wrap
-            Layout.fillWidth: true
-            color: "#6d7384"
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
-            border.width: 1
-            border.color: "#5f6b86"
-            color: "transparent"
-            radius: 8
-            implicitHeight: verificationText.implicitHeight + 20
-
-            Label {
-                id: verificationText
-                anchors.fill: parent
-                anchors.margins: 10
-                text: page.nvidiaDetector.verificationReport
-                wrapMode: Text.Wrap
-            }
-        }
-
-        Label {
-            visible: page.nvidiaInstaller.proprietaryAgreementRequired
-            text: page.nvidiaInstaller.proprietaryAgreementText
-            color: "#8a6500"
-            wrapMode: Text.Wrap
-            Layout.fillWidth: true
-        }
-
-        CheckBox {
-            id: eulaAccept
-            visible: page.nvidiaInstaller.proprietaryAgreementRequired
-            text: qsTr("I accept the license/agreement terms")
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 8
-
-            Button {
-                text: qsTr("Install Proprietary Driver")
-                enabled: (!page.nvidiaInstaller.proprietaryAgreementRequired || eulaAccept.checked) && !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
-                onClicked: page.nvidiaInstaller.installProprietary(eulaAccept.checked)
-            }
-
-            Button {
-                text: qsTr("Install Nouveau Driver")
-                enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
-                onClicked: {
-                    page.appendLog(qsTr("Nouveau driver installation started..."));
-                    page.nvidiaInstaller.installOpenSource();
-                }
-            }
-
-            Button {
-                text: qsTr("Deep Clean")
-                enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
-                onClicked: page.nvidiaInstaller.deepClean()
-            }
-        }
-
-        RowLayout {
-            spacing: 8
-
-            // TR: Manuel kontrol butonu, sonucu log alanina yazar.
-            // EN: Manual check button writes status into the on-screen log.
-            Button {
-                text: qsTr("Check for Updates")
-                enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
-                onClicked: {
-                    page.appendLog(qsTr("Update check requested..."));
-                    page.nvidiaUpdater.checkForUpdate();
-                }
-            }
-
-            Button {
-                text: qsTr("Apply Latest Update")
-                enabled: page.nvidiaUpdater.updateAvailable && !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
-                onClicked: page.nvidiaUpdater.applyUpdate()
-            }
-
-            Label {
-                visible: page.nvidiaUpdater.updateAvailable
-                text: qsTr("New version: ") + page.nvidiaUpdater.latestVersion
-                color: "#8a6500"
-            }
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
-            border.width: 1
-            border.color: "#5f6b86"
-            color: "transparent"
-            radius: 8
-            implicitHeight: versionColumn.implicitHeight + 20
-
-            ColumnLayout {
-                id: versionColumn
-                anchors.fill: parent
-                anchors.margins: 10
-                spacing: 8
-
-                Label {
-                    text: qsTr("Apply Specific Version")
-                    font.bold: true
-                }
-
-                Label {
-                    text: page.nvidiaUpdater.availableVersions.length > 0
-                          ? qsTr("Repository versions were listed. The selected version can be installed or synced.")
-                          : qsTr("Repository version list is not loaded yet or no version was found.")
-                    wrapMode: Text.Wrap
-                    Layout.fillWidth: true
-                    color: "#6d7384"
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 8
-
-                    ComboBox {
-                        id: versionSelector
+                    Label {
+                        text: qsTr("Manage detection, installation, updates and version pinning from one place. The flow is tuned for Fedora systems that only need NVIDIA driver stack handling.")
+                        wrapMode: Text.Wrap
                         Layout.fillWidth: true
-                        model: page.nvidiaUpdater.availableVersions
-                        enabled: model.length > 0 && !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
+                        color: page.theme.textMuted
                     }
 
-                    Button {
-                        text: qsTr("Refresh Versions")
-                        enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
-                        onClicked: {
-                            page.appendLog(qsTr("Refreshing repository version list..."));
-                            page.nvidiaUpdater.refreshAvailableVersions();
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 14
+
+                        StatCard {
+                            Layout.fillWidth: true
+                            theme: page.theme
+                            title: qsTr("GPU State")
+                            value: page.nvidiaDetector.gpuFound ? page.nvidiaDetector.gpuName : qsTr("Not Detected")
+                            subtitle: qsTr("Active driver: %1").arg(page.nvidiaDetector.activeDriver)
+                            accentColor: page.theme.accentB
+                            emphasized: true
                         }
-                    }
 
-                    Button {
-                        text: qsTr("Apply Selected Version")
-                        enabled: versionSelector.currentIndex >= 0 && page.nvidiaUpdater.availableVersions.length > 0 && !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
-                        onClicked: {
-                            const selectedVersion = versionSelector.currentText;
-                            page.appendLog(qsTr("Applying selected version: ") + selectedVersion);
-                            page.nvidiaUpdater.applyVersion(selectedVersion);
+                        StatCard {
+                            Layout.fillWidth: true
+                            theme: page.theme
+                            title: qsTr("Installed Version")
+                            value: page.nvidiaUpdater.currentVersion.length > 0 ? page.nvidiaUpdater.currentVersion : qsTr("None")
+                            subtitle: qsTr("Latest repo version: %1").arg(page.nvidiaUpdater.latestVersion.length > 0 ? page.nvidiaUpdater.latestVersion : qsTr("Unknown"))
+                            accentColor: page.theme.accentA
+                            busy: page.nvidiaUpdater.busy
+                        }
+
+                        StatCard {
+                            Layout.fillWidth: true
+                            theme: page.theme
+                            title: qsTr("Session")
+                            value: page.nvidiaDetector.sessionType.length > 0 ? page.nvidiaDetector.sessionType : qsTr("Unknown")
+                            subtitle: page.nvidiaDetector.secureBootKnown
+                                      ? qsTr("Secure Boot: %1").arg(page.nvidiaDetector.secureBootEnabled ? qsTr("Enabled") : qsTr("Disabled"))
+                                      : qsTr("Secure Boot state could not be detected")
+                            accentColor: page.nvidiaDetector.secureBootEnabled ? page.theme.danger : page.theme.success
                         }
                     }
                 }
             }
-        }
 
-        RowLayout {
-            spacing: 8
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 18
 
-            // TR: Yeniden Tara; detector + lisans durumu + update kontrolunu tazeler.
-            // EN: Rescan refreshes detector state, agreement state, and update check.
-            Button {
-                text: qsTr("Rescan")
-                enabled: !page.nvidiaInstaller.busy && !page.nvidiaUpdater.busy
-                onClicked: {
-                    page.appendLog(qsTr("Rescanning system..."));
-                    page.nvidiaDetector.refresh();
-                    page.nvidiaInstaller.refreshProprietaryAgreement();
-                    page.nvidiaUpdater.checkForUpdate();
-                    page.appendLog(qsTr("Rescan completed."));
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 1
+                    radius: 26
+                    color: page.theme.card
+                    border.width: 1
+                    border.color: page.theme.border
+                    implicitHeight: installColumn.implicitHeight + 26
+
+                    ColumnLayout {
+                        id: installColumn
+                        anchors.fill: parent
+                        anchors.margins: 18
+                        spacing: 12
+
+                        Label {
+                            text: qsTr("Install & Recovery")
+                            font.pixelSize: 21
+                            font.bold: true
+                            color: page.theme.text
+                        }
+
+                        Label {
+                            text: page.nvidiaDetector.waylandSession
+                                  ? qsTr("Wayland is active. The workflow will also enforce nvidia-drm.modeset=1 when required.")
+                                  : qsTr("X11 is active. The workflow verifies X11 driver components together with the core NVIDIA stack.")
+                            wrapMode: Text.Wrap
+                            Layout.fillWidth: true
+                            color: page.theme.textMuted
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            radius: 18
+                            color: page.theme.cardMuted
+                            border.width: 1
+                            border.color: page.theme.border
+                            visible: page.nvidiaInstaller.proprietaryAgreementRequired
+                            implicitHeight: agreementColumn.implicitHeight + 18
+
+                            ColumnLayout {
+                                id: agreementColumn
+                                anchors.fill: parent
+                                anchors.margins: 14
+                                spacing: 10
+
+                                Label {
+                                    text: page.nvidiaInstaller.proprietaryAgreementText
+                                    wrapMode: Text.Wrap
+                                    Layout.fillWidth: true
+                                    color: page.theme.warning
+                                }
+
+                                CheckBox {
+                                    id: eulaAccept
+                                    text: qsTr("I accept the license/agreement terms")
+                                }
+                            }
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 10
+
+                            Button {
+                                Layout.fillWidth: true
+                                text: qsTr("Install Proprietary")
+                                enabled: (!page.nvidiaInstaller.proprietaryAgreementRequired || eulaAccept.checked) && !page.operationsBusy
+                                onClicked: page.nvidiaInstaller.installProprietary(eulaAccept.checked)
+                            }
+
+                            Button {
+                                Layout.fillWidth: true
+                                text: qsTr("Install Nouveau")
+                                enabled: !page.operationsBusy
+                                onClicked: {
+                                    page.appendLog(qsTr("Nouveau driver installation started..."))
+                                    page.nvidiaInstaller.installOpenSource()
+                                }
+                            }
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 10
+
+                            Button {
+                                Layout.fillWidth: true
+                                text: qsTr("Deep Clean")
+                                enabled: !page.operationsBusy
+                                onClicked: page.nvidiaInstaller.deepClean()
+                            }
+
+                            Button {
+                                Layout.fillWidth: true
+                                text: qsTr("Rescan")
+                                enabled: !page.operationsBusy
+                                onClicked: {
+                                    page.appendLog(qsTr("Rescanning system..."))
+                                    page.nvidiaDetector.refresh()
+                                    page.nvidiaInstaller.refreshProprietaryAgreement()
+                                    page.nvidiaUpdater.checkForUpdate()
+                                    page.appendLog(qsTr("Rescan completed."))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 1
+                    radius: 26
+                    color: page.theme.card
+                    border.width: 1
+                    border.color: page.theme.border
+                    implicitHeight: updateColumn.implicitHeight + 26
+
+                    ColumnLayout {
+                        id: updateColumn
+                        anchors.fill: parent
+                        anchors.margins: 18
+                        spacing: 12
+
+                        Label {
+                            text: qsTr("Updates & Version Pinning")
+                            font.pixelSize: 21
+                            font.bold: true
+                            color: page.theme.text
+                        }
+
+                        Label {
+                            text: page.nvidiaUpdater.updateAvailable
+                                  ? qsTr("A newer repository version is available. You can apply the latest package set or lock the system to a specific version.")
+                                  : qsTr("The installed version is current, or no newer repository version has been found yet.")
+                            wrapMode: Text.Wrap
+                            Layout.fillWidth: true
+                            color: page.theme.textMuted
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 10
+
+                            Button {
+                                Layout.fillWidth: true
+                                text: qsTr("Check for Updates")
+                                enabled: !page.operationsBusy
+                                onClicked: {
+                                    page.appendLog(qsTr("Update check requested..."))
+                                    page.nvidiaUpdater.checkForUpdate()
+                                }
+                            }
+
+                            Button {
+                                Layout.fillWidth: true
+                                text: qsTr("Apply Latest")
+                                enabled: page.nvidiaUpdater.updateAvailable && !page.operationsBusy
+                                onClicked: page.nvidiaUpdater.applyUpdate()
+                            }
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            radius: 18
+                            color: page.theme.cardMuted
+                            implicitHeight: 52
+
+                            Label {
+                                anchors.fill: parent
+                                anchors.margins: 14
+                                verticalAlignment: Text.AlignVCenter
+                                text: qsTr("Latest repo version: %1").arg(page.nvidiaUpdater.latestVersion.length > 0 ? page.nvidiaUpdater.latestVersion : qsTr("Unknown"))
+                                color: page.nvidiaUpdater.updateAvailable ? page.theme.warning : page.theme.textMuted
+                                font.bold: page.nvidiaUpdater.updateAvailable
+                            }
+                        }
+
+                        Label {
+                            text: qsTr("Available Versions")
+                            font.bold: true
+                            color: page.theme.text
+                        }
+
+                        ComboBox {
+                            id: versionSelector
+                            Layout.fillWidth: true
+                            model: page.nvidiaUpdater.availableVersions
+                            enabled: model.length > 0 && !page.operationsBusy
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 10
+
+                            Button {
+                                Layout.fillWidth: true
+                                text: qsTr("Refresh Versions")
+                                enabled: !page.operationsBusy
+                                onClicked: {
+                                    page.appendLog(qsTr("Refreshing repository version list..."))
+                                    page.nvidiaUpdater.refreshAvailableVersions()
+                                }
+                            }
+
+                            Button {
+                                Layout.fillWidth: true
+                                text: qsTr("Apply Selected")
+                                enabled: versionSelector.currentIndex >= 0 && page.nvidiaUpdater.availableVersions.length > 0 && !page.operationsBusy
+                                onClicked: {
+                                    const selectedVersion = versionSelector.currentText
+                                    page.appendLog(qsTr("Applying selected version: %1").arg(selectedVersion))
+                                    page.nvidiaUpdater.applyVersion(selectedVersion)
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
-            Label {
-                text: qsTr("Installed NVIDIA version: ") + page.nvidiaUpdater.currentVersion
-                visible: page.nvidiaUpdater.currentVersion.length > 0
-            }
-        }
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 18
 
-        ScrollView {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 1
+                    radius: 26
+                    color: page.theme.card
+                    border.width: 1
+                    border.color: page.theme.border
+                    implicitHeight: verificationColumn.implicitHeight + 26
 
-            TextArea {
-                id: logArea
-                readOnly: true
-                wrapMode: Text.Wrap
-                text: ""
+                    ColumnLayout {
+                        id: verificationColumn
+                        anchors.fill: parent
+                        anchors.margins: 18
+                        spacing: 12
+
+                        Label {
+                            text: qsTr("Environment Verification")
+                            font.pixelSize: 21
+                            font.bold: true
+                            color: page.theme.text
+                        }
+
+                        Label {
+                            text: qsTr("Use this report to confirm that Fedora session state, Secure Boot information and package checks are aligned before changing drivers.")
+                            wrapMode: Text.Wrap
+                            Layout.fillWidth: true
+                            color: page.theme.textMuted
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            radius: 18
+                            color: page.theme.cardMuted
+                            border.width: 1
+                            border.color: page.theme.border
+                            implicitHeight: verificationText.implicitHeight + 24
+
+                            Label {
+                                id: verificationText
+                                anchors.fill: parent
+                                anchors.margins: 14
+                                wrapMode: Text.Wrap
+                                text: page.nvidiaDetector.verificationReport
+                                color: page.theme.textMuted
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 1
+                    radius: 26
+                    color: page.theme.card
+                    border.width: 1
+                    border.color: page.theme.border
+                    implicitHeight: logColumn.implicitHeight + 26
+
+                    ColumnLayout {
+                        id: logColumn
+                        anchors.fill: parent
+                        anchors.margins: 18
+                        spacing: 12
+
+                        RowLayout {
+                            Layout.fillWidth: true
+
+                            Label {
+                                text: qsTr("Operation Log")
+                                font.pixelSize: 21
+                                font.bold: true
+                                color: page.theme.text
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
+                            }
+
+                            Label {
+                                text: page.operationsBusy ? qsTr("Running") : qsTr("Idle")
+                                color: page.operationsBusy ? page.theme.warning : page.theme.success
+                                font.bold: true
+                            }
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.minimumHeight: 250
+                            radius: 18
+                            color: page.darkMode ? "#0d1523" : "#edf4ff"
+                            border.width: 1
+                            border.color: page.theme.border
+
+                            ScrollView {
+                                anchors.fill: parent
+                                anchors.margins: 1
+                                clip: true
+
+                                TextArea {
+                                    id: logArea
+                                    readOnly: true
+                                    wrapMode: Text.Wrap
+                                    color: page.theme.text
+                                    selectionColor: page.theme.accentB
+                                    selectedTextColor: "#ffffff"
+                                    background: null
+                                    text: ""
+                                    placeholderText: qsTr("Driver actions and backend progress messages will appear here.")
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -244,38 +443,36 @@ Item {
     Connections {
         target: page.nvidiaInstaller
         function onProgressMessage(message) {
-            page.appendLog(message);
+            page.appendLog(message)
         }
         function onInstallFinished(success, message) {
-            page.appendLog(message);
-            page.nvidiaDetector.refresh();
-            page.nvidiaUpdater.checkForUpdate();
-            page.nvidiaInstaller.refreshProprietaryAgreement();
+            page.appendLog(message)
+            page.nvidiaDetector.refresh()
+            page.nvidiaUpdater.checkForUpdate()
+            page.nvidiaInstaller.refreshProprietaryAgreement()
         }
         function onRemoveFinished(success, message) {
-            page.appendLog(message);
-            page.nvidiaDetector.refresh();
-            page.nvidiaInstaller.refreshProprietaryAgreement();
+            page.appendLog(message)
+            page.nvidiaDetector.refresh()
+            page.nvidiaInstaller.refreshProprietaryAgreement()
         }
     }
 
     Connections {
         target: page.nvidiaUpdater
-        // TR: Updater backend mesajlarini canli log olarak UI'ye aktar.
-        // EN: Stream updater backend messages into the live UI log.
         function onProgressMessage(message) {
-            page.appendLog(message);
+            page.appendLog(message)
         }
         function onUpdateFinished(success, message) {
-            page.appendLog(message);
-            page.nvidiaDetector.refresh();
-            page.nvidiaUpdater.checkForUpdate();
+            page.appendLog(message)
+            page.nvidiaDetector.refresh()
+            page.nvidiaUpdater.checkForUpdate()
         }
     }
 
     Component.onCompleted: {
-        page.nvidiaDetector.refresh();
-        page.nvidiaUpdater.checkForUpdate();
-        page.nvidiaInstaller.refreshProprietaryAgreement();
+        page.nvidiaDetector.refresh()
+        page.nvidiaUpdater.checkForUpdate()
+        page.nvidiaInstaller.refreshProprietaryAgreement()
     }
 }

@@ -1,110 +1,177 @@
-import QtQuick
-import QtQuick.Controls
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 
 Rectangle {
     id: sidebar
-    width: 220
-    color: "#181825"
-
+    required property var theme
+    required property var menuItems
     property int currentIndex: 0
+    property bool darkMode: true
+    signal navigate(int index)
 
-    ListModel {
-        id: menuModel
-        ListElement {
-            label: "Sürücü Yönetimi"
-        }
-        ListElement {
-            label: "Sistem İzleme"
-        }
-        ListElement {
-            label: "Ayarlar"
-        }
-    }
+    radius: 30
+    color: Qt.tint(theme.panel, darkMode ? "#12000000" : "#08ffffff")
+    border.width: 1
+    border.color: theme.border
 
-    Column {
+    ColumnLayout {
         anchors.fill: parent
-        spacing: 0
+        anchors.margins: 20
+        spacing: 18
 
-        // Başlık
-        Item {
-            width: parent.width
-            height: 70
+        Rectangle {
+            Layout.fillWidth: true
+            radius: 24
+            color: Qt.tint(sidebar.theme.cardStrong, sidebar.darkMode ? "#20ff8a3d" : "#14f47b20")
+            implicitHeight: brandLayout.implicitHeight + 26
 
-            Row {
-                anchors.centerIn: parent
-                spacing: 10
+            ColumnLayout {
+                id: brandLayout
+                anchors.fill: parent
+                anchors.margins: 18
+                spacing: 14
 
-                Image {
-                    source: "qrc:/qt/qml/rocontrol/assets/ro-control-logo.svg"
-                    sourceSize.width: 28
-                    sourceSize.height: 28
-                    width: 28
-                    height: 28
-                    fillMode: Image.PreserveAspectFit
+                RowLayout {
+                    spacing: 12
+
+                    Rectangle {
+                        Layout.preferredWidth: 46
+                        Layout.preferredHeight: 46
+                        radius: 16
+                        color: sidebar.theme.accentSoft
+
+                        Image {
+                            anchors.centerIn: parent
+                            source: "qrc:/qt/qml/rocontrol/assets/ro-control-logo.png"
+                            sourceSize.width: 30
+                            sourceSize.height: 30
+                            fillMode: Image.PreserveAspectFit
+                        }
+                    }
+
+                    ColumnLayout {
+                        spacing: 2
+
+                        Label {
+                            text: "ro-Control"
+                            font.pixelSize: 21
+                            font.bold: true
+                            color: sidebar.theme.text
+                        }
+
+                        Label {
+                            text: qsTr("Fedora NVIDIA center")
+                            color: sidebar.theme.textMuted
+                            font.pixelSize: 13
+                        }
+                    }
                 }
 
                 Label {
-                    text: "ro-Control"
-                    font.pixelSize: 22
-                    font.bold: true
-                    color: "#cdd6f4"
-                    anchors.verticalCenter: parent.verticalCenter
+                    text: qsTr("A compact control surface for driver operations, telemetry and environment checks.")
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                    color: sidebar.theme.textSoft
                 }
             }
         }
 
-        Rectangle {
-            width: parent.width - 32
-            height: 1
-            anchors.horizontalCenter: parent.horizontalCenter
-            color: "#313244"
-        }
-
-        Item {
-            width: 1
-            height: 12
+        Label {
+            text: qsTr("Navigation")
+            color: sidebar.theme.textSoft
+            font.pixelSize: 12
+            font.bold: true
+            leftPadding: 6
         }
 
         Repeater {
-            model: menuModel
+            model: sidebar.menuItems
 
             delegate: Rectangle {
-                id: menuItem
                 required property int index
-                required property string label
+                required property string modelData
 
-                width: sidebar.width - 16
-                height: 44
-                x: 8
-                radius: 8
-                color: sidebar.currentIndex === menuItem.index ? "#313244" : mouseArea.containsMouse ? "#1e1e2e" : "transparent"
+                Layout.fillWidth: true
+                radius: 20
+                implicitHeight: 58
+                color: sidebar.currentIndex === index ? Qt.tint(sidebar.theme.cardMuted, sidebar.darkMode ? "#2b39a7ff" : "#18f47b20") : "transparent"
+                border.width: sidebar.currentIndex === index ? 1 : 0
+                border.color: sidebar.currentIndex === index ? sidebar.theme.border : "transparent"
 
-                Label {
-                    anchors.verticalCenter: parent.verticalCenter
-                    leftPadding: 16
-                    text: menuItem.label
-                    font.pixelSize: 14
-                    color: sidebar.currentIndex === menuItem.index ? "#89b4fa" : "#a6adc8"
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    spacing: 12
+
+                    Rectangle {
+                        Layout.preferredWidth: 30
+                        Layout.preferredHeight: 30
+                        radius: 10
+                        color: sidebar.currentIndex === index ? sidebar.theme.accentSoft : sidebar.theme.cardMuted
+
+                        Label {
+                            anchors.centerIn: parent
+                            text: (index + 1).toString()
+                            font.bold: true
+                            color: sidebar.currentIndex === index ? sidebar.theme.text : sidebar.theme.textMuted
+                        }
+                    }
+
+                    Label {
+                        Layout.fillWidth: true
+                        text: modelData
+                        font.pixelSize: 15
+                        font.bold: sidebar.currentIndex === index
+                        color: sidebar.currentIndex === index ? sidebar.theme.text : sidebar.theme.textMuted
+                    }
                 }
 
                 MouseArea {
-                    id: mouseArea
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: sidebar.currentIndex = menuItem.index
+                    onClicked: sidebar.navigate(index)
                 }
             }
         }
-    }
 
-    // Versiyon — alt köşe
-    Label {
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottomMargin: 16
-        text: "v" + Qt.application.version
-        font.pixelSize: 11
-        color: "#585b70"
+        Item {
+            Layout.fillHeight: true
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            radius: 22
+            color: sidebar.theme.card
+            border.width: 1
+            border.color: sidebar.theme.border
+            implicitHeight: footerLayout.implicitHeight + 22
+
+            ColumnLayout {
+                id: footerLayout
+                anchors.fill: parent
+                anchors.margins: 16
+                spacing: 6
+
+                Label {
+                    text: qsTr("Build")
+                    color: sidebar.theme.textSoft
+                    font.pixelSize: 12
+                }
+
+                Label {
+                    text: "v" + Qt.application.version
+                    color: sidebar.theme.text
+                    font.pixelSize: 17
+                    font.bold: true
+                }
+
+                Label {
+                    text: qsTr("Theme: %1").arg(sidebar.darkMode ? qsTr("Dark") : qsTr("Light"))
+                    color: sidebar.theme.textMuted
+                }
+            }
+        }
     }
 }
