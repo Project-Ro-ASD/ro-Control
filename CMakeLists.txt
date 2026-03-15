@@ -45,6 +45,7 @@ set(BACKEND_SOURCES
     src/backend/nvidia/detector.cpp
     src/backend/nvidia/installer.cpp
     src/backend/nvidia/updater.cpp
+    src/backend/nvidia/versionparser.cpp
     src/backend/monitor/gpumonitor.cpp
     src/backend/monitor/cpumonitor.cpp
     src/backend/monitor/rammonitor.cpp

@@ -133,6 +133,66 @@ Item {
             }
         }
 
+        Rectangle {
+            Layout.fillWidth: true
+            border.width: 1
+            border.color: "#5f6b86"
+            color: "transparent"
+            radius: 8
+            implicitHeight: versionColumn.implicitHeight + 20
+
+            ColumnLayout {
+                id: versionColumn
+                anchors.fill: parent
+                anchors.margins: 10
+                spacing: 8
+
+                Label {
+                    text: "Belirli Surum Uygula"
+                    font.bold: true
+                }
+
+                Label {
+                    text: page.nvidiaUpdater.availableVersions.length > 0
+                          ? "Repo surumleri listelendi. Secilen surum kurulabilir/guncellenebilir."
+                          : "Repo surum listesi henuz yuklenmedi veya surum bulunamadi."
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                    color: "#6d7384"
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+
+                    ComboBox {
+                        id: versionSelector
+                        Layout.fillWidth: true
+                        model: page.nvidiaUpdater.availableVersions
+                        enabled: model.length > 0
+                    }
+
+                    Button {
+                        text: "Surumleri Yenile"
+                        onClicked: {
+                            logArea.append("Repo surum listesi yenileniyor...");
+                            page.nvidiaUpdater.refreshAvailableVersions();
+                        }
+                    }
+
+                    Button {
+                        text: "Secili Surumu Uygula"
+                        enabled: versionSelector.currentIndex >= 0 && page.nvidiaUpdater.availableVersions.length > 0
+                        onClicked: {
+                            const selectedVersion = versionSelector.currentText;
+                            logArea.append("Secilen surum uygulanacak: " + selectedVersion);
+                            page.nvidiaUpdater.applyVersion(selectedVersion);
+                        }
+                    }
+                }
+            }
+        }
+
         RowLayout {
             spacing: 8
 
@@ -203,6 +263,7 @@ Item {
     Component.onCompleted: {
         page.nvidiaDetector.refresh();
         page.nvidiaUpdater.checkForUpdate();
+        page.nvidiaUpdater.refreshAvailableVersions();
         page.nvidiaInstaller.refreshProprietaryAgreement();
     }
 }

@@ -1,8 +1,8 @@
 #include "updater.h"
 #include "detector.h"
 #include "system/commandrunner.h"
+#include "versionparser.h"
 
-#include <QRegularExpression>
 #include <QStandardPaths>
 #include <QtGlobal>
 
@@ -28,6 +28,24 @@ QString commandError(const CommandRunner::Result &result,
 
 NvidiaUpdater::NvidiaUpdater(QObject *parent) : QObject(parent) {}
 
+void NvidiaUpdater::setLatestVersion(const QString &version) {
+  if (m_latestVersion == version) {
+    return;
+  }
+
+  m_latestVersion = version;
+  emit latestVersionChanged();
+}
+
+void NvidiaUpdater::setAvailableVersions(const QStringList &versions) {
+  if (m_availableVersions == versions) {
+    return;
+  }
+
+  m_availableVersions = versions;
+  emit availableVersionsChanged();
+}
+
 QString NvidiaUpdater::detectSessionType() const {
   const QString envType =
       qEnvironmentVariable("XDG_SESSION_TYPE").trimmed().toLower();
@@ -52,10 +70,93 @@ QString NvidiaUpdater::detectSessionType() const {
   return QStringLiteral("unknown");
 }
 
+QStringList
+NvidiaUpdater::buildDriverTargets(const QString &version,
+                                  const QString &sessionType) const {
+  QStringList targets;
+  targets << NvidiaVersionParser::packageSpecForVersion(
+      QStringLiteral("akmod-nvidia"), version);
+
+  if (sessionType == QStringLiteral("x11")) {
+    targets << NvidiaVersionParser::packageSpecForVersion(
+        QStringLiteral("xorg-x11-drv-nvidia"), version);
+  }
+
+  return targets;
+}
+
+bool NvidiaUpdater::finalizeDriverChange(CommandRunner &runner,
+                                         const QString &sessionType,
+                                         QString *errorMessage) {
+  auto result =
+      runner.runAsRoot(QStringLiteral("akmods"), {QStringLiteral("--force")});
+  if (!result.success()) {
+    if (errorMessage != nullptr) {
+      *errorMessage = QStringLiteral("Kernel modulu derlenemedi: ") +
+                      commandError(result, QStringLiteral("bilinmeyen hata"));
+    }
+    return false;
+  }
+
+  if (sessionType == QStringLiteral("wayland")) {
+    emit progressMessage(QStringLiteral(
+        "Wayland tespit edildi: nvidia-drm.modeset=1 ayari guncelleniyor..."));
+    result = runner.runAsRoot(QStringLiteral("grubby"),
+                              {QStringLiteral("--update-kernel=ALL"),
+                               QStringLiteral("--args=nvidia-drm.modeset=1")});
+    if (!result.success()) {
+      if (errorMessage != nullptr) {
+        *errorMessage =
+            QStringLiteral("Wayland kernel parametresi guncellenemedi: ") +
+            commandError(result, QStringLiteral("bilinmeyen hata"));
+      }
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void NvidiaUpdater::refreshAvailableVersions() {
+  if (QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty()) {
+    setAvailableVersions({});
+    emit progressMessage(QStringLiteral("dnf bulunamadi."));
+    return;
+  }
+
+  CommandRunner runner;
+  const auto result =
+      runner.run(QStringLiteral("dnf"),
+                 {QStringLiteral("list"), QStringLiteral("--showduplicates"),
+                  QStringLiteral("akmod-nvidia")});
+
+  if (!result.success()) {
+    setAvailableVersions({});
+    emit progressMessage(
+        QStringLiteral("Surum listesi alinamadi: %1")
+            .arg(commandError(result, QStringLiteral("bilinmeyen hata"))));
+    return;
+  }
+
+  const QStringList versions =
+      NvidiaVersionParser::parseAvailablePackageVersions(
+          result.stdout, QStringLiteral("akmod-nvidia"));
+  setAvailableVersions(versions);
+
+  if (!versions.isEmpty()) {
+    emit progressMessage(
+        QStringLiteral("Kullanilabilir surum sayisi: %1").arg(versions.size()));
+  } else {
+    emit progressMessage(QStringLiteral("Kullanilabilir surum bulunamadi."));
+  }
+}
+
 void NvidiaUpdater::checkForUpdate() {
   // TR: Her kontrol denemesinde UI'ye gorunur bir baslangic mesaji gonder.
   // EN: Always emit a visible start message for each check request.
   emit progressMessage(QStringLiteral("Guncelleme kontrolu baslatildi..."));
+
+  refreshAvailableVersions();
 
   // Mevcut kurulu sürücü versiyonu
   NvidiaDetector detector;
@@ -72,10 +173,7 @@ void NvidiaUpdater::checkForUpdate() {
       m_updateAvailable = false;
       emit updateAvailableChanged();
     }
-    if (!m_latestVersion.isEmpty()) {
-      m_latestVersion.clear();
-      emit latestVersionChanged();
-    }
+    setLatestVersion({});
     emit progressMessage(QStringLiteral("Kurulu NVIDIA surucusu bulunamadi."));
     return;
   }
@@ -88,10 +186,7 @@ void NvidiaUpdater::checkForUpdate() {
       m_updateAvailable = false;
       emit updateAvailableChanged();
     }
-    if (!m_latestVersion.isEmpty()) {
-      m_latestVersion.clear();
-      emit latestVersionChanged();
-    }
+    setLatestVersion({});
     emit progressMessage(QStringLiteral("dnf bulunamadi."));
     return;
   }
@@ -102,19 +197,9 @@ void NvidiaUpdater::checkForUpdate() {
 
   // dnf check-update: exit code 100 = güncelleme var, 0 = yok
   if (result.exitCode == 100) {
-    // Çıktıdan versiyon numarasını parse et
-    // Format: "akmod-nvidia.x86_64    3:560.35.03-1.fc41
-    // rpmfusion-nonfree-updates"
-    static const QRegularExpression re(
-        QStringLiteral(R"(akmod-nvidia\S*\s+\S*:?(\d+\.\d+[\.\d]*)\S*)"));
-
-    const auto match = re.match(result.stdout);
-    const QString latest = match.hasMatch() ? match.captured(1) : QString();
-
-    if (!latest.isEmpty() && latest != m_latestVersion) {
-      m_latestVersion = latest;
-      emit latestVersionChanged();
-    }
+    const QString latest = NvidiaVersionParser::parseCheckUpdateVersion(
+        result.stdout, QStringLiteral("akmod-nvidia"));
+    setLatestVersion(latest);
 
     if (!m_updateAvailable) {
       m_updateAvailable = true;
@@ -133,10 +218,7 @@ void NvidiaUpdater::checkForUpdate() {
       m_updateAvailable = false;
       emit updateAvailableChanged();
     }
-    if (!m_latestVersion.isEmpty()) {
-      m_latestVersion.clear();
-      emit latestVersionChanged();
-    }
+    setLatestVersion({});
 
     emit progressMessage(
         QStringLiteral("Surucu guncel. Yeni surum bulunamadi."));
@@ -145,10 +227,7 @@ void NvidiaUpdater::checkForUpdate() {
       m_updateAvailable = false;
       emit updateAvailableChanged();
     }
-    if (!m_latestVersion.isEmpty()) {
-      m_latestVersion.clear();
-      emit latestVersionChanged();
-    }
+    setLatestVersion({});
 
     emit progressMessage(QStringLiteral("Guncelleme kontrolu basarisiz: %1")
                              .arg(result.stderr.trimmed().isEmpty()
@@ -157,7 +236,9 @@ void NvidiaUpdater::checkForUpdate() {
   }
 }
 
-void NvidiaUpdater::applyUpdate() {
+void NvidiaUpdater::applyUpdate() { applyVersion(QString()); }
+
+void NvidiaUpdater::applyVersion(const QString &version) {
   CommandRunner runner;
 
   connect(&runner, &CommandRunner::outputLine, this,
@@ -170,11 +251,34 @@ void NvidiaUpdater::applyUpdate() {
     return;
   }
 
-  emit progressMessage(QStringLiteral("NVIDIA sürücüsü güncelleniyor..."));
+  NvidiaDetector detector;
+  const QString installedVersion = detector.installedDriverVersion();
+  const QString sessionType = detectSessionType();
+  const QString trimmedVersion = version.trimmed();
+  const QStringList packageTargets =
+      buildDriverTargets(trimmedVersion, sessionType);
 
-  auto result = runner.runAsRoot(
-      QStringLiteral("dnf"), {QStringLiteral("update"), QStringLiteral("-y"),
-                              QStringLiteral("akmod-nvidia")});
+  if (!trimmedVersion.isEmpty() &&
+      !m_availableVersions.contains(trimmedVersion)) {
+    emit updateFinished(
+        false, QStringLiteral("Secilen surum repo listesinde bulunamadi."));
+    return;
+  }
+
+  emit progressMessage(
+      trimmedVersion.isEmpty()
+          ? QStringLiteral("NVIDIA surucusu en son surume guncelleniyor...")
+          : QStringLiteral("NVIDIA surucusu secilen surume geciriliyor: %1")
+                .arg(trimmedVersion));
+
+  auto args =
+      QStringList{(trimmedVersion.isEmpty() && !installedVersion.isEmpty())
+                      ? QStringLiteral("update")
+                      : QStringLiteral("install"),
+                  QStringLiteral("-y")};
+  args << packageTargets;
+
+  auto result = runner.runAsRoot(QStringLiteral("dnf"), args);
 
   if (!result.success()) {
     emit updateFinished(
@@ -185,28 +289,10 @@ void NvidiaUpdater::applyUpdate() {
 
   emit progressMessage(QStringLiteral("Kernel modülü yeniden derleniyor..."));
 
-  result =
-      runner.runAsRoot(QStringLiteral("akmods"), {QStringLiteral("--force")});
-  if (!result.success()) {
-    emit updateFinished(
-        false, QStringLiteral("Kernel modulu derlenemedi: ") +
-                   commandError(result, QStringLiteral("bilinmeyen hata")));
+  QString finalizeError;
+  if (!finalizeDriverChange(runner, sessionType, &finalizeError)) {
+    emit updateFinished(false, finalizeError);
     return;
-  }
-
-  const QString sessionType = detectSessionType();
-  if (sessionType == QStringLiteral("wayland")) {
-    emit progressMessage(QStringLiteral(
-        "Wayland tespit edildi: nvidia-drm.modeset=1 ayari guncelleniyor..."));
-    result = runner.runAsRoot(QStringLiteral("grubby"),
-                              {QStringLiteral("--update-kernel=ALL"),
-                               QStringLiteral("--args=nvidia-drm.modeset=1")});
-    if (!result.success()) {
-      emit updateFinished(
-          false, QStringLiteral("Wayland kernel parametresi guncellenemedi: ") +
-                     commandError(result, QStringLiteral("bilinmeyen hata")));
-      return;
-    }
   }
 
   // Güncelleme sonrası durumu yenile
@@ -216,7 +302,12 @@ void NvidiaUpdater::applyUpdate() {
   checkForUpdate();
 
   emit updateFinished(
-      true,
-      QStringLiteral(
-          "Sürücü başarıyla güncellendi. Lütfen sistemi yeniden başlatın."));
+      true, trimmedVersion.isEmpty()
+                ? (installedVersion.isEmpty()
+                       ? QStringLiteral("En son surum basariyla kuruldu. "
+                                        "Lutfen sistemi yeniden baslatin.")
+                       : QStringLiteral("Surucu basariyla guncellendi. Lutfen "
+                                        "sistemi yeniden baslatin."))
+                : QStringLiteral("Secilen surum basariyla uygulandi. Lutfen "
+                                 "sistemi yeniden baslatin."));
 }

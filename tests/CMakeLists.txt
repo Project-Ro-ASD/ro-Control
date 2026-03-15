@@ -19,6 +19,24 @@ target_link_libraries(test_detector PRIVATE
 
 add_test(NAME test_detector COMMAND test_detector)
 
+# ─── Updater/Version Parser Tests ────────────────────────────────────────────
+qt_add_executable(test_updater
+    test_updater.cpp
+    ${CMAKE_SOURCE_DIR}/src/backend/nvidia/versionparser.cpp
+)
+
+target_include_directories(test_updater PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/backend
+)
+
+target_link_libraries(test_updater PRIVATE
+    Qt6::Core
+    Qt6::Test
+)
+
+add_test(NAME test_updater COMMAND test_updater)
+
 # ─── Monitor Tests ───────────────────────────────────────────────────────────
 qt_add_executable(test_monitor
     test_monitor.cpp
