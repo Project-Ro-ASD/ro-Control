@@ -254,11 +254,11 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
         Qt::QueuedConnection);
 
     const QString sessionType = guard->detectSessionType();
-    result = runner.runAsRoot(
-        QStringLiteral("dnf"),
-        QStringList{QStringLiteral("install"), QStringLiteral("-y"),
-                    QStringLiteral("--allowerasing")} +
-            buildLatestDriverTargets(sessionType));
+    result = runner.runAsRoot(QStringLiteral("dnf"),
+                              QStringList{QStringLiteral("install"),
+                                          QStringLiteral("-y"),
+                                          QStringLiteral("--allowerasing")} +
+                                  buildLatestDriverTargets(sessionType));
     if (!result.success()) {
       const QString error =
           QStringLiteral("Kurulum basarisiz: ") +
