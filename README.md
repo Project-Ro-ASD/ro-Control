@@ -87,20 +87,25 @@ sudo make install
 
 ```
 ro-Control/
+├── .github/              # CI, issue templates, PR template
 ├── src/
 │   ├── backend/          # C++ business logic
 │   │   ├── nvidia/       # Driver detection, install, update
 │   │   ├── monitor/      # GPU/CPU/RAM statistics
 │   │   └── system/       # Polkit, DNF, command runner
 │   ├── qml/              # Qt Quick UI
-│   │   ├── pages/        # Main application pages
-│   │   └── components/   # Reusable UI components
+│   │   ├── assets/       # Embedded logos and UI assets
+│   │   ├── components/   # Reusable UI components + qmldir
+│   │   └── pages/        # Main application pages + qmldir
 │   └── main.cpp
-├── data/                 # Icons, .desktop, PolicyKit, AppStream
+├── data/                 # Icons, desktop file, PolicyKit, AppStream
+├── docs/                 # Architecture, build, design, release docs
+├── i18n/                 # Qt Linguist translation sources (.ts)
 ├── packaging/rpm/        # Fedora RPM spec
-├── docs/                 # Architecture and build docs
 ├── tests/                # Unit tests
-└── CMakeLists.txt
+├── CMakeLists.txt
+├── SECURITY.md
+└── SUPPORT.md
 ```
 
 ## Contributing
@@ -133,4 +138,3 @@ git push origin feature/your-feature-name
 ## License
 
 This project is licensed under the [GNU General Public License v3.0](LICENSE).
-

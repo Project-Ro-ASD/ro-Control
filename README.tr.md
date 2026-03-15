@@ -87,20 +87,25 @@ sudo make install
 
 ```
 ro-Control/
+├── .github/              # CI, issue template'leri, PR şablonu
 ├── src/
 │   ├── backend/          # C++ iş mantığı
 │   │   ├── nvidia/       # Sürücü tespiti, kurulum, güncelleme
 │   │   ├── monitor/      # GPU/CPU/RAM istatistikleri
 │   │   └── system/       # Polkit, DNF, komut çalıştırıcı
 │   ├── qml/              # Qt Quick arayüzü
-│   │   ├── pages/        # Ana uygulama sayfaları
-│   │   └── components/   # Tekrar kullanılabilir UI bileşenleri
+│   │   ├── assets/       # Gömülü logo ve arayüz varlıkları
+│   │   ├── components/   # Tekrar kullanılabilir UI bileşenleri + qmldir
+│   │   └── pages/        # Ana uygulama sayfaları + qmldir
 │   └── main.cpp
-├── data/                 # İkonlar, .desktop, PolicyKit, AppStream
+├── data/                 # İkonlar, desktop dosyası, PolicyKit, AppStream
+├── docs/                 # Mimari, derleme, tasarım, sürüm dokümanları
+├── i18n/                 # Qt Linguist çeviri kaynakları (.ts)
 ├── packaging/rpm/        # Fedora RPM spec
-├── docs/                 # Mimari ve derleme dökümanları
 ├── tests/                # Birim testleri
-└── CMakeLists.txt
+├── CMakeLists.txt
+├── SECURITY.md
+└── SUPPORT.md
 ```
 
 ## Katkıda Bulunma
