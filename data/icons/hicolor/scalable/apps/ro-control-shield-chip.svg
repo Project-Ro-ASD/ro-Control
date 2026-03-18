@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="ro-Control Shield Chip concept">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#20262D"/>
+      <stop offset="100%" stop-color="#12171C"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7FDF58"/>
+      <stop offset="100%" stop-color="#56B53E"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="256" height="256" rx="52" fill="url(#bg)"/>
+
+  <g fill="#343D46">
+    <rect x="76" y="30" width="11" height="24" rx="4"/>
+    <rect x="105" y="30" width="11" height="24" rx="4"/>
+    <rect x="140" y="30" width="11" height="24" rx="4"/>
+    <rect x="169" y="30" width="11" height="24" rx="4"/>
+
+    <rect x="76" y="202" width="11" height="24" rx="4"/>
+    <rect x="105" y="202" width="11" height="24" rx="4"/>
+    <rect x="140" y="202" width="11" height="24" rx="4"/>
+    <rect x="169" y="202" width="11" height="24" rx="4"/>
+
+    <rect x="30" y="76" width="24" height="11" rx="4"/>
+    <rect x="30" y="105" width="24" height="11" rx="4"/>
+    <rect x="30" y="140" width="24" height="11" rx="4"/>
+    <rect x="30" y="169" width="24" height="11" rx="4"/>
+
+    <rect x="202" y="76" width="24" height="11" rx="4"/>
+    <rect x="202" y="105" width="24" height="11" rx="4"/>
+    <rect x="202" y="140" width="24" height="11" rx="4"/>
+    <rect x="202" y="169" width="24" height="11" rx="4"/>
+  </g>
+
+  <rect x="54" y="54" width="148" height="148" rx="34" fill="#171C22"/>
+  <rect x="70" y="70" width="116" height="116" rx="28" fill="#10151A" stroke="#404A53" stroke-width="4"/>
+
+  <path d="M128 88l34 13v26c0 28-18 45-34 53-16-8-34-25-34-53v-26z" fill="url(#shield)"/>
+  <path d="M128 106v38" stroke="#EAF5E4" stroke-width="10" stroke-linecap="round"/>
+  <path d="M110 126h36" stroke="#16301C" stroke-width="10" stroke-linecap="round" opacity="0.35"/>
+  <path d="M112 140l12 12 22-24" fill="none" stroke="#EAF5E4" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

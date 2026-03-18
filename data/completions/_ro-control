@@ -1,0 +1,58 @@
+#compdef ro-control
+
+local -a commands
+commands=(
+  'help:Show usage information'
+  'version:Show application version'
+  'status:Show concise system and driver status'
+  'diagnostics:Show full diagnostics snapshot'
+  'driver:Manage NVIDIA drivers'
+)
+
+local -a driver_commands
+driver_commands=(
+  'install:Install the NVIDIA driver'
+  'remove:Remove installed NVIDIA packages'
+  'update:Update the installed NVIDIA driver'
+  'deep-clean:Remove legacy NVIDIA leftovers'
+)
+
+local -a global_opts
+global_opts=(
+  '--help[Show usage information]'
+  '--version[Show application version]'
+  '--diagnostics[Legacy alias for diagnostics]'
+  '--json[Render status or diagnostics output as JSON]'
+)
+
+local -a install_opts
+install_opts=(
+  '--proprietary[Use the proprietary NVIDIA driver install path]'
+  '--open-source[Use the open-source Nouveau install path]'
+  '--accept-license[Confirm proprietary driver license acceptance]'
+)
+
+if (( CURRENT == 2 )); then
+  _describe 'command' commands
+  _describe 'option' global_opts
+  return
+fi
+
+case "${words[2]}" in
+  status|diagnostics)
+    _describe 'option' '--json[Render output as JSON]'
+    ;;
+  driver)
+    if (( CURRENT == 3 )); then
+      _describe 'driver-command' driver_commands
+      return
+    fi
+
+    if [[ "${words[3]}" == "install" ]]; then
+      _describe 'install-option' install_opts
+    fi
+    ;;
+  *)
+    _describe 'option' global_opts
+    ;;
+esac

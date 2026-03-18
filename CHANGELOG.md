@@ -16,18 +16,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Session-aware post-install and post-update handling for Wayland/X11
 - Real system monitors for CPU, GPU, and RAM with live QML bindings
 - Driver update check/apply flow and deep-clean operation support
-- Fedora build and test workflow with CMake + Qt6
+- Linux build and test workflow with CMake + Qt6
 
 ### Changed
 - Driver management UI is wired to backend operations instead of placeholders
 - Documentation updated for current architecture and build instructions
 - Test suite expanded to cover monitor metric ranges and detector reporting
+- Repository metadata and packaging references aligned with the active GitHub organization
+- Privileged command flow now uses a dedicated allowlisted helper instead of raw `pkexec` command dispatch
 
 ### Fixed
 - Command execution path preserves stdout reliably
-- RPM Fusion URL resolution and repository failure handling improved
+- RPM repository URL resolution and repository failure handling improved
 - Updater API/header alignment and monitor test compatibility issues resolved
 - Repository cleanup for stray macOS metadata files
+- PolicyKit metadata, helper install path, and packaged action identifiers are now consistent
 
 ---
 

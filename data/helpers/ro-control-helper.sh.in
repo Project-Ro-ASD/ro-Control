@@ -1,0 +1,37 @@
+#!/bin/sh
+
+set -eu
+
+if [ "$#" -lt 1 ]; then
+  echo "ro-control-helper: missing command" >&2
+  exit 64
+fi
+
+command_name="$1"
+shift
+
+case "$command_name" in
+  dnf|/usr/bin/dnf)
+    resolved_path="$(command -v dnf 2>/dev/null || true)"
+    ;;
+  akmods|/usr/sbin/akmods|/usr/bin/akmods)
+    resolved_path="$(command -v akmods 2>/dev/null || true)"
+    ;;
+  dracut|/usr/bin/dracut)
+    resolved_path="$(command -v dracut 2>/dev/null || true)"
+    ;;
+  grubby|/usr/sbin/grubby|/usr/bin/grubby)
+    resolved_path="$(command -v grubby 2>/dev/null || true)"
+    ;;
+  *)
+    echo "ro-control-helper: command not allowed: ${command_name}" >&2
+    exit 64
+    ;;
+esac
+
+if [ -z "${resolved_path}" ] || [ ! -x "${resolved_path}" ]; then
+  echo "ro-control-helper: command not found: ${command_name}" >&2
+  exit 127
+fi
+
+exec "${resolved_path}" "$@"

@@ -21,9 +21,25 @@ We as members, contributors, and maintainers pledge to make participation in ro-
 
 ## Enforcement
 
-Instances of unacceptable behavior may be reported by opening a GitHub issue or contacting the maintainers directly. All complaints will be reviewed and investigated promptly.
+Instances of unacceptable behavior should not be reported through a public GitHub issue.
+Please contact the maintainers privately through GitHub's direct contact channels.
+All complaints will be reviewed and investigated promptly and handled with as much confidentiality as possible.
 
 Maintainers have the right to remove, edit, or reject comments, commits, issues, and other contributions that do not align with this Code of Conduct.
+
+## Scope
+
+This Code of Conduct applies within project spaces and in public spaces when an
+individual is officially representing the project or its community.
+
+## Enforcement Guidelines
+
+Project maintainers may apply any action they deem appropriate, including:
+
+- Warning contributors about unacceptable behavior
+- Removing or editing content
+- Temporarily restricting participation
+- Permanently banning contributors from project spaces
 
 ## Attribution
 

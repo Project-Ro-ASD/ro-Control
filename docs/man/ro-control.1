@@ -1,0 +1,105 @@
+.TH RO-CONTROL 1 "March 2026" "ro-control 0.1.0" "User Commands"
+.SH NAME
+ro-control \- NVIDIA driver management and diagnostics CLI
+.SH SYNOPSIS
+.B ro-control
+[\fICOMMAND\fR] [\fIOPTIONS\fR]
+.SH DESCRIPTION
+.B ro-control
+provides a desktop application and a command-line interface for inspecting
+system status, collecting diagnostics, and managing NVIDIA driver operations.
+When no command is provided, the graphical interface is launched.
+.SH COMMANDS
+.TP
+.B help
+Print usage information.
+.TP
+.B version
+Print the application version.
+.TP
+.B status
+Print a concise system and driver status summary.
+.TP
+.B diagnostics
+Print a full diagnostics snapshot.
+.TP
+.BI "driver install " [ "--proprietary" " | " "--open-source" ] " [--accept-license]"
+Install the NVIDIA driver stack. The proprietary path is the default.
+.TP
+.B driver remove
+Remove installed NVIDIA packages.
+.TP
+.B driver update
+Update the installed NVIDIA driver.
+.TP
+.B driver deep-clean
+Remove legacy NVIDIA leftovers.
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Show help text and exit.
+.TP
+.B \-v, \-\-version
+Show the application version and exit.
+.TP
+.B \-d, \-\-diagnostics
+Legacy alias for
+.BR diagnostics .
+.TP
+.B \-\-json
+Render
+.BR status
+or
+.BR diagnostics
+output as JSON.
+.TP
+.B \-\-proprietary
+Use the proprietary NVIDIA driver install path.
+.TP
+.B \-\-open-source
+Use the open-source Nouveau install path.
+.TP
+.B \-\-accept-license
+Confirm that the NVIDIA proprietary license has been reviewed.
+.SH EXIT STATUS
+.TP
+.B 0
+Command completed successfully.
+.TP
+.B 1
+The requested driver management operation failed.
+.TP
+.B 2
+Invalid command line usage or unsupported option combination.
+.SH EXAMPLES
+.TP
+.B ro-control status
+Print a concise text summary.
+.TP
+.B ro-control diagnostics --json
+Emit a machine-readable diagnostics snapshot.
+.TP
+.B ro-control driver install --proprietary --accept-license
+Install the proprietary driver stack with explicit license confirmation.
+.TP
+.B ro-control driver update
+Update the installed NVIDIA driver.
+.SH FILES
+.TP
+.I /usr/bin/ro-control
+Installed CLI entry point.
+.TP
+.I /usr/share/man/man1/ro-control.1.gz
+Manual page.
+.TP
+.I /usr/share/bash-completion/completions/ro-control
+Bash completion definition.
+.TP
+.I /usr/share/zsh/site-functions/_ro-control
+Zsh completion definition.
+.TP
+.I /usr/share/fish/vendor_completions.d/ro-control.fish
+Fish completion definition.
+.SH SEE ALSO
+.BR pkexec (1),
+.BR dnf (8)

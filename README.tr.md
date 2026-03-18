@@ -2,12 +2,11 @@
 
 <div align="center">
 
-<img src="data/icons/hicolor/256x256/apps/ro-control.png" alt="ro-Control Logo" width="120" height="120"/>
+![ro-Control Logo](data/icons/hicolor/scalable/apps/ro-control.svg)
 
 **Linux için Akıllı NVIDIA Sürücü Yöneticisi & Sistem Monitörü**
 
 [![Lisans: GPL-3.0](https://img.shields.io/badge/lisans-GPL--3.0-blue?style=flat-square)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Fedora%2040%2B-51A2DA?style=flat-square)](https://getfedora.org/)
 [![Qt6 ile yapıldı](https://img.shields.io/badge/Qt6%20%2B%20QML-41CD52?style=flat-square)](https://www.qt.io/)
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-00599C?style=flat-square)](https://isocpp.org/)
 
@@ -19,7 +18,7 @@
 
 ---
 
-ro-Control, **C++20** ve **Qt6/QML** ile geliştirilmiş, Fedora Linux üzerinde NVIDIA GPU sürücü yönetimini ve sistem izlemeyi kolaylaştıran native bir KDE Plasma masaüstü uygulamasıdır. Sürücülerin kurulumu, güncellenmesi ve izlenmesi için modern, Plasma'ya uyumlu bir arayüz sunar; güvenli yetki yükseltme için PolicyKit entegrasyonu içerir.
+ro-Control, **C++20** ve **Qt6/QML** ile geliştirilmiş, Linux üzerinde NVIDIA GPU sürücü yönetimini ve sistem izlemeyi kolaylaştıran native bir KDE Plasma masaüstü uygulamasıdır. Sürücülerin kurulumu, güncellenmesi ve izlenmesi için modern, Plasma'ya uyumlu bir arayüz sunar; güvenli yetki yükseltme için PolicyKit entegrasyonu içerir.
 
 ## Özellikler
 
@@ -41,16 +40,26 @@ ro-Control, **C++20** ve **Qt6/QML** ile geliştirilmiş, Fedora Linux üzerinde
 - **PolicyKit entegrasyonu** — Root olarak çalıştırmadan güvenli yetki yükseltme
 
 ### 🌍 Çok Dil Desteği
-- Türkçe ve İngilizce arayüz
-- Genişletilebilir çeviri sistemi
+- Qt çeviri sistemi (`.ts` / `.qm`) ile çalışma zamanı yerelleştirme
+- İngilizce kaynak metinler ve dahil edilmiş Türkçe çeviri
+- Yeni diller için genişletilebilir iş akışı
+
+### 🧰 CLI Desteği
+- `ro-control help` kullanım bilgisini gösterir
+- `ro-control version` uygulama sürümünü gösterir
+- `ro-control status` kısa sistem ve sürücü durumunu gösterir
+- `ro-control diagnostics --json` makine tarafından işlenebilir tanı çıktısı üretir
+- `ro-control driver install|remove|update|deep-clean` scriptlenebilir sürücü yönetimi sunar
+- Kurulumla birlikte `man ro-control` sayfası ve Bash/Zsh/Fish completion dosyaları gelir
 
 ## Ekran Görüntüleri
 
-> Ekran görüntüleri ilk UI milestone'ından sonra eklenecektir.
+Önizleme görselleri [`docs/screenshots/`](docs/screenshots/) altında bulunur.
+Daha geniş mağaza / distro dağıtımı öncesinde PNG ekran görüntüleri eklenmelidir.
 
 ## Kurulum
 
-### Fedora (RPM) — Önerilen
+### RPM Paketi
 
 [Releases](https://github.com/Project-Ro-ASD/ro-Control/releases) sayfasından en son `.rpm` dosyasını indirin:
 
@@ -62,15 +71,28 @@ sudo dnf install ./ro-control-*.rpm
 
 Tam talimatlar için [docs/BUILDING.md](docs/BUILDING.md) dosyasına bakın.
 
+### CLI Hızlı Örnekler
+
+```bash
+ro-control help
+ro-control version
+ro-control status
+ro-control diagnostics --json
+ro-control driver install --proprietary --accept-license
+ro-control driver update
+```
+
 **Hızlı başlangıç:**
 
 ```bash
-# Bağımlılıkları kur (Fedora 40+)
+# Bağımlılıkları kur
 sudo dnf install cmake extra-cmake-modules gcc-c++ \
   qt6-qtbase-devel \
   qt6-qtdeclarative-devel \
+  qt6-qttools-devel \
   qt6-qtwayland-devel \
-  kf6-qqc2-desktop-style
+  kf6-qqc2-desktop-style \
+  polkit-devel
 
 # Klonla ve derle
 git clone https://github.com/Project-Ro-ASD/ro-Control.git
@@ -87,32 +109,27 @@ sudo make install
 
 ```
 ro-Control/
-├── .github/              # CI, issue template'leri, PR şablonu
 ├── src/
 │   ├── backend/          # C++ iş mantığı
 │   │   ├── nvidia/       # Sürücü tespiti, kurulum, güncelleme
 │   │   ├── monitor/      # GPU/CPU/RAM istatistikleri
 │   │   └── system/       # Polkit, DNF, komut çalıştırıcı
 │   ├── qml/              # Qt Quick arayüzü
-│   │   ├── assets/       # Gömülü logo ve arayüz varlıkları
-│   │   ├── components/   # Tekrar kullanılabilir UI bileşenleri + qmldir
-│   │   └── pages/        # Ana uygulama sayfaları + qmldir
+│   │   ├── pages/        # Ana uygulama sayfaları
+│   │   └── components/   # Tekrar kullanılabilir UI bileşenleri
 │   └── main.cpp
-├── data/                 # İkonlar, desktop dosyası, PolicyKit, AppStream
-├── docs/                 # Mimari, derleme, tasarım, sürüm dokümanları
-├── i18n/                 # Qt Linguist çeviri kaynakları (.ts)
-├── packaging/rpm/        # Fedora RPM spec
+├── data/                 # İkonlar, .desktop, PolicyKit, AppStream
+├── packaging/rpm/        # RPM paketleme
+├── docs/                 # Mimari ve derleme dökümanları
 ├── tests/                # Birim testleri
-├── CMakeLists.txt
-├── SECURITY.md
-└── SUPPORT.md
+└── CMakeLists.txt
 ```
 
 ## Katkıda Bulunma
 
 Katkılarınızı bekliyoruz! Pull request göndermeden önce lütfen [CONTRIBUTING.md](CONTRIBUTING.md) dosyasını okuyun.
-Surum akis detaylari icin [docs/RELEASE.md](docs/RELEASE.md) dosyasina bakin.
-Yerellestirme altyapisi icin [i18n/README.md](i18n/README.md) dosyasini inceleyin.
+Sürüm akış detayları için [docs/RELEASE.md](docs/RELEASE.md) dosyasına bakın.
+Yerelleştirme altyapısı için [i18n/README.md](i18n/README.md) dosyasını inceleyin.
 
 Hızlı katkı akışı:
 
@@ -129,7 +146,6 @@ git push origin feature/ozellik-adi
 
 | Bileşen | Minimum Versiyon |
 |---------|-----------------|
-| Fedora  | 40+             |
 | Qt      | 6.6+            |
 | CMake   | 3.22+           |
 | GCC     | 13+ (C++20)     |

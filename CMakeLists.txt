@@ -7,6 +7,12 @@ project(ro-control
     LANGUAGES CXX
 )
 
+set(RO_CONTROL_POLICY_ID "io.github.ProjectRoASD.rocontrol.manage-drivers")
+set(RO_CONTROL_HELPER_NAME "ro-control-helper")
+set(RO_CONTROL_HELPER_BUILD_PATH
+    "${CMAKE_CURRENT_BINARY_DIR}/${RO_CONTROL_HELPER_NAME}"
+)
+
 # ─── C++ Standard ────────────────────────────────────────────────────────────
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -33,6 +39,18 @@ find_package(Qt6 REQUIRED COMPONENTS
 
 find_package(Qt6 QUIET COMPONENTS LinguistTools)
 
+option(REQUIRE_TRANSLATIONS
+    "Fail configuration when Qt Linguist tools are unavailable"
+    ON
+)
+
+if(REQUIRE_TRANSLATIONS AND NOT Qt6LinguistTools_FOUND)
+    message(FATAL_ERROR
+        "Qt6 LinguistTools were not found. Install the Qt tools development "
+        "package or configure with -DREQUIRE_TRANSLATIONS=OFF for local-only builds."
+    )
+endif()
+
 qt_standard_project_setup()
 
 if(COMMAND qt_policy)
@@ -56,6 +74,7 @@ set(BACKEND_SOURCES
 
 set(APP_SOURCES
     src/main.cpp
+    src/cli/cli.cpp
     ${BACKEND_SOURCES}
 )
 
@@ -93,14 +112,9 @@ if(Qt6LinguistTools_FOUND)
 
     qt_add_translations(ro-control
         TS_FILES ${TS_FILES}
+        RESOURCE_PREFIX "/i18n"
     )
 endif()
-
-# ─── Include Directories ──────────────────────────────────────────────────────
-target_include_directories(ro-control PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/backend
-)
 
 # ─── Link Qt Libraries ────────────────────────────────────────────────────────
 target_link_libraries(ro-control PRIVATE
@@ -123,19 +137,59 @@ target_compile_options(ro-control PRIVATE
 # ─── Install Targets ──────────────────────────────────────────────────────────
 include(GNUInstallDirs)
 
+set(RO_CONTROL_HELPER_INSTALL_PATH
+    "${CMAKE_INSTALL_FULL_LIBEXECDIR}/${RO_CONTROL_HELPER_NAME}"
+)
+set(RO_CONTROL_POLICY_BUILD_PATH
+    "${CMAKE_CURRENT_BINARY_DIR}/io.github.ProjectRoASD.rocontrol.policy"
+)
+
+# ─── Include Directories ──────────────────────────────────────────────────────
+target_include_directories(ro-control PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/backend
+)
+
+target_compile_definitions(ro-control PRIVATE
+    RO_CONTROL_POLICY_ID="${RO_CONTROL_POLICY_ID}"
+    RO_CONTROL_HELPER_BUILD_PATH="${RO_CONTROL_HELPER_BUILD_PATH}"
+    RO_CONTROL_HELPER_INSTALL_PATH="${RO_CONTROL_HELPER_INSTALL_PATH}"
+)
+
+configure_file(
+    data/helpers/ro-control-helper.sh.in
+    ${RO_CONTROL_HELPER_BUILD_PATH}
+    @ONLY
+    NEWLINE_STYLE UNIX
+)
+
+configure_file(
+    data/polkit/io.github.ProjectRoASD.rocontrol.policy.in
+    ${RO_CONTROL_POLICY_BUILD_PATH}
+    @ONLY
+    NEWLINE_STYLE UNIX
+)
+
 install(TARGETS ro-control
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(PROGRAMS ${RO_CONTROL_HELPER_BUILD_PATH}
+    DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}
+    RENAME ${RO_CONTROL_HELPER_NAME}
 )
 
 install(FILES data/icons/ro-control.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
 )
 
-install(DIRECTORY data/icons/hicolor/
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor
+install(FILES
+    data/icons/hicolor/scalable/apps/ro-control.svg
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
 )
 
-install(FILES data/icons/hicolor/256x256/apps/ro-control.png
+install(FILES
+    data/icons/hicolor/256x256/apps/ro-control.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps
 )
 
@@ -143,8 +197,25 @@ install(FILES data/icons/ro-control.metainfo.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
 )
 
-install(FILES data/polkit/com.github.AcikKaynakGelistirmeToplulugu.rocontrol.policy
+install(FILES ${RO_CONTROL_POLICY_BUILD_PATH}
     DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/actions
+)
+
+install(FILES docs/man/ro-control.1
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1
+)
+
+install(FILES data/completions/ro-control.bash
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/bash-completion/completions
+    RENAME ro-control
+)
+
+install(FILES data/completions/_ro-control
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/zsh/site-functions
+)
+
+install(FILES data/completions/ro-control.fish
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/fish/vendor_completions.d
 )
 
 # ─── Tests ───────────────────────────────────────────────────────────────────

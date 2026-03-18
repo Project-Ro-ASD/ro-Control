@@ -33,6 +33,7 @@ jobs:
             ninja-build \
             qt6-qtbase-devel \
             qt6-qtdeclarative-devel \
+            qt6-qttools-devel \
             qt6-qtwayland-devel \
             kf6-qqc2-desktop-style \
             polkit-devel \
@@ -44,7 +45,8 @@ jobs:
           cmake -B build \
             -GNinja \
             -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_TESTS=ON
+            -DBUILD_TESTS=ON \
+            -DREQUIRE_TRANSLATIONS=ON
 
       - name: Build
         run: cmake --build build --parallel
@@ -80,6 +82,7 @@ jobs:
             qt6-qtbase-devel \
             qt6-qtbase-private-devel \
             qt6-qtdeclarative-devel \
+            qt6-qttools-devel \
             qt6-qtwayland-devel \
             kf6-qqc2-desktop-style \
             polkit-devel
@@ -93,13 +96,13 @@ jobs:
           fi
           ARCHIVE_BASENAME="ro-control-${VERSION}"
           mkdir -p ~/rpmbuild/SOURCES ~/rpmbuild/SPECS
-          tar \
-            --exclude-vcs \
-            --exclude='./build' \
-            --exclude='./build-*' \
-            --transform="s,^,${ARCHIVE_BASENAME}/," \
-            -czf "${HOME}/rpmbuild/SOURCES/${ARCHIVE_BASENAME}.tar.gz" \
-            .
+          STAGE_DIR="$(mktemp -d)"
+          cp -a . "${STAGE_DIR}/${ARCHIVE_BASENAME}"
+          rm -rf "${STAGE_DIR}/${ARCHIVE_BASENAME}/.git" \
+                 "${STAGE_DIR}/${ARCHIVE_BASENAME}/build" \
+                 "${STAGE_DIR}/${ARCHIVE_BASENAME}/build-"*
+          tar -C "${STAGE_DIR}" -czf "${HOME}/rpmbuild/SOURCES/${ARCHIVE_BASENAME}.tar.gz" "${ARCHIVE_BASENAME}"
+          rm -rf "${STAGE_DIR}"
           cp packaging/rpm/ro-control.spec "${HOME}/rpmbuild/SPECS/ro-control.spec"
 
       - name: Build RPM

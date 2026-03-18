@@ -1,133 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="ro-Control logo">
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="ro-Control icon">
   <defs>
-    <!-- Background gradient: deep navy to dark blue -->
-    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%"   stop-color="#0a1628"/>
-      <stop offset="100%" stop-color="#0d2540"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#252C33"/>
+      <stop offset="100%" stop-color="#13181D"/>
     </linearGradient>
-
-    <!-- Shield glass gradient: left half -->
-    <linearGradient id="shieldLeft" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%"   stop-color="#d0e8ff" stop-opacity="0.55"/>
-      <stop offset="100%" stop-color="#8bbcdd" stop-opacity="0.30"/>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7CDB55"/>
+      <stop offset="100%" stop-color="#57B83D"/>
     </linearGradient>
-
-    <!-- Shield glass gradient: right half -->
-    <linearGradient id="shieldRight" x1="1" y1="0" x2="0" y2="1">
-      <stop offset="0%"   stop-color="#c8dff5" stop-opacity="0.45"/>
-      <stop offset="100%" stop-color="#7aaac8" stop-opacity="0.20"/>
-    </linearGradient>
-
-    <!-- Speedometer arc gradient: blue → cyan → lime -->
-    <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%"   stop-color="#2979ff"/>
-      <stop offset="50%"  stop-color="#00e5ff"/>
-      <stop offset="100%" stop-color="#76ff03"/>
-    </linearGradient>
-
-    <!-- Needle gradient: cyan → lime -->
-    <linearGradient id="needleGrad" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0%"   stop-color="#00e5ff"/>
-      <stop offset="100%" stop-color="#76ff03"/>
-    </linearGradient>
-
-    <!-- Outer glow filter -->
-    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="5" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <!-- Soft inner shadow for shield -->
-    <filter id="shieldShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <!-- Clip for left half of shield -->
-    <clipPath id="leftHalf">
-      <rect x="0" y="0" width="128" height="256"/>
-    </clipPath>
-    <!-- Clip for right half of shield -->
-    <clipPath id="rightHalf">
-      <rect x="128" y="0" width="128" height="256"/>
-    </clipPath>
   </defs>
 
-  <!-- ── Background rounded square ── -->
-  <rect width="256" height="256" rx="46" fill="url(#bgGrad)"/>
+  <rect width="256" height="256" rx="52" fill="url(#bg)"/>
 
-  <!-- ── Outer glow ring ── -->
-  <rect width="256" height="256" rx="46" fill="none"
-        stroke="#00bcd4" stroke-width="2" stroke-opacity="0.35"/>
+  <g fill="#313941">
+    <rect x="74" y="28" width="12" height="28" rx="4"/>
+    <rect x="104" y="28" width="12" height="28" rx="4"/>
+    <rect x="140" y="28" width="12" height="28" rx="4"/>
+    <rect x="170" y="28" width="12" height="28" rx="4"/>
 
-  <!-- ── Shield outline (border + subtle glow) ── -->
-  <path d="M128 26 L196 56 L196 116 C196 165 163 202 128 218 C93 202 60 165 60 116 L60 56 Z"
-        fill="none" stroke="#38d9f5" stroke-width="2.5" stroke-opacity="0.7"
-        filter="url(#glow)"/>
+    <rect x="74" y="200" width="12" height="28" rx="4"/>
+    <rect x="104" y="200" width="12" height="28" rx="4"/>
+    <rect x="140" y="200" width="12" height="28" rx="4"/>
+    <rect x="170" y="200" width="12" height="28" rx="4"/>
 
-  <!-- ── Shield body: left half ── -->
-  <path d="M128 26 L196 56 L196 116 C196 165 163 202 128 218 C93 202 60 165 60 116 L60 56 Z"
-        fill="url(#shieldLeft)" clip-path="url(#leftHalf)"/>
+    <rect x="28" y="74" width="28" height="12" rx="4"/>
+    <rect x="28" y="104" width="28" height="12" rx="4"/>
+    <rect x="28" y="140" width="28" height="12" rx="4"/>
+    <rect x="28" y="170" width="28" height="12" rx="4"/>
 
-  <!-- ── Shield body: right half ── -->
-  <path d="M128 26 L196 56 L196 116 C196 165 163 202 128 218 C93 202 60 165 60 116 L60 56 Z"
-        fill="url(#shieldRight)" clip-path="url(#rightHalf)"/>
-
-  <!-- ── Circuit traces (top-left quadrant) ── -->
-  <g stroke="#00e5ff" stroke-opacity="0.55" stroke-width="1.2" fill="none" stroke-linecap="round">
-    <path d="M80 80 L95 80 L95 95"/>
-    <path d="M80 100 L90 100"/>
-    <circle cx="80" cy="80" r="2" fill="#00e5ff" fill-opacity="0.7"/>
-    <circle cx="90" cy="100" r="2" fill="#00e5ff" fill-opacity="0.7"/>
-    <circle cx="95" cy="95" r="2" fill="#00e5ff" fill-opacity="0.7"/>
+    <rect x="200" y="74" width="28" height="12" rx="4"/>
+    <rect x="200" y="104" width="28" height="12" rx="4"/>
+    <rect x="200" y="140" width="28" height="12" rx="4"/>
+    <rect x="200" y="170" width="28" height="12" rx="4"/>
   </g>
 
-  <!-- ── Circuit traces (top-right quadrant) ── -->
-  <g stroke="#76ff03" stroke-opacity="0.55" stroke-width="1.2" fill="none" stroke-linecap="round">
-    <path d="M176 80 L161 80 L161 95"/>
-    <path d="M176 100 L166 100"/>
-    <circle cx="176" cy="80" r="2" fill="#76ff03" fill-opacity="0.7"/>
-    <circle cx="166" cy="100" r="2" fill="#76ff03" fill-opacity="0.7"/>
-    <circle cx="161" cy="95" r="2" fill="#76ff03" fill-opacity="0.7"/>
-  </g>
+  <rect x="56" y="56" width="144" height="144" rx="32" fill="#1A2026"/>
+  <rect x="72" y="72" width="112" height="112" rx="24" fill="#11161B" stroke="#3C454E" stroke-width="4"/>
 
-  <!-- ── Speedometer arc (3 concentric arcs) ── -->
-  <!-- Outer arc -->
-  <path d="M82 158 A50 50 0 0 1 174 158"
-        fill="none" stroke="url(#arcGrad)" stroke-width="8"
-        stroke-linecap="round" filter="url(#glow)" opacity="0.9"/>
-  <!-- Middle arc -->
-  <path d="M90 160 A40 40 0 0 1 166 160"
-        fill="none" stroke="url(#arcGrad)" stroke-width="6"
-        stroke-linecap="round" opacity="0.7"/>
-  <!-- Inner arc -->
-  <path d="M98 162 A30 30 0 0 1 158 162"
-        fill="none" stroke="url(#arcGrad)" stroke-width="4"
-        stroke-linecap="round" opacity="0.5"/>
-
-  <!-- ── Needle ── -->
-  <line x1="128" y1="158" x2="163" y2="115"
-        stroke="url(#needleGrad)" stroke-width="4"
-        stroke-linecap="round" filter="url(#glow)"/>
-
-  <!-- ── Needle pivot ── -->
-  <circle cx="128" cy="158" r="8" fill="#00e5ff" filter="url(#glow)"/>
-  <circle cx="128" cy="158" r="4" fill="#ffffff" fill-opacity="0.9"/>
-
-  <!-- ── Needle tip glow dot ── -->
-  <circle cx="163" cy="115" r="3.5" fill="#76ff03" filter="url(#glow)"/>
-
-  <!-- ── Bottom circuit trace ── -->
-  <g stroke="#00e5ff" stroke-opacity="0.45" stroke-width="1.2" fill="none" stroke-linecap="round">
-    <path d="M108 172 L98 180 L98 190"/>
-    <path d="M148 172 L158 180 L158 190"/>
-    <circle cx="98"  cy="190" r="2" fill="#00e5ff" fill-opacity="0.6"/>
-    <circle cx="158" cy="190" r="2" fill="#76ff03" fill-opacity="0.6"/>
-  </g>
+  <circle cx="128" cy="128" r="38" fill="none" stroke="url(#core)" stroke-width="14"/>
+  <path d="M128 92v18" stroke="#EAF5E4" stroke-width="10" stroke-linecap="round"/>
+  <path d="M128 146h22" stroke="#EAF5E4" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="128" cy="128" r="8" fill="#EAF5E4"/>
 </svg>

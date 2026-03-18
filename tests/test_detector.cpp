@@ -31,16 +31,15 @@ private slots:
 
   void testHasNvidiaGpu() {
     NvidiaDetector detector;
-    bool result = detector.hasNvidiaGpu();
-    Q_UNUSED(result);
-    QVERIFY(true);
+    const bool hasGpu = detector.hasNvidiaGpu();
+    const auto info = detector.detect();
+    QCOMPARE(hasGpu, info.found);
   }
 
   void testIsDriverInstalled() {
     NvidiaDetector detector;
-    bool result = detector.isDriverInstalled();
-    Q_UNUSED(result);
-    QVERIFY(true);
+    const bool installed = detector.isDriverInstalled();
+    QCOMPARE(installed, !detector.installedDriverVersion().isEmpty());
   }
 
   void testInstalledDriverVersion() {
@@ -57,6 +56,9 @@ private slots:
     if (!info.found) {
       QVERIFY(info.name.isEmpty());
     }
+    if (info.driverVersion.isEmpty()) {
+      QVERIFY(!detector.isDriverInstalled());
+    }
   }
 
   // verificationReport() en azından temel güvenlik bilgisini döndürmeli.
@@ -65,7 +67,15 @@ private slots:
     detector.refresh();
     const QString report = detector.verificationReport();
     QVERIFY(!report.isEmpty());
+    QVERIFY(report.contains(QStringLiteral("GPU: ")));
+    QVERIFY(report.contains(QStringLiteral("Driver Version: ")));
     QVERIFY(report.contains(QStringLiteral("Secure Boot")));
+  }
+
+  void testActiveDriverStringIsNeverEmpty() {
+    NvidiaDetector detector;
+    detector.refresh();
+    QVERIFY(!detector.activeDriver().trimmed().isEmpty());
   }
 };
 

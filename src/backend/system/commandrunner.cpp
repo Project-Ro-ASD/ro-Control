@@ -1,6 +1,7 @@
 #include "commandrunner.h"
 
 #include <QElapsedTimer>
+#include <QFileInfo>
 #include <QProcess>
 #include <QStandardPaths>
 #include <QThread>
@@ -145,6 +146,11 @@ CommandRunner::Result CommandRunner::runAsRoot(const QString &program,
                                                const QStringList &args,
                                                const RunOptions &options) {
   QStringList pkexecArgs;
-  pkexecArgs << program << args;
+  QString helperPath = QStringLiteral(RO_CONTROL_HELPER_BUILD_PATH);
+  if (!QFileInfo::exists(helperPath)) {
+    helperPath = QStringLiteral(RO_CONTROL_HELPER_INSTALL_PATH);
+  }
+
+  pkexecArgs << helperPath << program << args;
   return run(QStringLiteral("pkexec"), pkexecArgs, options);
 }

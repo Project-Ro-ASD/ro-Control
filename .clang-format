@@ -1,7 +1,8 @@
 ---
 # ro-Control clang-format configuration
-# CI bu dosyayı kullanır — değişiklik yapılırsa tüm kaynak dosyalar yeniden formatlanmalı.
-# Kullanım: find src/ -name "*.cpp" -o -name "*.h" | xargs clang-format -i
+# CI bu dosyayı kullanır; değişirse tüm C++ kaynakları yeniden formatlanmalıdır.
+# Kullanım:
+#   find src \( -name "*.cpp" -o -name "*.h" \) -print0 | xargs -0 clang-format -i
 
 BasedOnStyle: LLVM
 Language: Cpp

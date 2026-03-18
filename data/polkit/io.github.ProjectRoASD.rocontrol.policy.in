@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+    "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+    "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+
+<policyconfig>
+
+    <vendor>Project Ro ASD</vendor>
+    <vendor_url>https://github.com/Project-Ro-ASD/ro-Control</vendor_url>
+
+    <action id="@RO_CONTROL_POLICY_ID@">
+        <description>Manage NVIDIA drivers with ro-Control</description>
+        <description xml:lang="tr">ro-Control ile NVIDIA sürücülerini yönet</description>
+        <message>Authentication is required to perform privileged ro-Control operations</message>
+        <message xml:lang="tr">Ayrıcalıklı ro-Control işlemleri için kimlik doğrulama gerekli</message>
+        <icon_name>ro-control</icon_name>
+        <defaults>
+            <allow_any>auth_admin</allow_any>
+            <allow_inactive>auth_admin</allow_inactive>
+            <allow_active>auth_admin_keep</allow_active>
+        </defaults>
+        <annotate key="org.freedesktop.policykit.exec.path">@RO_CONTROL_HELPER_INSTALL_PATH@</annotate>
+        <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+    </action>
+
+</policyconfig>

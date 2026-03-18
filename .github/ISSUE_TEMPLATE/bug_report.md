@@ -37,8 +37,11 @@ What actually happened.
 ## Logs
 
 ```
-# Paste relevant output from:
-# journalctl --user -u ro-control --no-pager -n 50
+# Paste any relevant output from one or more of these:
+# ro-control started from a terminal
+# coredumpctl info ro-control
+# journalctl --since "10 minutes ago" --no-pager
+# dnf history info
 ```
 
 ## Additional Context

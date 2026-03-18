@@ -108,7 +108,7 @@ Driver operations (install, remove, GRUB edit) require root. We use **PolicyKit 
 User clicks "Install Driver"
         │
         ▼
-C++ calls pkexec with a PolicyKit action ID
+C++ calls `pkexec` on the dedicated `ro-control-helper`
         │
         ▼
 System shows a Plasma authentication dialog
@@ -120,7 +120,7 @@ Privileged operation runs as root
 Result emitted back to QML via signal
 ```
 
-The PolicyKit action definition lives in `data/polkit/`.
+The PolicyKit action definition and helper entrypoint live in `data/polkit/` and `data/helpers/`.
 
 ---
 

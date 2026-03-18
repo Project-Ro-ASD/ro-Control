@@ -18,15 +18,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Derive release version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "VERSION=${VERSION}" >> "${GITHUB_ENV}"
+
       - name: Create source archives
         run: |
-          git archive --format=tar.gz --output=ro-control-${GITHUB_REF_NAME}.tar.gz ${GITHUB_SHA}
-          git archive --format=zip --output=ro-control-${GITHUB_REF_NAME}.zip ${GITHUB_SHA}
+          PREFIX="ro-control-${VERSION}"
+          git archive --format=tar.gz --prefix="${PREFIX}/" --output="${PREFIX}.tar.gz" "${GITHUB_SHA}"
+          git archive --format=zip --prefix="${PREFIX}/" --output="${PREFIX}.zip" "${GITHUB_SHA}"
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           files: |
-            ro-control-${{ github.ref_name }}.tar.gz
-            ro-control-${{ github.ref_name }}.zip
+            ro-control-${{ env.VERSION }}.tar.gz
+            ro-control-${{ env.VERSION }}.zip

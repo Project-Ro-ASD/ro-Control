@@ -1,0 +1,9 @@
+{
+    "qt-qml.qmlls.enabled": true,
+    "qt-qml.qmlls.useQmlImportPathEnvVar": true,
+    "qt-qml.qmlls.additionalImportPaths": [
+        "${workspaceFolder}/src/qml",
+        "${workspaceFolder}/src/qml/pages",
+        "${workspaceFolder}/build/rocontrol"
+    ]
+}

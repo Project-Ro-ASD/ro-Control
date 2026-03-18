@@ -12,9 +12,6 @@ NvidiaDetector::NvidiaDetector(QObject *parent) : QObject(parent) {}
 NvidiaDetector::GpuInfo NvidiaDetector::detect() const {
   GpuInfo info;
 
-  // TR: Tespit adimlari olabildigince bagimsiz tutulur; biri fail etse digeri
-  // devam eder. EN: Detection steps are independent so one failure does not
-  // block others.
   info.name = detectGpuName();
   info.found = !info.name.isEmpty();
   info.driverVersion = detectDriverVersion();
@@ -38,34 +35,26 @@ QString NvidiaDetector::installedDriverVersion() const {
 
 QString NvidiaDetector::activeDriver() const {
   if (m_info.driverLoaded)
-    return QStringLiteral("Kapali Kaynak (NVIDIA)");
+    return tr("Proprietary (NVIDIA)");
   if (m_info.nouveauActive)
-    return QStringLiteral("Nouveau (Topluluk Surucusu)");
-  return QStringLiteral("Yuklu Degil/Bilinmiyor");
+    return tr("Open Source (Nouveau)");
+  return tr("Not Installed / Unknown");
 }
 
 QString NvidiaDetector::verificationReport() const {
-  // TR: UI icin tek yerde ozet tanilama metni uret.
-  // EN: Produce a single consolidated diagnostic text for the UI.
-  const QString gpuText = m_info.found ? m_info.name : QStringLiteral("Yok");
-  const QString versionText = m_info.driverVersion.isEmpty()
-                                  ? QStringLiteral("Yok")
-                                  : m_info.driverVersion;
+  const QString gpuText = m_info.found ? m_info.name : tr("None");
+  const QString versionText =
+      m_info.driverVersion.isEmpty() ? tr("None") : m_info.driverVersion;
 
-  return QStringLiteral(
-             "GPU: %1\nSurucu Versiyonu: %2\nSecure Boot: %3\nOturum: %4\n"
-             "NVIDIA Modulu: %5\nNouveau: %6")
+  return tr("GPU: %1\nDriver Version: %2\nSecure Boot: %3\nSession: %4\n"
+            "NVIDIA Module: %5\nNouveau: %6")
       .arg(gpuText, versionText,
            m_info.secureBootKnown
-               ? (m_info.secureBootEnabled ? QStringLiteral("Acik")
-                                           : QStringLiteral("Kapali"))
-               : QStringLiteral("Bilinmiyor"),
-           m_info.sessionType.isEmpty() ? QStringLiteral("Bilinmiyor")
-                                        : m_info.sessionType,
-           m_info.driverLoaded ? QStringLiteral("Yuklu")
-                               : QStringLiteral("Yuklu degil"),
-           m_info.nouveauActive ? QStringLiteral("Aktif")
-                                : QStringLiteral("Aktif degil"));
+               ? (m_info.secureBootEnabled ? tr("Enabled") : tr("Disabled"))
+               : tr("Disabled / Unknown"),
+           m_info.sessionType.isEmpty() ? tr("Unknown") : m_info.sessionType,
+           m_info.driverLoaded ? tr("Loaded") : tr("Not loaded"),
+           m_info.nouveauActive ? tr("Active") : tr("Inactive"));
 }
 
 void NvidiaDetector::refresh() {
@@ -113,8 +102,6 @@ QString NvidiaDetector::detectDriverVersion() const {
   if (result.success())
     return result.stdout.trimmed();
 
-  // TR: nvidia-smi yoksa modinfo ile surum fallback'i dene.
-  // EN: If nvidia-smi is unavailable, fall back to modinfo.
   const auto modinfo =
       runner.run(QStringLiteral("modinfo"), {QStringLiteral("nvidia")});
 
@@ -145,9 +132,6 @@ bool NvidiaDetector::isModuleLoaded(const QString &moduleName) const {
 }
 
 bool NvidiaDetector::detectSecureBoot(bool *known) const {
-  // TR: mokutil yoksa "kapali" degil "bilinmiyor" olarak siniflandir.
-  // EN: If mokutil is unavailable, classify as "unknown" rather than
-  // "disabled".
   CommandRunner runner;
   const auto result =
       runner.run(QStringLiteral("mokutil"), {QStringLiteral("--sb-state")});

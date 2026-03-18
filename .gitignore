@@ -38,7 +38,8 @@ ui_*.h
 CMakeLists.txt.user
 
 # VS Code
-.vscode/
+.vscode/*
+!.vscode/settings.json
 *.code-workspace
 
 # CLion / JetBrains
@@ -81,23 +82,3 @@ test_results/
 vgcore.*
 callgrind.out.*
 massif.out.*
-
-# Build
-build/
-
-# CMake
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-
-# Qt
-*_autogen/
-moc_*
-qmltypes
-
-# Binary
-*.o
-*.so
-*.a
-.DS_Store
