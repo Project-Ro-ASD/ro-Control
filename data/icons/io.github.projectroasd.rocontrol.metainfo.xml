@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-	<id>ro-control.desktop</id>
+	<id>io.github.projectroasd.rocontrol.desktop</id>
 	<name>ro-Control</name>
 	<summary>NVIDIA driver manager and system monitor</summary>
 	<summary xml:lang="tr">NVIDIA sürücü yöneticisi ve sistem monitörü</summary>
@@ -13,9 +13,7 @@
 			ro-Control helps users detect NVIDIA GPUs, install or update
 			drivers via DNF, and monitor system metrics from a Qt desktop UI.
 		</p>
-	</description>
-	<description xml:lang="tr">
-		<p>
+		<p xml:lang="tr">
 			ro-Control, kullanıcıların NVIDIA GPU'ları tespit etmesine,
 			sürücüleri DNF ile kurup güncellemesine ve sistem metriklerini Qt tabanlı
 			bir masaüstü arayüzünden izlemesine yardımcı olur.
@@ -38,12 +36,12 @@
 		</screenshot>
 	</screenshots>
 
-	<launchable type="desktop-id">ro-control.desktop</launchable>
+	<launchable type="desktop-id">io.github.projectroasd.rocontrol.desktop</launchable>
 	<provides>
 		<binary>ro-control</binary>
 	</provides>
 
-	<developer id="io.github.ProjectRoASD">
+	<developer id="io.github.projectroasd">
 		<name>Project Ro ASD</name>
 	</developer>
 

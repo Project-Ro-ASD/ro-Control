@@ -182,7 +182,7 @@ install(PROGRAMS ${RO_CONTROL_HELPER_BUILD_PATH}
     RENAME ${RO_CONTROL_HELPER_NAME}
 )
 
-install(FILES data/icons/ro-control.desktop
+install(FILES data/icons/io.github.projectroasd.rocontrol.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
 )
 
@@ -196,7 +196,7 @@ install(FILES
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps
 )
 
-install(FILES data/icons/ro-control.metainfo.xml
+install(FILES data/icons/io.github.projectroasd.rocontrol.metainfo.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
 )
 

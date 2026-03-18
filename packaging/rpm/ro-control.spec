@@ -1,8 +1,6 @@
-%global _rpmfilename %{NAME}-%{VERSION}.%{ARCH}.rpm
-
 Name:           ro-control
 Version:        0.1.0
-Release:        1
+Release:        2%{?dist}
 Summary:        Smart NVIDIA driver manager and system monitor
 
 License:        GPL-3.0-or-later
@@ -26,6 +24,8 @@ Requires:       qt6-qtdeclarative
 Requires:       qt6-qtwayland
 Requires:       kf6-qqc2-desktop-style
 Requires:       polkit
+Requires:       dnf
+Requires:       /usr/bin/pkexec
 
 %description
 ro-Control is a Qt6/KDE Plasma desktop application that helps users
@@ -51,9 +51,9 @@ tar -xzf %{SOURCE0} --strip-components=1
 %license LICENSE
 %doc README.md README.tr.md CHANGELOG.md
 %{_bindir}/ro-control
-%{_datadir}/applications/ro-control.desktop
+%{_datadir}/applications/io.github.projectroasd.rocontrol.desktop
 %{_datadir}/man/man1/ro-control.1*
-%{_datadir}/metainfo/ro-control.metainfo.xml
+%{_datadir}/metainfo/io.github.projectroasd.rocontrol.metainfo.xml
 %{_datadir}/icons/hicolor/256x256/apps/ro-control.png
 %{_datadir}/icons/hicolor/scalable/apps/ro-control.svg
 %{_datadir}/bash-completion/completions/ro-control
@@ -63,5 +63,9 @@ tar -xzf %{SOURCE0} --strip-components=1
 %{_datadir}/polkit-1/actions/io.github.ProjectRoASD.rocontrol.policy
 
 %changelog
+* Mon Mar 16 2026 ro-Control Maintainers <noreply@github.com> - 0.1.0-2
+- Fix Fedora runtime dependencies for DNF and pkexec
+- Restore standard RPM artifact naming to avoid output collisions
+
 * Fri Mar 06 2026 ro-Control Maintainers <noreply@github.com> - 0.1.0-1
 - Initial RPM packaging spec
