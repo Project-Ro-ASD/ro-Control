@@ -9,6 +9,7 @@ Item {
     property bool darkMode: false
     property bool compactMode: false
     property bool showAdvancedInfo: true
+    readonly property string themeMode: uiPreferences.themeMode
 
     ScrollView {
         id: pageScroll
@@ -29,8 +30,47 @@ Item {
                 SectionPanel {
                     Layout.fillWidth: true
                     theme: settingsPage.theme
-                    title: qsTr("Interface")
-                    subtitle: qsTr("Tune the shell density and how much operational detail the app exposes.")
+                    title: qsTr("Appearance & Behavior")
+                    subtitle: qsTr("Control theme, density and operator-focused interface behavior.")
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 12
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 4
+
+                            Label {
+                                text: qsTr("Theme mode")
+                                font.bold: true
+                                color: settingsPage.theme.text
+                            }
+
+                            Label {
+                                text: qsTr("Choose whether the application follows the OS theme or uses an explicit light or dark shell.")
+                                wrapMode: Text.Wrap
+                                color: settingsPage.theme.textSoft
+                                Layout.fillWidth: true
+                            }
+                        }
+
+                        ComboBox {
+                            id: themePicker
+                            Layout.preferredWidth: 220
+                            model: uiPreferences.availableThemeModes
+                            textRole: "label"
+
+                            Component.onCompleted: settingsPage.syncThemePicker()
+
+                            onActivated: {
+                                const selected = model[currentIndex];
+                                if (selected && selected.code) {
+                                    uiPreferences.setThemeMode(selected.code);
+                                }
+                            }
+                        }
+                    }
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -58,16 +98,9 @@ Item {
                             id: languagePicker
                             Layout.preferredWidth: 220
                             model: languageManager.availableLanguages
-                            textRole: "label"
+                            textRole: "nativeLabel"
 
-                            Component.onCompleted: {
-                                for (let i = 0; i < model.length; ++i) {
-                                    if (model[i].code === languageManager.currentLanguage) {
-                                        currentIndex = i;
-                                        break;
-                                    }
-                                }
-                            }
+                            Component.onCompleted: settingsPage.syncLanguagePicker()
 
                             onActivated: {
                                 const selected = model[currentIndex];
@@ -100,8 +133,8 @@ Item {
                         }
 
                         Switch {
-                            checked: settingsPage.compactMode
-                            onToggled: settingsPage.compactMode = checked
+                            checked: uiPreferences.compactMode
+                            onToggled: uiPreferences.setCompactMode(checked)
                         }
                     }
 
@@ -127,12 +160,12 @@ Item {
                         }
 
                         Switch {
-                            checked: settingsPage.showAdvancedInfo
-                            onToggled: settingsPage.showAdvancedInfo = checked
+                            checked: uiPreferences.showAdvancedInfo
+                            onToggled: uiPreferences.setShowAdvancedInfo(checked)
                         }
                     }
 
-                    RowLayout {
+                    Flow {
                         Layout.fillWidth: true
                         spacing: 8
 
@@ -143,15 +176,42 @@ Item {
                         }
 
                         InfoBadge {
-                            text: settingsPage.darkMode ? qsTr("System Dark Theme") : qsTr("System Light Theme")
+                            text: settingsPage.themeMode === "system"
+                                  ? qsTr("Theme: Follow System")
+                                  : settingsPage.darkMode ? qsTr("Theme: Dark")
+                                                          : qsTr("Theme: Light")
                             backgroundColor: settingsPage.theme.infoBg
                             foregroundColor: settingsPage.theme.text
                         }
 
                         InfoBadge {
-                            text: settingsPage.compactMode ? qsTr("Compact Active") : qsTr("Comfort Active")
+                            text: uiPreferences.compactMode ? qsTr("Compact Active") : qsTr("Comfort Active")
                             backgroundColor: settingsPage.theme.cardStrong
                             foregroundColor: settingsPage.theme.text
+                        }
+
+                        InfoBadge {
+                            text: uiPreferences.showAdvancedInfo ? qsTr("Advanced Visible") : qsTr("Advanced Hidden")
+                            backgroundColor: settingsPage.theme.cardStrong
+                            foregroundColor: settingsPage.theme.text
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 12
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: qsTr("Restore the recommended interface defaults if the shell starts to feel cluttered.")
+                            wrapMode: Text.Wrap
+                            color: settingsPage.theme.textSoft
+                        }
+
+                        ActionButton {
+                            theme: settingsPage.theme
+                            text: qsTr("Reset Interface Defaults")
+                            onClicked: uiPreferences.resetToDefaults()
                         }
                     }
                 }
@@ -247,24 +307,52 @@ Item {
                             Layout.fillWidth: true
                             theme: settingsPage.theme
                             label: qsTr("Theme")
-                            value: settingsPage.darkMode ? qsTr("System Dark") : qsTr("System Light")
+                            value: settingsPage.themeMode === "system"
+                                   ? qsTr("Follow System")
+                                   : settingsPage.darkMode ? qsTr("Dark")
+                                                           : qsTr("Light")
+                        }
+
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: settingsPage.theme
+                            label: qsTr("Effective language")
+                            value: languageManager.displayNameForLanguage(languageManager.effectiveLanguage)
                         }
 
                         DetailRow {
                             Layout.fillWidth: true
                             theme: settingsPage.theme
                             label: qsTr("Layout density")
-                            value: settingsPage.compactMode ? qsTr("Compact") : qsTr("Comfort")
+                            value: uiPreferences.compactMode ? qsTr("Compact") : qsTr("Comfort")
                         }
 
                         DetailRow {
                             Layout.fillWidth: true
                             theme: settingsPage.theme
                             label: qsTr("Advanced diagnostics")
-                            value: settingsPage.showAdvancedInfo ? qsTr("Visible") : qsTr("Hidden")
+                            value: uiPreferences.showAdvancedInfo ? qsTr("Visible") : qsTr("Hidden")
                         }
                     }
                 }
+            }
+        }
+    }
+
+    function syncLanguagePicker() {
+        for (let i = 0; i < languagePicker.model.length; ++i) {
+            if (languagePicker.model[i].code === languageManager.currentLanguage) {
+                languagePicker.currentIndex = i;
+                break;
+            }
+        }
+    }
+
+    function syncThemePicker() {
+        for (let i = 0; i < themePicker.model.length; ++i) {
+            if (themePicker.model[i].code === uiPreferences.themeMode) {
+                themePicker.currentIndex = i;
+                break;
             }
         }
     }
@@ -273,12 +361,15 @@ Item {
         target: languageManager
 
         function onCurrentLanguageChanged() {
-            for (let i = 0; i < languagePicker.model.length; ++i) {
-                if (languagePicker.model[i].code === languageManager.currentLanguage) {
-                    languagePicker.currentIndex = i;
-                    break;
-                }
-            }
+            settingsPage.syncLanguagePicker()
+        }
+    }
+
+    Connections {
+        target: uiPreferences
+
+        function onThemeModeChanged() {
+            settingsPage.syncThemePicker()
         }
     }
 }

@@ -10,6 +10,46 @@
 
 namespace {
 
+const QStringList kSharedNvidiaUserspacePackages = {
+    QStringLiteral("xorg-x11-drv-nvidia"),
+    QStringLiteral("xorg-x11-drv-nvidia-libs"),
+    QStringLiteral("xorg-x11-drv-nvidia-cuda"),
+    QStringLiteral("xorg-x11-drv-nvidia-cuda-libs"),
+    QStringLiteral("nvidia-modprobe"),
+    QStringLiteral("nvidia-persistenced"),
+    QStringLiteral("nvidia-settings"),
+};
+
+const QStringList kKernelPackageCleanupTargets = {
+    QStringLiteral("akmod-nvidia"),
+    QStringLiteral("akmod-nvidia-open"),
+    QStringLiteral("xorg-x11-drv-nvidia-kmodsrc"),
+};
+
+const char kNvidiaLicenseUrl[] =
+    "https://www.nvidia.com/en-us/drivers/nvidia-license/";
+
+QString commandError(const CommandRunner::Result &result,
+                     const QString &fallback = QString()) {
+  const QString stderrText = result.stderr.trimmed();
+  if (!stderrText.isEmpty()) {
+    return stderrText;
+  }
+
+  const QString stdoutText = result.stdout.trimmed();
+  if (!stdoutText.isEmpty()) {
+    return stdoutText;
+  }
+
+  return fallback;
+}
+
+QStringList buildDriverInstallTargets(const QString &kernelPackageName) {
+  QStringList packages{kernelPackageName};
+  packages << kSharedNvidiaUserspacePackages;
+  return packages;
+}
+
 void emitProgressAsync(const QPointer<NvidiaInstaller> &guard,
                        const QString &message) {
   QMetaObject::invokeMethod(
@@ -110,40 +150,11 @@ void NvidiaInstaller::setProprietaryAgreement(bool required,
 }
 
 void NvidiaInstaller::refreshProprietaryAgreement() {
-  CommandRunner runner;
-  const auto info =
-      runner.run(QStringLiteral("dnf"),
-                 {QStringLiteral("info"), QStringLiteral("akmod-nvidia")});
-
-  if (!info.success()) {
-    setProprietaryAgreement(false, QString());
-    return;
-  }
-
-  QString licenseLine;
-  const QStringList lines = info.stdout.split(QLatin1Char('\n'));
-  for (const QString &line : lines) {
-    if (line.startsWith(QStringLiteral("License"), Qt::CaseInsensitive)) {
-      licenseLine = line;
-      break;
-    }
-  }
-
-  const QString lowered = licenseLine.toLower();
-  const bool requiresAgreement =
-      lowered.contains(QStringLiteral("eula")) ||
-      lowered.contains(QStringLiteral("proprietary")) ||
-      lowered.contains(QStringLiteral("nvidia"));
-
-  if (requiresAgreement) {
-    setProprietaryAgreement(
-        true, tr("You must accept the NVIDIA proprietary driver license terms "
-                 "before installation. Detected license: %1")
-                  .arg(licenseLine.isEmpty() ? tr("Unknown") : licenseLine));
-    return;
-  }
-
-  setProprietaryAgreement(false, QString());
+  setProprietaryAgreement(
+      true,
+      tr("The proprietary NVIDIA driver is subject to NVIDIA's software "
+         "license. Review the official NVIDIA license before installation: %1")
+          .arg(QString::fromLatin1(kNvidiaLicenseUrl)));
 }
 
 void NvidiaInstaller::install() { installProprietary(false); }
@@ -153,7 +164,7 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
 
   if (m_proprietaryAgreementRequired && !agreementAccepted) {
     emit installFinished(false,
-                         tr("License agreement acceptance is required before "
+                         tr("NVIDIA license review confirmation is required before "
                             "installation."));
     return;
   }
@@ -218,9 +229,12 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
         guard, NvidiaInstaller::tr(
                    "Installing the proprietary NVIDIA driver (akmod-nvidia)..."));
 
-    result = runner.runAsRoot(QStringLiteral("dnf"),
-                              {QStringLiteral("install"), QStringLiteral("-y"),
-                               QStringLiteral("akmod-nvidia")});
+    QStringList installArgs{QStringLiteral("install"), QStringLiteral("-y"),
+                            QStringLiteral("--refresh"),
+                            QStringLiteral("--best"),
+                            QStringLiteral("--allowerasing")};
+    installArgs << buildDriverInstallTargets(QStringLiteral("akmod-nvidia"));
+    result = runner.runAsRoot(QStringLiteral("dnf"), installArgs);
 
     if (!result.success()) {
       const QString error =
@@ -294,19 +308,18 @@ void NvidiaInstaller::installOpenSource() {
     CommandRunner runner;
     attachRunnerLogging(runner, guard);
 
-    emitProgressAsync(guard,
-                      NvidiaInstaller::tr("Switching to the open-source driver..."));
+    emitProgressAsync(
+        guard, NvidiaInstaller::tr("Switching to NVIDIA open kernel modules..."));
 
     auto result = runner.runAsRoot(
         QStringLiteral("dnf"),
-        {QStringLiteral("remove"), QStringLiteral("-y"),
-         QStringLiteral("akmod-nvidia"),
-         QStringLiteral("xorg-x11-drv-nvidia*")});
+        QStringList{QStringLiteral("remove"), QStringLiteral("-y")} +
+            kKernelPackageCleanupTargets);
 
     if (!result.success()) {
       const QString error =
-          NvidiaInstaller::tr("Failed to remove proprietary packages: ") +
-          result.stderr.trimmed();
+          NvidiaInstaller::tr("Failed to remove conflicting NVIDIA kernel packages: ") +
+          commandError(result);
       QMetaObject::invokeMethod(
           guard,
           [guard, error]() {
@@ -318,20 +331,57 @@ void NvidiaInstaller::installOpenSource() {
       return;
     }
 
-    result = runner.runAsRoot(QStringLiteral("dnf"),
-                              {QStringLiteral("install"), QStringLiteral("-y"),
-                               QStringLiteral("xorg-x11-drv-nouveau"),
-                               QStringLiteral("mesa-dri-drivers")});
+    QStringList installArgs{QStringLiteral("install"), QStringLiteral("-y"),
+                            QStringLiteral("--refresh"),
+                            QStringLiteral("--best"),
+                            QStringLiteral("--allowerasing")};
+    installArgs
+        << buildDriverInstallTargets(QStringLiteral("akmod-nvidia-open"));
+    result = runner.runAsRoot(QStringLiteral("dnf"), installArgs);
 
     if (!result.success()) {
       const QString error =
-          NvidiaInstaller::tr("Open-source driver installation failed: ") +
-          result.stderr.trimmed();
+          NvidiaInstaller::tr("Open NVIDIA kernel module installation failed: ") +
+          commandError(result);
       QMetaObject::invokeMethod(
           guard,
           [guard, error]() {
             if (guard) {
               emit guard->installFinished(false, error);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
+
+    emitProgressAsync(
+        guard,
+        NvidiaInstaller::tr("Building the kernel module (akmods --force)..."));
+    result = runner.runAsRoot(QStringLiteral("akmods"),
+                              {QStringLiteral("--force")});
+    if (!result.success()) {
+      const QString error =
+          NvidiaInstaller::tr("Kernel module build failed: ") +
+          commandError(result, NvidiaInstaller::tr("unknown error"));
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, error]() {
+            if (guard) {
+              emit guard->installFinished(false, error);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
+
+    QString sessionError;
+    const QString sessionType = SessionUtil::detectSessionType();
+    if (!guard->applySessionSpecificSetup(runner, sessionType, &sessionError)) {
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, sessionError]() {
+            if (guard) {
+              emit guard->installFinished(false, sessionError);
             }
           },
           Qt::QueuedConnection);
@@ -346,8 +396,8 @@ void NvidiaInstaller::installOpenSource() {
           if (guard) {
             emit guard->installFinished(
                 true,
-                NvidiaInstaller::tr("The open-source driver (Nouveau) was installed. "
-                          "Please restart the system."));
+                NvidiaInstaller::tr("NVIDIA open kernel modules were installed "
+                                    "successfully. Please restart the system."));
           }
         },
         Qt::QueuedConnection);
@@ -371,6 +421,7 @@ void NvidiaInstaller::remove() {
         QStringLiteral("dnf"),
         {QStringLiteral("remove"), QStringLiteral("-y"),
          QStringLiteral("akmod-nvidia"),
+         QStringLiteral("akmod-nvidia-open"),
          QStringLiteral("xorg-x11-drv-nvidia*")});
 
     const bool success = result.success();
@@ -404,7 +455,8 @@ void NvidiaInstaller::deepClean() {
     const auto removeResult = runner.runAsRoot(
         QStringLiteral("dnf"),
         {QStringLiteral("remove"), QStringLiteral("-y"),
-         QStringLiteral("*nvidia*"), QStringLiteral("*akmod*")});
+         QStringLiteral("*nvidia*"), QStringLiteral("*akmod*"),
+         QStringLiteral("*nvidia-open*")});
 
     if (!removeResult.success()) {
       const QString error =

@@ -19,6 +19,7 @@ Item {
     property double operationStartedAt: 0
     property double lastLogAt: 0
     property int operationElapsedSeconds: 0
+    readonly property string nvidiaLicenseUrl: "https://www.nvidia.com/en-us/drivers/nvidia-license/"
     readonly property bool backendBusy: nvidiaInstaller.busy || nvidiaUpdater.busy
     readonly property bool operationRunning: page.operationActive || page.backendBusy
 
@@ -284,7 +285,7 @@ Item {
                         }
 
                         InfoBadge {
-                            text: nvidiaDetector.nouveauActive ? qsTr("Nouveau Active") : qsTr("Nouveau Inactive")
+                            text: nvidiaDetector.nouveauActive ? qsTr("Fallback Open Driver Active") : qsTr("Fallback Open Driver Inactive")
                             backgroundColor: nvidiaDetector.nouveauActive ? page.theme.warningBg : page.theme.cardStrong
                             foregroundColor: page.theme.text
                         }
@@ -380,7 +381,17 @@ Item {
                     CheckBox {
                         id: eulaAccept
                         visible: nvidiaInstaller.proprietaryAgreementRequired
-                        text: qsTr("I accept the detected license / agreement terms")
+                        text: qsTr("I reviewed the NVIDIA license terms")
+                    }
+
+                    Label {
+                        Layout.fillWidth: true
+                        visible: nvidiaInstaller.proprietaryAgreementRequired
+                        textFormat: Text.RichText
+                        wrapMode: Text.Wrap
+                        color: page.theme.textSoft
+                        text: qsTr("Official NVIDIA license: <a href=\"%1\">%1</a>").arg(page.nvidiaLicenseUrl)
+                        onLinkActivated: function(link) { Qt.openUrlExternally(link) }
                     }
 
                     GridLayout {
@@ -393,7 +404,7 @@ Item {
                             Layout.fillWidth: true
                             theme: page.theme
                             tone: "primary"
-                            text: qsTr("Install Proprietary")
+                            text: qsTr("Install NVIDIA Driver")
                             enabled: !nvidiaInstaller.busy && (!nvidiaInstaller.proprietaryAgreementRequired || eulaAccept.checked)
                             onClicked: {
                                 page.setOperationState(qsTr("Installer"), qsTr("Installing the proprietary NVIDIA driver (akmod-nvidia)..."), "info", true);
@@ -404,10 +415,10 @@ Item {
                         ActionButton {
                             Layout.fillWidth: true
                             theme: page.theme
-                            text: qsTr("Install Nouveau")
+                            text: qsTr("Install Open Kernel Modules")
                             enabled: !nvidiaInstaller.busy
                             onClicked: {
-                                page.setOperationState(qsTr("Installer"), qsTr("Switching to the open-source driver..."), "info", true);
+                                page.setOperationState(qsTr("Installer"), qsTr("Switching to NVIDIA open kernel modules..."), "info", true);
                                 nvidiaInstaller.installOpenSource();
                             }
                         }

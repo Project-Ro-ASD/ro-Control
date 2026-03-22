@@ -50,11 +50,14 @@ private:
   void setLatestVersion(const QString &version);
   void setAvailableVersions(const QStringList &versions);
   bool transactionChanged(const CommandRunner::Result &result) const;
+  QString detectInstalledKernelPackageName() const;
   QStringList buildTransactionArguments(const QString &requestedVersion,
                                         const QString &installedVersion,
-                                        const QString &sessionType) const;
+                                        const QString &sessionType,
+                                        const QString &kernelPackageName) const;
   QStringList buildDriverTargets(const QString &version,
-                                 const QString &sessionType) const;
+                                 const QString &sessionType,
+                                 const QString &kernelPackageName) const;
   bool finalizeDriverChange(CommandRunner &runner, const QString &sessionType,
                             QString *errorMessage);
   QString detectSessionType() const;

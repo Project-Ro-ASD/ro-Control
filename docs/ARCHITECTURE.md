@@ -61,7 +61,9 @@ Divided into three modules:
 |------|---------------|
 | `commandrunner.cpp` | Execute shell commands, capture stdout/stderr |
 | `dnfmanager.cpp` | Wrap DNF commands for install/remove/update |
+| `languagemanager.cpp` | Load runtime locale catalogs and expose shipped language choices |
 | `polkit.cpp` | Privilege escalation via `pkexec` / PolicyKit D-Bus |
+| `uipreferencesmanager.cpp` | Persist theme mode, density, and diagnostics visibility |
 
 ---
 
@@ -131,7 +133,7 @@ CMake 3.22+ with `qt_add_qml_module` for QML resource embedding. All QML files a
 
 ## Test Layout
 
-- `test_detector`, `test_updater`, `test_monitor`, `test_system_integration`, `test_cli`: backend and CLI regression coverage
+- `test_detector`, `test_updater`, `test_monitor`, `test_preferences`, `test_system_integration`, `test_cli`: backend and CLI regression coverage
 - `test_driver_page`: QML integration coverage for frontend/backend state bindings
 - `ro-control_lrelease`: release target that compiles shipped locale catalogs
 
@@ -157,8 +159,10 @@ ro-Control/
 │   │   ├── system/
 │   │   │   ├── commandrunner.h / commandrunner.cpp
 │   │   │   ├── dnfmanager.h / dnfmanager.cpp
+│   │   │   ├── languagemanager.h / languagemanager.cpp
 │   │   │   ├── polkit.h / polkit.cpp
-│   │   │   └── sessionutil.h / sessionutil.cpp
+│   │   │   ├── sessionutil.h / sessionutil.cpp
+│   │   │   └── uipreferencesmanager.h / uipreferencesmanager.cpp
 │   │   └── cli/
 │   │       └── cli.h / cli.cpp
 │   ├── qml/
@@ -166,6 +170,8 @@ ro-Control/
 │   │   │   ├── ro-control-logo.png
 │   │   │   └── ro-control-logo.svg
 │   │   ├── components/
+│   │   │   ├── ActionButton.qml
+│   │   │   ├── DetailRow.qml
 │   │   │   ├── InfoBadge.qml
 │   │   │   ├── SectionPanel.qml
 │   │   │   ├── SidebarMenu.qml

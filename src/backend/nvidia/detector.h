@@ -28,6 +28,7 @@ public:
     QString vbiosVersion;
     bool driverLoaded = false;
     bool nouveauActive = false;
+    bool openKernelModulesInstalled = false;
     bool secureBootEnabled = false;
     bool secureBootKnown = false;
     QString sessionType;
@@ -63,6 +64,7 @@ signals:
 private:
   QString detectGpuName() const;
   QString detectDriverVersion() const;
+  bool isPackageInstalled(const QString &packageName) const;
   bool isModuleLoaded(const QString &moduleName) const;
   bool detectSecureBoot(bool *known = nullptr) const;
 

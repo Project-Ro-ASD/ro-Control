@@ -74,6 +74,7 @@ set(BACKEND_SOURCES
     src/backend/system/sessionutil.cpp
     src/backend/system/capabilityprobe.cpp
     src/backend/system/languagemanager.cpp
+    src/backend/system/uipreferencesmanager.cpp
 )
 
 set(APP_SOURCES
@@ -143,6 +144,8 @@ if(Qt6LinguistTools_FOUND)
     # English strings ship directly from source code. Keep the English TS file
     # for catalog maintenance, but only compile non-source locales into .qm.
     set(TS_FILES
+        i18n/ro-control_de.ts
+        i18n/ro-control_es.ts
         i18n/ro-control_tr.ts
     )
 

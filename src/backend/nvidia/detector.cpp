@@ -19,6 +19,8 @@ NvidiaDetector::GpuInfo NvidiaDetector::detect() const {
   info.driverVersion = detectDriverVersion();
   info.driverLoaded = isModuleLoaded(QStringLiteral("nvidia"));
   info.nouveauActive = isModuleLoaded(QStringLiteral("nouveau"));
+  info.openKernelModulesInstalled =
+      isPackageInstalled(QStringLiteral("akmod-nvidia-open"));
   info.secureBootEnabled = detectSecureBoot(&info.secureBootKnown);
   info.sessionType = SessionUtil::detectSessionType();
 
@@ -36,10 +38,14 @@ QString NvidiaDetector::installedDriverVersion() const {
 }
 
 QString NvidiaDetector::activeDriver() const {
-  if (m_info.driverLoaded)
-    return tr("Proprietary (NVIDIA)");
+  if (m_info.driverLoaded) {
+    if (m_info.openKernelModulesInstalled) {
+      return tr("NVIDIA Open Kernel Modules");
+    }
+    return tr("NVIDIA Driver");
+  }
   if (m_info.nouveauActive)
-    return tr("Open Source (Nouveau)");
+    return tr("Fallback Open Driver");
   return tr("Not Installed / Unknown");
 }
 
@@ -49,13 +55,13 @@ QString NvidiaDetector::verificationReport() const {
       m_info.driverVersion.isEmpty() ? tr("None") : m_info.driverVersion;
 
   return tr("GPU: %1\nDriver Version: %2\nSecure Boot: %3\nSession: %4\n"
-            "NVIDIA Module: %5\nNouveau: %6")
+            "Active Stack: %5\nFallback Open Driver: %6")
       .arg(gpuText, versionText,
            m_info.secureBootKnown
                ? (m_info.secureBootEnabled ? tr("Enabled") : tr("Disabled"))
                : tr("Disabled / Unknown"),
            m_info.sessionType.isEmpty() ? tr("Unknown") : m_info.sessionType,
-           m_info.driverLoaded ? tr("Loaded") : tr("Not loaded"),
+           activeDriver(),
            m_info.nouveauActive ? tr("Active") : tr("Inactive"));
 }
 
@@ -129,6 +135,17 @@ QString NvidiaDetector::detectDriverVersion() const {
   return {};
 }
 
+bool NvidiaDetector::isPackageInstalled(const QString &packageName) const {
+  if (!CapabilityProbe::isToolAvailable(QStringLiteral("rpm"))) {
+    return false;
+  }
+
+  CommandRunner runner;
+  const auto result =
+      runner.run(QStringLiteral("rpm"), {QStringLiteral("-q"), packageName});
+  return result.success();
+}
+
 bool NvidiaDetector::isModuleLoaded(const QString &moduleName) const {
   QFile modules(QStringLiteral("/proc/modules"));
   if (!modules.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -170,4 +187,3 @@ bool NvidiaDetector::detectSecureBoot(bool *known) const {
 
   return false;
 }
-

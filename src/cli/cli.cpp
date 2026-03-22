@@ -3,6 +3,7 @@
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QCoreApplication>
+#include <QEventLoop>
 #include <QJsonObject>
 #include <QLocale>
 #include <QTextStream>
@@ -65,10 +66,10 @@ QString buildHelpText(const QString &applicationName,
   stream << "Driver install options:\n";
   stream << "  --proprietary              Install the proprietary akmod-nvidia "
             "stack.\n";
-  stream << "  --open-source              Install the open-source Nouveau "
-            "stack.\n";
-  stream << "  --accept-license           Confirm proprietary driver license "
-            "acceptance.\n\n";
+  stream << "  --open-source              Install the NVIDIA open kernel "
+            "module stack.\n";
+  stream << "  --accept-license           Confirm NVIDIA license review for "
+            "the proprietary install path.\n\n";
   stream << "Global options:\n";
   stream << "  -h, --help                 Show help and exit.\n";
   stream << "  -v, --version              Show version and exit.\n";
@@ -112,11 +113,11 @@ void configureParser(QCommandLineParser &parser, const QString &applicationName,
       QStringLiteral("Use the proprietary NVIDIA driver install path.")));
   parser.addOption(QCommandLineOption(
       {QStringLiteral("open-source")},
-      QStringLiteral("Use the open-source Nouveau install path.")));
+      QStringLiteral("Use the NVIDIA open kernel module install path.")));
   parser.addOption(QCommandLineOption(
       {QStringLiteral("accept-license")},
       QStringLiteral(
-          "Confirm that the proprietary NVIDIA license was reviewed.")));
+          "Confirm that the NVIDIA license was reviewed.")));
   parser.addPositionalArgument(QStringLiteral("command"),
                                QStringLiteral("CLI command to execute."));
   parser.addPositionalArgument(
@@ -347,7 +348,23 @@ DiagnosticsSnapshot collectDiagnostics(const QString &applicationName,
   snapshot.verificationReport = detector.verificationReport();
 
   NvidiaUpdater updater;
+  QEventLoop updaterLoop;
+  bool updaterStarted = false;
+  QObject::connect(&updater, &NvidiaUpdater::busyChanged, &updater,
+                   [&]() {
+                     if (updater.busy()) {
+                       updaterStarted = true;
+                       return;
+                     }
+
+                     if (updaterStarted) {
+                       updaterLoop.quit();
+                     }
+                   });
   updater.checkForUpdate();
+  if (updater.busy()) {
+    updaterLoop.exec();
+  }
   snapshot.currentDriverVersion = updater.currentVersion();
   snapshot.latestDriverVersion = updater.latestVersion();
   snapshot.updateAvailable = updater.updateAvailable();

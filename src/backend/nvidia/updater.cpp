@@ -1,6 +1,7 @@
 #include "updater.h"
 #include "detector.h"
 #include "system/commandrunner.h"
+#include "system/capabilityprobe.h"
 #include "system/sessionutil.h"
 #include "versionparser.h"
 
@@ -12,8 +13,7 @@
 
 namespace {
 
-const QStringList kVersionLockedDriverPackages = {
-    QStringLiteral("akmod-nvidia"),
+const QStringList kSharedVersionLockedDriverPackages = {
     QStringLiteral("xorg-x11-drv-nvidia"),
     QStringLiteral("xorg-x11-drv-nvidia-libs"),
     QStringLiteral("xorg-x11-drv-nvidia-cuda"),
@@ -67,13 +67,30 @@ QString firstNonEmptyLine(const QString &text) {
   return {};
 }
 
-QString queryLatestRemoteVersion(CommandRunner &runner) {
+QString detectInstalledKernelPackageName() {
+  if (!CapabilityProbe::isToolAvailable(QStringLiteral("rpm"))) {
+    return QStringLiteral("akmod-nvidia");
+  }
+
+  CommandRunner runner;
+  const auto openResult = runner.run(
+      QStringLiteral("rpm"),
+      {QStringLiteral("-q"), QStringLiteral("akmod-nvidia-open")});
+  if (openResult.success()) {
+    return QStringLiteral("akmod-nvidia-open");
+  }
+
+  return QStringLiteral("akmod-nvidia");
+}
+
+QString queryLatestRemoteVersion(CommandRunner &runner,
+                                 const QString &kernelPackageName) {
   const auto result = runner.run(
       QStringLiteral("dnf"),
       {QStringLiteral("--refresh"), QStringLiteral("repoquery"),
        QStringLiteral("--latest-limit"), QStringLiteral("1"),
        QStringLiteral("--qf"), QStringLiteral("%{epoch}:%{version}-%{release}"),
-       QStringLiteral("akmod-nvidia")});
+       kernelPackageName});
 
   if (!result.success()) {
     return {};
@@ -85,6 +102,7 @@ QString queryLatestRemoteVersion(CommandRunner &runner) {
 UpdateStatusSnapshot collectUpdateStatus() {
   UpdateStatusSnapshot snapshot;
   NvidiaDetector detector;
+  const QString kernelPackageName = detectInstalledKernelPackageName();
   snapshot.currentVersion = detector.installedDriverVersion();
 
   if (QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty()) {
@@ -97,16 +115,16 @@ UpdateStatusSnapshot collectUpdateStatus() {
       runner.run(QStringLiteral("dnf"),
                  {QStringLiteral("--refresh"), QStringLiteral("list"),
                   QStringLiteral("--showduplicates"),
-                  QStringLiteral("akmod-nvidia")});
+                  kernelPackageName});
 
   if (listResult.success()) {
     snapshot.availableVersions =
         NvidiaVersionParser::parseAvailablePackageVersions(
-            listResult.stdout, QStringLiteral("akmod-nvidia"));
+            listResult.stdout, kernelPackageName);
     snapshot.remoteCatalogAvailable = !snapshot.availableVersions.isEmpty();
   }
 
-  snapshot.latestVersion = queryLatestRemoteVersion(runner);
+  snapshot.latestVersion = queryLatestRemoteVersion(runner, kernelPackageName);
   if (snapshot.latestVersion.isEmpty() && !snapshot.availableVersions.isEmpty()) {
     snapshot.latestVersion = snapshot.availableVersions.constLast();
   }
@@ -130,11 +148,11 @@ UpdateStatusSnapshot collectUpdateStatus() {
 
   const auto checkResult =
       runner.run(QStringLiteral("dnf"), {QStringLiteral("check-update"),
-                                         QStringLiteral("akmod-nvidia")});
+                                         kernelPackageName});
 
   if (checkResult.exitCode == 100) {
     const QString checkUpdateVersion = NvidiaVersionParser::parseCheckUpdateVersion(
-        checkResult.stdout, QStringLiteral("akmod-nvidia"));
+        checkResult.stdout, kernelPackageName);
     if (!checkUpdateVersion.isEmpty()) {
       snapshot.latestVersion = checkUpdateVersion;
     }
@@ -279,13 +297,20 @@ QString NvidiaUpdater::detectSessionType() const {
   return SessionUtil::detectSessionType();
 }
 
+QString NvidiaUpdater::detectInstalledKernelPackageName() const {
+  return ::detectInstalledKernelPackageName();
+}
+
 QStringList
 NvidiaUpdater::buildDriverTargets(const QString &version,
-                                  const QString &sessionType) const {
+                                  const QString &sessionType,
+                                  const QString &kernelPackageName) const {
   Q_UNUSED(sessionType);
   QStringList targets;
+  QStringList versionLockedPackages{kernelPackageName};
+  versionLockedPackages << kSharedVersionLockedDriverPackages;
   targets << NvidiaVersionParser::buildVersionedPackageSpecs(
-      kVersionLockedDriverPackages, version);
+      versionLockedPackages, version);
   targets << kFloatingDriverPackages;
 
   return targets;
@@ -293,7 +318,7 @@ NvidiaUpdater::buildDriverTargets(const QString &version,
 
 QStringList NvidiaUpdater::buildTransactionArguments(
     const QString &requestedVersion, const QString &installedVersion,
-    const QString &sessionType) const {
+    const QString &sessionType, const QString &kernelPackageName) const {
   const QString normalizedRequestedVersion = requestedVersion.trimmed();
   const QString normalizedInstalledVersion = installedVersion.trimmed();
   const QString targetVersion =
@@ -318,7 +343,7 @@ QStringList NvidiaUpdater::buildTransactionArguments(
     args << QStringLiteral("--allowerasing");
   }
 
-  args << buildDriverTargets(targetVersion, sessionType);
+  args << buildDriverTargets(targetVersion, sessionType, kernelPackageName);
   return args;
 }
 
@@ -448,6 +473,7 @@ void NvidiaUpdater::applyVersion(const QString &version) {
     NvidiaDetector detector;
     const QString installedVersion = detector.installedDriverVersion();
     const QString sessionType = SessionUtil::detectSessionType();
+    const QString kernelPackageName = guard->detectInstalledKernelPackageName();
 
     if (!trimmedVersion.isEmpty() && !knownVersions.contains(trimmedVersion)) {
       QMetaObject::invokeMethod(
@@ -473,7 +499,7 @@ void NvidiaUpdater::applyVersion(const QString &version) {
 
     const QStringList args =
         guard->buildTransactionArguments(trimmedVersion, installedVersion,
-                                         sessionType);
+                                         sessionType, kernelPackageName);
 
     auto result = runner.runAsRoot(QStringLiteral("dnf"), args);
     if (!result.success()) {

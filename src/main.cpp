@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QCoreApplication>
+#include <QEventLoop>
 #include <QIcon>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -21,6 +22,7 @@
 #include "backend/nvidia/installer.h"
 #include "backend/nvidia/updater.h"
 #include "backend/system/languagemanager.h"
+#include "backend/system/uipreferencesmanager.h"
 #include "cli/cli.h"
 
 namespace {
@@ -79,18 +81,21 @@ CliExecutionResult executeCliCommand(const RoControlCli::ParsedCommand &command,
     bool finished = false;
     bool success = false;
     QString finalMessage;
+    QEventLoop loop;
 
     QObject::connect(&installer, &NvidiaInstaller::installFinished, &installer,
                      [&](bool ok, const QString &message) {
                        finished = true;
                        success = ok;
                        finalMessage = message;
+                       loop.quit();
                      });
     QObject::connect(&installer, &NvidiaInstaller::removeFinished, &installer,
                      [&](bool ok, const QString &message) {
                        finished = true;
                        success = ok;
                        finalMessage = message;
+                       loop.quit();
                      });
 
     if (command.action ==
@@ -103,9 +108,10 @@ CliExecutionResult executeCliCommand(const RoControlCli::ParsedCommand &command,
       installer.remove();
     } else {
       installer.deepClean();
-      finished = true;
-      success = true;
-      finalMessage = QStringLiteral("Legacy NVIDIA cleanup completed.");
+    }
+
+    if (!finished) {
+      loop.exec();
     }
 
     if (!finalMessage.isEmpty()) {
@@ -128,15 +134,21 @@ CliExecutionResult executeCliCommand(const RoControlCli::ParsedCommand &command,
     bool finished = false;
     bool success = false;
     QString finalMessage;
+    QEventLoop loop;
 
     QObject::connect(&updater, &NvidiaUpdater::updateFinished, &updater,
                      [&](bool ok, const QString &message) {
                        finished = true;
                        success = ok;
                        finalMessage = message;
+                       loop.quit();
                      });
 
     updater.applyUpdate();
+
+    if (!finished) {
+      loop.exec();
+    }
 
     if (!finalMessage.isEmpty()) {
       if (success) {
@@ -255,6 +267,7 @@ int main(int argc, char *argv[]) {
 
   QQmlApplicationEngine engine;
   LanguageManager languageManager(&app, &engine, &translator);
+  UiPreferencesManager uiPreferencesManager;
 
   // Backend nesnelerini tüm QML dosyalarına global olarak aç
   engine.rootContext()->setContextProperty("nvidiaDetector", &detector);
@@ -264,6 +277,8 @@ int main(int argc, char *argv[]) {
   engine.rootContext()->setContextProperty("gpuMonitor", &gpuMonitor);
   engine.rootContext()->setContextProperty("ramMonitor", &ramMonitor);
   engine.rootContext()->setContextProperty("languageManager", &languageManager);
+  engine.rootContext()->setContextProperty("uiPreferences",
+                                           &uiPreferencesManager);
 
   QObject::connect(
       &engine, &QQmlApplicationEngine::objectCreationFailed, &app,

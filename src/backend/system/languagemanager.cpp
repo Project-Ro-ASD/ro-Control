@@ -9,10 +9,19 @@
 
 namespace {
 
-const std::pair<QString, QString> kSupportedLanguages[] = {
-    {QStringLiteral("system"), QStringLiteral("System Default")},
-    {QStringLiteral("en"), QStringLiteral("English")},
-    {QStringLiteral("tr"), QStringLiteral("Turkce")},
+struct LanguageEntry {
+  const char *code;
+  const char *label;
+  const char *nativeLabel;
+  bool shipped;
+};
+
+constexpr LanguageEntry kSupportedLanguages[] = {
+    {"system", "System Default", "System Default", true},
+    {"en", "English", "English", true},
+    {"de", "German", "Deutsch", true},
+    {"es", "Spanish", "Espanol", true},
+    {"tr", "Turkish", "Turkce", true},
 };
 
 } // namespace
@@ -30,16 +39,29 @@ LanguageManager::LanguageManager(QCoreApplication *application, QQmlEngine *engi
 
 QString LanguageManager::currentLanguage() const { return m_currentLanguage; }
 
+QString LanguageManager::effectiveLanguage() const {
+  return effectiveLanguageCode(m_currentLanguage);
+}
+
 QString LanguageManager::currentLanguageLabel() const {
-  return displayNameForLanguage(effectiveLanguageCode(m_currentLanguage));
+  if (m_currentLanguage == QStringLiteral("system")) {
+    return QStringLiteral("%1 (%2)")
+        .arg(displayNameForLanguage(m_currentLanguage),
+             displayNameForLanguage(effectiveLanguage()));
+  }
+
+  return displayNameForLanguage(m_currentLanguage);
 }
 
 QVariantList LanguageManager::availableLanguages() const {
   QVariantList languages;
   for (const auto &entry : kSupportedLanguages) {
     QVariantMap language;
-    language.insert(QStringLiteral("code"), entry.first);
-    language.insert(QStringLiteral("label"), entry.second);
+    language.insert(QStringLiteral("code"), QString::fromLatin1(entry.code));
+    language.insert(QStringLiteral("label"), QString::fromLatin1(entry.label));
+    language.insert(QStringLiteral("nativeLabel"),
+                    QString::fromLatin1(entry.nativeLabel));
+    language.insert(QStringLiteral("shipped"), entry.shipped);
     languages.append(language);
   }
 
@@ -69,8 +91,8 @@ QString LanguageManager::displayNameForLanguage(
     const QString &languageCode) const {
   const QString normalizedLanguage = normalizeLanguageCode(languageCode);
   for (const auto &entry : kSupportedLanguages) {
-    if (entry.first == normalizedLanguage) {
-      return entry.second;
+    if (QString::fromLatin1(entry.code) == normalizedLanguage) {
+      return QString::fromLatin1(entry.nativeLabel);
     }
   }
 
@@ -80,7 +102,7 @@ QString LanguageManager::displayNameForLanguage(
 QString LanguageManager::normalizeLanguageCode(const QString &languageCode) const {
   const QString normalizedLanguage = languageCode.trimmed().toLower();
   for (const auto &entry : kSupportedLanguages) {
-    if (entry.first == normalizedLanguage) {
+    if (QString::fromLatin1(entry.code) == normalizedLanguage) {
       return normalizedLanguage;
     }
   }

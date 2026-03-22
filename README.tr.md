@@ -29,6 +29,7 @@ Mevcut kod tabanı özellikle şu alanlara odaklanır:
 - PolicyKit ve DNF üzerinden güvenli sürücü yaşam döngüsü işlemleri
 - GPU, CPU ve RAM telemetrisi için pratik tanılama araçları
 - İngilizce kaynak metinler ve tam Türkçe çalışma zamanı yerelleştirmesi
+- Kalıcı arayüz tercihleri ve açık `Sistem / Açık / Koyu` tema seçimi
 
 Şu anda **hibrit grafik geçişi**, fan kontrolü veya overclock özellikleri sunmaz.
 
@@ -58,10 +59,11 @@ ro-Control, daha geniş **Project Ro ASD / ro-ASD OS** ekosistemi içinde NVIDIA
 ### 🖥 Ekran & Sistem
 - **Wayland desteği** — Otomatik `nvidia-drm.modeset=1` GRUB yapılandırması
 - **PolicyKit entegrasyonu** — Root olarak çalıştırmadan güvenli yetki yükseltme
+- **Kalıcı kabuk tercihleri** — Kayıtlı tema modu, yoğunluk ve tanılama görünürlüğü
 
 ### 🌍 Çok Dil Desteği
 - Qt çeviri sistemi (`.ts` / `.qm`) ile çalışma zamanı yerelleştirme
-- İngilizce kaynak metinler ve dahil edilmiş Türkçe çeviri
+- Dağıtıma giren çalışma zamanı dilleri: İngilizce ve Türkçe
 - Yeni diller için genişletilebilir iş akışı
 
 ### 🧰 CLI Desteği
@@ -73,7 +75,7 @@ ro-Control, daha geniş **Project Ro ASD / ro-ASD OS** ekosistemi içinde NVIDIA
 - Kurulumla birlikte `man ro-control` sayfası ve Bash/Zsh/Fish completion dosyaları gelir
 
 ### ✅ Test Kapsamı
-- Detector, updater, monitor, CLI ve sistem entegrasyonu için backend testleri
+- Detector, updater, monitor, preferences, CLI ve sistem entegrasyonu için backend testleri
 - `DriverPage` durum senkronizasyonu için QML entegrasyon testi
 - Dağıtıma giren diller için translation release target doğrulaması
 

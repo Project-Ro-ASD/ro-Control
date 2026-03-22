@@ -11,9 +11,12 @@ ApplicationWindow {
     minimumHeight: 680
     title: qsTr("ro-Control")
 
-    readonly property bool darkMode: Qt.styleHints.colorScheme === Qt.Dark
-    property bool compactMode: false
-    property bool showAdvancedInfo: true
+    readonly property string themeMode: uiPreferences.themeMode
+    readonly property bool darkMode: themeMode === "dark"
+                                     || (themeMode === "system"
+                                         && Qt.styleHints.colorScheme === Qt.Dark)
+    readonly property bool compactMode: uiPreferences.compactMode
+    readonly property bool showAdvancedInfo: uiPreferences.showAdvancedInfo
 
     readonly property var pageTitles: [
         qsTr("Driver Control Center"),
@@ -162,7 +165,10 @@ ApplicationWindow {
                             spacing: 10
 
                             InfoBadge {
-                                text: root.darkMode ? qsTr("System Dark") : qsTr("System Light")
+                                text: root.themeMode === "system"
+                                      ? qsTr("Follow System")
+                                      : root.darkMode ? qsTr("Dark Theme")
+                                                      : qsTr("Light Theme")
                                 backgroundColor: root.theme.infoBg
                                 foregroundColor: root.theme.text
                             }
@@ -201,8 +207,6 @@ ApplicationWindow {
                         darkMode: root.darkMode
                         compactMode: root.compactMode
                         showAdvancedInfo: root.showAdvancedInfo
-                        onCompactModeChanged: root.compactMode = compactMode
-                        onShowAdvancedInfoChanged: root.showAdvancedInfo = showAdvancedInfo
                     }
                 }
             }

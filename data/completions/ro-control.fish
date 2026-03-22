@@ -19,5 +19,5 @@ complete -c ro-control -n "__fish_seen_subcommand_from driver; and not __fish_se
 complete -c ro-control -n "__fish_seen_subcommand_from driver; and not __fish_seen_subcommand_from install remove update deep-clean" -a deep-clean -d "Remove legacy NVIDIA leftovers"
 
 complete -c ro-control -n "__fish_seen_subcommand_from install" -l proprietary -d "Use the proprietary NVIDIA driver install path"
-complete -c ro-control -n "__fish_seen_subcommand_from install" -l open-source -d "Use the open-source Nouveau install path"
-complete -c ro-control -n "__fish_seen_subcommand_from install" -l accept-license -d "Confirm proprietary driver license acceptance"
+complete -c ro-control -n "__fish_seen_subcommand_from install" -l open-source -d "Use the NVIDIA open kernel module install path"
+complete -c ro-control -n "__fish_seen_subcommand_from install" -l accept-license -d "Confirm NVIDIA license review for the proprietary install path"

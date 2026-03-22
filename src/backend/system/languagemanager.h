@@ -14,6 +14,8 @@ class LanguageManager : public QObject {
 
   Q_PROPERTY(QString currentLanguage READ currentLanguage WRITE setCurrentLanguage
                  NOTIFY currentLanguageChanged)
+  Q_PROPERTY(QString effectiveLanguage READ effectiveLanguage NOTIFY
+                 currentLanguageChanged)
   Q_PROPERTY(QString currentLanguageLabel READ currentLanguageLabel NOTIFY
                  currentLanguageChanged)
   Q_PROPERTY(QVariantList availableLanguages READ availableLanguages CONSTANT)
@@ -23,6 +25,7 @@ public:
                            QTranslator *translator, QObject *parent = nullptr);
 
   QString currentLanguage() const;
+  QString effectiveLanguage() const;
   QString currentLanguageLabel() const;
   QVariantList availableLanguages() const;
 

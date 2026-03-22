@@ -60,7 +60,8 @@ private slots:
     updater.m_latestVersion = QStringLiteral("3:570.153.02-1.fc42");
 
     const QStringList args =
-        updater.buildTransactionArguments(QString(), QString(), QString());
+        updater.buildTransactionArguments(QString(), QString(), QString(),
+                                         QStringLiteral("akmod-nvidia"));
 
     QCOMPARE(args.value(0), QStringLiteral("install"));
     QVERIFY(args.contains(QStringLiteral("--refresh")));
@@ -76,7 +77,8 @@ private slots:
     updater.m_latestVersion = QStringLiteral("3:570.153.02-1.fc42");
 
     const QStringList args = updater.buildTransactionArguments(
-        QString(), QStringLiteral("3:565.77-1.fc42"), QString());
+        QString(), QStringLiteral("3:565.77-1.fc42"), QString(),
+        QStringLiteral("akmod-nvidia"));
 
     QCOMPARE(args.value(0), QStringLiteral("distro-sync"));
     QVERIFY(args.contains(QStringLiteral("--allowerasing")));
@@ -108,6 +110,18 @@ private slots:
     };
 
     QVERIFY(updater.transactionChanged(result));
+  }
+
+  void testBuildTransactionArgumentsForOpenKernelModules() {
+    NvidiaUpdater updater;
+    updater.m_latestVersion = QStringLiteral("3:570.153.02-1.fc42");
+
+    const QStringList args = updater.buildTransactionArguments(
+        QString(), QStringLiteral("3:565.77-1.fc42"), QString(),
+        QStringLiteral("akmod-nvidia-open"));
+
+    QVERIFY(args.contains(
+        QStringLiteral("akmod-nvidia-open-3:570.153.02-1.fc42")));
   }
 };
 

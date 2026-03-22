@@ -49,6 +49,21 @@ target_link_libraries(test_monitor PRIVATE
 
 add_test(NAME test_monitor COMMAND test_monitor)
 
+# ─── Preferences / Localization Tests ───────────────────────────────────────
+qt_add_executable(test_preferences
+    test_preferences.cpp
+)
+
+ro_control_configure_test(test_preferences)
+
+target_link_libraries(test_preferences PRIVATE
+    Qt6::Qml
+    Qt6::Test
+    ro-control-backend
+)
+
+add_test(NAME test_preferences COMMAND test_preferences)
+
 # ─── System Integration Tests ───────────────────────────────────────────────
 qt_add_executable(test_system_integration
     test_system_integration.cpp

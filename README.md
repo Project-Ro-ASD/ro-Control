@@ -29,6 +29,7 @@ The current codebase focuses on:
 - Safe driver lifecycle operations through PolicyKit and DNF
 - Practical diagnostics for GPU, CPU, and RAM telemetry
 - English source strings with complete Turkish runtime localization
+- Persistent interface preferences with explicit `System / Light / Dark` theme selection
 
 It does **not** currently implement hybrid graphics switching, fan control, or overclocking.
 
@@ -58,6 +59,7 @@ ro-Control is intended to be the NVIDIA operations and diagnostics surface for t
 ### 🖥 Display & System
 - **Wayland support** — Automatic `nvidia-drm.modeset=1` GRUB configuration
 - **PolicyKit integration** — Secure privilege escalation without running as root
+- **Persistent shell preferences** — Saved theme mode, density, and diagnostics visibility
 
 ## Development
 
@@ -74,7 +76,7 @@ The easiest way to develop ro-Control rapidly on Fedora is using the provided `d
 
 ### 🌍 Internationalization
 - Runtime locale loading with Qt translations (`.ts` / `.qm`)
-- English source strings with Turkish translation included
+- Shipped runtime locales: English and Turkish
 - Extensible translation workflow for additional languages
 
 ### 🧰 CLI Support
@@ -86,7 +88,7 @@ The easiest way to develop ro-Control rapidly on Fedora is using the provided `d
 - Installed `man ro-control` page and Bash/Zsh/Fish shell completions
 
 ### ✅ Test Coverage
-- Backend unit tests for detector, updater, monitor, CLI, and system integration flows
+- Backend unit tests for detector, updater, monitor, preferences, CLI, and system integration flows
 - QML integration coverage for `DriverPage` state synchronization
 - Translation release target for shipped locales
 

@@ -1,33 +1,31 @@
 # Security Policy
 
-## Supported Versions
+## Supported Releases
 
-Security fixes are provided for the latest stable release and the `main` branch.
+Security fixes are applied to the latest development branch and the most recent tagged release that matches it.
 
 | Version | Supported |
-| --- | --- |
-| Latest release | :white_check_mark: |
-| `main` branch | :white_check_mark: |
-| Older releases | :x: |
+|---------|-----------|
+| Latest tag | Yes |
+| `main` / active release line | Yes |
+| Older releases | No |
 
 ## Reporting a Vulnerability
 
-Please do not open public issues for security vulnerabilities.
+Do not open public GitHub issues for security-sensitive bugs.
 
-Report vulnerabilities by email:
-- `security@project-ro.dev` (preferred)
+Use GitHub Security Advisories for private reporting:
+- Repository Security tab
+- `Report a vulnerability`
 
-Include the following details in your report:
-- A clear description of the issue and impact
-- Steps to reproduce or a proof of concept
-- Affected version/commit
-- Any suggested mitigation
+Include the following where possible:
+- affected ro-Control version
+- distro and desktop session
+- exact steps to reproduce
+- whether privilege escalation or package operations are involved
+- logs, screenshots, or proof-of-concept details
 
-## Response Timeline
-
-We aim to:
-- Acknowledge reports within 72 hours
-- Provide an initial assessment within 7 days
-- Share remediation or workaround details as soon as possible
-
-Thank you for helping keep ro-Control and its users safe.
+You can expect:
+- an acknowledgement after triage
+- confirmation if the issue is reproducible
+- a fix or mitigation plan for supported versions
