@@ -342,7 +342,8 @@ QObject *TestDriverPage::createPage(DetectorMock *detector,
   tempPageFile.write(pageSource.toUtf8());
   tempPageFile.close();
 
-  const QStringList componentFiles = {QStringLiteral("InfoBadge.qml"),
+  const QStringList componentFiles = {QStringLiteral("ActionButton.qml"),
+                                      QStringLiteral("InfoBadge.qml"),
                                       QStringLiteral("SectionPanel.qml"),
                                       QStringLiteral("StatusBanner.qml"),
                                       QStringLiteral("StatCard.qml")};
@@ -354,6 +355,13 @@ QObject *TestDriverPage::createPage(DetectorMock *detector,
     if (!QFile::copy(sourceComponentPath, targetComponentPath)) {
       qFatal("Failed to copy component fixture for DriverPage test");
     }
+  }
+
+  const QString sourceQmldirPath =
+      QDir(sourceRoot).filePath(QStringLiteral("src/qml/components/qmldir"));
+  const QString targetQmldirPath = componentsDir + QStringLiteral("/qmldir");
+  if (!QFile::copy(sourceQmldirPath, targetQmldirPath)) {
+    qFatal("Failed to copy qmldir fixture for DriverPage test");
   }
 
   QQmlComponent component(engine, QUrl::fromLocalFile(tempPagePath));

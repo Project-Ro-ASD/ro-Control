@@ -1,3 +1,5 @@
+ActionButton 1.0 ActionButton.qml
+DetailRow 1.0 DetailRow.qml
 InfoBadge 1.0 InfoBadge.qml
 SectionPanel 1.0 SectionPanel.qml
 SidebarMenu 1.0 SidebarMenu.qml

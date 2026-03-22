@@ -46,7 +46,7 @@ sudo dnf install \
 Runtime tools used by diagnostics and driver operations:
 
 ```bash
-sudo dnf install dnf polkit pciutils mokutil kmod
+sudo dnf install dnf polkit pciutils mokutil kmod lm_sensors procps-ng
 ```
 
 ---
@@ -80,7 +80,7 @@ cmake --build build -j$(nproc)
 
 ```bash
 lupdate src -ts i18n/ro-control_en.ts i18n/ro-control_tr.ts
-cmake --build build
+cmake --build build --target ro-control_lrelease
 ```
 
 ---
@@ -172,7 +172,7 @@ gcc --version  # Should be 13+
 rm -rf build/.qt build/CMakeFiles
 cmake -S . -B build
 lupdate src -ts i18n/ro-control_en.ts i18n/ro-control_tr.ts
-cmake --build build
+cmake --build build --target ro-control_lrelease
 ```
 
 ---

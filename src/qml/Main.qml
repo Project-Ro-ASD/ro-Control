@@ -120,32 +120,32 @@ ApplicationWindow {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: root.compactMode ? 18 : 24
-                spacing: root.compactMode ? 14 : 18
+                anchors.margins: root.compactMode ? 18 : 28
+                spacing: root.compactMode ? 14 : 20
 
                 Rectangle {
                     Layout.fillWidth: true
-                    radius: 28
+                    radius: 30
                     color: root.theme.card
                     border.width: 1
                     border.color: root.theme.border
-                    implicitHeight: heroLayout.implicitHeight + 40
+                    implicitHeight: heroLayout.implicitHeight + 44
 
                     RowLayout {
                         id: heroLayout
-                        x: 20
-                        y: 20
-                        width: parent.width - 40
-                        spacing: 18
+                        x: 24
+                        y: 22
+                        width: parent.width - 48
+                        spacing: 20
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 6
+                            spacing: 8
 
                             Label {
                                 text: root.pageTitles[sidebar.currentIndex]
-                                font.pixelSize: 28
-                                font.bold: true
+                                font.pixelSize: 30
+                                font.weight: Font.Bold
                                 color: root.theme.text
                             }
 
@@ -157,16 +157,21 @@ ApplicationWindow {
                             }
                         }
 
-                        InfoBadge {
-                            text: root.darkMode ? qsTr("System Dark") : qsTr("System Light")
-                            backgroundColor: root.theme.infoBg
-                            foregroundColor: root.theme.text
-                        }
+                        Flow {
+                            Layout.alignment: Qt.AlignTop
+                            spacing: 10
 
-                        InfoBadge {
-                            text: root.compactMode ? qsTr("Compact Layout") : qsTr("Comfort Layout")
-                            backgroundColor: root.theme.cardStrong
-                            foregroundColor: root.theme.text
+                            InfoBadge {
+                                text: root.darkMode ? qsTr("System Dark") : qsTr("System Light")
+                                backgroundColor: root.theme.infoBg
+                                foregroundColor: root.theme.text
+                            }
+
+                            InfoBadge {
+                                text: root.compactMode ? qsTr("Compact Layout") : qsTr("Comfort Layout")
+                                backgroundColor: root.theme.cardStrong
+                                foregroundColor: root.theme.text
+                            }
                         }
                     }
                 }

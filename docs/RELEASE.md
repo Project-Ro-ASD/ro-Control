@@ -21,6 +21,7 @@ Use this checklist for every production release.
 - [ ] Update `CHANGELOG.md` with final release notes.
 - [ ] Ensure AppStream metadata is up to date.
 - [ ] Refresh translation sources and verify `.ts` files are complete.
+- [ ] Run `cmake --build build --target ro-control_lrelease` and confirm shipped locales compile cleanly.
 - [ ] Smoke-test the app in English and Turkish locales.
 
 ## 4. Packaging

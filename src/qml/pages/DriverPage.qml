@@ -389,8 +389,10 @@ Item {
                         columnSpacing: 10
                         rowSpacing: 10
 
-                        Button {
+                        ActionButton {
                             Layout.fillWidth: true
+                            theme: page.theme
+                            tone: "primary"
                             text: qsTr("Install Proprietary")
                             enabled: !nvidiaInstaller.busy && (!nvidiaInstaller.proprietaryAgreementRequired || eulaAccept.checked)
                             onClicked: {
@@ -399,8 +401,9 @@ Item {
                             }
                         }
 
-                        Button {
+                        ActionButton {
                             Layout.fillWidth: true
+                            theme: page.theme
                             text: qsTr("Install Nouveau")
                             enabled: !nvidiaInstaller.busy
                             onClicked: {
@@ -409,8 +412,10 @@ Item {
                             }
                         }
 
-                        Button {
+                        ActionButton {
                             Layout.fillWidth: true
+                            theme: page.theme
+                            tone: "danger"
                             text: qsTr("Remove Driver")
                             enabled: !nvidiaInstaller.busy
                             onClicked: {
@@ -419,8 +424,9 @@ Item {
                             }
                         }
 
-                        Button {
+                        ActionButton {
                             Layout.fillWidth: true
+                            theme: page.theme
                             text: qsTr("Deep Clean")
                             enabled: !nvidiaInstaller.busy
                             onClicked: {
@@ -433,7 +439,8 @@ Item {
                     RowLayout {
                         Layout.fillWidth: true
 
-                        Button {
+                        ActionButton {
+                            theme: page.theme
                             text: qsTr("Rescan System")
                             enabled: !nvidiaInstaller.busy && !nvidiaUpdater.busy
                             onClicked: {
@@ -485,7 +492,8 @@ Item {
                         Layout.fillWidth: true
                         spacing: 10
 
-                        Button {
+                        ActionButton {
+                            theme: page.theme
                             text: qsTr("Check for Updates")
                             enabled: !nvidiaUpdater.busy && !nvidiaInstaller.busy
                             onClicked: {
@@ -494,7 +502,9 @@ Item {
                             }
                         }
 
-                        Button {
+                        ActionButton {
+                            theme: page.theme
+                            tone: "primary"
                             text: page.driverInstalledLocally ? qsTr("Apply Latest") : qsTr("Install Latest")
                             enabled: !nvidiaUpdater.busy && !nvidiaInstaller.busy && (nvidiaUpdater.updateAvailable || page.canInstallLatestRemoteDriver)
                             onClicked: {
@@ -519,7 +529,8 @@ Item {
                             textRole: "versionTitle"
                         }
 
-                        Button {
+                        ActionButton {
+                            theme: page.theme
                             text: qsTr("Apply Selected")
                             enabled: !nvidiaUpdater.busy && !nvidiaInstaller.busy && versionPicker.currentIndex >= 0 && page.remoteDriverCatalogAvailable
                             onClicked: {
@@ -565,7 +576,8 @@ Item {
                         }
                     }
 
-                    Button {
+                    ActionButton {
+                        theme: page.theme
                         text: qsTr("Clear Log")
                         onClicked: {
                             logArea.text = ""

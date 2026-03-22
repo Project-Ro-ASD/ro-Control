@@ -128,6 +128,8 @@ qt_add_qml_module(ro-control
         src/qml/pages/MonitorPage.qml
         src/qml/pages/SettingsPage.qml
         src/qml/components/InfoBadge.qml
+        src/qml/components/ActionButton.qml
+        src/qml/components/DetailRow.qml
         src/qml/components/SectionPanel.qml
         src/qml/components/StatusBanner.qml
         src/qml/components/StatCard.qml

@@ -162,50 +162,36 @@ Item {
                     title: qsTr("Diagnostics")
                     subtitle: qsTr("Useful runtime context before filing issues or performing support work.")
 
-                    GridLayout {
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        columns: 2
-                        columnSpacing: 10
-                        rowSpacing: 8
+                        spacing: 8
 
-                        Label {
-                            text: qsTr("Application")
-                            color: settingsPage.theme.textMuted
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: settingsPage.theme
+                            label: qsTr("Application")
+                            value: Qt.application.name + " " + Qt.application.version
                         }
 
-                        Label {
-                            text: Qt.application.name + " " + Qt.application.version
-                            color: settingsPage.theme.text
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: settingsPage.theme
+                            label: qsTr("GPU")
+                            value: nvidiaDetector.gpuFound ? nvidiaDetector.gpuName : qsTr("Not detected")
                         }
 
-                        Label {
-                            text: qsTr("GPU")
-                            color: settingsPage.theme.textMuted
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: settingsPage.theme
+                            label: qsTr("Driver")
+                            value: nvidiaDetector.activeDriver
                         }
 
-                        Label {
-                            text: nvidiaDetector.gpuFound ? nvidiaDetector.gpuName : qsTr("Not detected")
-                            color: settingsPage.theme.text
-                        }
-
-                        Label {
-                            text: qsTr("Driver")
-                            color: settingsPage.theme.textMuted
-                        }
-
-                        Label {
-                            text: nvidiaDetector.activeDriver
-                            color: settingsPage.theme.text
-                        }
-
-                        Label {
-                            text: qsTr("Session")
-                            color: settingsPage.theme.textMuted
-                        }
-
-                        Label {
-                            text: nvidiaDetector.sessionType.length > 0 ? nvidiaDetector.sessionType : qsTr("Unknown")
-                            color: settingsPage.theme.text
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: settingsPage.theme
+                            label: qsTr("Session")
+                            value: nvidiaDetector.sessionType.length > 0 ? nvidiaDetector.sessionType : qsTr("Unknown")
                         }
                     }
 
@@ -246,24 +232,37 @@ Item {
                     title: qsTr("About")
                     subtitle: qsTr("Project identity and current shell mode.")
 
-                    Label {
-                        text: qsTr("Application: ") + Qt.application.name + " (" + Qt.application.version + ")"
-                        color: settingsPage.theme.text
-                    }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
 
-                    Label {
-                        text: qsTr("Theme: ") + (settingsPage.darkMode ? qsTr("System Dark") : qsTr("System Light"))
-                        color: settingsPage.theme.text
-                    }
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: settingsPage.theme
+                            label: qsTr("Application")
+                            value: Qt.application.name + " (" + Qt.application.version + ")"
+                        }
 
-                    Label {
-                        text: qsTr("Layout density: ") + (settingsPage.compactMode ? qsTr("Compact") : qsTr("Comfort"))
-                        color: settingsPage.theme.text
-                    }
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: settingsPage.theme
+                            label: qsTr("Theme")
+                            value: settingsPage.darkMode ? qsTr("System Dark") : qsTr("System Light")
+                        }
 
-                    Label {
-                        text: qsTr("Advanced diagnostics: ") + (settingsPage.showAdvancedInfo ? qsTr("Visible") : qsTr("Hidden"))
-                        color: settingsPage.theme.text
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: settingsPage.theme
+                            label: qsTr("Layout density")
+                            value: settingsPage.compactMode ? qsTr("Compact") : qsTr("Comfort")
+                        }
+
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: settingsPage.theme
+                            label: qsTr("Advanced diagnostics")
+                            value: settingsPage.showAdvancedInfo ? qsTr("Visible") : qsTr("Hidden")
+                        }
                     }
                 }
             }

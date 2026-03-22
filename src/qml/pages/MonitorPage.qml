@@ -213,50 +213,36 @@ Item {
                     subtitle: qsTr("Expanded raw values for support and diagnostics.")
                     visible: page.showAdvancedInfo
 
-                    GridLayout {
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        columns: 2
-                        columnSpacing: 10
-                        rowSpacing: 8
+                        spacing: 8
 
-                        Label {
-                            text: qsTr("CPU Temperature")
-                            color: page.theme.textMuted
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: page.theme
+                            label: qsTr("CPU Temperature")
+                            value: page.formatTemperature(cpuMonitor.temperatureC)
                         }
 
-                        Label {
-                            text: page.formatTemperature(cpuMonitor.temperatureC)
-                            color: page.theme.text
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: page.theme
+                            label: qsTr("GPU Temperature")
+                            value: page.gpuTelemetryAvailable ? page.formatTemperature(gpuMonitor.temperatureC) : qsTr("Unknown")
                         }
 
-                        Label {
-                            text: qsTr("GPU Temperature")
-                            color: page.theme.textMuted
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: page.theme
+                            label: qsTr("VRAM")
+                            value: page.gpuTelemetryAvailable ? page.formatMemoryUsage(gpuMonitor.memoryUsedMiB, gpuMonitor.memoryTotalMiB) : qsTr("Unknown")
                         }
 
-                        Label {
-                            text: page.gpuTelemetryAvailable ? page.formatTemperature(gpuMonitor.temperatureC) : qsTr("Unknown")
-                            color: page.theme.text
-                        }
-
-                        Label {
-                            text: qsTr("VRAM")
-                            color: page.theme.textMuted
-                        }
-
-                        Label {
-                            text: page.gpuTelemetryAvailable ? page.formatMemoryUsage(gpuMonitor.memoryUsedMiB, gpuMonitor.memoryTotalMiB) : qsTr("Unknown")
-                            color: page.theme.text
-                        }
-
-                        Label {
-                            text: qsTr("RAM Footprint")
-                            color: page.theme.textMuted
-                        }
-
-                        Label {
-                            text: page.ramTelemetryAvailable ? page.formatMemoryUsage(ramMonitor.usedMiB, ramMonitor.totalMiB) : qsTr("Unknown")
-                            color: page.theme.text
+                        DetailRow {
+                            Layout.fillWidth: true
+                            theme: page.theme
+                            label: qsTr("RAM Footprint")
+                            value: page.ramTelemetryAvailable ? page.formatMemoryUsage(ramMonitor.usedMiB, ramMonitor.totalMiB) : qsTr("Unknown")
                         }
                     }
                 }
@@ -271,7 +257,9 @@ Item {
                         Layout.fillWidth: true
                         spacing: 10
 
-                        Button {
+                        ActionButton {
+                            theme: page.theme
+                            tone: "primary"
                             text: qsTr("Refresh Telemetry")
                             onClicked: {
                                 cpuMonitor.refresh();

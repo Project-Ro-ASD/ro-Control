@@ -22,20 +22,20 @@ Rectangle {
                                    : tone === "error" ? "#5b1820"
                                    : "#12304f"
 
-    radius: 18
+    radius: 20
     color: bannerColor
     border.width: 1
     border.color: borderTone
     visible: text.length > 0
 
-    implicitHeight: bannerLayout.implicitHeight + 24
+    implicitHeight: bannerLayout.implicitHeight + 26
 
     RowLayout {
         id: bannerLayout
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: 12
+        anchors.margins: 14
         spacing: 12
 
         Rectangle {
@@ -50,6 +50,7 @@ Rectangle {
             text: banner.text
             wrapMode: Text.Wrap
             color: banner.textTone
+            font.pixelSize: 14
         }
     }
 }

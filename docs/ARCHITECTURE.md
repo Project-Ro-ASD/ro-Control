@@ -21,7 +21,8 @@ ro-Control follows a strict **C++ Backend / QML Frontend** separation. The two l
                     │  Shell commands / D-Bus
 ┌───────────────────▼─────────────────────────────┐
 │                Linux System                     │
-│   sysfs · nvidia-smi · dnf · pkexec · GRUB      │
+│   sysfs · hwmon · sensors · nvidia-smi · dnf    │
+│   pkexec · GRUB · /proc                          │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -51,9 +52,9 @@ Divided into three modules:
 #### `monitor/` — Live Statistics
 | File | Responsibility |
 |------|---------------|
-| `gpumonitor.cpp` | Poll GPU temperature, load, VRAM via `nvidia-smi` or sysfs |
-| `cpumonitor.cpp` | Poll CPU load and temperature via `/proc/stat` and hwmon |
-| `rammonitor.cpp` | Poll RAM usage via `/proc/meminfo` |
+| `gpumonitor.cpp` | Poll GPU temperature, load, VRAM via `nvidia-smi` |
+| `cpumonitor.cpp` | Poll CPU load via `/proc/stat` and probe temperatures via thermal zones, hwmon, and `sensors` |
+| `rammonitor.cpp` | Poll RAM usage via `/proc/meminfo` with `free --mebi` fallback |
 
 #### `system/` — System Integration
 | File | Responsibility |
@@ -127,6 +128,12 @@ The PolicyKit action definition and helper entrypoint live in `data/polkit/` and
 ## Build System
 
 CMake 3.22+ with `qt_add_qml_module` for QML resource embedding. All QML files are compiled into the binary at build time — no loose `.qml` files needed at runtime.
+
+## Test Layout
+
+- `test_detector`, `test_updater`, `test_monitor`, `test_system_integration`, `test_cli`: backend and CLI regression coverage
+- `test_driver_page`: QML integration coverage for frontend/backend state bindings
+- `ro-control_lrelease`: release target that compiles shipped locale catalogs
 
 See [BUILDING.md](BUILDING.md) for full build instructions.
 
