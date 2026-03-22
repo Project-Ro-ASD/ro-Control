@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <QTemporaryDir>
 #include <QTest>
+#include <QtQuickControls2/QQuickStyle>
 
 class DetectorMock : public QObject {
   Q_OBJECT
@@ -285,10 +286,6 @@ class TestDriverPage : public QObject {
   Q_OBJECT
 
 private slots:
-  void initTestCase() {
-    qputenv("QT_QPA_PLATFORM", QByteArrayLiteral("offscreen"));
-  }
-
   void testDriverInstalledLocallyUsesDetectorVersion();
   void testOperationRunningStillTracksBackendBusyAfterManualStateChanges();
 
@@ -450,5 +447,14 @@ void TestDriverPage::
   QTRY_VERIFY(!page->property("operationRunning").toBool());
 }
 
-QTEST_MAIN(TestDriverPage)
+int main(int argc, char **argv) {
+  qputenv("QT_QPA_PLATFORM", QByteArrayLiteral("offscreen"));
+  qputenv("QT_QUICK_CONTROLS_STYLE", QByteArrayLiteral("Basic"));
+
+  QQuickStyle::setStyle(QStringLiteral("Basic"));
+
+  QGuiApplication app(argc, argv);
+  TestDriverPage testCase;
+  return QTest::qExec(&testCase, argc, argv);
+}
 #include "test_driver_page.moc"

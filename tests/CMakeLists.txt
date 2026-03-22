@@ -128,3 +128,6 @@ target_link_libraries(test_driver_page PRIVATE
 )
 
 add_test(NAME test_driver_page COMMAND test_driver_page)
+set_tests_properties(test_driver_page PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_CONTROLS_STYLE=Basic"
+)
