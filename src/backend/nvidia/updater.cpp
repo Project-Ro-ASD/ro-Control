@@ -46,11 +46,37 @@ struct UpdateStatusSnapshot {
   QString currentVersion;
   QString latestVersion;
   QStringList availableVersions;
+  bool remoteCatalogAvailable = false;
   bool updateAvailable = false;
   QString message;
 };
 
+QString firstNonEmptyLine(const QString &text) {
+  const QStringList lines = text.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
+  for (const QString &line : lines) {
+    const QString trimmedLine = line.trimmed();
+    if (!trimmedLine.isEmpty()) {
+      return trimmedLine;
+    }
+  }
 
+  return {};
+}
+
+QString queryLatestRemoteVersion(CommandRunner &runner) {
+  const auto result = runner.run(
+      QStringLiteral("dnf"),
+      {QStringLiteral("--refresh"), QStringLiteral("repoquery"),
+       QStringLiteral("--latest-limit"), QStringLiteral("1"),
+       QStringLiteral("--qf"), QStringLiteral("%{epoch}:%{version}-%{release}"),
+       QStringLiteral("akmod-nvidia")});
+
+  if (!result.success()) {
+    return {};
+  }
+
+  return firstNonEmptyLine(result.stdout);
+}
 
 UpdateStatusSnapshot collectUpdateStatus() {
   UpdateStatusSnapshot snapshot;
@@ -65,17 +91,36 @@ UpdateStatusSnapshot collectUpdateStatus() {
   CommandRunner runner;
   const auto listResult =
       runner.run(QStringLiteral("dnf"),
-                 {QStringLiteral("list"), QStringLiteral("--showduplicates"),
+                 {QStringLiteral("--refresh"), QStringLiteral("list"),
+                  QStringLiteral("--showduplicates"),
                   QStringLiteral("akmod-nvidia")});
 
   if (listResult.success()) {
     snapshot.availableVersions =
         NvidiaVersionParser::parseAvailablePackageVersions(
             listResult.stdout, QStringLiteral("akmod-nvidia"));
+    snapshot.remoteCatalogAvailable = !snapshot.availableVersions.isEmpty();
+  }
+
+  snapshot.latestVersion = queryLatestRemoteVersion(runner);
+  if (snapshot.latestVersion.isEmpty() && !snapshot.availableVersions.isEmpty()) {
+    snapshot.latestVersion = snapshot.availableVersions.constLast();
   }
 
   if (snapshot.currentVersion.isEmpty()) {
-    snapshot.message = NvidiaUpdater::tr("No installed NVIDIA driver found.");
+    if (snapshot.remoteCatalogAvailable) {
+      snapshot.updateAvailable = true;
+      snapshot.message =
+          snapshot.latestVersion.isEmpty()
+              ? NvidiaUpdater::tr(
+                    "Online NVIDIA packages were found. You can download and install the driver now.")
+              : NvidiaUpdater::tr(
+                    "Online NVIDIA driver found. Latest remote version: %1")
+                    .arg(snapshot.latestVersion);
+    } else {
+      snapshot.message = NvidiaUpdater::tr(
+          "No online NVIDIA package catalog was found. RPM Fusion may not be configured yet.");
+    }
     return snapshot;
   }
 
@@ -84,8 +129,11 @@ UpdateStatusSnapshot collectUpdateStatus() {
                                          QStringLiteral("akmod-nvidia")});
 
   if (checkResult.exitCode == 100) {
-    snapshot.latestVersion = NvidiaVersionParser::parseCheckUpdateVersion(
+    const QString checkUpdateVersion = NvidiaVersionParser::parseCheckUpdateVersion(
         checkResult.stdout, QStringLiteral("akmod-nvidia"));
+    if (!checkUpdateVersion.isEmpty()) {
+      snapshot.latestVersion = checkUpdateVersion;
+    }
     snapshot.updateAvailable = true;
     snapshot.message =
         snapshot.latestVersion.isEmpty()

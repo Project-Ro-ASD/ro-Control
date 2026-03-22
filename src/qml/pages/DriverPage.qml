@@ -45,6 +45,10 @@ Item {
         setOperationState(source, message, success ? "success" : "error", false);
     }
 
+    readonly property bool remoteDriverCatalogAvailable: nvidiaUpdater.availableVersions.length > 0
+    readonly property bool canInstallLatestRemoteDriver: nvidiaDetector.gpuFound && remoteDriverCatalogAvailable
+    readonly property bool driverInstalledLocally: nvidiaUpdater.currentVersion.length > 0
+
     ScrollView {
         id: pageScroll
         anchors.fill: parent
@@ -92,7 +96,13 @@ Item {
                     theme: page.theme
                     title: qsTr("Installed Version")
                     value: nvidiaDetector.driverVersion.length > 0 ? nvidiaDetector.driverVersion : qsTr("None")
-                    subtitle: nvidiaUpdater.updateAvailable ? qsTr("Latest available: ") + nvidiaUpdater.latestVersion : qsTr("No pending package update detected.")
+                    subtitle: page.driverInstalledLocally
+                              ? (nvidiaUpdater.updateAvailable
+                                 ? qsTr("Latest available online: ") + nvidiaUpdater.latestVersion
+                                 : qsTr("No pending online package update detected."))
+                              : (page.remoteDriverCatalogAvailable
+                                 ? qsTr("Latest driver found online: ") + nvidiaUpdater.latestVersion
+                                 : qsTr("No online driver catalog has been loaded yet."))
                     accentColor: page.theme.accentC
                     busy: page.operationRunning
                 }
@@ -299,7 +309,7 @@ Item {
                     Layout.fillWidth: true
                     theme: page.theme
                     title: qsTr("Update Center")
-                    subtitle: qsTr("Check the repository version and pin a specific build when required.")
+                    subtitle: qsTr("Search the online package catalog, then download and install a matching driver build.")
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -312,8 +322,12 @@ Item {
                         }
 
                         InfoBadge {
-                            text: nvidiaUpdater.updateAvailable ? qsTr("Update Available") : qsTr("Up to Date")
-                            backgroundColor: nvidiaUpdater.updateAvailable ? page.theme.warningBg : page.theme.successBg
+                            text: page.driverInstalledLocally
+                                  ? (nvidiaUpdater.updateAvailable ? qsTr("Update Available") : qsTr("Up to Date"))
+                                  : (page.remoteDriverCatalogAvailable ? qsTr("Remote Driver Available") : qsTr("Catalog Not Ready"))
+                            backgroundColor: page.driverInstalledLocally
+                                             ? (nvidiaUpdater.updateAvailable ? page.theme.warningBg : page.theme.successBg)
+                                             : (page.remoteDriverCatalogAvailable ? page.theme.successBg : page.theme.warningBg)
                             foregroundColor: page.theme.text
                         }
                     }
@@ -326,16 +340,19 @@ Item {
                             text: qsTr("Check for Updates")
                             enabled: !nvidiaUpdater.busy && !nvidiaInstaller.busy
                             onClicked: {
-                                page.setOperationState(qsTr("Updater"), qsTr("Starting update check..."), "info", true);
+                                page.setOperationState(qsTr("Updater"), qsTr("Searching the online NVIDIA package catalog..."), "info", true);
                                 nvidiaUpdater.checkForUpdate();
                             }
                         }
 
                         Button {
-                            text: qsTr("Apply Latest")
-                            enabled: !nvidiaUpdater.busy && !nvidiaInstaller.busy && nvidiaUpdater.updateAvailable
+                            text: page.driverInstalledLocally ? qsTr("Apply Latest") : qsTr("Install Latest")
+                            enabled: !nvidiaUpdater.busy && !nvidiaInstaller.busy && (nvidiaUpdater.updateAvailable || page.canInstallLatestRemoteDriver)
                             onClicked: {
-                                page.setOperationState(qsTr("Updater"), qsTr("Updating NVIDIA driver to the latest version..."), "info", true);
+                                page.setOperationState(qsTr("Updater"), page.driverInstalledLocally
+                                                       ? qsTr("Updating NVIDIA driver to the latest online version...")
+                                                       : qsTr("Downloading and installing the latest online NVIDIA driver..."),
+                                                       "info", true);
                                 nvidiaUpdater.applyUpdate();
                             }
                         }
@@ -354,9 +371,12 @@ Item {
 
                         Button {
                             text: qsTr("Apply Selected")
-                            enabled: !nvidiaUpdater.busy && !nvidiaInstaller.busy && versionPicker.currentIndex >= 0
+                            enabled: !nvidiaUpdater.busy && !nvidiaInstaller.busy && versionPicker.currentIndex >= 0 && page.remoteDriverCatalogAvailable
                             onClicked: {
-                                page.setOperationState(qsTr("Updater"), qsTr("Switching NVIDIA driver to selected version: ") + versionPicker.currentText, "info", true);
+                                page.setOperationState(qsTr("Updater"), page.driverInstalledLocally
+                                                       ? qsTr("Switching NVIDIA driver to selected online version: ") + versionPicker.currentText
+                                                       : qsTr("Downloading and installing selected NVIDIA driver version: ") + versionPicker.currentText,
+                                                       "info", true);
                                 nvidiaUpdater.applyVersion(versionPicker.currentText);
                             }
                         }
@@ -367,8 +387,8 @@ Item {
                         wrapMode: Text.Wrap
                         color: page.theme.textSoft
                         text: nvidiaUpdater.availableVersions.length > 0
-                              ? qsTr("Repository versions loaded: ") + nvidiaUpdater.availableVersions.length
-                              : qsTr("No repository version list has been loaded yet.")
+                              ? qsTr("Online repository versions loaded: ") + nvidiaUpdater.availableVersions.length
+                              : qsTr("No online repository version list has been loaded yet.")
                     }
                 }
 
