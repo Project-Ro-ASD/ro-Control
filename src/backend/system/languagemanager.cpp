@@ -26,8 +26,9 @@ constexpr LanguageEntry kSupportedLanguages[] = {
 
 } // namespace
 
-LanguageManager::LanguageManager(QCoreApplication *application, QQmlEngine *engine,
-                                 QTranslator *translator, QObject *parent)
+LanguageManager::LanguageManager(QCoreApplication *application,
+                                 QQmlEngine *engine, QTranslator *translator,
+                                 QObject *parent)
     : QObject(parent), m_application(application), m_engine(engine),
       m_translator(translator) {
   QSettings settings;
@@ -45,9 +46,9 @@ QString LanguageManager::effectiveLanguage() const {
 
 QString LanguageManager::currentLanguageLabel() const {
   if (m_currentLanguage == QStringLiteral("system")) {
-    return QStringLiteral("%1 (%2)")
-        .arg(displayNameForLanguage(m_currentLanguage),
-             displayNameForLanguage(effectiveLanguage()));
+    return QStringLiteral("%1 (%2)").arg(
+        displayNameForLanguage(m_currentLanguage),
+        displayNameForLanguage(effectiveLanguage()));
   }
 
   return displayNameForLanguage(m_currentLanguage);
@@ -87,8 +88,8 @@ void LanguageManager::setCurrentLanguage(const QString &languageCode) {
   emit currentLanguageChanged();
 }
 
-QString LanguageManager::displayNameForLanguage(
-    const QString &languageCode) const {
+QString
+LanguageManager::displayNameForLanguage(const QString &languageCode) const {
   const QString normalizedLanguage = normalizeLanguageCode(languageCode);
   for (const auto &entry : kSupportedLanguages) {
     if (QString::fromLatin1(entry.code) == normalizedLanguage) {
@@ -99,7 +100,8 @@ QString LanguageManager::displayNameForLanguage(
   return normalizedLanguage;
 }
 
-QString LanguageManager::normalizeLanguageCode(const QString &languageCode) const {
+QString
+LanguageManager::normalizeLanguageCode(const QString &languageCode) const {
   const QString normalizedLanguage = languageCode.trimmed().toLower();
   for (const auto &entry : kSupportedLanguages) {
     if (QString::fromLatin1(entry.code) == normalizedLanguage) {
@@ -114,14 +116,16 @@ QString LanguageManager::systemLanguageCode() const {
   return QLocale::system().name().section(QLatin1Char('_'), 0, 0).toLower();
 }
 
-QString LanguageManager::effectiveLanguageCode(const QString &languageCode) const {
+QString
+LanguageManager::effectiveLanguageCode(const QString &languageCode) const {
   const QString normalizedLanguage = normalizeLanguageCode(languageCode);
   return normalizedLanguage == QStringLiteral("system") ? systemLanguageCode()
                                                         : normalizedLanguage;
 }
 
 bool LanguageManager::loadLanguage(const QString &languageCode) {
-  if (m_application == nullptr || m_engine == nullptr || m_translator == nullptr) {
+  if (m_application == nullptr || m_engine == nullptr ||
+      m_translator == nullptr) {
     return false;
   }
 

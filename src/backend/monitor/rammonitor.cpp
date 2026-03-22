@@ -17,13 +17,15 @@ struct RamSnapshot {
 };
 
 QString meminfoPath() {
-  const QString overridePath = qEnvironmentVariable("RO_CONTROL_MEMINFO_PATH")
-                                   .trimmed();
-  return overridePath.isEmpty() ? QStringLiteral("/proc/meminfo") : overridePath;
+  const QString overridePath =
+      qEnvironmentVariable("RO_CONTROL_MEMINFO_PATH").trimmed();
+  return overridePath.isEmpty() ? QStringLiteral("/proc/meminfo")
+                                : overridePath;
 }
 
 RamSnapshot buildSnapshot(qint64 memTotalKiB, qint64 memAvailableKiB) {
-  if (memTotalKiB <= 0 || memAvailableKiB < 0 || memAvailableKiB > memTotalKiB) {
+  if (memTotalKiB <= 0 || memAvailableKiB < 0 ||
+      memAvailableKiB > memTotalKiB) {
     return {};
   }
 
@@ -48,8 +50,8 @@ RamSnapshot readSnapshotFromFree() {
     return {};
   }
 
-  const QStringList lines = result.stdout.split(QLatin1Char('\n'),
-                                                Qt::SkipEmptyParts);
+  const QStringList lines =
+      result.stdout.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
   for (const QString &line : lines) {
     if (!line.startsWith(QStringLiteral("Mem:"))) {
       continue;
@@ -88,10 +90,11 @@ RamSnapshot readSnapshotFromFree() {
     snapshot.valid = true;
     snapshot.totalMiB = totalMiB;
     snapshot.usedMiB = usedMiB;
-    snapshot.usagePercent = std::clamp(
-        static_cast<int>((static_cast<double>(usedMiB) /
-                          static_cast<double>(totalMiB)) * 100.0),
-        0, 100);
+    snapshot.usagePercent =
+        std::clamp(static_cast<int>((static_cast<double>(usedMiB) /
+                                     static_cast<double>(totalMiB)) *
+                                    100.0),
+                   0, 100);
     return snapshot;
   }
 

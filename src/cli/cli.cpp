@@ -116,8 +116,7 @@ void configureParser(QCommandLineParser &parser, const QString &applicationName,
       QStringLiteral("Use the NVIDIA open kernel module install path.")));
   parser.addOption(QCommandLineOption(
       {QStringLiteral("accept-license")},
-      QStringLiteral(
-          "Confirm that the NVIDIA license was reviewed.")));
+      QStringLiteral("Confirm that the NVIDIA license was reviewed.")));
   parser.addPositionalArgument(QStringLiteral("command"),
                                QStringLiteral("CLI command to execute."));
   parser.addPositionalArgument(
@@ -350,17 +349,16 @@ DiagnosticsSnapshot collectDiagnostics(const QString &applicationName,
   NvidiaUpdater updater;
   QEventLoop updaterLoop;
   bool updaterStarted = false;
-  QObject::connect(&updater, &NvidiaUpdater::busyChanged, &updater,
-                   [&]() {
-                     if (updater.busy()) {
-                       updaterStarted = true;
-                       return;
-                     }
+  QObject::connect(&updater, &NvidiaUpdater::busyChanged, &updater, [&]() {
+    if (updater.busy()) {
+      updaterStarted = true;
+      return;
+    }
 
-                     if (updaterStarted) {
-                       updaterLoop.quit();
-                     }
-                   });
+    if (updaterStarted) {
+      updaterLoop.quit();
+    }
+  });
   updater.checkForUpdate();
   if (updater.busy()) {
     updaterLoop.exec();
