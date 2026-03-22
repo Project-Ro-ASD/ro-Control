@@ -66,7 +66,7 @@ Divided into three modules:
 
 ## C++ ↔ QML Communication
 
-Qt's `QObject` system is the bridge. Backend objects are injected at startup from `main.cpp`, and their `Q_PROPERTY` values are then consumed by QML:
+Qt's `QObject` system is the bridge. Backend objects are injected at startup from `main.cpp` into the root QML context, and their `Q_PROPERTY` values are then consumed by QML:
 
 ```cpp
 // C++ side — gpumonitor.h
@@ -141,22 +141,29 @@ ro-Control/
 │   │   ├── nvidia/
 │   │   │   ├── detector.h / detector.cpp
 │   │   │   ├── installer.h / installer.cpp
-│   │   │   └── updater.h / updater.cpp
+│   │   │   ├── updater.h / updater.cpp
+│   │   │   └── versionparser.h / versionparser.cpp
 │   │   ├── monitor/
 │   │   │   ├── gpumonitor.h / gpumonitor.cpp
 │   │   │   ├── cpumonitor.h / cpumonitor.cpp
 │   │   │   └── rammonitor.h / rammonitor.cpp
-│   │   └── system/
-│   │       ├── commandrunner.h / commandrunner.cpp
-│   │       ├── dnfmanager.h / dnfmanager.cpp
-│   │       └── polkit.h / polkit.cpp
+│   │   ├── system/
+│   │   │   ├── commandrunner.h / commandrunner.cpp
+│   │   │   ├── dnfmanager.h / dnfmanager.cpp
+│   │   │   ├── polkit.h / polkit.cpp
+│   │   │   └── sessionutil.h / sessionutil.cpp
+│   │   └── cli/
+│   │       └── cli.h / cli.cpp
 │   ├── qml/
 │   │   ├── assets/
 │   │   │   ├── ro-control-logo.png
 │   │   │   └── ro-control-logo.svg
 │   │   ├── components/
+│   │   │   ├── InfoBadge.qml
+│   │   │   ├── SectionPanel.qml
 │   │   │   ├── SidebarMenu.qml
 │   │   │   ├── StatCard.qml
+│   │   │   ├── StatusBanner.qml
 │   │   │   └── qmldir
 │   │   ├── pages/
 │   │   │   ├── DriverPage.qml

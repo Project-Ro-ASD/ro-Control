@@ -39,6 +39,19 @@ ro-Control is a native KDE Plasma desktop application built with **C++20** and *
 - **Hybrid graphics** — Switch between NVIDIA, Intel, and On-Demand modes
 - **PolicyKit integration** — Secure privilege escalation without running as root
 
+## Development
+
+The easiest way to develop ro-Control rapidly on Fedora is using the provided `dev-watch.sh` script, which automatically rebuilds and restarts the application on file save:
+```bash
+# Setup Fedora dependencies
+./scripts/fedora-bootstrap.sh
+
+# Start the live development watcher
+./scripts/dev-watch.sh
+```
+
+> **Note:** If you launch the tool on a system without a working NVIDIA driver or encounter `libEGL` errors, UI elements may overlap. The `dev-watch.sh` script detects this and automatically exports `QT_XCB_GL_INTEGRATION=none` to force software rendering as a fallback.
+
 ### 🌍 Internationalization
 - Runtime locale loading with Qt translations (`.ts` / `.qm`)
 - English source strings with Turkish translation included
