@@ -1,40 +1,174 @@
 // CPU istatistikleri
 
 #include "cpumonitor.h"
+#include "system/commandrunner.h"
 
+#include <QDir>
 #include <QFile>
+#include <QRegularExpression>
 #include <QTextStream>
 
 #include <algorithm>
 
 namespace {
 
-int readCpuTemperatureC() {
-  for (int i = 0; i < 32; ++i) {
-    QFile thermalFile(QString("/sys/class/thermal/thermal_zone%1/temp").arg(i));
-    if (!thermalFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      continue;
-    }
+QString readFileText(const QString &path) {
+  QFile file(path);
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    return {};
+  }
 
-    const QByteArray raw = thermalFile.readAll().trimmed();
-    bool ok = false;
-    const int milliC = raw.toInt(&ok);
-    if (ok && milliC > 0) {
-      return milliC / 1000;
+  return QString::fromUtf8(file.readAll()).trimmed();
+}
+
+QString pathOverrideOrDefault(const char *envVarName, const QString &fallback) {
+  const QString overridePath = qEnvironmentVariable(envVarName).trimmed();
+  return overridePath.isEmpty() ? fallback : overridePath;
+}
+
+int parseMilliCelsius(const QString &value) {
+  bool ok = false;
+  const int milliC = value.trimmed().toInt(&ok);
+  return ok && milliC > 0 ? milliC / 1000 : 0;
+}
+
+bool isPreferredCpuSensorType(const QString &sensorType) {
+  const QString lowered = sensorType.trimmed().toLower();
+  return lowered.contains(QStringLiteral("cpu")) ||
+         lowered.contains(QStringLiteral("pkg")) ||
+         lowered.contains(QStringLiteral("package")) ||
+         lowered.contains(QStringLiteral("core")) ||
+         lowered.contains(QStringLiteral("k10temp")) ||
+         lowered.contains(QStringLiteral("tctl")) ||
+         lowered.contains(QStringLiteral("tdie")) ||
+         lowered.contains(QStringLiteral("x86_pkg_temp"));
+}
+
+int readFirstValidTemperature(const QStringList &paths) {
+  for (const QString &path : paths) {
+    const int temperatureC = parseMilliCelsius(readFileText(path));
+    if (temperatureC > 0) {
+      return temperatureC;
     }
   }
 
-  for (int i = 0; i < 32; ++i) {
-    QFile hwmonFile(QString("/sys/class/hwmon/hwmon%1/temp1_input").arg(i));
-    if (!hwmonFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      continue;
-    }
+  return 0;
+}
 
-    const QByteArray raw = hwmonFile.readAll().trimmed();
-    bool ok = false;
-    const int milliC = raw.toInt(&ok);
-    if (ok && milliC > 0) {
-      return milliC / 1000;
+int readCpuTemperatureFromThermalZones() {
+  QDir thermalDir(pathOverrideOrDefault("RO_CONTROL_THERMAL_ROOT",
+                                        QStringLiteral("/sys/class/thermal")));
+  const QFileInfoList entries = thermalDir.entryInfoList(
+      {QStringLiteral("thermal_zone*")}, QDir::Dirs | QDir::NoDotAndDotDot,
+      QDir::Name);
+
+  QStringList preferredPaths;
+  QStringList fallbackPaths;
+
+  for (const QFileInfo &entry : entries) {
+    const QString basePath = entry.absoluteFilePath();
+    const QString type = readFileText(basePath + QStringLiteral("/type"));
+    const QString tempPath = basePath + QStringLiteral("/temp");
+
+    if (isPreferredCpuSensorType(type)) {
+      preferredPaths << tempPath;
+    } else {
+      fallbackPaths << tempPath;
+    }
+  }
+
+  const int preferredTemperature = readFirstValidTemperature(preferredPaths);
+  if (preferredTemperature > 0) {
+    return preferredTemperature;
+  }
+
+  return readFirstValidTemperature(fallbackPaths);
+}
+
+int readCpuTemperatureFromHwmon() {
+  QDir hwmonDir(pathOverrideOrDefault("RO_CONTROL_HWMON_ROOT",
+                                      QStringLiteral("/sys/class/hwmon")));
+  const QFileInfoList entries = hwmonDir.entryInfoList(
+      {QStringLiteral("hwmon*")}, QDir::Dirs | QDir::NoDotAndDotDot,
+      QDir::Name);
+
+  QStringList preferredPaths;
+  QStringList fallbackPaths;
+
+  for (const QFileInfo &entry : entries) {
+    const QString basePath = entry.absoluteFilePath();
+    const QString sensorName =
+        readFileText(basePath + QStringLiteral("/name")).toLower();
+    const bool preferredSensor = isPreferredCpuSensorType(sensorName);
+
+    const QFileInfoList inputs = QDir(basePath).entryInfoList(
+        {QStringLiteral("temp*_input")}, QDir::Files, QDir::Name);
+    for (const QFileInfo &input : inputs) {
+      const QString inputPath = input.absoluteFilePath();
+      const QString labelPath =
+          inputPath.left(inputPath.size() - QStringLiteral("_input").size()) +
+          QStringLiteral("_label");
+      const QString label = readFileText(labelPath);
+      if (preferredSensor || isPreferredCpuSensorType(label)) {
+        preferredPaths << inputPath;
+      } else {
+        fallbackPaths << inputPath;
+      }
+    }
+  }
+
+  const int preferredTemperature = readFirstValidTemperature(preferredPaths);
+  if (preferredTemperature > 0) {
+    return preferredTemperature;
+  }
+
+  return readFirstValidTemperature(fallbackPaths);
+}
+
+int readCpuTemperatureC() {
+  const int thermalZoneTemperature = readCpuTemperatureFromThermalZones();
+  if (thermalZoneTemperature > 0) {
+    return thermalZoneTemperature;
+  }
+
+  const int hwmonTemperature = readCpuTemperatureFromHwmon();
+  if (hwmonTemperature > 0) {
+    return hwmonTemperature;
+  }
+
+  CommandRunner runner;
+  const auto result = runner.run(QStringLiteral("sensors"));
+  if (!result.success()) {
+    return 0;
+  }
+
+  static const QRegularExpression preferredLinePattern(
+      QStringLiteral(
+          R"((package|tctl|tdie|cpu|core)[^:\n]*:\s*[+-]?([0-9]+(?:\.[0-9]+)?))"),
+      QRegularExpression::CaseInsensitiveOption);
+  static const QRegularExpression genericLinePattern(
+      QStringLiteral(R"(:\s*[+-]?([0-9]+(?:\.[0-9]+)?))"));
+
+  const QStringList lines = result.stdout.split(QLatin1Char('\n'));
+  for (const QString &line : lines) {
+    const auto preferredMatch = preferredLinePattern.match(line);
+    if (preferredMatch.hasMatch()) {
+      bool ok = false;
+      const double value = preferredMatch.captured(2).toDouble(&ok);
+      if (ok && value > 0.0) {
+        return static_cast<int>(value);
+      }
+    }
+  }
+
+  for (const QString &line : lines) {
+    const auto genericMatch = genericLinePattern.match(line);
+    if (genericMatch.hasMatch()) {
+      bool ok = false;
+      const double value = genericMatch.captured(1).toDouble(&ok);
+      if (ok && value > 0.0) {
+        return static_cast<int>(value);
+      }
     }
   }
 

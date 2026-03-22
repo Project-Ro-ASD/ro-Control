@@ -20,6 +20,28 @@
 
 ro-Control is a native KDE Plasma desktop application built with **C++20** and **Qt6/QML** that simplifies NVIDIA GPU driver management and system monitoring on Linux. It provides a modern, Plasma-native interface for installing, updating, and monitoring graphics drivers — with full PolicyKit integration for secure privilege escalation.
 
+## Project Status
+
+ro-Control is an active desktop utility for Fedora-first NVIDIA driver workflows.
+The current codebase focuses on:
+
+- Native Qt/QML desktop UX instead of wrapper scripts
+- Safe driver lifecycle operations through PolicyKit and DNF
+- Practical diagnostics for GPU, CPU, and RAM telemetry
+- English source strings with complete Turkish runtime localization
+- Persistent interface preferences with explicit `System / Light / Dark` theme selection
+
+It does **not** currently implement hybrid graphics switching, fan control, or overclocking.
+
+## Why This Repository Exists
+
+ro-Control is intended to be the NVIDIA operations and diagnostics surface for the broader **Project Ro ASD / ro-ASD OS** ecosystem. The repository is structured so it can be:
+
+- Shown on the organization profile as a flagship desktop utility
+- Built and packaged independently from the operating system image
+- Used both interactively from the GUI and programmatically from the CLI
+- Extended cleanly through separate backend, frontend, packaging, and translation layers
+
 ## Features
 
 ### 🚀 Driver Management
@@ -29,19 +51,32 @@ ro-Control is a native KDE Plasma desktop application built with **C++20** and *
 - **Secure Boot** — Detection and warnings for unsigned kernel modules
 
 ### 📊 Live System Monitor
-- Real-time GPU temperature, load, and VRAM usage
-- CPU load and temperature tracking
-- RAM usage monitoring
+- Real-time GPU temperature, load, and VRAM usage when `nvidia-smi` is available
+- CPU load tracking with temperature probing via sysfs, hwmon, and `sensors`
+- RAM usage monitoring via `/proc/meminfo` with `free` fallback
 - Color-coded progress indicators
 
 ### 🖥 Display & System
 - **Wayland support** — Automatic `nvidia-drm.modeset=1` GRUB configuration
-- **Hybrid graphics** — Switch between NVIDIA, Intel, and On-Demand modes
 - **PolicyKit integration** — Secure privilege escalation without running as root
+- **Persistent shell preferences** — Saved theme mode, density, and diagnostics visibility
+
+## Development
+
+The easiest way to develop ro-Control rapidly on Fedora is using the provided `dev-watch.sh` script, which automatically rebuilds and restarts the application on file save:
+```bash
+# Setup Fedora dependencies
+./scripts/fedora-bootstrap.sh
+
+# Start the live development watcher
+./scripts/dev-watch.sh
+```
+
+> **Note:** If you launch the tool on a system without a working NVIDIA driver or encounter `libEGL` errors, UI elements may overlap. The `dev-watch.sh` script detects this and automatically exports `QT_XCB_GL_INTEGRATION=none` to force software rendering as a fallback.
 
 ### 🌍 Internationalization
 - Runtime locale loading with Qt translations (`.ts` / `.qm`)
-- English source strings with Turkish translation included
+- Shipped runtime locales: English and Turkish
 - Extensible translation workflow for additional languages
 
 ### 🧰 CLI Support
@@ -51,6 +86,24 @@ ro-Control is a native KDE Plasma desktop application built with **C++20** and *
 - `ro-control diagnostics --json` for machine-readable diagnostics
 - `ro-control driver install|remove|update|deep-clean` for scripted driver management
 - Installed `man ro-control` page and Bash/Zsh/Fish shell completions
+
+### ✅ Test Coverage
+- Backend unit tests for detector, updater, monitor, preferences, CLI, and system integration flows
+- QML integration coverage for `DriverPage` state synchronization
+- Translation release target for shipped locales
+
+## Current Scope
+
+Supported well today:
+- Fedora-oriented NVIDIA driver install, update, and cleanup workflows
+- Driver-state inspection and diagnostics export
+- Monitor dashboard for live CPU/GPU/RAM status
+- App packaging metadata, shell completions, and man page support
+
+Deliberately out of scope for now:
+- Windows support
+- Non-Qt frontends
+- Advanced GPU tuning or gaming overlay features
 
 ## Screenshots
 
@@ -70,6 +123,14 @@ sudo dnf install ./ro-control-*.rpm
 ### Building from Source
 
 See [docs/BUILDING.md](docs/BUILDING.md) for full instructions.
+
+Fedora quick bootstrap:
+
+```bash
+./scripts/fedora-bootstrap.sh
+```
+
+For Fedora-specific runtime notes, see [docs/FEDORA.md](docs/FEDORA.md).
 
 ### CLI Quick Examples
 
@@ -130,6 +191,8 @@ ro-Control/
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
 For release flow details, see [docs/RELEASE.md](docs/RELEASE.md).
 For localization scaffolding, see [i18n/README.md](i18n/README.md).
+For architecture details, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+For usage questions and issue routing, see [SUPPORT.md](SUPPORT.md).
 
 Quick contribution flow:
 

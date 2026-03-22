@@ -5,7 +5,7 @@
 #include <QStringList>
 #include <functional>
 
-class CommandRunner;
+#include "system/commandrunner.h"
 
 // NvidiaUpdater: Kurulu surucu ile mevcut en guncel surumu karsilastirir.
 class NvidiaUpdater : public QObject {
@@ -49,8 +49,15 @@ private:
   void runAsyncTask(const std::function<void()> &task);
   void setLatestVersion(const QString &version);
   void setAvailableVersions(const QStringList &versions);
+  bool transactionChanged(const CommandRunner::Result &result) const;
+  QString detectInstalledKernelPackageName() const;
+  QStringList buildTransactionArguments(const QString &requestedVersion,
+                                        const QString &installedVersion,
+                                        const QString &sessionType,
+                                        const QString &kernelPackageName) const;
   QStringList buildDriverTargets(const QString &version,
-                                 const QString &sessionType) const;
+                                 const QString &sessionType,
+                                 const QString &kernelPackageName) const;
   bool finalizeDriverChange(CommandRunner &runner, const QString &sessionType,
                             QString *errorMessage);
   QString detectSessionType() const;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-	<id>ro-control.desktop</id>
+	<id>io.github.projectroasd.rocontrol.desktop</id>
 	<name>ro-Control</name>
 	<summary>NVIDIA driver manager and system monitor</summary>
 	<summary xml:lang="tr">NVIDIA sürücü yöneticisi ve sistem monitörü</summary>
@@ -10,17 +10,26 @@
 
 	<description>
 		<p>
-			ro-Control helps users detect NVIDIA GPUs, install or update
-			drivers via DNF, and monitor system metrics from a Qt desktop UI.
+			ro-Control is a Fedora-oriented desktop utility for NVIDIA driver
+			management and live system diagnostics. It helps users detect GPUs,
+			install or update drivers through DNF, and inspect GPU, CPU, and RAM
+			telemetry from a native Qt interface.
+		</p>
+		<p xml:lang="tr">
+			ro-Control, Fedora odaklı bir NVIDIA sürücü yönetimi ve canlı sistem
+			tanılama masaüstü aracıdır. Kullanıcıların GPU'ları tespit etmesine,
+			sürücüleri DNF üzerinden kurup güncellemesine ve GPU, CPU, RAM
+			telemetrisini yerel bir Qt arayüzünden izlemesine yardımcı olur.
 		</p>
 	</description>
-	<description xml:lang="tr">
-		<p>
-			ro-Control, kullanıcıların NVIDIA GPU'ları tespit etmesine,
-			sürücüleri DNF ile kurup güncellemesine ve sistem metriklerini Qt tabanlı
-			bir masaüstü arayüzünden izlemesine yardımcı olur.
-		</p>
-	</description>
+
+	<keywords>
+		<keyword>NVIDIA</keyword>
+		<keyword>Drivers</keyword>
+		<keyword>Diagnostics</keyword>
+		<keyword>Telemetry</keyword>
+		<keyword>Fedora</keyword>
+	</keywords>
 
 	<categories>
 		<category>System</category>
@@ -38,15 +47,17 @@
 		</screenshot>
 	</screenshots>
 
-	<launchable type="desktop-id">ro-control.desktop</launchable>
+	<launchable type="desktop-id">io.github.projectroasd.rocontrol.desktop</launchable>
 	<provides>
 		<binary>ro-control</binary>
 	</provides>
 
-	<developer id="io.github.ProjectRoASD">
+	<developer id="io.github.projectroasd">
 		<name>Project Ro ASD</name>
 	</developer>
 
 	<url type="homepage">https://github.com/Project-Ro-ASD/ro-Control</url>
+	<url type="vcs-browser">https://github.com/Project-Ro-ASD/ro-Control</url>
 	<url type="bugtracker">https://github.com/Project-Ro-ASD/ro-Control/issues</url>
+	<url type="help">https://github.com/Project-Ro-ASD/ro-Control/blob/main/SUPPORT.md</url>
 </component>

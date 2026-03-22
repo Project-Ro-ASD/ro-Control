@@ -21,7 +21,8 @@ ro-Control follows a strict **C++ Backend / QML Frontend** separation. The two l
                     │  Shell commands / D-Bus
 ┌───────────────────▼─────────────────────────────┐
 │                Linux System                     │
-│   sysfs · nvidia-smi · dnf · pkexec · GRUB      │
+│   sysfs · hwmon · sensors · nvidia-smi · dnf    │
+│   pkexec · GRUB · /proc                          │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -51,22 +52,24 @@ Divided into three modules:
 #### `monitor/` — Live Statistics
 | File | Responsibility |
 |------|---------------|
-| `gpumonitor.cpp` | Poll GPU temperature, load, VRAM via `nvidia-smi` or sysfs |
-| `cpumonitor.cpp` | Poll CPU load and temperature via `/proc/stat` and hwmon |
-| `rammonitor.cpp` | Poll RAM usage via `/proc/meminfo` |
+| `gpumonitor.cpp` | Poll GPU temperature, load, VRAM via `nvidia-smi` |
+| `cpumonitor.cpp` | Poll CPU load via `/proc/stat` and probe temperatures via thermal zones, hwmon, and `sensors` |
+| `rammonitor.cpp` | Poll RAM usage via `/proc/meminfo` with `free --mebi` fallback |
 
 #### `system/` — System Integration
 | File | Responsibility |
 |------|---------------|
 | `commandrunner.cpp` | Execute shell commands, capture stdout/stderr |
 | `dnfmanager.cpp` | Wrap DNF commands for install/remove/update |
+| `languagemanager.cpp` | Load runtime locale catalogs and expose shipped language choices |
 | `polkit.cpp` | Privilege escalation via `pkexec` / PolicyKit D-Bus |
+| `uipreferencesmanager.cpp` | Persist theme mode, density, and diagnostics visibility |
 
 ---
 
 ## C++ ↔ QML Communication
 
-Qt's `QObject` system is the bridge. Backend objects are injected at startup from `main.cpp`, and their `Q_PROPERTY` values are then consumed by QML:
+Qt's `QObject` system is the bridge. Backend objects are injected at startup from `main.cpp` into the root QML context, and their `Q_PROPERTY` values are then consumed by QML:
 
 ```cpp
 // C++ side — gpumonitor.h
@@ -128,6 +131,12 @@ The PolicyKit action definition and helper entrypoint live in `data/polkit/` and
 
 CMake 3.22+ with `qt_add_qml_module` for QML resource embedding. All QML files are compiled into the binary at build time — no loose `.qml` files needed at runtime.
 
+## Test Layout
+
+- `test_detector`, `test_updater`, `test_monitor`, `test_preferences`, `test_system_integration`, `test_cli`: backend and CLI regression coverage
+- `test_driver_page`: QML integration coverage for frontend/backend state bindings
+- `ro-control_lrelease`: release target that compiles shipped locale catalogs
+
 See [BUILDING.md](BUILDING.md) for full build instructions.
 
 ---
@@ -141,22 +150,33 @@ ro-Control/
 │   │   ├── nvidia/
 │   │   │   ├── detector.h / detector.cpp
 │   │   │   ├── installer.h / installer.cpp
-│   │   │   └── updater.h / updater.cpp
+│   │   │   ├── updater.h / updater.cpp
+│   │   │   └── versionparser.h / versionparser.cpp
 │   │   ├── monitor/
 │   │   │   ├── gpumonitor.h / gpumonitor.cpp
 │   │   │   ├── cpumonitor.h / cpumonitor.cpp
 │   │   │   └── rammonitor.h / rammonitor.cpp
-│   │   └── system/
-│   │       ├── commandrunner.h / commandrunner.cpp
-│   │       ├── dnfmanager.h / dnfmanager.cpp
-│   │       └── polkit.h / polkit.cpp
+│   │   ├── system/
+│   │   │   ├── commandrunner.h / commandrunner.cpp
+│   │   │   ├── dnfmanager.h / dnfmanager.cpp
+│   │   │   ├── languagemanager.h / languagemanager.cpp
+│   │   │   ├── polkit.h / polkit.cpp
+│   │   │   ├── sessionutil.h / sessionutil.cpp
+│   │   │   └── uipreferencesmanager.h / uipreferencesmanager.cpp
+│   │   └── cli/
+│   │       └── cli.h / cli.cpp
 │   ├── qml/
 │   │   ├── assets/
 │   │   │   ├── ro-control-logo.png
 │   │   │   └── ro-control-logo.svg
 │   │   ├── components/
+│   │   │   ├── ActionButton.qml
+│   │   │   ├── DetailRow.qml
+│   │   │   ├── InfoBadge.qml
+│   │   │   ├── SectionPanel.qml
 │   │   │   ├── SidebarMenu.qml
 │   │   │   ├── StatCard.qml
+│   │   │   ├── StatusBanner.qml
 │   │   │   └── qmldir
 │   │   ├── pages/
 │   │   │   ├── DriverPage.qml

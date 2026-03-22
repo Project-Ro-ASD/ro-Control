@@ -2,7 +2,7 @@
 
 #include "polkit.h"
 
-#include <QStandardPaths>
+#include "capabilityprobe.h"
 
 PolkitHelper::PolkitHelper(QObject *parent) : QObject(parent) {
   connect(&m_runner, &CommandRunner::outputLine, this,
@@ -12,7 +12,7 @@ PolkitHelper::PolkitHelper(QObject *parent) : QObject(parent) {
 }
 
 bool PolkitHelper::isPkexecAvailable() const {
-  return !QStandardPaths::findExecutable(QStringLiteral("pkexec")).isEmpty();
+  return CapabilityProbe::isToolAvailable(QStringLiteral("pkexec"));
 }
 
 CommandRunner::Result PolkitHelper::runPrivileged(const QString &program,

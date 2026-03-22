@@ -1,4 +1,8 @@
 #include <QTest>
+#include <QDir>
+#include <QFile>
+#include <QTemporaryDir>
+#include <QTextStream>
 
 #include "monitor/cpumonitor.h"
 #include "monitor/gpumonitor.h"
@@ -71,6 +75,38 @@ private slots:
     QVERIFY(gpu.running());
   }
 
+  void testGpuPartialTelemetryKeepsMonitorAvailable() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString scriptPath = tempDir.filePath(QStringLiteral("fake-nvidia-smi.sh"));
+    QFile script(scriptPath);
+    QVERIFY(script.open(QIODevice::WriteOnly | QIODevice::Text));
+
+    QTextStream stream(&script);
+    stream << "#!/bin/sh\n";
+    stream << "printf 'NVIDIA GeForce RTX 4080, 61, N/A, 2048, 16384\\n'\n";
+    script.close();
+    QVERIFY(QFile::setPermissions(scriptPath, QFileDevice::ReadOwner |
+                                                  QFileDevice::WriteOwner |
+                                                  QFileDevice::ExeOwner));
+
+    qputenv("RO_CONTROL_COMMAND_NVIDIA_SMI", scriptPath.toUtf8());
+    GpuMonitor gpu;
+    gpu.stop();
+    gpu.refresh();
+
+    QVERIFY(gpu.available());
+    QCOMPARE(gpu.gpuName(), QStringLiteral("NVIDIA GeForce RTX 4080"));
+    QCOMPARE(gpu.temperatureC(), 61);
+    QCOMPARE(gpu.utilizationPercent(), 0);
+    QCOMPARE(gpu.memoryUsedMiB(), 2048);
+    QCOMPARE(gpu.memoryTotalMiB(), 16384);
+    QCOMPARE(gpu.memoryUsagePercent(), 12);
+
+    qunsetenv("RO_CONTROL_COMMAND_NVIDIA_SMI");
+  }
+
   void testRamConstruction() {
     RamMonitor ram;
     QVERIFY(ram.running());
@@ -99,6 +135,34 @@ private slots:
 
     ram.start();
     QVERIFY(ram.running());
+  }
+
+  void testRamUsesOverriddenMeminfoPath() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString meminfoPath = tempDir.filePath(QStringLiteral("meminfo"));
+    QFile meminfo(meminfoPath);
+    QVERIFY(meminfo.open(QIODevice::WriteOnly | QIODevice::Text));
+    meminfo.write("MemTotal:       32768000 kB\n");
+    meminfo.write("MemAvailable:   23552000 kB\n");
+    meminfo.write("MemFree:         3072000 kB\n");
+    meminfo.write("Buffers:          204800 kB\n");
+    meminfo.write("Cached:          8192000 kB\n");
+    meminfo.close();
+
+    qputenv("RO_CONTROL_MEMINFO_PATH", meminfoPath.toUtf8());
+
+    RamMonitor ram;
+    ram.stop();
+    ram.refresh();
+
+    QVERIFY(ram.available());
+    QCOMPARE(ram.totalMiB(), 32000);
+    QCOMPARE(ram.usedMiB(), 9000);
+    QCOMPARE(ram.usagePercent(), 28);
+
+    qunsetenv("RO_CONTROL_MEMINFO_PATH");
   }
 };
 

@@ -16,6 +16,17 @@ This guide covers building ro-Control from source on Linux systems with Qt 6 and
 
 ---
 
+## Fedora Quick Bootstrap
+
+```bash
+./scripts/fedora-bootstrap.sh
+```
+
+The script installs Fedora dependencies, builds the app, and runs tests by default.
+For Fedora-specific runtime notes, see [FEDORA.md](FEDORA.md).
+
+---
+
 ## Install Dependencies
 
 ```bash
@@ -30,6 +41,12 @@ sudo dnf install \
   qt6-qtwayland-devel \
   kf6-qqc2-desktop-style \
   polkit-devel
+```
+
+Runtime tools used by diagnostics and driver operations:
+
+```bash
+sudo dnf install dnf polkit pciutils mokutil kmod lm_sensors procps-ng
 ```
 
 ---
@@ -48,32 +65,22 @@ cd ro-Control
 ### Debug Build (for development)
 
 ```bash
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug
-make -j$(nproc)
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build -j$(nproc)
 ```
 
 ### Release Build
 
 ```bash
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j$(nproc)
-```
-
-### Faster builds with Ninja (optional)
-
-```bash
-mkdir build && cd build
-cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug
-ninja
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
 ```
 
 ### Refresh translations (recommended before release)
 
 ```bash
 lupdate src -ts i18n/ro-control_en.ts i18n/ro-control_tr.ts
-cmake --build build
+cmake --build build --target ro-control_lrelease
 ```
 
 ---
@@ -81,19 +88,19 @@ cmake --build build
 ## Run
 
 ```bash
-# From the build directory
-./ro-control
+# From the repository root
+./build/ro-control
 ```
 
 CLI examples:
 
 ```bash
-./ro-control help
-./ro-control version
-./ro-control status
-./ro-control diagnostics --json
-./ro-control driver install --proprietary --accept-license
-./ro-control driver update
+./build/ro-control help
+./build/ro-control version
+./build/ro-control status
+./build/ro-control diagnostics --json
+./build/ro-control driver install --proprietary --accept-license
+./build/ro-control driver update
 ```
 
 > **Note:** Driver install/remove operations require PolicyKit authentication. The UI will prompt you automatically.
@@ -110,27 +117,25 @@ After `cmake --install`, the CLI integration also installs:
 ## Install System-Wide
 
 ```bash
-cd build
-sudo make install
+sudo cmake --install build
 ```
 
 This installs:
-- Binary → `/usr/local/bin/ro-control`
-- Privileged helper → `/usr/local/libexec/ro-control-helper`
-- Desktop entry → `/usr/local/share/applications/`
-- Icons → `/usr/local/share/icons/`
-- AppStream metadata → `/usr/local/share/metainfo/`
-- PolicyKit policy → `/usr/local/share/polkit-1/actions/`
+- Binary -> `/usr/local/bin/ro-control`
+- Privileged helper -> `/usr/local/libexec/ro-control-helper`
+- Desktop entry -> `/usr/local/share/applications/`
+- Icons -> `/usr/local/share/icons/`
+- AppStream metadata -> `/usr/local/share/metainfo/`
+- PolicyKit policy -> `/usr/local/share/polkit-1/actions/`
 
 ---
 
 ## Build with Tests
 
 ```bash
-mkdir build && cd build
-cmake .. -DBUILD_TESTS=ON
-make -j$(nproc)
-ctest --output-on-failure
+cmake -S . -B build -G Ninja -DBUILD_TESTS=ON
+cmake --build build -j$(nproc)
+ctest --test-dir build --output-on-failure
 ```
 
 ---
@@ -167,7 +172,7 @@ gcc --version  # Should be 13+
 rm -rf build/.qt build/CMakeFiles
 cmake -S . -B build
 lupdate src -ts i18n/ro-control_en.ts i18n/ro-control_tr.ts
-cmake --build build
+cmake --build build --target ro-control_lrelease
 ```
 
 ---
@@ -177,9 +182,8 @@ cmake --build build
 After making changes, always verify the build passes before submitting a PR:
 
 ```bash
-cd build
-make -j$(nproc)
-ctest --output-on-failure
+cmake --build build -j$(nproc)
+ctest --test-dir build --output-on-failure
 ```
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full contribution guide.

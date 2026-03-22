@@ -2,6 +2,41 @@
 #include "system/commandrunner.h"
 
 #include <algorithm>
+#include <QRegularExpression>
+
+namespace {
+
+QString normalizedMetricField(const QString &field) {
+  QString normalized = field.trimmed();
+  normalized.remove(QRegularExpression(QStringLiteral(R"(\s*\[[^\]]+\]\s*)")));
+  normalized.remove(QRegularExpression(QStringLiteral(R"(\s*%\s*)")));
+  return normalized.trimmed();
+}
+
+bool parseMetricInt(const QString &field, int *value) {
+  if (value == nullptr) {
+    return false;
+  }
+
+  const QString normalized = normalizedMetricField(field);
+  if (normalized.isEmpty() ||
+      normalized.compare(QStringLiteral("n/a"), Qt::CaseInsensitive) == 0 ||
+      normalized.compare(QStringLiteral("not supported"), Qt::CaseInsensitive) == 0 ||
+      normalized.compare(QStringLiteral("unknown"), Qt::CaseInsensitive) == 0) {
+    return false;
+  }
+
+  bool ok = false;
+  const int parsedValue = normalized.toInt(&ok);
+  if (!ok) {
+    return false;
+  }
+
+  *value = parsedValue;
+  return true;
+}
+
+} // namespace
 
 GpuMonitor::GpuMonitor(QObject *parent) : QObject(parent) {
   m_timer.setInterval(1500);
@@ -59,31 +94,38 @@ void GpuMonitor::refresh() {
     return;
   }
 
-  bool ok = true;
   const QString nextName = fields.at(0).trimmed();
-  const int nextTemp = fields.at(1).trimmed().toInt(&ok);
-  if (!ok) {
+  int nextTemp = 0;
+  int nextUtil = 0;
+  int nextUsed = 0;
+  int nextTotal = 0;
+
+  const bool tempAvailable = parseMetricInt(fields.at(1), &nextTemp);
+  const bool utilAvailable = parseMetricInt(fields.at(2), &nextUtil);
+  const bool usedAvailable = parseMetricInt(fields.at(3), &nextUsed);
+  const bool totalAvailable = parseMetricInt(fields.at(4), &nextTotal);
+
+  if (nextTotal < 0 || nextUsed < 0) {
     setAvailable(false);
     clearMetrics();
     return;
   }
 
-  const int nextUtil = fields.at(2).trimmed().toInt(&ok);
-  const int nextUsed = fields.at(3).trimmed().toInt(&ok);
-  const int nextTotal = fields.at(4).trimmed().toInt(&ok);
-  if (!ok || nextTotal < 0 || nextUsed < 0) {
-    setAvailable(false);
-    clearMetrics();
-    return;
-  }
-
-  const int usagePercent =
-      nextTotal > 0
+  const int usagePercent = (usedAvailable && totalAvailable && nextTotal > 0)
           ? std::clamp(static_cast<int>((static_cast<double>(nextUsed) /
                                          static_cast<double>(nextTotal)) *
                                         100.0),
                        0, 100)
           : 0;
+
+  const bool telemetryAvailable = !nextName.isEmpty() || tempAvailable ||
+                                  utilAvailable || usedAvailable ||
+                                  totalAvailable;
+  if (!telemetryAvailable) {
+    setAvailable(false);
+    clearMetrics();
+    return;
+  }
 
   if (m_gpuName != nextName) {
     m_gpuName = nextName;
@@ -95,7 +137,7 @@ void GpuMonitor::refresh() {
     emit temperatureCChanged();
   }
 
-  if (m_utilizationPercent != nextUtil) {
+  if (m_utilizationPercent != std::clamp(nextUtil, 0, 100)) {
     m_utilizationPercent = std::clamp(nextUtil, 0, 100);
     emit utilizationPercentChanged();
   }

@@ -1,30 +1,22 @@
-find_package(Qt6 REQUIRED COMPONENTS Test)
+find_package(Qt6 REQUIRED COMPONENTS Test Qml Quick QuickControls2)
 
-set(RO_CONTROL_TEST_COMPILE_DEFINITIONS
-    RO_CONTROL_POLICY_ID="${RO_CONTROL_POLICY_ID}"
-    RO_CONTROL_HELPER_BUILD_PATH="${RO_CONTROL_HELPER_BUILD_PATH}"
-    RO_CONTROL_HELPER_INSTALL_PATH="${RO_CONTROL_HELPER_INSTALL_PATH}"
-)
+function(ro_control_configure_test target_name)
+    target_include_directories(${target_name} PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/backend
+    )
+endfunction()
 
 # ─── Detector Tests ──────────────────────────────────────────────────────────
 qt_add_executable(test_detector
     test_detector.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/nvidia/detector.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/system/commandrunner.cpp
 )
 
-target_include_directories(test_detector PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/backend
-)
-
-target_compile_definitions(test_detector PRIVATE
-    ${RO_CONTROL_TEST_COMPILE_DEFINITIONS}
-)
+ro_control_configure_test(test_detector)
 
 target_link_libraries(test_detector PRIVATE
-    Qt6::Core
     Qt6::Test
+    ro-control-backend
 )
 
 add_test(NAME test_detector COMMAND test_detector)
@@ -32,17 +24,13 @@ add_test(NAME test_detector COMMAND test_detector)
 # ─── Updater/Version Parser Tests ────────────────────────────────────────────
 qt_add_executable(test_updater
     test_updater.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/nvidia/versionparser.cpp
 )
 
-target_include_directories(test_updater PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/backend
-)
+ro_control_configure_test(test_updater)
 
 target_link_libraries(test_updater PRIVATE
-    Qt6::Core
     Qt6::Test
+    ro-control-backend
 )
 
 add_test(NAME test_updater COMMAND test_updater)
@@ -50,48 +38,42 @@ add_test(NAME test_updater COMMAND test_updater)
 # ─── Monitor Tests ───────────────────────────────────────────────────────────
 qt_add_executable(test_monitor
     test_monitor.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/monitor/cpumonitor.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/monitor/gpumonitor.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/monitor/rammonitor.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/system/commandrunner.cpp
 )
 
-target_include_directories(test_monitor PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/backend
-)
-
-target_compile_definitions(test_monitor PRIVATE
-    ${RO_CONTROL_TEST_COMPILE_DEFINITIONS}
-)
+ro_control_configure_test(test_monitor)
 
 target_link_libraries(test_monitor PRIVATE
-    Qt6::Core
     Qt6::Test
+    ro-control-backend
 )
 
 add_test(NAME test_monitor COMMAND test_monitor)
 
+# ─── Preferences / Localization Tests ───────────────────────────────────────
+qt_add_executable(test_preferences
+    test_preferences.cpp
+)
+
+ro_control_configure_test(test_preferences)
+
+target_link_libraries(test_preferences PRIVATE
+    Qt6::Qml
+    Qt6::Test
+    ro-control-backend
+)
+
+add_test(NAME test_preferences COMMAND test_preferences)
+
 # ─── System Integration Tests ───────────────────────────────────────────────
 qt_add_executable(test_system_integration
     test_system_integration.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/system/commandrunner.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/system/dnfmanager.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/system/polkit.cpp
 )
 
-target_include_directories(test_system_integration PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/backend
-)
-
-target_compile_definitions(test_system_integration PRIVATE
-    ${RO_CONTROL_TEST_COMPILE_DEFINITIONS}
-)
+ro_control_configure_test(test_system_integration)
 
 target_link_libraries(test_system_integration PRIVATE
-    Qt6::Core
     Qt6::Test
+    ro-control-backend
 )
 
 add_test(NAME test_system_integration COMMAND test_system_integration)
@@ -102,8 +84,7 @@ qt_add_executable(test_metadata
 )
 
 target_compile_definitions(test_metadata PRIVATE
-    ${RO_CONTROL_TEST_COMPILE_DEFINITIONS}
-    RO_CONTROL_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    "RO_CONTROL_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\""
 )
 
 target_link_libraries(test_metadata PRIVATE
@@ -117,27 +98,33 @@ add_test(NAME test_metadata COMMAND test_metadata)
 qt_add_executable(test_cli
     test_cli.cpp
     ${CMAKE_SOURCE_DIR}/src/cli/cli.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/nvidia/detector.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/nvidia/updater.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/nvidia/versionparser.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/monitor/cpumonitor.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/monitor/gpumonitor.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/monitor/rammonitor.cpp
-    ${CMAKE_SOURCE_DIR}/src/backend/system/commandrunner.cpp
 )
 
-target_include_directories(test_cli PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/backend
-)
-
-target_compile_definitions(test_cli PRIVATE
-    ${RO_CONTROL_TEST_COMPILE_DEFINITIONS}
-)
+ro_control_configure_test(test_cli)
 
 target_link_libraries(test_cli PRIVATE
-    Qt6::Core
     Qt6::Test
+    ro-control-backend
 )
 
 add_test(NAME test_cli COMMAND test_cli)
+
+# ─── Driver Page QML Integration Tests ──────────────────────────────────────
+qt_add_executable(test_driver_page
+    test_driver_page.cpp
+)
+
+ro_control_configure_test(test_driver_page)
+
+target_compile_definitions(test_driver_page PRIVATE
+    "RO_CONTROL_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\""
+)
+
+target_link_libraries(test_driver_page PRIVATE
+    Qt6::Qml
+    Qt6::Quick
+    Qt6::QuickControls2
+    Qt6::Test
+)
+
+add_test(NAME test_driver_page COMMAND test_driver_page)

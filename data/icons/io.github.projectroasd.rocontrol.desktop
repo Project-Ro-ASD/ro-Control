@@ -13,4 +13,4 @@ Categories=System;Settings;HardwareSettings;
 Keywords=nvidia;driver;gpu;monitor;system;fedora;
 Keywords[tr]=nvidia;sürücü;gpu;monitör;sistem;fedora;
 StartupNotify=true
-StartupWMClass=ro-control
+StartupWMClass=io.github.projectroasd.rocontrol

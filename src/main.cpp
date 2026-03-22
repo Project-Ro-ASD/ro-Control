@@ -1,14 +1,19 @@
 #include <QApplication>
 #include <QCoreApplication>
+#include <QEventLoop>
 #include <QIcon>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLocale>
 #include <QObject>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QQuickWindow>
+#include <QSGRendererInterface>
 #include <QTextStream>
 #include <QTranslator>
 #include <QVariant>
+#include <QStringList>
 
 #include "backend/monitor/cpumonitor.h"
 #include "backend/monitor/gpumonitor.h"
@@ -16,6 +21,8 @@
 #include "backend/nvidia/detector.h"
 #include "backend/nvidia/installer.h"
 #include "backend/nvidia/updater.h"
+#include "backend/system/languagemanager.h"
+#include "backend/system/uipreferencesmanager.h"
 #include "cli/cli.h"
 
 namespace {
@@ -74,18 +81,21 @@ CliExecutionResult executeCliCommand(const RoControlCli::ParsedCommand &command,
     bool finished = false;
     bool success = false;
     QString finalMessage;
+    QEventLoop loop;
 
     QObject::connect(&installer, &NvidiaInstaller::installFinished, &installer,
                      [&](bool ok, const QString &message) {
                        finished = true;
                        success = ok;
                        finalMessage = message;
+                       loop.quit();
                      });
     QObject::connect(&installer, &NvidiaInstaller::removeFinished, &installer,
                      [&](bool ok, const QString &message) {
                        finished = true;
                        success = ok;
                        finalMessage = message;
+                       loop.quit();
                      });
 
     if (command.action ==
@@ -98,9 +108,10 @@ CliExecutionResult executeCliCommand(const RoControlCli::ParsedCommand &command,
       installer.remove();
     } else {
       installer.deepClean();
-      finished = true;
-      success = true;
-      finalMessage = QStringLiteral("Legacy NVIDIA cleanup completed.");
+    }
+
+    if (!finished) {
+      loop.exec();
     }
 
     if (!finalMessage.isEmpty()) {
@@ -123,15 +134,21 @@ CliExecutionResult executeCliCommand(const RoControlCli::ParsedCommand &command,
     bool finished = false;
     bool success = false;
     QString finalMessage;
+    QEventLoop loop;
 
     QObject::connect(&updater, &NvidiaUpdater::updateFinished, &updater,
                      [&](bool ok, const QString &message) {
                        finished = true;
                        success = ok;
                        finalMessage = message;
+                       loop.quit();
                      });
 
     updater.applyUpdate();
+
+    if (!finished) {
+      loop.exec();
+    }
 
     if (!finalMessage.isEmpty()) {
       if (success) {
@@ -150,6 +167,25 @@ CliExecutionResult executeCliCommand(const RoControlCli::ParsedCommand &command,
   return result;
 }
 
+void configureGuiGraphicsEnvironment() {
+#if defined(Q_OS_LINUX)
+  const QByteArray sessionType =
+      qgetenv("XDG_SESSION_TYPE").trimmed().toLower();
+
+  // NVIDIA on Fedora/X11 is generally more stable through the GLX path than
+  // the EGL/DRI2 integration that can emit startup errors.
+  if (sessionType == "x11" && qEnvironmentVariableIsEmpty("QT_XCB_GL_INTEGRATION")) {
+    qputenv("QT_XCB_GL_INTEGRATION", QByteArrayLiteral("glx"));
+  }
+
+  // Keep an explicit escape hatch for hosts that still need software rendering.
+  if (!qEnvironmentVariableIsEmpty("RO_CONTROL_FORCE_SOFTWARE_RENDER")) {
+    qputenv("QT_QUICK_BACKEND", QByteArrayLiteral("software"));
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
+  }
+#endif
+}
+
 } // namespace
 
 int main(int argc, char *argv[]) {
@@ -159,51 +195,57 @@ int main(int argc, char *argv[]) {
   const QString applicationDescription =
       QStringLiteral("ro-Control GPU driver manager and diagnostics CLI.");
 
-  {
+  QStringList arguments;
+  arguments.reserve(argc);
+  for (int i = 0; i < argc; ++i) {
+    arguments << QString::fromLocal8Bit(argv[i]);
+  }
+
+  const auto command = RoControlCli::parseArguments(
+      arguments, QString::fromLatin1(kApplicationName),
+      QString::fromLatin1(kApplicationVersion), applicationDescription);
+
+  QTextStream out(stdout);
+  QTextStream err(stderr);
+
+  if (command.action == RoControlCli::CommandAction::PrintHelp ||
+      command.action == RoControlCli::CommandAction::PrintVersion) {
+    out << command.payload;
+    if (!command.payload.endsWith(QLatin1Char('\n'))) {
+      out << Qt::endl;
+    }
+    return 0;
+  }
+
+  if (command.action == RoControlCli::CommandAction::Invalid) {
+    err << command.payload << Qt::endl;
+    err << "Run `ro-control --help` for usage." << Qt::endl;
+    return 2;
+  }
+
+  if (command.action != RoControlCli::CommandAction::LaunchGui) {
     QCoreApplication cliApp(argc, argv);
     cliApp.setApplicationName(QString::fromLatin1(kApplicationName));
     cliApp.setApplicationVersion(QString::fromLatin1(kApplicationVersion));
 
-    const auto command = RoControlCli::parseArguments(
-        cliApp.arguments(), cliApp.applicationName(),
-        cliApp.applicationVersion(), applicationDescription);
-
-    QTextStream out(stdout);
-    QTextStream err(stderr);
-
-    if (command.action == RoControlCli::CommandAction::PrintHelp ||
-        command.action == RoControlCli::CommandAction::PrintVersion) {
-      out << command.payload;
-      if (!command.payload.endsWith(QLatin1Char('\n'))) {
+    const auto result = executeCliCommand(command, cliApp.applicationName(),
+                                          cliApp.applicationVersion());
+    if (!result.stdoutText.isEmpty()) {
+      out << result.stdoutText;
+      if (!result.stdoutText.endsWith(QLatin1Char('\n'))) {
         out << Qt::endl;
       }
-      return 0;
     }
-
-    if (command.action == RoControlCli::CommandAction::Invalid) {
-      err << command.payload << Qt::endl;
-      err << "Run `ro-control --help` for usage." << Qt::endl;
-      return 2;
-    }
-
-    if (command.action != RoControlCli::CommandAction::LaunchGui) {
-      const auto result = executeCliCommand(command, cliApp.applicationName(),
-                                            cliApp.applicationVersion());
-      if (!result.stdoutText.isEmpty()) {
-        out << result.stdoutText;
-        if (!result.stdoutText.endsWith(QLatin1Char('\n'))) {
-          out << Qt::endl;
-        }
+    if (!result.stderrText.isEmpty()) {
+      err << result.stderrText;
+      if (!result.stderrText.endsWith(QLatin1Char('\n'))) {
+        err << Qt::endl;
       }
-      if (!result.stderrText.isEmpty()) {
-        err << result.stderrText;
-        if (!result.stderrText.endsWith(QLatin1Char('\n'))) {
-          err << Qt::endl;
-        }
-      }
-      return result.exitCode;
     }
+    return result.exitCode;
   }
+
+  configureGuiGraphicsEnvironment();
 
   QApplication app(argc, argv);
 
@@ -216,17 +258,6 @@ int main(int argc, char *argv[]) {
       "ro-control", QIcon(":/qt/qml/rocontrol/assets/ro-control-logo.svg")));
 
   QTranslator translator;
-  const QString localeName = QLocale::system().name();
-  const QString baseLanguage =
-      localeName.section(QLatin1Char('_'), 0, 0).toLower();
-
-  if (translator.load(
-          QStringLiteral(":/i18n/ro-control_%1.qm").arg(localeName)) ||
-      translator.load(
-          QStringLiteral(":/i18n/ro-control_%1.qm").arg(baseLanguage))) {
-    app.installTranslator(&translator);
-  }
-
   NvidiaDetector detector;
   NvidiaInstaller installer;
   NvidiaUpdater updater;
@@ -235,14 +266,19 @@ int main(int argc, char *argv[]) {
   RamMonitor ramMonitor;
 
   QQmlApplicationEngine engine;
-  engine.setInitialProperties({
-      {"nvidiaDetector", QVariant::fromValue(&detector)},
-      {"nvidiaInstaller", QVariant::fromValue(&installer)},
-      {"nvidiaUpdater", QVariant::fromValue(&updater)},
-      {"cpuMonitor", QVariant::fromValue(&cpuMonitor)},
-      {"gpuMonitor", QVariant::fromValue(&gpuMonitor)},
-      {"ramMonitor", QVariant::fromValue(&ramMonitor)},
-  });
+  LanguageManager languageManager(&app, &engine, &translator);
+  UiPreferencesManager uiPreferencesManager;
+
+  // Backend nesnelerini tüm QML dosyalarına global olarak aç
+  engine.rootContext()->setContextProperty("nvidiaDetector", &detector);
+  engine.rootContext()->setContextProperty("nvidiaInstaller", &installer);
+  engine.rootContext()->setContextProperty("nvidiaUpdater", &updater);
+  engine.rootContext()->setContextProperty("cpuMonitor", &cpuMonitor);
+  engine.rootContext()->setContextProperty("gpuMonitor", &gpuMonitor);
+  engine.rootContext()->setContextProperty("ramMonitor", &ramMonitor);
+  engine.rootContext()->setContextProperty("languageManager", &languageManager);
+  engine.rootContext()->setContextProperty("uiPreferences",
+                                           &uiPreferencesManager);
 
   QObject::connect(
       &engine, &QQmlApplicationEngine::objectCreationFailed, &app,

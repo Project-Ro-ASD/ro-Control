@@ -1,6 +1,8 @@
 #include "detector.h"
 
+#include "system/capabilityprobe.h"
 #include "system/commandrunner.h"
+#include "system/sessionutil.h"
 
 #include <QFile>
 #include <QRegularExpression>
@@ -17,8 +19,10 @@ NvidiaDetector::GpuInfo NvidiaDetector::detect() const {
   info.driverVersion = detectDriverVersion();
   info.driverLoaded = isModuleLoaded(QStringLiteral("nvidia"));
   info.nouveauActive = isModuleLoaded(QStringLiteral("nouveau"));
+  info.openKernelModulesInstalled =
+      isPackageInstalled(QStringLiteral("akmod-nvidia-open"));
   info.secureBootEnabled = detectSecureBoot(&info.secureBootKnown);
-  info.sessionType = detectSessionType();
+  info.sessionType = SessionUtil::detectSessionType();
 
   return info;
 }
@@ -34,10 +38,14 @@ QString NvidiaDetector::installedDriverVersion() const {
 }
 
 QString NvidiaDetector::activeDriver() const {
-  if (m_info.driverLoaded)
-    return tr("Proprietary (NVIDIA)");
+  if (m_info.driverLoaded) {
+    if (m_info.openKernelModulesInstalled) {
+      return tr("NVIDIA Open Kernel Modules");
+    }
+    return tr("NVIDIA Driver");
+  }
   if (m_info.nouveauActive)
-    return tr("Open Source (Nouveau)");
+    return tr("Fallback Open Driver");
   return tr("Not Installed / Unknown");
 }
 
@@ -47,13 +55,13 @@ QString NvidiaDetector::verificationReport() const {
       m_info.driverVersion.isEmpty() ? tr("None") : m_info.driverVersion;
 
   return tr("GPU: %1\nDriver Version: %2\nSecure Boot: %3\nSession: %4\n"
-            "NVIDIA Module: %5\nNouveau: %6")
+            "Active Stack: %5\nFallback Open Driver: %6")
       .arg(gpuText, versionText,
            m_info.secureBootKnown
                ? (m_info.secureBootEnabled ? tr("Enabled") : tr("Disabled"))
                : tr("Disabled / Unknown"),
            m_info.sessionType.isEmpty() ? tr("Unknown") : m_info.sessionType,
-           m_info.driverLoaded ? tr("Loaded") : tr("Not loaded"),
+           activeDriver(),
            m_info.nouveauActive ? tr("Active") : tr("Inactive"));
 }
 
@@ -63,6 +71,10 @@ void NvidiaDetector::refresh() {
 }
 
 QString NvidiaDetector::detectGpuName() const {
+  if (!CapabilityProbe::isToolAvailable(QStringLiteral("lspci"))) {
+    return {};
+  }
+
   CommandRunner runner;
 
   const auto result =
@@ -95,12 +107,19 @@ QString NvidiaDetector::detectGpuName() const {
 QString NvidiaDetector::detectDriverVersion() const {
   CommandRunner runner;
 
-  const auto result = runner.run(QStringLiteral("nvidia-smi"),
-                                 {QStringLiteral("--query-gpu=driver_version"),
-                                  QStringLiteral("--format=csv,noheader")});
+  if (CapabilityProbe::isToolAvailable(QStringLiteral("nvidia-smi"))) {
+    const auto result =
+        runner.run(QStringLiteral("nvidia-smi"),
+                   {QStringLiteral("--query-gpu=driver_version"),
+                    QStringLiteral("--format=csv,noheader")});
 
-  if (result.success())
-    return result.stdout.trimmed();
+    if (result.success())
+      return result.stdout.trimmed();
+  }
+
+  if (!CapabilityProbe::isToolAvailable(QStringLiteral("modinfo"))) {
+    return {};
+  }
 
   const auto modinfo =
       runner.run(QStringLiteral("modinfo"), {QStringLiteral("nvidia")});
@@ -114,6 +133,17 @@ QString NvidiaDetector::detectDriverVersion() const {
   }
 
   return {};
+}
+
+bool NvidiaDetector::isPackageInstalled(const QString &packageName) const {
+  if (!CapabilityProbe::isToolAvailable(QStringLiteral("rpm"))) {
+    return false;
+  }
+
+  CommandRunner runner;
+  const auto result =
+      runner.run(QStringLiteral("rpm"), {QStringLiteral("-q"), packageName});
+  return result.success();
 }
 
 bool NvidiaDetector::isModuleLoaded(const QString &moduleName) const {
@@ -132,6 +162,13 @@ bool NvidiaDetector::isModuleLoaded(const QString &moduleName) const {
 }
 
 bool NvidiaDetector::detectSecureBoot(bool *known) const {
+  if (!CapabilityProbe::isToolAvailable(QStringLiteral("mokutil"))) {
+    if (known != nullptr) {
+      *known = false;
+    }
+    return false;
+  }
+
   CommandRunner runner;
   const auto result =
       runner.run(QStringLiteral("mokutil"), {QStringLiteral("--sb-state")});
@@ -149,26 +186,4 @@ bool NvidiaDetector::detectSecureBoot(bool *known) const {
   }
 
   return false;
-}
-
-QString NvidiaDetector::detectSessionType() const {
-  const QString envType =
-      qEnvironmentVariable("XDG_SESSION_TYPE").trimmed().toLower();
-  if (!envType.isEmpty())
-    return envType;
-
-  CommandRunner runner;
-  const auto loginctl =
-      runner.run(QStringLiteral("loginctl"),
-                 {QStringLiteral("show-session"),
-                  qEnvironmentVariable("XDG_SESSION_ID"), QStringLiteral("-p"),
-                  QStringLiteral("Type"), QStringLiteral("--value")});
-
-  if (loginctl.success()) {
-    const QString type = loginctl.stdout.trimmed().toLower();
-    if (!type.isEmpty())
-      return type;
-  }
-
-  return QStringLiteral("unknown");
 }

@@ -26,6 +26,7 @@ public:
   };
 
   explicit CommandRunner(QObject *parent = nullptr);
+  static QString resolveProgramPath(const QString &program);
 
   // Bloklayan komut — sonuç dönene kadar bekler
   Result run(const QString &program, const QStringList &args = {});
@@ -48,6 +49,7 @@ signals:
 
 private:
   QString resolveProgram(const QString &program) const;
+  static QString overrideEnvironmentVariableName(const QString &program);
   Result runOnce(const QString &program, const QStringList &args,
                  const RunOptions &options, int attempt);
 };

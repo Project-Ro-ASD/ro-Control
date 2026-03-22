@@ -1,9 +1,8 @@
 // DNF paket yoneticisi
 
 #include "dnfmanager.h"
+#include "capabilityprobe.h"
 #include "commandrunner.h"
-
-#include <QStandardPaths>
 
 namespace {
 
@@ -25,7 +24,7 @@ DnfManager::DnfManager(QObject *parent) : QObject(parent) {
 }
 
 bool DnfManager::isAvailable() const {
-  return !QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty();
+  return CapabilityProbe::isToolAvailable(QStringLiteral("dnf"));
 }
 
 CommandRunner::Result DnfManager::checkUpdates(const QStringList &packages) {

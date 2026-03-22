@@ -61,7 +61,6 @@ private:
   void setBusy(bool busy);
   void runAsyncTask(const std::function<void()> &task);
   void setProprietaryAgreement(bool required, const QString &text);
-  QString detectSessionType() const;
   bool applySessionSpecificSetup(CommandRunner &runner,
                                  const QString &sessionType,
                                  QString *errorMessage);

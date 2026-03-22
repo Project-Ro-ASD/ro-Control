@@ -21,7 +21,8 @@ class TestMetadata : public QObject {
 
 private slots:
   void testDesktopEntryContainsCoreFields() {
-    const QString desktop = readFile(QStringLiteral("data/icons/ro-control.desktop"));
+    const QString desktop = readFile(
+        QStringLiteral("data/icons/io.github.projectroasd.rocontrol.desktop"));
     QVERIFY(!desktop.isEmpty());
     QVERIFY(desktop.contains(QStringLiteral("[Desktop Entry]")));
     QVERIFY(desktop.contains(QStringLiteral("Exec=ro-control")));
@@ -31,10 +32,13 @@ private slots:
   }
 
   void testAppStreamContainsExpectedIdsAndUrls() {
-    const QString metainfo = readFile(QStringLiteral("data/icons/ro-control.metainfo.xml"));
+    const QString metainfo = readFile(QStringLiteral(
+        "data/icons/io.github.projectroasd.rocontrol.metainfo.xml"));
     QVERIFY(!metainfo.isEmpty());
-    QVERIFY(metainfo.contains(QStringLiteral("<id>ro-control.desktop</id>")));
-    QVERIFY(metainfo.contains(QStringLiteral("<launchable type=\"desktop-id\">ro-control.desktop</launchable>")));
+    QVERIFY(metainfo.contains(
+        QStringLiteral("<id>io.github.projectroasd.rocontrol.desktop</id>")));
+    QVERIFY(metainfo.contains(QStringLiteral(
+        "<launchable type=\"desktop-id\">io.github.projectroasd.rocontrol.desktop</launchable>")));
     QVERIFY(metainfo.contains(QStringLiteral("<binary>ro-control</binary>")));
     QVERIFY(metainfo.contains(QStringLiteral("<url type=\"homepage\">https://github.com/Project-Ro-ASD/ro-Control</url>")));
     QVERIFY(metainfo.contains(QStringLiteral("<url type=\"bugtracker\">https://github.com/Project-Ro-ASD/ro-Control/issues</url>")));
@@ -49,14 +53,17 @@ private slots:
   }
 
   void testDesktopAndAppStreamIdsStayAligned() {
-    const QString desktop = readFile(QStringLiteral("data/icons/ro-control.desktop"));
-    const QString metainfo = readFile(QStringLiteral("data/icons/ro-control.metainfo.xml"));
+    const QString desktop = readFile(
+        QStringLiteral("data/icons/io.github.projectroasd.rocontrol.desktop"));
+    const QString metainfo = readFile(QStringLiteral(
+        "data/icons/io.github.projectroasd.rocontrol.metainfo.xml"));
 
     QVERIFY(!desktop.isEmpty());
     QVERIFY(!metainfo.isEmpty());
 
     QVERIFY(desktop.contains(QStringLiteral("Exec=ro-control")));
-    QVERIFY(metainfo.contains(QStringLiteral("<id>ro-control.desktop</id>")));
+    QVERIFY(metainfo.contains(
+        QStringLiteral("<id>io.github.projectroasd.rocontrol.desktop</id>")));
 
     const QRegularExpression screenshotRe(
         QStringLiteral(R"(<image>https://raw\.githubusercontent\.com/.+/docs/screenshots/.+</image>)"));

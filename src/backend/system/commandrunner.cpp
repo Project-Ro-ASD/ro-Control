@@ -36,9 +36,24 @@ CommandRunner::Result CommandRunner::run(const QString &program,
   return lastResult;
 }
 
-QString CommandRunner::resolveProgram(const QString &program) const {
+QString CommandRunner::overrideEnvironmentVariableName(const QString &program) {
+  QString normalized = program.toUpper();
+  normalized.replace(QLatin1Char('-'), QLatin1Char('_'));
+  normalized.replace(QLatin1Char('.'), QLatin1Char('_'));
+  normalized.replace(QLatin1Char('/'), QLatin1Char('_'));
+  return QStringLiteral("RO_CONTROL_COMMAND_%1").arg(normalized);
+}
+
+QString CommandRunner::resolveProgramPath(const QString &program) {
   if (program.isEmpty()) {
     return {};
+  }
+
+  const QString overridePath =
+      qEnvironmentVariable(overrideEnvironmentVariableName(program).toUtf8())
+          .trimmed();
+  if (!overridePath.isEmpty()) {
+    return overridePath;
   }
 
   if (program.contains(QLatin1Char('/'))) {
@@ -46,6 +61,10 @@ QString CommandRunner::resolveProgram(const QString &program) const {
   }
 
   return QStandardPaths::findExecutable(program);
+}
+
+QString CommandRunner::resolveProgram(const QString &program) const {
+  return resolveProgramPath(program);
 }
 
 CommandRunner::Result CommandRunner::runOnce(const QString &program,

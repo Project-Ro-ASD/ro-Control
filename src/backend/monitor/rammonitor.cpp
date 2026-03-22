@@ -1,10 +1,104 @@
 #include "rammonitor.h"
+#include "system/commandrunner.h"
 
 #include <QFile>
 #include <QRegularExpression>
 #include <QTextStream>
 
 #include <algorithm>
+
+namespace {
+
+struct RamSnapshot {
+  bool valid = false;
+  int totalMiB = 0;
+  int usedMiB = 0;
+  int usagePercent = 0;
+};
+
+QString meminfoPath() {
+  const QString overridePath = qEnvironmentVariable("RO_CONTROL_MEMINFO_PATH")
+                                   .trimmed();
+  return overridePath.isEmpty() ? QStringLiteral("/proc/meminfo") : overridePath;
+}
+
+RamSnapshot buildSnapshot(qint64 memTotalKiB, qint64 memAvailableKiB) {
+  if (memTotalKiB <= 0 || memAvailableKiB < 0 || memAvailableKiB > memTotalKiB) {
+    return {};
+  }
+
+  const qint64 usedKiB = memTotalKiB - memAvailableKiB;
+  RamSnapshot snapshot;
+  snapshot.valid = true;
+  snapshot.totalMiB = static_cast<int>(memTotalKiB / 1024);
+  snapshot.usedMiB = static_cast<int>(usedKiB / 1024);
+  snapshot.usagePercent =
+      std::clamp(static_cast<int>((static_cast<double>(usedKiB) /
+                                   static_cast<double>(memTotalKiB)) *
+                                  100.0),
+                 0, 100);
+  return snapshot;
+}
+
+RamSnapshot readSnapshotFromFree() {
+  CommandRunner runner;
+  const auto result =
+      runner.run(QStringLiteral("free"), {QStringLiteral("--mebi")});
+  if (!result.success()) {
+    return {};
+  }
+
+  const QStringList lines = result.stdout.split(QLatin1Char('\n'),
+                                                Qt::SkipEmptyParts);
+  for (const QString &line : lines) {
+    if (!line.startsWith(QStringLiteral("Mem:"))) {
+      continue;
+    }
+
+    const QStringList fields = line.split(
+        QRegularExpression(QStringLiteral(R"(\s+)")), Qt::SkipEmptyParts);
+    if (fields.size() < 3) {
+      return {};
+    }
+
+    bool totalOk = false;
+    const int totalMiB = fields.value(1).toInt(&totalOk);
+    if (!totalOk || totalMiB <= 0) {
+      return {};
+    }
+
+    int usedMiB = 0;
+    bool usedOk = false;
+    if (fields.size() >= 7) {
+      const int availableMiB = fields.value(6).toInt(&usedOk);
+      if (usedOk) {
+        usedMiB = std::clamp(totalMiB - availableMiB, 0, totalMiB);
+      }
+    }
+
+    if (!usedOk) {
+      usedMiB = fields.value(2).toInt(&usedOk);
+      if (!usedOk) {
+        return {};
+      }
+      usedMiB = std::clamp(usedMiB, 0, totalMiB);
+    }
+
+    RamSnapshot snapshot;
+    snapshot.valid = true;
+    snapshot.totalMiB = totalMiB;
+    snapshot.usedMiB = usedMiB;
+    snapshot.usagePercent = std::clamp(
+        static_cast<int>((static_cast<double>(usedMiB) /
+                          static_cast<double>(totalMiB)) * 100.0),
+        0, 100);
+    return snapshot;
+  }
+
+  return {};
+}
+
+} // namespace
 
 RamMonitor::RamMonitor(QObject *parent) : QObject(parent) {
   m_timer.setInterval(1000);
@@ -30,13 +124,6 @@ int RamMonitor::updateInterval() const { return m_timer.interval(); }
 void RamMonitor::refresh() {
   // TR: Linux RAM metrikleri /proc/meminfo uzerinden okunur.
   // EN: Linux memory metrics are read from /proc/meminfo.
-  QFile meminfo("/proc/meminfo");
-  if (!meminfo.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    setAvailable(false);
-    clearMetrics();
-    return;
-  }
-
   qint64 memTotalKiB = -1;
   qint64 memAvailableKiB = -1;
   qint64 memFreeKiB = -1;
@@ -45,41 +132,49 @@ void RamMonitor::refresh() {
   qint64 sReclaimableKiB = -1;
   qint64 shmemKiB = -1;
 
-  // TR: "Anahtar: deger" satirlarini guvenli sekilde ayriştir.
-  // EN: Safely parse "Key: value" lines.
-  static const QRegularExpression lineRe(
-      QStringLiteral(R"(^([A-Za-z_]+):\s+(\d+))"));
+  QFile meminfo(meminfoPath());
+  if (meminfo.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    // TR: "Anahtar: deger" satirlarini guvenli sekilde ayriştir.
+    QTextStream stream(&meminfo);
+    while (!stream.atEnd()) {
+      const QString line = stream.readLine().trimmed();
+      if (line.isEmpty()) {
+        continue;
+      }
 
-  QTextStream stream(&meminfo);
-  while (!stream.atEnd()) {
-    const QString line = stream.readLine();
+      const int colonIdx = line.indexOf(QLatin1Char(':'));
+      if (colonIdx <= 0) {
+        continue;
+      }
 
-    const auto match = lineRe.match(line);
-    if (!match.hasMatch()) {
-      continue;
-    }
+      const QString key = line.left(colonIdx).trimmed();
+      const QString valueStr = line.mid(colonIdx + 1).trimmed();
 
-    bool ok = false;
-    const qint64 value = match.captured(2).toLongLong(&ok);
-    if (!ok) {
-      continue;
-    }
+      // The value might be "19842104 kB". We just need the number.
+      const int spaceIdx = valueStr.indexOf(QLatin1Char(' '));
+      const QString numStr = spaceIdx > 0 ? valueStr.left(spaceIdx) : valueStr;
 
-    const QString key = match.captured(1);
-    if (key == QStringLiteral("MemTotal")) {
-      memTotalKiB = value;
-    } else if (key == QStringLiteral("MemAvailable")) {
-      memAvailableKiB = value;
-    } else if (key == QStringLiteral("MemFree")) {
-      memFreeKiB = value;
-    } else if (key == QStringLiteral("Buffers")) {
-      buffersKiB = value;
-    } else if (key == QStringLiteral("Cached")) {
-      cachedKiB = value;
-    } else if (key == QStringLiteral("SReclaimable")) {
-      sReclaimableKiB = value;
-    } else if (key == QStringLiteral("Shmem")) {
-      shmemKiB = value;
+      bool ok = false;
+      const qint64 value = numStr.toLongLong(&ok);
+      if (!ok) {
+        continue;
+      }
+
+      if (key == QStringLiteral("MemTotal")) {
+        memTotalKiB = value;
+      } else if (key == QStringLiteral("MemAvailable")) {
+        memAvailableKiB = value;
+      } else if (key == QStringLiteral("MemFree")) {
+        memFreeKiB = value;
+      } else if (key == QStringLiteral("Buffers")) {
+        buffersKiB = value;
+      } else if (key == QStringLiteral("Cached")) {
+        cachedKiB = value;
+      } else if (key == QStringLiteral("SReclaimable")) {
+        sReclaimableKiB = value;
+      } else if (key == QStringLiteral("Shmem")) {
+        shmemKiB = value;
+      }
     }
   }
 
@@ -102,27 +197,29 @@ void RamMonitor::refresh() {
     return;
   }
 
-  const qint64 usedKiB = memTotalKiB - memAvailableKiB;
-  const int nextTotalMiB = static_cast<int>(memTotalKiB / 1024);
-  const int nextUsedMiB = static_cast<int>(usedKiB / 1024);
-  const int nextUsagePercent =
-      std::clamp(static_cast<int>((static_cast<double>(usedKiB) /
-                                   static_cast<double>(memTotalKiB)) *
-                                  100.0),
-                 0, 100);
+  RamSnapshot snapshot = buildSnapshot(memTotalKiB, memAvailableKiB);
+  if (!snapshot.valid) {
+    snapshot = readSnapshotFromFree();
+  }
 
-  if (m_totalMiB != nextTotalMiB) {
-    m_totalMiB = nextTotalMiB;
+  if (!snapshot.valid) {
+    setAvailable(false);
+    clearMetrics();
+    return;
+  }
+
+  if (m_totalMiB != snapshot.totalMiB) {
+    m_totalMiB = snapshot.totalMiB;
     emit totalMiBChanged();
   }
 
-  if (m_usedMiB != nextUsedMiB) {
-    m_usedMiB = nextUsedMiB;
+  if (m_usedMiB != snapshot.usedMiB) {
+    m_usedMiB = snapshot.usedMiB;
     emit usedMiBChanged();
   }
 
-  if (m_usagePercent != nextUsagePercent) {
-    m_usagePercent = nextUsagePercent;
+  if (m_usagePercent != snapshot.usagePercent) {
+    m_usagePercent = snapshot.usagePercent;
     emit usagePercentChanged();
   }
 

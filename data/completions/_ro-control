@@ -28,8 +28,8 @@ global_opts=(
 local -a install_opts
 install_opts=(
   '--proprietary[Use the proprietary NVIDIA driver install path]'
-  '--open-source[Use the open-source Nouveau install path]'
-  '--accept-license[Confirm proprietary driver license acceptance]'
+  '--open-source[Use the NVIDIA open kernel module install path]'
+  '--accept-license[Confirm NVIDIA license review for the proprietary install path]'
 )
 
 if (( CURRENT == 2 )); then

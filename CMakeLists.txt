@@ -31,6 +31,7 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS
     Core
+    Qml
     Quick          # Qt Quick / QML engine
     QuickControls2 # QML controls (Button, Slider, etc.)
     Widgets        # QApplication base
@@ -70,15 +71,45 @@ set(BACKEND_SOURCES
     src/backend/system/polkit.cpp
     src/backend/system/dnfmanager.cpp
     src/backend/system/commandrunner.cpp
+    src/backend/system/sessionutil.cpp
+    src/backend/system/capabilityprobe.cpp
+    src/backend/system/languagemanager.cpp
+    src/backend/system/uipreferencesmanager.cpp
 )
 
 set(APP_SOURCES
     src/main.cpp
     src/cli/cli.cpp
-    ${BACKEND_SOURCES}
 )
 
 # ─── QML Resources ────────────────────────────────────────────────────────────
+add_library(ro-control-backend STATIC ${BACKEND_SOURCES})
+
+target_link_libraries(ro-control-backend PUBLIC
+    Qt6::Core
+    Qt6::DBus
+    Qt6::Qml
+)
+
+target_compile_options(ro-control-backend PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+    $<$<CONFIG:Debug>:-g -O0>
+    $<$<CONFIG:Release>:-O2>
+)
+
+target_include_directories(ro-control-backend PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/backend
+)
+
+target_compile_definitions(ro-control-backend PUBLIC
+    RO_CONTROL_POLICY_ID="${RO_CONTROL_POLICY_ID}"
+    RO_CONTROL_HELPER_BUILD_PATH="${RO_CONTROL_HELPER_BUILD_PATH}"
+    RO_CONTROL_HELPER_INSTALL_PATH="${RO_CONTROL_HELPER_INSTALL_PATH}"
+)
+
 qt_add_executable(ro-control ${APP_SOURCES})
 
 set_source_files_properties(src/qml/assets/ro-control-logo.svg PROPERTIES
@@ -97,6 +128,11 @@ qt_add_qml_module(ro-control
         src/qml/pages/DriverPage.qml
         src/qml/pages/MonitorPage.qml
         src/qml/pages/SettingsPage.qml
+        src/qml/components/InfoBadge.qml
+        src/qml/components/ActionButton.qml
+        src/qml/components/DetailRow.qml
+        src/qml/components/SectionPanel.qml
+        src/qml/components/StatusBanner.qml
         src/qml/components/StatCard.qml
         src/qml/components/SidebarMenu.qml
     RESOURCES
@@ -105,8 +141,11 @@ qt_add_qml_module(ro-control
 )
 
 if(Qt6LinguistTools_FOUND)
+    # English strings ship directly from source code. Keep the English TS file
+    # for catalog maintenance, but only compile non-source locales into .qm.
     set(TS_FILES
-        i18n/ro-control_en.ts
+        i18n/ro-control_de.ts
+        i18n/ro-control_es.ts
         i18n/ro-control_tr.ts
     )
 
@@ -118,11 +157,10 @@ endif()
 
 # ─── Link Qt Libraries ────────────────────────────────────────────────────────
 target_link_libraries(ro-control PRIVATE
-    Qt6::Core
     Qt6::Quick
     Qt6::QuickControls2
     Qt6::Widgets
-    Qt6::DBus
+    ro-control-backend
 )
 
 # ─── Compiler Warnings ────────────────────────────────────────────────────────
@@ -152,8 +190,6 @@ target_include_directories(ro-control PRIVATE
 
 target_compile_definitions(ro-control PRIVATE
     RO_CONTROL_POLICY_ID="${RO_CONTROL_POLICY_ID}"
-    RO_CONTROL_HELPER_BUILD_PATH="${RO_CONTROL_HELPER_BUILD_PATH}"
-    RO_CONTROL_HELPER_INSTALL_PATH="${RO_CONTROL_HELPER_INSTALL_PATH}"
 )
 
 configure_file(
@@ -162,6 +198,7 @@ configure_file(
     @ONLY
     NEWLINE_STYLE UNIX
 )
+execute_process(COMMAND chmod +x ${RO_CONTROL_HELPER_BUILD_PATH})
 
 configure_file(
     data/polkit/io.github.ProjectRoASD.rocontrol.policy.in
@@ -179,7 +216,7 @@ install(PROGRAMS ${RO_CONTROL_HELPER_BUILD_PATH}
     RENAME ${RO_CONTROL_HELPER_NAME}
 )
 
-install(FILES data/icons/ro-control.desktop
+install(FILES data/icons/io.github.projectroasd.rocontrol.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
 )
 
@@ -193,7 +230,7 @@ install(FILES
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps
 )
 
-install(FILES data/icons/ro-control.metainfo.xml
+install(FILES data/icons/io.github.projectroasd.rocontrol.metainfo.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo
 )
 

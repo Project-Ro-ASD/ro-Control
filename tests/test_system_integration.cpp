@@ -1,6 +1,10 @@
+#include <QDir>
+#include <QFile>
+#include <QTemporaryDir>
 #include <QStandardPaths>
 #include <QTest>
 
+#include "system/capabilityprobe.h"
 #include "system/commandrunner.h"
 #include "system/dnfmanager.h"
 #include "system/polkit.h"
@@ -9,6 +13,52 @@ class TestSystemIntegration : public QObject {
   Q_OBJECT
 
 private slots:
+  void testCommandRunnerUsesProgramOverride() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString scriptPath = tempDir.filePath(QStringLiteral("fake-dnf.sh"));
+    QFile script(scriptPath);
+    QVERIFY(script.open(QIODevice::WriteOnly | QIODevice::Text));
+    QVERIFY(script.write("#!/bin/sh\nprintf 'override-ok\\n'\nexit 0\n") > 0);
+    script.close();
+    QVERIFY(script.setPermissions(QFileDevice::ReadOwner |
+                                  QFileDevice::WriteOwner |
+                                  QFileDevice::ExeOwner));
+
+    qputenv("RO_CONTROL_COMMAND_DNF", scriptPath.toUtf8());
+
+    CommandRunner runner;
+    const auto result = runner.run(QStringLiteral("dnf"));
+    QCOMPARE(result.exitCode, 0);
+    QCOMPARE(result.stdout.trimmed(), QStringLiteral("override-ok"));
+
+    qunsetenv("RO_CONTROL_COMMAND_DNF");
+  }
+
+  void testCapabilityProbeUsesProgramOverride() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString scriptPath =
+        tempDir.filePath(QStringLiteral("fake-nvidia-smi.sh"));
+    QFile script(scriptPath);
+    QVERIFY(script.open(QIODevice::WriteOnly | QIODevice::Text));
+    QVERIFY(script.write("#!/bin/sh\nexit 0\n") > 0);
+    script.close();
+    QVERIFY(script.setPermissions(QFileDevice::ReadOwner |
+                                  QFileDevice::WriteOwner |
+                                  QFileDevice::ExeOwner));
+
+    qputenv("RO_CONTROL_COMMAND_NVIDIA_SMI", scriptPath.toUtf8());
+
+    const auto status = CapabilityProbe::probeTool(QStringLiteral("nvidia-smi"));
+    QVERIFY(status.available);
+    QCOMPARE(QDir::cleanPath(status.resolvedPath), QDir::cleanPath(scriptPath));
+
+    qunsetenv("RO_CONTROL_COMMAND_NVIDIA_SMI");
+  }
+
   void testCommandRunnerBasic() {
     CommandRunner runner;
     const auto result = runner.run(QStringLiteral("true"));

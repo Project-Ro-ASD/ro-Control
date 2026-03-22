@@ -143,6 +143,14 @@ cd build && ctest --output-on-failure
 
 **PRs to `main` will be rejected.** All contributions go through `dev` first.
 
+Recommended PR checklist:
+
+- Keep scope focused to one feature/fix/theme
+- Update docs when user-visible behavior changes
+- Update translations when adding or changing UI strings
+- Include before/after screenshots for UI changes
+- Run `ctest --test-dir build --output-on-failure` locally
+
 ---
 
 ## Translations
@@ -186,3 +194,5 @@ Use the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md) and include:
 - Steps to reproduce
 - Expected vs actual behavior
 - Relevant terminal output, `coredumpctl info ro-control`, or recent journal entries
+
+For general setup questions, diagnostics help, or uncertainty about whether something is a bug, start with [SUPPORT.md](SUPPORT.md).
