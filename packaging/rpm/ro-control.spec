@@ -1,11 +1,14 @@
+%global upstream_version %{!?upstream_version:0.1.0}%{?upstream_version}
+
 Name:           ro-control
-Version:        0.1.0
-Release:        2%{?dist}
+Version:        %{upstream_version}
+Release:        1%{?dist}
 Summary:        Smart NVIDIA driver manager and system monitor
 
 License:        GPL-3.0-or-later
 URL:            https://github.com/Project-Ro-ASD/ro-Control
 Source0:        %{name}-%{version}.tar.gz
+ExclusiveArch:  x86_64 aarch64
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -24,11 +27,17 @@ Requires:       qt6-qtdeclarative
 Requires:       qt6-qtwayland
 Requires:       kf6-qqc2-desktop-style
 Requires:       polkit
-Requires:       dnf
+Requires:       /usr/bin/dnf
 Requires:       /usr/bin/pkexec
+Requires:       /usr/bin/rpm
 Requires:       pciutils
+Requires:       /usr/bin/free
 Recommends:     mokutil
 Recommends:     kmod
+Recommends:     /usr/bin/sensors
+Recommends:     /usr/sbin/akmods
+Recommends:     /usr/bin/dracut
+Recommends:     /usr/sbin/grubby
 
 %description
 ro-Control is a Qt6/KDE Plasma desktop application that helps users
@@ -66,9 +75,7 @@ tar -xzf %{SOURCE0} --strip-components=1
 %{_datadir}/polkit-1/actions/io.github.ProjectRoASD.rocontrol.policy
 
 %changelog
-* Mon Mar 16 2026 ro-Control Maintainers <noreply@github.com> - 0.1.0-2
-- Fix Fedora runtime dependencies for DNF and pkexec
-- Restore standard RPM artifact naming to avoid output collisions
-
-* Fri Mar 06 2026 ro-Control Maintainers <noreply@github.com> - 0.1.0-1
-- Initial RPM packaging spec
+* Sun Mar 22 2026 ro-Control Maintainers <noreply@github.com> - 0.1.0-1
+- Prepare first GitHub Release RPMs for x86_64 and aarch64
+- Add explicit Fedora runtime command dependencies and recommendations
+- Align RPM release automation with tagged versioned source archives

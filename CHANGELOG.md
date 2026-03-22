@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test suite expanded to cover monitor metric ranges and detector reporting
 - Repository metadata and packaging references aligned with the active GitHub organization
 - Privileged command flow now uses a dedicated allowlisted helper instead of raw `pkexec` command dispatch
+- GitHub release automation now targets Fedora `x86_64` and `aarch64` RPM publication from tagged builds
 
 ### Fixed
 - Command execution path preserves stdout reliably
@@ -31,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updater API/header alignment and monitor test compatibility issues resolved
 - Repository cleanup for stray macOS metadata files
 - PolicyKit metadata, helper install path, and packaged action identifiers are now consistent
+- Release packaging now validates tag/CMake/spec version alignment before publishing assets
 
 ---
 

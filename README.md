@@ -114,7 +114,7 @@ Additional PNG screenshots should be added before wider store distribution.
 
 ### RPM Package
 
-Download the latest `.rpm` from [Releases](https://github.com/Project-Ro-ASD/ro-Control/releases):
+Download the latest Fedora `.rpm` from [Releases](https://github.com/Project-Ro-ASD/ro-Control/releases) and choose the package that matches your machine architecture (`x86_64` or `aarch64`):
 
 ```bash
 sudo dnf install ./ro-control-*.rpm
