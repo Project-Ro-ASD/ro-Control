@@ -11,6 +11,7 @@ qt_add_executable(test_detector
     test_detector.cpp
     ${CMAKE_SOURCE_DIR}/src/backend/nvidia/detector.cpp
     ${CMAKE_SOURCE_DIR}/src/backend/system/commandrunner.cpp
+    ${CMAKE_SOURCE_DIR}/src/backend/system/sessionutil.cpp
 )
 
 target_include_directories(test_detector PRIVATE
@@ -32,7 +33,11 @@ add_test(NAME test_detector COMMAND test_detector)
 # ─── Updater/Version Parser Tests ────────────────────────────────────────────
 qt_add_executable(test_updater
     test_updater.cpp
+    ${CMAKE_SOURCE_DIR}/src/backend/nvidia/updater.cpp
     ${CMAKE_SOURCE_DIR}/src/backend/nvidia/versionparser.cpp
+    ${CMAKE_SOURCE_DIR}/src/backend/nvidia/detector.cpp
+    ${CMAKE_SOURCE_DIR}/src/backend/system/commandrunner.cpp
+    ${CMAKE_SOURCE_DIR}/src/backend/system/sessionutil.cpp
 )
 
 target_include_directories(test_updater PRIVATE
@@ -54,6 +59,7 @@ qt_add_executable(test_monitor
     ${CMAKE_SOURCE_DIR}/src/backend/monitor/gpumonitor.cpp
     ${CMAKE_SOURCE_DIR}/src/backend/monitor/rammonitor.cpp
     ${CMAKE_SOURCE_DIR}/src/backend/system/commandrunner.cpp
+    ${CMAKE_SOURCE_DIR}/src/backend/system/sessionutil.cpp
 )
 
 target_include_directories(test_monitor PRIVATE
@@ -124,6 +130,7 @@ qt_add_executable(test_cli
     ${CMAKE_SOURCE_DIR}/src/backend/monitor/gpumonitor.cpp
     ${CMAKE_SOURCE_DIR}/src/backend/monitor/rammonitor.cpp
     ${CMAKE_SOURCE_DIR}/src/backend/system/commandrunner.cpp
+    ${CMAKE_SOURCE_DIR}/src/backend/system/sessionutil.cpp
 )
 
 target_include_directories(test_cli PRIVATE
