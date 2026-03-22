@@ -129,11 +129,13 @@ ApplicationWindow {
                     color: root.theme.card
                     border.width: 1
                     border.color: root.theme.border
-                    implicitHeight: heroLayout.implicitHeight + 32
+                    implicitHeight: heroLayout.implicitHeight + 40
 
                     RowLayout {
                         id: heroLayout
-                        anchors.fill: parent
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
                         anchors.margins: 20
                         spacing: 18
 

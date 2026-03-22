@@ -16,7 +16,7 @@ Rectangle {
     color: emphasized ? Qt.tint(theme.cardStrong, "#15000000") : theme.card
     border.width: 1
     border.color: theme.border
-    implicitHeight: cardLayout.implicitHeight + 30
+    implicitHeight: cardLayout.implicitHeight + 36
 
     Rectangle {
         anchors.top: parent.top
@@ -30,9 +30,11 @@ Rectangle {
 
     ColumnLayout {
         id: cardLayout
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
         anchors.margins: 18
-        spacing: 10
+        spacing: 8
 
         Label {
             text: card.title

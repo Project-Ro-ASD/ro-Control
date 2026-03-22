@@ -137,7 +137,9 @@ Item {
 
                         Label {
                             id: verificationText
-                            anchors.fill: parent
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
                             anchors.margins: 12
                             text: nvidiaDetector.verificationReport
                             wrapMode: Text.Wrap

@@ -28,10 +28,15 @@ Rectangle {
     border.color: borderTone
     visible: text.length > 0
 
+    implicitHeight: bannerLayout.implicitHeight + 24
+
     RowLayout {
-        anchors.fill: parent
+        id: bannerLayout
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
         anchors.margins: 12
-        spacing: 10
+        spacing: 12
 
         Rectangle {
             width: 10
