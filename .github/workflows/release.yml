@@ -145,7 +145,7 @@ jobs:
             --define "upstream_version ${VERSION}" \
             --define "dist .fc42"
 
-          cp ~/rpmbuild/RPMS/*/*.rpm dist/rpm/
+          find ~/rpmbuild/RPMS -maxdepth 2 -type f -name "ro-control-[0-9]*.${RPM_ARCH}.rpm" -exec cp {} dist/rpm/ \;
 
           if [[ "${RPM_ARCH}" == "x86_64" ]]; then
             cp ~/rpmbuild/SRPMS/*.src.rpm dist/rpm/

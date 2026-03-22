@@ -93,9 +93,9 @@ jobs:
 
       - name: Prepare source tarball
         run: |
-          VERSION="$(awk '/^Version:/ {print $2}' packaging/rpm/ro-control.spec)"
+          VERSION="$(sed -n 's/^[[:space:]]*VERSION[[:space:]]\([0-9.][0-9.]*\)$/\1/p' CMakeLists.txt | head -n1)"
           if [[ -z "${VERSION}" ]]; then
-            echo "Failed to read Version from packaging/rpm/ro-control.spec" >&2
+            echo "Failed to read project version from CMakeLists.txt" >&2
             exit 1
           fi
           ARCHIVE_BASENAME="ro-control-${VERSION}"
@@ -112,7 +112,8 @@ jobs:
       - name: Build RPM
         run: |
           rpmbuild -ba "${HOME}/rpmbuild/SPECS/ro-control.spec" \
-            --define "_topdir ${HOME}/rpmbuild"
+            --define "_topdir ${HOME}/rpmbuild" \
+            --define "upstream_version ${VERSION}"
 
       - name: Lint built RPMs
         run: |
