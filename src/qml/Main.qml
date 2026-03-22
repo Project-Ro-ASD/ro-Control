@@ -133,10 +133,9 @@ ApplicationWindow {
 
                     RowLayout {
                         id: heroLayout
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.margins: 20
+                        x: 20
+                        y: 20
+                        width: parent.width - 40
                         spacing: 18
 
                         ColumnLayout {

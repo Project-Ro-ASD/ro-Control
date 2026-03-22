@@ -11,12 +11,13 @@ Item {
     property bool showAdvancedInfo: true
 
     ScrollView {
+        id: pageScroll
         anchors.fill: parent
         clip: true
         contentWidth: availableWidth
 
         ColumnLayout {
-            width: parent.availableWidth
+            width: pageScroll.availableWidth
             spacing: settingsPage.compactMode ? 12 : 16
 
             GridLayout {

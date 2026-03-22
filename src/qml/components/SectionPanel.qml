@@ -18,10 +18,9 @@ Rectangle {
 
     ColumnLayout {
         id: innerColumn
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.margins: 18
+        x: 18
+        y: 18
+        width: parent.width - 36
         spacing: 14
 
         ColumnLayout {

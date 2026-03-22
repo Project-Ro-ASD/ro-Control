@@ -14,12 +14,13 @@ Item {
     property string bannerTone: "info"
 
     ScrollView {
+        id: pageScroll
         anchors.fill: parent
         clip: true
         contentWidth: availableWidth
 
         ColumnLayout {
-            width: parent.availableWidth
+            width: pageScroll.availableWidth
             spacing: page.compactMode ? 12 : 16
 
             StatusBanner {
@@ -137,10 +138,9 @@ Item {
 
                         Label {
                             id: verificationText
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.margins: 12
+                            x: 12
+                            y: 12
+                            width: parent.width - 24
                             text: nvidiaDetector.verificationReport
                             wrapMode: Text.Wrap
                             color: page.theme.text
