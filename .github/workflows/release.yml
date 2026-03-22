@@ -5,20 +5,113 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version without the leading v"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  artifacts:
-    name: Build Release Artifacts
+  metadata:
+    name: Resolve Release Metadata
     runs-on: ubuntu-latest
-    container:
-      image: fedora:42
 
-    permissions:
-      contents: read
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tag_name: ${{ steps.meta.outputs.tag_name }}
+      archive_prefix: ${{ steps.meta.outputs.archive_prefix }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: meta
+        run: |
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+
+          if [[ -z "${VERSION}" ]]; then
+            echo "Release version could not be determined." >&2
+            exit 1
+          fi
+
+          PROJECT_VERSION="$(sed -n 's/^[[:space:]]*VERSION[[:space:]]\([0-9.][0-9.]*\)$/\1/p' CMakeLists.txt | head -n1)"
+          SPEC_DEFAULT_VERSION="$(sed -n 's/^%global upstream_version %{!?upstream_version:\([0-9.][0-9.]*\)}%{?upstream_version}$/\1/p' packaging/rpm/ro-control.spec | head -n1)"
+
+          if [[ "${VERSION}" != "${PROJECT_VERSION}" ]]; then
+            echo "Tag/workflow version (${VERSION}) does not match CMake project version (${PROJECT_VERSION})." >&2
+            exit 1
+          fi
+
+          if [[ "${VERSION}" != "${SPEC_DEFAULT_VERSION}" ]]; then
+            echo "Tag/workflow version (${VERSION}) does not match RPM spec default version (${SPEC_DEFAULT_VERSION})." >&2
+            exit 1
+          fi
+
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "tag_name=v${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "archive_prefix=ro-control-${VERSION}" >> "${GITHUB_OUTPUT}"
+
+  source-archives:
+    name: Build Source Archives
+    runs-on: ubuntu-latest
+    needs: metadata
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create source archives
+        env:
+          ARCHIVE_PREFIX: ${{ needs.metadata.outputs.archive_prefix }}
+        run: |
+          git archive --format=tar.gz --prefix="${ARCHIVE_PREFIX}/" --output="${ARCHIVE_PREFIX}.tar.gz" "${GITHUB_SHA}"
+          git archive --format=zip --prefix="${ARCHIVE_PREFIX}/" --output="${ARCHIVE_PREFIX}.zip" "${GITHUB_SHA}"
+
+      - name: Upload source archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: ro-control-source-${{ needs.metadata.outputs.version }}
+          path: |
+            ${{ needs.metadata.outputs.archive_prefix }}.tar.gz
+            ${{ needs.metadata.outputs.archive_prefix }}.zip
+
+  rpm:
+    name: Build Fedora RPM (${{ matrix.arch }})
+    needs: [metadata, source-archives]
+    runs-on: ${{ matrix.runs_on }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runs_on: ubuntu-24.04
+          - arch: aarch64
+            runs_on: ubuntu-24.04-arm
+    container:
+      image: fedora:42
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download source archives
+        uses: actions/download-artifact@v4
+        with:
+          name: ro-control-source-${{ needs.metadata.outputs.version }}
+          path: dist
 
       - name: Install packaging dependencies
         run: |
@@ -37,73 +130,97 @@ jobs:
             kf6-qqc2-desktop-style \
             polkit-devel
 
-      - name: Derive release version
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          echo "VERSION=${VERSION}" >> "${GITHUB_ENV}"
-
-      - name: Create source archives
-        run: |
-          PREFIX="ro-control-${VERSION}"
-          git archive --format=tar.gz --prefix="${PREFIX}/" --output="${PREFIX}.tar.gz" "${GITHUB_SHA}"
-          git archive --format=zip --prefix="${PREFIX}/" --output="${PREFIX}.zip" "${GITHUB_SHA}"
-
       - name: Build RPM artifacts
+        env:
+          VERSION: ${{ needs.metadata.outputs.version }}
+          ARCHIVE_PREFIX: ${{ needs.metadata.outputs.archive_prefix }}
+          RPM_ARCH: ${{ matrix.arch }}
         run: |
-          mkdir -p ~/rpmbuild/SOURCES ~/rpmbuild/SPECS
-          cp "ro-control-${VERSION}.tar.gz" "${HOME}/rpmbuild/SOURCES/"
+          mkdir -p ~/rpmbuild/SOURCES ~/rpmbuild/SPECS dist/rpm
+          cp "dist/${ARCHIVE_PREFIX}.tar.gz" "${HOME}/rpmbuild/SOURCES/"
           cp packaging/rpm/ro-control.spec "${HOME}/rpmbuild/SPECS/ro-control.spec"
+
           rpmbuild -ba "${HOME}/rpmbuild/SPECS/ro-control.spec" \
-            --define "_topdir ${HOME}/rpmbuild"
-          cp ~/rpmbuild/SRPMS/*.src.rpm .
-          cp ~/rpmbuild/RPMS/*/*.rpm .
+            --define "_topdir ${HOME}/rpmbuild" \
+            --define "upstream_version ${VERSION}" \
+            --define "dist .fc42"
 
-      - name: Generate checksums
+          cp ~/rpmbuild/RPMS/*/*.rpm dist/rpm/
+
+          if [[ "${RPM_ARCH}" == "x86_64" ]]; then
+            cp ~/rpmbuild/SRPMS/*.src.rpm dist/rpm/
+          fi
+
+      - name: Verify package metadata
+        env:
+          VERSION: ${{ needs.metadata.outputs.version }}
+          RPM_ARCH: ${{ matrix.arch }}
         run: |
-          sha256sum \
-            "ro-control-${VERSION}.tar.gz" \
-            "ro-control-${VERSION}.zip" \
-            *.rpm \
-            *.src.rpm > "ro-control-${VERSION}-SHA256SUMS.txt"
+          RPM_FILE="$(find dist/rpm -maxdepth 1 -type f -name "*.${RPM_ARCH}.rpm" | head -n1)"
+          if [[ -z "${RPM_FILE}" ]]; then
+            echo "Failed to locate built ${RPM_ARCH} RPM." >&2
+            exit 1
+          fi
 
-      - name: Upload release artifacts
+          rpm -qp --info "${RPM_FILE}" > "dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-info.txt"
+          rpm -qp --requires "${RPM_FILE}" | sort > "dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-requires.txt"
+
+      - name: Install and smoke-test RPM
+        env:
+          VERSION: ${{ needs.metadata.outputs.version }}
+          RPM_ARCH: ${{ matrix.arch }}
+        run: |
+          RPM_FILE="$(find dist/rpm -maxdepth 1 -type f -name "*.${RPM_ARCH}.rpm" | head -n1)"
+          dnf install -y --nogpgcheck "${RPM_FILE}"
+
+          INSTALLED_VERSION="$(ro-control --version | tr -d '\n')"
+          if [[ "${INSTALLED_VERSION}" != "${VERSION}" ]]; then
+            echo "Installed CLI version (${INSTALLED_VERSION}) does not match release version (${VERSION})." >&2
+            exit 1
+          fi
+
+          ro-control --help > /dev/null
+
+      - name: Generate per-arch checksums
+        env:
+          VERSION: ${{ needs.metadata.outputs.version }}
+          RPM_ARCH: ${{ matrix.arch }}
+        run: |
+          (
+            cd dist/rpm
+            sha256sum * > "ro-control-${VERSION}-${RPM_ARCH}-SHA256SUMS.txt"
+          )
+
+      - name: Upload RPM artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ro-control-release-${{ env.VERSION }}
-          path: |
-            ro-control-${{ env.VERSION }}.tar.gz
-            ro-control-${{ env.VERSION }}.zip
-            *.rpm
-            *.src.rpm
-            ro-control-${{ env.VERSION }}-SHA256SUMS.txt
+          name: ro-control-rpm-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
+          path: dist/rpm/*
 
   release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: artifacts
-
-    permissions:
-      contents: write
+    needs: [metadata, source-archives, rpm]
 
     steps:
-      - name: Derive release version
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          echo "VERSION=${VERSION}" >> "${GITHUB_ENV}"
-
-      - name: Download release artifacts
+      - name: Download all release artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ro-control-release-${{ env.VERSION }}
+          pattern: ro-control-*
           path: dist
+          merge-multiple: true
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ needs.metadata.outputs.tag_name }}
+          target_commitish: ${{ github.sha }}
           generate_release_notes: true
           files: |
-            dist/ro-control-${{ env.VERSION }}.tar.gz
-            dist/ro-control-${{ env.VERSION }}.zip
+            dist/ro-control-${{ needs.metadata.outputs.version }}.tar.gz
+            dist/ro-control-${{ needs.metadata.outputs.version }}.zip
             dist/*.rpm
             dist/*.src.rpm
-            dist/ro-control-${{ env.VERSION }}-SHA256SUMS.txt
+            dist/*SHA256SUMS.txt
+            dist/*-requires.txt
+            dist/*-info.txt
