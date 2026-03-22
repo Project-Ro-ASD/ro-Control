@@ -1,4 +1,5 @@
 %global upstream_version %{!?upstream_version:0.1.0}%{?upstream_version}
+%global debug_package %{nil}
 
 Name:           ro-control
 Version:        %{upstream_version}
