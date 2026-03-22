@@ -16,9 +16,10 @@ Item {
     ScrollView {
         anchors.fill: parent
         clip: true
+        contentWidth: availableWidth
 
         ColumnLayout {
-            width: Math.max(page.width - 12, 760)
+            width: parent.availableWidth
             spacing: page.compactMode ? 12 : 16
 
             StatusBanner {
@@ -83,7 +84,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: page.theme
                     title: qsTr("Verification")
                     subtitle: qsTr("Review driver prerequisites before changing packages.")
@@ -148,7 +148,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: page.theme
                     title: qsTr("Driver Actions")
                     subtitle: qsTr("Use guided actions to install, switch or remove the current stack.")
@@ -227,7 +226,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: page.theme
                     title: qsTr("Update Center")
                     subtitle: qsTr("Check the repository version and pin a specific build when required.")
@@ -296,7 +294,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: page.theme
                     title: qsTr("Activity Log")
                     subtitle: qsTr("Operation output is streamed here in real time.")

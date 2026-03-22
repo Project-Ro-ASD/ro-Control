@@ -13,9 +13,10 @@ Item {
     ScrollView {
         anchors.fill: parent
         clip: true
+        contentWidth: availableWidth
 
         ColumnLayout {
-            width: Math.max(settingsPage.width - 12, 760)
+            width: parent.availableWidth
             spacing: settingsPage.compactMode ? 12 : 16
 
             GridLayout {
@@ -26,7 +27,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: settingsPage.theme
                     title: qsTr("Interface")
                     subtitle: qsTr("Tune the shell density and how much operational detail the app exposes.")
@@ -105,7 +105,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: settingsPage.theme
                     title: qsTr("Diagnostics")
                     subtitle: qsTr("Useful runtime context before filing issues or performing support work.")
@@ -167,7 +166,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: settingsPage.theme
                     title: qsTr("Workflow Guidance")
                     subtitle: qsTr("Recommended order of operations when changing drivers.")
@@ -191,7 +189,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: settingsPage.theme
                     title: qsTr("About")
                     subtitle: qsTr("Project identity and current shell mode.")

@@ -1,11 +1,13 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 Rectangle {
     id: sidebar
     width: 220
     required property var theme
     color: theme.sidebarBg
+    clip: true
 
     property int currentIndex: 0
     readonly property var menuItems: [
@@ -14,14 +16,27 @@ Rectangle {
         qsTr("Settings")
     ]
 
-    Column {
-        anchors.fill: parent
+    // Versiyon — alt köşe
+    Label {
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: 16
+        text: "v" + Qt.application.version
+        font.pixelSize: 11
+        color: theme.sidebarHint
+        z: 1
+    }
+
+    ColumnLayout {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
         spacing: 0
 
         // Başlık
         Item {
-            width: parent.width
-            height: 70
+            Layout.fillWidth: true
+            implicitHeight: 70
 
             Label {
                 anchors.centerIn: parent
@@ -33,15 +48,16 @@ Rectangle {
         }
 
         Rectangle {
-            width: parent.width - 32
+            Layout.fillWidth: true
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
             height: 1
-            anchors.horizontalCenter: parent.horizontalCenter
             color: theme.sidebarBorder
         }
 
         Item {
-            width: 1
-            height: 12
+            Layout.fillWidth: true
+            implicitHeight: 12
         }
 
         Repeater {
@@ -50,10 +66,12 @@ Rectangle {
             delegate: Rectangle {
                 id: menuItem
                 required property int index
+                required property string modelData
 
-                width: sidebar.width - 16
-                height: 44
-                x: 8
+                Layout.fillWidth: true
+                Layout.leftMargin: 8
+                Layout.rightMargin: 8
+                implicitHeight: 44
                 radius: 8
                 color: sidebar.currentIndex === menuItem.index ? theme.sidebarActive
                                                                : mouseArea.containsMouse ? theme.sidebarHover
@@ -61,10 +79,14 @@ Rectangle {
 
                 Label {
                     anchors.verticalCenter: parent.verticalCenter
-                    leftPadding: 16
-                    text: modelData
+                    anchors.left: parent.left
+                    anchors.leftMargin: 16
+                    anchors.right: parent.right
+                    anchors.rightMargin: 8
+                    text: menuItem.modelData
                     font.pixelSize: 14
                     color: sidebar.currentIndex === menuItem.index ? theme.sidebarAccent : theme.sidebarMuted
+                    elide: Text.ElideRight
                 }
 
                 MouseArea {
@@ -76,15 +98,5 @@ Rectangle {
                 }
             }
         }
-    }
-
-    // Versiyon — alt köşe
-    Label {
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottomMargin: 16
-        text: "v" + Qt.application.version
-        font.pixelSize: 11
-        color: theme.sidebarHint
     }
 }

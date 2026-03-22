@@ -14,9 +14,13 @@ Rectangle {
     color: theme.card
     border.width: 1
     border.color: theme.border
+    implicitHeight: innerColumn.implicitHeight + 36
 
     ColumnLayout {
-        anchors.fill: parent
+        id: innerColumn
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
         anchors.margins: 18
         spacing: 14
 
@@ -30,6 +34,8 @@ Rectangle {
                 font.bold: true
                 color: panel.theme.text
                 visible: text.length > 0
+                Layout.fillWidth: true
+                wrapMode: Text.Wrap
             }
 
             Label {

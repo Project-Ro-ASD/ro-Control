@@ -13,9 +13,10 @@ Item {
     ScrollView {
         anchors.fill: parent
         clip: true
+        contentWidth: availableWidth
 
         ColumnLayout {
-            width: Math.max(page.width - 12, 760)
+            width: parent.availableWidth
             spacing: page.compactMode ? 12 : 16
 
             GridLayout {
@@ -69,7 +70,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: page.theme
                     title: qsTr("Live Resource Curves")
                     subtitle: qsTr("Quick pulse view for the most important machine resources.")
@@ -122,7 +122,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: page.theme
                     title: qsTr("Health Summary")
                     subtitle: qsTr("Fast interpretation of the raw telemetry values.")
@@ -170,7 +169,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: page.theme
                     title: qsTr("Detailed Signals")
                     subtitle: qsTr("Expanded raw values for support and diagnostics.")
@@ -226,7 +224,6 @@ Item {
 
                 SectionPanel {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
                     theme: page.theme
                     title: qsTr("Actions")
                     subtitle: qsTr("Trigger a manual refresh when you need a fresh sample.")
