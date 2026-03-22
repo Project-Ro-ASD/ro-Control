@@ -24,10 +24,10 @@
         <translation type="vanished">Sürücü sürümü: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="98"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="319"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="98"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="319"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="230"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="465"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="233"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="468"/>
         <source>None</source>
         <translation>Yok</translation>
     </message>
@@ -36,86 +36,98 @@
         <translation type="vanished">Secure Boot: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="23"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="23"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="26"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="28"/>
         <source>Repository Setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Depo Kurulumu</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="25"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="25"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="28"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="30"/>
         <source>Package Transaction</source>
-        <translation type="unfinished"></translation>
+        <translation>Paket İşlemi</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="27"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="27"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="30"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="32"/>
         <source>Kernel Integration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="29"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="29"/>
-        <source>Session Finalization</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="31"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="31"/>
-        <source>Update Check</source>
-        <translation type="unfinished"></translation>
+        <translation>Kernel Entegrasyonu</translation>
     </message>
     <message>
         <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="32"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="32"/>
-        <source>General</source>
-        <translation type="unfinished"></translation>
+        <location filename="../src/qml/pages/DriverPage.qml" line="34"/>
+        <source>Session Finalization</source>
+        <translation>Oturum Sonlandırma</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="78"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="78"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="34"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="36"/>
+        <source>Update Check</source>
+        <translation>Güncelleme Kontrolü</translation>
+    </message>
+    <message>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="35"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="37"/>
+        <source>General</source>
+        <translation>Genel</translation>
+    </message>
+    <message>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="121"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="123"/>
+        <source>Installed</source>
+        <translation>Kurulu</translation>
+    </message>
+    <message>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="123"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="125"/>
+        <source>Latest</source>
+        <translation>En Güncel</translation>
+    </message>
+    <message>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="210"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="213"/>
         <source>GPU Detection</source>
         <translation>GPU Tespiti</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="79"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="79"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="211"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="214"/>
         <source>Detected</source>
         <translation>Tespit Edildi</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="79"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="79"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="211"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="214"/>
         <source>Missing</source>
         <translation>Bulunamadı</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="80"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="80"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="212"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="215"/>
         <source>No NVIDIA GPU was detected on this system.</source>
         <translation>Bu sistemde NVIDIA GPU tespit edilemedi.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="88"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="88"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="220"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="223"/>
         <source>Active Driver</source>
         <translation>Aktif Sürücü</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="90"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="90"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="222"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="225"/>
         <source>Session: </source>
         <translation>Oturum: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="90"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="90"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="222"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="225"/>
         <source>Unknown</source>
         <translation>Bilinmiyor</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="97"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="97"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="229"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="232"/>
         <source>Installed Version</source>
         <translation>Kurulu Sürüm</translation>
     </message>
@@ -128,324 +140,346 @@
         <translation type="vanished">Bekleyen paket güncellemesi bulunamadı.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="101"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="101"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="233"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="236"/>
         <source>Latest available online: </source>
-        <translation type="unfinished"></translation>
+        <translation>Çevrimiçi bulunan en güncel sürüm: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="102"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="102"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="234"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="237"/>
         <source>No pending online package update detected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bekleyen çevrimiçi paket güncellemesi tespit edilmedi.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="104"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="104"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="236"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="239"/>
         <source>Latest driver found online: </source>
-        <translation type="unfinished"></translation>
+        <translation>Çevrimiçi bulunan en güncel sürücü: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="105"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="105"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="237"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="240"/>
         <source>No online driver catalog has been loaded yet.</source>
-        <translation type="unfinished"></translation>
+        <translation>Henüz çevrimiçi sürücü kataloğu yüklenmedi.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="113"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="113"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="245"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="248"/>
         <source>Secure Boot</source>
         <translation>Güvenli Önyükleme (Secure Boot)</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="114"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="114"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="246"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="249"/>
         <source>Enabled</source>
         <translation>Açık</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="114"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="114"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="246"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="249"/>
         <source>Disabled / Unknown</source>
         <translation>Kapalı / Bilinmiyor</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="116"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="116"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="248"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="251"/>
         <source>Unsigned kernel modules may require manual signing.</source>
         <translation>İmzasız kernel modüllerinin manuel olarak imzalanması gerekebilir.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="117"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="117"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="249"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="252"/>
         <source>No Secure Boot blocker is currently detected.</source>
         <translation>Şu anda herhangi bir Secure Boot engeli tespit edilmedi.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="132"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="132"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="264"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="267"/>
         <source>Verification</source>
         <translation>Doğrulama</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="133"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="133"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="265"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="268"/>
         <source>Review driver prerequisites before changing packages.</source>
         <translation>Paketleri değiştirmeden önce sürücü ön koşullarını gözden geçirin.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="140"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="140"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="272"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="275"/>
         <source>GPU Ready</source>
         <translation>GPU Hazır</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="140"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="140"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="272"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="275"/>
         <source>GPU Missing</source>
         <translation>GPU Bulunamadı</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="146"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="146"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="278"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="281"/>
         <source>Wayland Session</source>
         <translation>Wayland Oturumu</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="146"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="146"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="278"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="281"/>
         <source>X11 / Other Session</source>
         <translation>X11 / Diğer Oturum</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="152"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="152"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="284"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="287"/>
         <source>Nouveau Active</source>
         <translation>Nouveau Aktif</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="152"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="152"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="284"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="287"/>
         <source>Nouveau Inactive</source>
         <translation>Nouveau Pasif</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="158"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="158"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="290"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="293"/>
         <source>Kernel Module Loaded</source>
         <translation>Kernel Modülü Yüklü</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="158"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="158"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="290"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="293"/>
         <source>Kernel Module Missing</source>
         <translation>Kernel Modülü Eksik</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="169"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="169"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="301"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="304"/>
         <source>Wayland sessions automatically need the nvidia-drm.modeset=1 kernel argument.</source>
         <translation>Wayland oturumları otomatik olarak nvidia-drm.modeset=1 çekirdek argümanına ihtiyaç duyar.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="170"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="170"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="302"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="305"/>
         <source>X11 sessions require matching userspace packages after install or update.</source>
         <translation>X11 oturumları, kurulum veya güncelleme sonrası eşleşen kullanıcı alanı paketleri gerektirir.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="197"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="197"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="329"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="332"/>
         <source>Driver Actions</source>
         <translation>Sürücü İşlemleri</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="198"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="198"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="330"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="333"/>
         <source>Use guided actions to install, switch or remove the current stack.</source>
         <translation>Mevcut yığını kurmak, değiştirmek veya kaldırmak için rehberli işlemleri kullanın.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="206"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="206"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="338"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="341"/>
         <source>Source: </source>
-        <translation type="unfinished"></translation>
+        <translation>Kaynak: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="206"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="212"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="218"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="206"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="212"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="218"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="338"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="344"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="350"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="341"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="347"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="353"/>
         <source>Idle</source>
-        <translation type="unfinished"></translation>
+        <translation>Boşta</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="212"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="212"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="344"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="347"/>
         <source>Phase: </source>
-        <translation type="unfinished"></translation>
+        <translation>Aşama: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="218"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="218"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="350"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="353"/>
         <source>Running</source>
-        <translation type="unfinished"></translation>
+        <translation>Çalışıyor</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="234"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="234"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="356"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="359"/>
+        <source>Elapsed: </source>
+        <translation>Geçen Süre: </translation>
+    </message>
+    <message>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="363"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="366"/>
+        <source>Last Log: </source>
+        <translation>Son Günlük: </translation>
+    </message>
+    <message>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="380"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="383"/>
         <source>I accept the detected license / agreement terms</source>
         <translation>Tespit edilen lisans / sözleşme koşullarını kabul ediyorum</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="245"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="245"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="391"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="394"/>
         <source>Install Proprietary</source>
         <translation>Sahipli Sürücüyü Kur</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="248"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="258"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="268"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="278"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="432"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="437"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="446"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="248"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="258"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="268"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="278"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="432"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="437"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="446"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="394"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="404"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="414"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="424"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="581"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="582"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="586"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="587"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="595"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="596"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="397"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="407"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="417"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="427"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="584"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="585"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="589"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="590"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="598"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="599"/>
         <source>Installer</source>
-        <translation type="unfinished"></translation>
+        <translation>Kurucu</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="248"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="248"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="394"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="397"/>
         <source>Installing the proprietary NVIDIA driver (akmod-nvidia)...</source>
-        <translation type="unfinished">Kapalı kaynak NVIDIA sürücüsü kuruluyor (akmod-nvidia)...</translation>
+        <translation>Kapalı kaynak NVIDIA sürücüsü kuruluyor (akmod-nvidia)...</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="255"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="255"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="401"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="404"/>
         <source>Install Nouveau</source>
         <translation>Nouveau Kur (Açık Kaynak)</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="258"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="258"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="404"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="407"/>
         <source>Switching to the open-source driver...</source>
-        <translation type="unfinished">Açık kaynak sürücüye geçiliyor...</translation>
+        <translation>Açık kaynak sürücüye geçiliyor...</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="265"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="265"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="411"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="414"/>
         <source>Remove Driver</source>
         <translation>Sürücüyü Kaldır</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="268"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="268"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="414"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="417"/>
         <source>Removing the NVIDIA driver...</source>
-        <translation type="unfinished">NVIDIA sürücüsü kaldırılıyor...</translation>
+        <translation>NVIDIA sürücüsü kaldırılıyor...</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="278"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="278"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="424"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="427"/>
         <source>Cleaning legacy driver leftovers...</source>
-        <translation type="unfinished">Eski sürücü kalıntıları temizleniyor...</translation>
+        <translation>Eski sürücü kalıntıları temizleniyor...</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="312"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="312"/>
-        <source>Search the online package catalog, then download and install a matching driver build.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="327"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="327"/>
-        <source>Remote Driver Available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="327"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="327"/>
-        <source>Catalog Not Ready</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="343"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="352"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="376"/>
         <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="458"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="463"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="343"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="352"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="376"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="458"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="463"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="461"/>
+        <source>Search the online package catalog, then download and install a matching driver build.</source>
+        <translation>Çevrimiçi paket kataloğunu tarayın, ardından uygun sürücü derlemesini indirip kurun.</translation>
+    </message>
+    <message>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="473"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="476"/>
+        <source>Remote Driver Available</source>
+        <translation>Uzak Sürücü Mevcut</translation>
+    </message>
+    <message>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="473"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="476"/>
+        <source>Catalog Not Ready</source>
+        <translation>Katalog Hazır Değil</translation>
+    </message>
+    <message>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="489"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="498"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="523"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="607"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="608"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="612"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="613"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="492"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="501"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="526"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="610"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="611"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="615"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="616"/>
         <source>Updater</source>
-        <translation type="unfinished"></translation>
+        <translation>Güncelleyici</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="343"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="343"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="489"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="492"/>
         <source>Searching the online NVIDIA package catalog...</source>
-        <translation type="unfinished"></translation>
+        <translation>Çevrimiçi NVIDIA paket kataloğu aranıyor...</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="349"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="349"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="495"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="498"/>
         <source>Install Latest</source>
-        <translation type="unfinished"></translation>
+        <translation>En Günceli Kur</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="353"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="353"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="499"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="502"/>
         <source>Updating NVIDIA driver to the latest online version...</source>
-        <translation type="unfinished"></translation>
+        <translation>NVIDIA sürücüsü çevrimiçi en güncel sürüme güncelleniyor...</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="354"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="354"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="500"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="503"/>
         <source>Downloading and installing the latest online NVIDIA driver...</source>
-        <translation type="unfinished"></translation>
+        <translation>En güncel çevrimiçi NVIDIA sürücüsü indiriliyor ve kuruluyor...</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="377"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="377"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="524"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="527"/>
         <source>Switching NVIDIA driver to selected online version: </source>
-        <translation type="unfinished"></translation>
+        <translation>NVIDIA sürücüsü seçilen çevrimiçi sürüme geçiriliyor: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="378"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="378"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="525"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="528"/>
         <source>Downloading and installing selected NVIDIA driver version: </source>
-        <translation type="unfinished"></translation>
+        <translation>Seçilen NVIDIA sürücü sürümü indiriliyor ve kuruluyor: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="390"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="390"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="537"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="540"/>
         <source>Online repository versions loaded: </source>
-        <translation type="unfinished"></translation>
+        <translation>Çevrimiçi depo sürümleri yüklendi: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="391"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="391"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="538"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="541"/>
         <source>No online repository version list has been loaded yet.</source>
-        <translation type="unfinished"></translation>
+        <translation>Henüz çevrimiçi depo sürüm listesi yüklenmedi.</translation>
     </message>
     <message>
         <source>Starting update check...</source>
         <translation type="obsolete">Güncelleme denetimi başlatılıyor...</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="349"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="349"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="495"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="498"/>
         <source>Apply Latest</source>
         <translation>En Son Sürümü Uygula</translation>
     </message>
@@ -454,8 +488,8 @@
         <translation type="obsolete">NVIDIA sürücüsü en yeni sürüme güncelleniyor...</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="373"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="373"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="520"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="523"/>
         <source>Apply Selected</source>
         <translation>Seçileni Uygula</translation>
     </message>
@@ -468,20 +502,20 @@
         <translation type="vanished">Henüz hiçbir repo sürüm listesi yüklenmedi.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="398"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="398"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="545"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="548"/>
         <source>Activity Log</source>
         <translation>Aktivite Günlüğü</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="399"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="399"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="546"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="549"/>
         <source>Operation output is streamed here in real time.</source>
         <translation>İşlem çıktıları burada gerçek zamanlı olarak gösterilir.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="419"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="419"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="566"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="569"/>
         <source>Clear Log</source>
         <translation>Günlüğü Temizle</translation>
     </message>
@@ -510,20 +544,20 @@
         <translation type="vanished">Açık Kaynak Sürücüyü Kur (Nouveau)</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="275"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="275"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="421"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="424"/>
         <source>Deep Clean</source>
         <translation>Derin Temizlik</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="288"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="288"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="434"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="437"/>
         <source>Rescan System</source>
         <translation>Sistemi Yeniden Tara</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="311"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="311"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="457"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="460"/>
         <source>Update Center</source>
         <translation>Güncelleme Merkezi</translation>
     </message>
@@ -532,26 +566,26 @@
         <translation type="vanished">Repo sürümünü kontrol edin ve gerektiğinde belirli bir yapıyı sabitleyin.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="319"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="319"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="465"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="468"/>
         <source>Installed: </source>
         <translation>Kurulu: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="326"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="326"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="472"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="475"/>
         <source>Update Available</source>
         <translation>Güncelleme Mevcut</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="326"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="326"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="472"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="475"/>
         <source>Up to Date</source>
         <translation>Güncel</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="340"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="340"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/DriverPage.qml" line="486"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="489"/>
         <source>Check for Updates</source>
         <translation>Güncellemeleri Kontrol Et</translation>
     </message>
@@ -668,216 +702,224 @@
         <translation type="vanished">Sistem İzleme</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="32"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="32"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="45"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="45"/>
         <source>CPU Load</source>
         <translation>CPU Yükü</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="33"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="45"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="57"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="33"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="45"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="57"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="19"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="23"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="46"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="58"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="70"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="19"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="23"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="46"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="58"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="70"/>
         <source>Unavailable</source>
         <translation>Kullanılamıyor</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="36"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="36"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="49"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="49"/>
         <source>CPU telemetry is currently unavailable.</source>
         <translation>CPU telemetrisi şu anda kullanılamıyor.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="44"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="44"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="57"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="57"/>
         <source>GPU Load</source>
         <translation>GPU Yükü</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="48"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="48"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="61"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="61"/>
         <source>nvidia-smi did not return live GPU telemetry.</source>
         <translation>nvidia-smi canlı GPU telemetrisi döndürmedi.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="56"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="56"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="69"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="69"/>
         <source>Memory Usage</source>
         <translation>Bellek Kullanımı</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="59"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="59"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="72"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="72"/>
         <source>Used: </source>
         <translation>Kullanılan: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="60"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="60"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="73"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="73"/>
         <source>RAM telemetry is currently unavailable.</source>
         <translation>RAM telemetrisi şu anda kullanılamıyor.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="75"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="75"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="88"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="88"/>
         <source>Live Resource Curves</source>
         <translation>Canlı Kaynak Grafikleri</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="76"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="76"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="89"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="89"/>
         <source>Quick pulse view for the most important machine resources.</source>
         <translation>En önemli makine kaynakları için hızlı anlık görünüm.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="83"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="83"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="96"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="96"/>
         <source>CPU</source>
         <translation>CPU</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="96"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="96"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="109"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="109"/>
         <source>GPU</source>
         <translation>Ekran Kartı (GPU)</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="127"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="127"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="139"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="139"/>
         <source>Health Summary</source>
         <translation>Sağlık Özeti</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="128"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="128"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="140"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="140"/>
         <source>Fast interpretation of the raw telemetry values.</source>
         <translation>Ham telemetri değerlerinin hızlı yorumlaması.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="135"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="135"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="147"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="147"/>
         <source>CPU Busy</source>
         <translation>CPU Meşgul</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="135"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="135"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="147"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="147"/>
         <source>CPU Stable</source>
         <translation>CPU Stabil</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="141"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="141"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="153"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="153"/>
         <source>GPU Online</source>
         <translation>GPU Çevrimiçi</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="141"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="141"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="153"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="153"/>
         <source>GPU Telemetry Missing</source>
         <translation>GPU Telemetrisi Bulunamadı</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="147"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="147"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="159"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="159"/>
         <source>Memory Pressure</source>
         <translation>Bellek Baskısı</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="147"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="147"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="159"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="159"/>
         <source>Memory Stable</source>
         <translation>Bellek Stabil</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="158"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="158"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="170"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="170"/>
         <source>GPU temperature: </source>
         <translation>GPU sıcaklığı: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="159"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="159"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="170"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="170"/>
+        <source>, VRAM </source>
+        <translation>, VRAM </translation>
+    </message>
+    <message>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="171"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="171"/>
         <source>GPU metrics are unavailable. Check driver installation and nvidia-smi accessibility.</source>
         <translation>GPU metrikleri kullanılamıyor. Sürücü kurulumunu ve nvidia-smi erişilebilirliğini kontrol edin.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="174"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="174"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="186"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="186"/>
         <source>Detailed Signals</source>
         <translation>Detaylı Sinyaller</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="175"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="175"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="187"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="187"/>
         <source>Expanded raw values for support and diagnostics.</source>
         <translation>Destek ve tanılama için genişletilmiş ham değerler.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="185"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="185"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="197"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="197"/>
         <source>CPU Temperature</source>
         <translation>CPU Sıcaklığı</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="190"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="200"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="210"/>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="220"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="190"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="200"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="210"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="220"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="212"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="222"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="232"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="212"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="222"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="232"/>
         <source>Unknown</source>
         <translation>Bilinmiyor</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="195"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="195"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="207"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="207"/>
         <source>GPU Temperature</source>
         <translation>GPU Sıcaklığı</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="205"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="205"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="217"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="217"/>
         <source>VRAM</source>
         <translation>VRAM Belleği</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="215"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="215"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="227"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="227"/>
         <source>RAM Footprint</source>
         <translation>RAM Kapladığı Alan</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="229"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="229"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="241"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="241"/>
         <source>Actions</source>
         <translation>İşlemler</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="230"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="230"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="242"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="242"/>
         <source>Trigger a manual refresh when you need a fresh sample.</source>
         <translation>Taze bir örneğe ihtiyacınız olduğunda manuel yenilemeyi tetikleyin.</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="237"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="237"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="249"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="249"/>
         <source>Refresh Telemetry</source>
         <translation>Telemetriyi Yenile</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="250"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="250"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="262"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="262"/>
         <source>NVIDIA Path OK</source>
         <translation>NVIDIA Yolu Tamam</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="250"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="250"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="262"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="262"/>
         <source>Check NVIDIA Path</source>
         <translation>NVIDIA Yolunu Kontrol Et</translation>
     </message>
@@ -890,8 +932,8 @@
         <translation type="vanished">CPU verisi alınamıyor</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="35"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="35"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="48"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="48"/>
         <source>Temperature: </source>
         <translation>Sıcaklık: </translation>
     </message>
@@ -900,8 +942,8 @@
         <translation type="vanished">GPU (NVIDIA)</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="47"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="47"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="60"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="60"/>
         <source>NVIDIA GPU</source>
         <translation>NVIDIA GPU</translation>
     </message>
@@ -918,8 +960,8 @@
         <translation type="vanished">VRAM: </translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="110"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="110"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="122"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="122"/>
         <source>RAM</source>
         <translation>RAM</translation>
     </message>
@@ -932,8 +974,8 @@
         <translation type="vanished">Yenile</translation>
     </message>
     <message>
-        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="167"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="167"/>
+        <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/MonitorPage.qml" line="179"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="179"/>
         <source>Refresh interval: </source>
         <translation>Yenileme aralığı: </translation>
     </message>
@@ -1020,102 +1062,117 @@ Nouveau: %6</translation>
 <context>
     <name>NvidiaInstaller</name>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="80"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="50"/>
+        <source>Starting command (attempt %1): %2</source>
+        <translation>Komut başlatılıyor (deneme %1): %2</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/installer.cpp" line="60"/>
+        <source>Command finished (attempt %1, exit %2, %3 ms): %4</source>
+        <translation>Komut tamamlandı (deneme %1, çıkış %2, %3 ms): %4</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/installer.cpp" line="140"/>
         <source>You must accept the NVIDIA proprietary driver license terms before installation. Detected license: %1</source>
         <translation>Kurulumdan önce NVIDIA kapalı kaynak sürücü lisans koşullarını kabul etmeniz gerekir. Tespit edilen lisans: %1</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="96"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="156"/>
         <source>License agreement acceptance is required before installation.</source>
         <translation>Kurulumdan önce lisans sözleşmesinin kabul edilmesi gerekir.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="128"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="171"/>
         <source>Checking RPM Fusion repositories...</source>
         <translation>RPM Fusion depoları kontrol ediliyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="145"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="185"/>
         <source>Platform version could not be detected.</source>
         <translation>Platform sürümü tespit edilemedi.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="164"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="204"/>
         <source>Failed to enable RPM Fusion repositories: </source>
         <translation>RPM Fusion depoları etkinleştirilemedi: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="181"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="218"/>
         <source>Installing the proprietary NVIDIA driver (akmod-nvidia)...</source>
         <translation>Kapalı kaynak NVIDIA sürücüsü kuruluyor (akmod-nvidia)...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="193"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="227"/>
         <source>Installation failed: </source>
         <translation>Kurulum başarısız: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="210"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="241"/>
         <source>Building the kernel module (akmods --force)...</source>
         <translation>Kernel modülü derleniyor (akmods --force)...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="236"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="245"/>
+        <source>Kernel module build failed: </source>
+        <translation>Kernel modülü inşası başarısız: </translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/installer.cpp" line="279"/>
         <source>The proprietary NVIDIA driver was installed successfully. Please restart the system.</source>
         <translation>Kapalı kaynak NVIDIA sürücüsü başarıyla kuruldu. Lütfen sistemi yeniden başlatın.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="272"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="298"/>
         <source>Switching to the open-source driver...</source>
         <translation>Açık kaynak sürücüye geçiliyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="285"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="308"/>
         <source>Failed to remove proprietary packages: </source>
         <translation>Kapalı kaynak paketler kaldırılamadı: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="305"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="328"/>
         <source>Open-source driver installation failed: </source>
         <translation>Açık kaynak sürücü kurulumu başarısız: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="326"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="349"/>
         <source>The open-source driver (Nouveau) was installed. Please restart the system.</source>
         <translation>Açık kaynak sürücü (Nouveau) kuruldu. Lütfen sistemi yeniden başlatın.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="362"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="368"/>
         <source>Removing the NVIDIA driver...</source>
         <translation>NVIDIA sürücüsü kaldırılıyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="375"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="378"/>
         <source>Driver removed successfully.</source>
         <translation>Sürücü başarıyla kaldırıldı.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="376"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="379"/>
         <source>Removal failed: </source>
         <translation>Kaldırma başarısız: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="416"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="402"/>
         <source>Cleaning legacy driver leftovers...</source>
         <translation>Eski sürücü kalıntıları temizleniyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="428"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="411"/>
         <source>Deep clean failed: </source>
         <translation>Derin temizlik başarısız: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="444"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="427"/>
         <source>DNF cache cleanup failed: </source>
         <translation>DNF önbellek temizliği başarısız: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="461"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="444"/>
         <source>Deep clean completed.</source>
         <translation>Derin temizlik tamamlandı.</translation>
     </message>
@@ -1124,32 +1181,32 @@ Nouveau: %6</translation>
         <translation type="vanished">Wayland tespit edildi: nvidia-drm.modeset=1 uygulanıyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="26"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="86"/>
         <source>Another driver operation is already running.</source>
         <translation>Başka bir sürücü işlemi şu an yürütülüyor.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="82"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="142"/>
         <source>Unknown</source>
         <translation>Bilinmiyor</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="463"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="446"/>
         <source>Legacy NVIDIA cleanup completed.</source>
         <translation>Eski NVIDIA temizliği tamamlandı.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="486"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="469"/>
         <source>Failed to apply the Wayland kernel parameter: </source>
         <translation>Wayland kernel parametresi uygulanamadı: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="496"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="479"/>
         <source>X11 detected: checking NVIDIA userspace packages...</source>
         <translation>X11 tespit edildi: NVIDIA userspace paketleri kontrol ediliyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="505"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="488"/>
         <source>Failed to install the X11 NVIDIA package: </source>
         <translation>X11 NVIDIA paketi kurulamadı: </translation>
     </message>
@@ -1161,7 +1218,7 @@ Nouveau: %6</translation>
         <translation type="vanished">NVIDIA sürücüsü güncelleniyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="404"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="481"/>
         <source>Update failed: </source>
         <translation>Güncelleme başarısız: </translation>
     </message>
@@ -1174,13 +1231,13 @@ Nouveau: %6</translation>
         <translation type="vanished">Wayland tespit edildi: nvidia-drm.modeset=1 yenileniyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="446"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="548"/>
         <source>Driver updated successfully. Please restart the system.</source>
         <translation>Sürücü başarıyla güncellendi. Lütfen sistemi yeniden başlatın.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="87"/>
-        <location filename="../src/backend/nvidia/updater.cpp" line="348"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="91"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="441"/>
         <source>dnf not found.</source>
         <translation>dnf bulunamadı.</translation>
     </message>
@@ -1189,109 +1246,129 @@ Nouveau: %6</translation>
         <translation type="vanished">Sistemde kurulu bir NVIDIA sürücüsü bulunamadı.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="115"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="119"/>
         <source>Online NVIDIA packages were found. You can download and install the driver now.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="117"/>
-        <source>Online NVIDIA driver found. Latest remote version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Çevrimiçi NVIDIA paketleri bulundu. Sürücüyü şimdi indirip kurabilirsiniz.</translation>
     </message>
     <message>
         <location filename="../src/backend/nvidia/updater.cpp" line="121"/>
-        <source>No online NVIDIA package catalog was found. RPM Fusion may not be configured yet.</source>
-        <translation type="unfinished"></translation>
+        <source>Online NVIDIA driver found. Latest remote version: %1</source>
+        <translation>Çevrimiçi NVIDIA sürücüsü bulundu. En güncel uzak sürüm: %1</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="140"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="125"/>
+        <source>No online NVIDIA package catalog was found. RPM Fusion may not be configured yet.</source>
+        <translation>Çevrimiçi NVIDIA paket kataloğu bulunamadı. RPM Fusion henüz yapılandırılmamış olabilir.</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/updater.cpp" line="144"/>
         <source>Update found (version details unavailable).</source>
         <translation>Güncelleme bulundu (sürüm detayları kullanılamıyor).</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="141"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="145"/>
         <source>Update found: %1</source>
         <translation>Güncelleme bulundu: %1</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="144"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="148"/>
         <source>Driver is up to date. No new version found.</source>
         <translation>Sürücü güncel. Yeni sürüm bulunamadı.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="146"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="150"/>
         <source>Update check failed: %1</source>
         <translation>Güncelleme kontrolü başarısız: %1</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="171"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="196"/>
+        <source>Starting command (attempt %1): %2</source>
+        <translation>Komut başlatılıyor (deneme %1): %2</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/updater.cpp" line="206"/>
+        <source>Command finished (attempt %1, exit %2, %3 ms): %4</source>
+        <translation>Komut tamamlandı (deneme %1, çıkış %2, %3 ms): %4</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/updater.cpp" line="231"/>
         <source>Another driver operation is already running.</source>
         <translation>Başka bir sürücü işlemi şu an yürütülüyor.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="226"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="332"/>
         <source>Kernel module build failed: </source>
         <translation>Kernel modülü inşası başarısız: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="227"/>
-        <location filename="../src/backend/nvidia/updater.cpp" line="242"/>
-        <location filename="../src/backend/nvidia/updater.cpp" line="405"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="333"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="348"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="482"/>
         <source>unknown error</source>
         <translation>bilinmeyen hata</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="234"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="340"/>
         <source>Wayland detected: applying nvidia-drm.modeset=1...</source>
         <translation>Wayland algılandı: nvidia-drm.modeset=1 uygulanıyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="241"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="347"/>
         <source>Failed to update the Wayland kernel parameter: </source>
         <translation>Wayland çekirdek parametresi güncellenemedi: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="269"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="375"/>
         <source>No available versions found.</source>
         <translation>Hiçbir uygun sürüm bulunamadı.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="270"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="376"/>
         <source>Available versions: %1</source>
         <translation>Mevcut sürümler: %1</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="280"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="386"/>
         <source>Starting update check...</source>
         <translation>Güncelleme denetimi başlatılıyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="366"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="459"/>
         <source>Selected version not found in the repository.</source>
         <translation>Seçili sürüm depoda bulunamadı.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="382"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="468"/>
         <source>Updating NVIDIA driver to the latest version...</source>
         <translation>NVIDIA sürücüsü en yeni sürüme güncelleniyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="384"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="470"/>
         <source>Switching NVIDIA driver to selected version: %1</source>
         <translation>NVIDIA sürücüsü seçili sürüme değiştiriliyor: %1</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="422"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="498"/>
+        <source>Driver is already at the latest available version.</source>
+        <translation>Sürücü zaten mevcut en güncel sürümde.</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/updater.cpp" line="500"/>
+        <source>Selected driver version is already installed.</source>
+        <translation>Seçilen sürücü sürümü zaten kurulu.</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/updater.cpp" line="527"/>
         <source>Rebuilding kernel module...</source>
         <translation>Kernel modülü yeniden derleniyor...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="444"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="546"/>
         <source>Latest version installed successfully. Please restart the system.</source>
         <translation>En son sürüm başarıyla yüklendi. Lütfen sistemi yeniden başlatın.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/updater.cpp" line="448"/>
+        <location filename="../src/backend/nvidia/updater.cpp" line="550"/>
         <source>Selected version applied successfully. Please restart the system.</source>
         <translation>Seçili sürüm başarıyla uygulandı. Lütfen sistemi yeniden başlatın.</translation>
     </message>
@@ -1318,13 +1395,13 @@ Nouveau: %6</translation>
         <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/SettingsPage.qml" line="44"/>
         <location filename="../src/qml/pages/SettingsPage.qml" line="44"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Dil</translation>
     </message>
     <message>
         <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/SettingsPage.qml" line="50"/>
         <location filename="../src/qml/pages/SettingsPage.qml" line="50"/>
         <source>Changes the application language immediately and keeps the selection for the next launch.</source>
-        <translation type="unfinished"></translation>
+        <translation>Uygulama dilini hemen değiştirir ve seçimi sonraki açılış için korur.</translation>
     </message>
     <message>
         <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/SettingsPage.qml" line="89"/>
@@ -1354,7 +1431,7 @@ Nouveau: %6</translation>
         <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/SettingsPage.qml" line="140"/>
         <location filename="../src/qml/pages/SettingsPage.qml" line="140"/>
         <source>Language: </source>
-        <translation type="unfinished"></translation>
+        <translation>Dil: </translation>
     </message>
     <message>
         <location filename="../src/build-fedora-check/rocontrol/src/qml/pages/SettingsPage.qml" line="146"/>

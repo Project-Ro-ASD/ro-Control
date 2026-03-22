@@ -15,6 +15,7 @@ added as new `ro-control_<locale>.ts` files.
 - QML strings use `qsTr(...)`
 - C++ strings use `tr(...)`
 - `main.cpp` loads the best matching `.qm` file from the embedded `/i18n` resource
+- English uses the source strings directly and does not require an embedded `.qm`
 - If no locale-specific translation is found, the app falls back to English
 
 ## Updating translations
@@ -23,7 +24,7 @@ added as new `ro-control_<locale>.ts` files.
 2. Reconfigure the build directory with CMake.
 3. Refresh translation sources with `lupdate`.
 4. Translate in Qt Linguist.
-5. Build again so CMake generates updated `.qm` files.
+5. Build again so CMake generates updated `.qm` files for shipped locales.
 
 Example workflow:
 

@@ -136,6 +136,34 @@ private slots:
     ram.start();
     QVERIFY(ram.running());
   }
+
+  void testRamUsesOverriddenMeminfoPath() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString meminfoPath = tempDir.filePath(QStringLiteral("meminfo"));
+    QFile meminfo(meminfoPath);
+    QVERIFY(meminfo.open(QIODevice::WriteOnly | QIODevice::Text));
+    meminfo.write("MemTotal:       32768000 kB\n");
+    meminfo.write("MemAvailable:   23552000 kB\n");
+    meminfo.write("MemFree:         3072000 kB\n");
+    meminfo.write("Buffers:          204800 kB\n");
+    meminfo.write("Cached:          8192000 kB\n");
+    meminfo.close();
+
+    qputenv("RO_CONTROL_MEMINFO_PATH", meminfoPath.toUtf8());
+
+    RamMonitor ram;
+    ram.stop();
+    ram.refresh();
+
+    QVERIFY(ram.available());
+    QCOMPARE(ram.totalMiB(), 32000);
+    QCOMPARE(ram.usedMiB(), 9000);
+    QCOMPARE(ram.usagePercent(), 28);
+
+    qunsetenv("RO_CONTROL_MEMINFO_PATH");
+  }
 };
 
 QTEST_MAIN(TestMonitor)

@@ -10,10 +10,12 @@ Item {
     property bool compactMode: false
     property bool showAdvancedInfo: true
     readonly property bool cpuTemperatureAvailable: cpuMonitor.temperatureC > 0
-    readonly property bool gpuTelemetryAvailable: gpuMonitor.available || gpuMonitor.gpuName.length > 0
+    readonly property bool gpuTelemetryAvailable: gpuMonitor.available
     readonly property bool gpuTemperatureAvailable: gpuMonitor.temperatureC > 0
     readonly property bool gpuMemoryAvailable: gpuMonitor.memoryTotalMiB > 0
     readonly property bool ramTelemetryAvailable: ramMonitor.available || ramMonitor.totalMiB > 0
+    readonly property bool gpuDetected: nvidiaDetector.gpuFound
+    readonly property bool gpuDriverActive: nvidiaDetector.driverLoaded || nvidiaDetector.nouveauActive
 
     function formatTemperature(value) {
         return value > 0 ? value + " C" : qsTr("Unavailable");
@@ -21,6 +23,34 @@ Item {
 
     function formatMemoryUsage(usedMiB, totalMiB) {
         return totalMiB > 0 ? usedMiB + " / " + totalMiB + " MiB" : qsTr("Unavailable");
+    }
+
+    function gpuLoadValueText() {
+        if (page.gpuTelemetryAvailable)
+            return gpuMonitor.utilizationPercent + "%";
+        if (page.gpuDetected)
+            return qsTr("No Live Data");
+        return qsTr("Unavailable");
+    }
+
+    function gpuSubtitleText() {
+        if (page.gpuTelemetryAvailable)
+            return gpuMonitor.gpuName.length > 0 ? gpuMonitor.gpuName : qsTr("NVIDIA GPU");
+        if (!page.gpuDetected)
+            return qsTr("No NVIDIA GPU was detected on this system.");
+        if (!page.gpuDriverActive)
+            return qsTr("GPU detected, but no active driver is loaded.");
+        return qsTr("Live GPU telemetry is unavailable. Check nvidia-smi and driver access.");
+    }
+
+    function gpuSummaryText() {
+        if (page.gpuTelemetryAvailable)
+            return qsTr("GPU temperature: ") + page.formatTemperature(gpuMonitor.temperatureC) + qsTr(", VRAM ") + page.formatMemoryUsage(gpuMonitor.memoryUsedMiB, gpuMonitor.memoryTotalMiB) + ".";
+        if (!page.gpuDetected)
+            return qsTr("No NVIDIA GPU is currently detected on this system.");
+        if (!page.gpuDriverActive)
+            return qsTr("GPU telemetry is unavailable because the NVIDIA driver is not active.");
+        return qsTr("GPU metrics are unavailable. Check driver installation and nvidia-smi accessibility.");
     }
 
     ScrollView {
@@ -55,10 +85,8 @@ Item {
                     Layout.fillWidth: true
                     theme: page.theme
                     title: qsTr("GPU Load")
-                    value: page.gpuTelemetryAvailable ? gpuMonitor.utilizationPercent + "%" : qsTr("Unavailable")
-                    subtitle: page.gpuTelemetryAvailable
-                              ? (gpuMonitor.gpuName.length > 0 ? gpuMonitor.gpuName : qsTr("NVIDIA GPU"))
-                              : qsTr("nvidia-smi did not return live GPU telemetry.")
+                    value: page.gpuLoadValueText()
+                    subtitle: page.gpuSubtitleText()
                     accentColor: page.theme.accentB
                     emphasized: page.gpuTemperatureAvailable && gpuMonitor.temperatureC >= 80
                 }
@@ -166,9 +194,7 @@ Item {
                         Layout.fillWidth: true
                         wrapMode: Text.Wrap
                         color: page.theme.textSoft
-                        text: page.gpuTelemetryAvailable
-                              ? qsTr("GPU temperature: ") + page.formatTemperature(gpuMonitor.temperatureC) + qsTr(", VRAM ") + page.formatMemoryUsage(gpuMonitor.memoryUsedMiB, gpuMonitor.memoryTotalMiB) + "."
-                              : qsTr("GPU metrics are unavailable. Check driver installation and nvidia-smi accessibility.")
+                        text: page.gpuSummaryText()
                     }
 
                     Label {

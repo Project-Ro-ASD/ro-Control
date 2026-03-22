@@ -138,8 +138,9 @@ qt_add_qml_module(ro-control
 )
 
 if(Qt6LinguistTools_FOUND)
+    # English strings ship directly from source code. Keep the English TS file
+    # for catalog maintenance, but only compile non-source locales into .qm.
     set(TS_FILES
-        i18n/ro-control_en.ts
         i18n/ro-control_tr.ts
     )
 

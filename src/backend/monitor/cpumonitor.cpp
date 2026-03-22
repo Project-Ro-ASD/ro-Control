@@ -1,9 +1,11 @@
 // CPU istatistikleri
 
 #include "cpumonitor.h"
+#include "system/commandrunner.h"
 
 #include <QDir>
 #include <QFile>
+#include <QRegularExpression>
 #include <QTextStream>
 
 #include <algorithm>
@@ -17,6 +19,11 @@ QString readFileText(const QString &path) {
   }
 
   return QString::fromUtf8(file.readAll()).trimmed();
+}
+
+QString pathOverrideOrDefault(const char *envVarName, const QString &fallback) {
+  const QString overridePath = qEnvironmentVariable(envVarName).trimmed();
+  return overridePath.isEmpty() ? fallback : overridePath;
 }
 
 int parseMilliCelsius(const QString &value) {
@@ -49,7 +56,8 @@ int readFirstValidTemperature(const QStringList &paths) {
 }
 
 int readCpuTemperatureFromThermalZones() {
-  QDir thermalDir(QStringLiteral("/sys/class/thermal"));
+  QDir thermalDir(pathOverrideOrDefault("RO_CONTROL_THERMAL_ROOT",
+                                        QStringLiteral("/sys/class/thermal")));
   const QFileInfoList entries = thermalDir.entryInfoList(
       {QStringLiteral("thermal_zone*")}, QDir::Dirs | QDir::NoDotAndDotDot,
       QDir::Name);
@@ -78,7 +86,8 @@ int readCpuTemperatureFromThermalZones() {
 }
 
 int readCpuTemperatureFromHwmon() {
-  QDir hwmonDir(QStringLiteral("/sys/class/hwmon"));
+  QDir hwmonDir(pathOverrideOrDefault("RO_CONTROL_HWMON_ROOT",
+                                      QStringLiteral("/sys/class/hwmon")));
   const QFileInfoList entries = hwmonDir.entryInfoList(
       {QStringLiteral("hwmon*")}, QDir::Dirs | QDir::NoDotAndDotDot,
       QDir::Name);
@@ -122,7 +131,48 @@ int readCpuTemperatureC() {
     return thermalZoneTemperature;
   }
 
-  return readCpuTemperatureFromHwmon();
+  const int hwmonTemperature = readCpuTemperatureFromHwmon();
+  if (hwmonTemperature > 0) {
+    return hwmonTemperature;
+  }
+
+  CommandRunner runner;
+  const auto result = runner.run(QStringLiteral("sensors"));
+  if (!result.success()) {
+    return 0;
+  }
+
+  static const QRegularExpression preferredLinePattern(
+      QStringLiteral(
+          R"((package|tctl|tdie|cpu|core)[^:\n]*:\s*[+-]?([0-9]+(?:\.[0-9]+)?))"),
+      QRegularExpression::CaseInsensitiveOption);
+  static const QRegularExpression genericLinePattern(
+      QStringLiteral(R"(:\s*[+-]?([0-9]+(?:\.[0-9]+)?))"));
+
+  const QStringList lines = result.stdout.split(QLatin1Char('\n'));
+  for (const QString &line : lines) {
+    const auto preferredMatch = preferredLinePattern.match(line);
+    if (preferredMatch.hasMatch()) {
+      bool ok = false;
+      const double value = preferredMatch.captured(2).toDouble(&ok);
+      if (ok && value > 0.0) {
+        return static_cast<int>(value);
+      }
+    }
+  }
+
+  for (const QString &line : lines) {
+    const auto genericMatch = genericLinePattern.match(line);
+    if (genericMatch.hasMatch()) {
+      bool ok = false;
+      const double value = genericMatch.captured(1).toDouble(&ok);
+      if (ok && value > 0.0) {
+        return static_cast<int>(value);
+      }
+    }
+  }
+
+  return 0;
 }
 
 } // namespace
