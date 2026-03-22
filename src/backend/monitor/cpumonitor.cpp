@@ -58,9 +58,9 @@ int readFirstValidTemperature(const QStringList &paths) {
 int readCpuTemperatureFromThermalZones() {
   QDir thermalDir(pathOverrideOrDefault("RO_CONTROL_THERMAL_ROOT",
                                         QStringLiteral("/sys/class/thermal")));
-  const QFileInfoList entries = thermalDir.entryInfoList(
-      {QStringLiteral("thermal_zone*")}, QDir::Dirs | QDir::NoDotAndDotDot,
-      QDir::Name);
+  const QFileInfoList entries =
+      thermalDir.entryInfoList({QStringLiteral("thermal_zone*")},
+                               QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
 
   QStringList preferredPaths;
   QStringList fallbackPaths;
@@ -88,9 +88,9 @@ int readCpuTemperatureFromThermalZones() {
 int readCpuTemperatureFromHwmon() {
   QDir hwmonDir(pathOverrideOrDefault("RO_CONTROL_HWMON_ROOT",
                                       QStringLiteral("/sys/class/hwmon")));
-  const QFileInfoList entries = hwmonDir.entryInfoList(
-      {QStringLiteral("hwmon*")}, QDir::Dirs | QDir::NoDotAndDotDot,
-      QDir::Name);
+  const QFileInfoList entries =
+      hwmonDir.entryInfoList({QStringLiteral("hwmon*")},
+                             QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
 
   QStringList preferredPaths;
   QStringList fallbackPaths;

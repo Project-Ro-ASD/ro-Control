@@ -10,10 +10,10 @@
 #include <QQmlContext>
 #include <QQuickWindow>
 #include <QSGRendererInterface>
+#include <QStringList>
 #include <QTextStream>
 #include <QTranslator>
 #include <QVariant>
-#include <QStringList>
 
 #include "backend/monitor/cpumonitor.h"
 #include "backend/monitor/gpumonitor.h"
@@ -174,7 +174,8 @@ void configureGuiGraphicsEnvironment() {
 
   // NVIDIA on Fedora/X11 is generally more stable through the GLX path than
   // the EGL/DRI2 integration that can emit startup errors.
-  if (sessionType == "x11" && qEnvironmentVariableIsEmpty("QT_XCB_GL_INTEGRATION")) {
+  if (sessionType == "x11" &&
+      qEnvironmentVariableIsEmpty("QT_XCB_GL_INTEGRATION")) {
     qputenv("QT_XCB_GL_INTEGRATION", QByteArrayLiteral("glx"));
   }
 

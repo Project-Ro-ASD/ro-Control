@@ -1,8 +1,8 @@
 #include "gpumonitor.h"
 #include "system/commandrunner.h"
 
-#include <algorithm>
 #include <QRegularExpression>
+#include <algorithm>
 
 namespace {
 
@@ -21,7 +21,8 @@ bool parseMetricInt(const QString &field, int *value) {
   const QString normalized = normalizedMetricField(field);
   if (normalized.isEmpty() ||
       normalized.compare(QStringLiteral("n/a"), Qt::CaseInsensitive) == 0 ||
-      normalized.compare(QStringLiteral("not supported"), Qt::CaseInsensitive) == 0 ||
+      normalized.compare(QStringLiteral("not supported"),
+                         Qt::CaseInsensitive) == 0 ||
       normalized.compare(QStringLiteral("unknown"), Qt::CaseInsensitive) == 0) {
     return false;
   }
@@ -111,7 +112,8 @@ void GpuMonitor::refresh() {
     return;
   }
 
-  const int usagePercent = (usedAvailable && totalAvailable && nextTotal > 0)
+  const int usagePercent =
+      (usedAvailable && totalAvailable && nextTotal > 0)
           ? std::clamp(static_cast<int>((static_cast<double>(nextUsed) /
                                          static_cast<double>(nextTotal)) *
                                         100.0),

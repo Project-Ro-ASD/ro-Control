@@ -12,8 +12,8 @@ class QTranslator;
 class LanguageManager : public QObject {
   Q_OBJECT
 
-  Q_PROPERTY(QString currentLanguage READ currentLanguage WRITE setCurrentLanguage
-                 NOTIFY currentLanguageChanged)
+  Q_PROPERTY(QString currentLanguage READ currentLanguage WRITE
+                 setCurrentLanguage NOTIFY currentLanguageChanged)
   Q_PROPERTY(QString effectiveLanguage READ effectiveLanguage NOTIFY
                  currentLanguageChanged)
   Q_PROPERTY(QString currentLanguageLabel READ currentLanguageLabel NOTIFY
