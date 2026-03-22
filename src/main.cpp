@@ -6,6 +6,7 @@
 #include <QLocale>
 #include <QObject>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <QTextStream>
 #include <QTranslator>
 #include <QVariant>
@@ -235,14 +236,14 @@ int main(int argc, char *argv[]) {
   RamMonitor ramMonitor;
 
   QQmlApplicationEngine engine;
-  engine.setInitialProperties({
-      {"nvidiaDetector", QVariant::fromValue(&detector)},
-      {"nvidiaInstaller", QVariant::fromValue(&installer)},
-      {"nvidiaUpdater", QVariant::fromValue(&updater)},
-      {"cpuMonitor", QVariant::fromValue(&cpuMonitor)},
-      {"gpuMonitor", QVariant::fromValue(&gpuMonitor)},
-      {"ramMonitor", QVariant::fromValue(&ramMonitor)},
-  });
+
+  // Backend nesnelerini tüm QML dosyalarına global olarak aç
+  engine.rootContext()->setContextProperty("nvidiaDetector", &detector);
+  engine.rootContext()->setContextProperty("nvidiaInstaller", &installer);
+  engine.rootContext()->setContextProperty("nvidiaUpdater", &updater);
+  engine.rootContext()->setContextProperty("cpuMonitor", &cpuMonitor);
+  engine.rootContext()->setContextProperty("gpuMonitor", &gpuMonitor);
+  engine.rootContext()->setContextProperty("ramMonitor", &ramMonitor);
 
   QObject::connect(
       &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
