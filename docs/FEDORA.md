@@ -28,12 +28,17 @@ sudo dnf install -y \
   gcc-c++ \
   ninja-build \
   qt6-qtbase-devel \
+  qt6-qtbase-private-devel \
   qt6-qtdeclarative-devel \
   qt6-qttools-devel \
   qt6-qtwayland-devel \
   kf6-qqc2-desktop-style \
   polkit-devel
 ```
+
+On some Fedora setups, `kf6-qqc2-desktop-style` is not exposed by the currently
+enabled repositories. The bootstrap script treats it as optional and continues
+without it.
 
 Runtime tools used by diagnostics and driver workflows:
 
