@@ -297,332 +297,330 @@ Item {
         }
     }
 
-    ColumnLayout {
+    ScrollView {
+        id: pageScroll
         anchors.fill: parent
-        anchors.margins: 16
-        spacing: 14
+        clip: true
+        contentWidth: availableWidth
 
-        Label {
-            text: qsTr("Expert Driver Management")
-            color: page.theme.text
-            font.pixelSize: 30
-            font.weight: Font.DemiBold
-        }
+        ColumnLayout {
+            width: pageScroll.availableWidth
+            spacing: 14
 
-        GridLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            columns: page.wideLayout ? 2 : 1
-            columnSpacing: 16
-            rowSpacing: 16
+            Label {
+                text: qsTr("Expert Driver Management")
+                color: page.theme.text
+                font.pixelSize: 30
+                font.weight: Font.DemiBold
+            }
 
-            ColumnLayout {
+            GridLayout {
                 Layout.fillWidth: true
-                Layout.fillHeight: true
-                spacing: 12
+                columns: page.wideLayout ? 2 : 1
+                columnSpacing: 16
+                rowSpacing: 16
 
-                SectionPanel {
+                ColumnLayout {
                     Layout.fillWidth: true
-                    theme: page.theme
-                    title: ""
-                    subtitle: ""
+                    spacing: 12
 
-                    ExpertHeaderRow {
+                    SectionPanel {
                         Layout.fillWidth: true
-                        title: qsTr("Current Driver")
-                        value: page.currentDriverLabel
-                        markerText: "D"
-                    }
+                        theme: page.theme
+                        title: ""
+                        subtitle: ""
 
-                    ExpertHeaderRow {
-                        Layout.fillWidth: true
-                        title: qsTr("Kernel Version")
-                        value: systemInfo.kernelVersion.length > 0 ? systemInfo.kernelVersion : qsTr("Unavailable")
-                        markerText: "K"
-                    }
-                }
-
-                Label {
-                    text: qsTr("Available Versions")
-                    color: page.theme.text
-                    font.pixelSize: 20
-                    font.weight: Font.DemiBold
-                }
-
-                SectionPanel {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    theme: page.theme
-                    title: ""
-                    subtitle: ""
-
-                    Repeater {
-                        model: page.availableVersionOptions.length
-
-                        delegate: VersionRow {
+                        ExpertHeaderRow {
                             Layout.fillWidth: true
-                            itemIndex: index
-                            optionData: page.availableVersionOptions[index]
+                            title: qsTr("Current Driver")
+                            value: page.currentDriverLabel
+                            markerText: "D"
+                        }
+
+                        ExpertHeaderRow {
+                            Layout.fillWidth: true
+                            title: qsTr("Kernel Version")
+                            value: systemInfo.kernelVersion.length > 0 ? systemInfo.kernelVersion : qsTr("Unavailable")
+                            markerText: "K"
                         }
                     }
 
                     Label {
-                        Layout.fillWidth: true
-                        visible: page.availableVersionOptions.length === 0
-                        text: qsTr("No remote driver versions have been loaded yet. Use refresh to query the repository.")
-                        wrapMode: Text.Wrap
-                        color: page.theme.textSoft
+                        text: qsTr("Available Versions")
+                        color: page.theme.text
+                        font.pixelSize: 20
+                        font.weight: Font.DemiBold
                     }
-                }
-            }
 
-            ColumnLayout {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                spacing: 12
-
-                Label {
-                    text: qsTr("Configuration")
-                    color: page.theme.text
-                    font.pixelSize: 20
-                    font.weight: Font.DemiBold
-                }
-
-                SectionPanel {
-                    Layout.fillWidth: true
-                    theme: page.theme
-                    title: qsTr("Kernel Module Type")
-                    subtitle: ""
-
-                    RowLayout {
+                    SectionPanel {
                         Layout.fillWidth: true
-                        spacing: 12
+                        theme: page.theme
+                        title: ""
+                        subtitle: ""
 
-                        Rectangle {
-                            Layout.fillWidth: true
-                            implicitHeight: 64
-                            radius: 18
-                            color: !page.useOpenModules ? page.theme.infoBg : page.theme.card
-                            border.width: !page.useOpenModules ? 2 : 1
-                            border.color: !page.useOpenModules ? page.theme.accentA : page.theme.border
+                        Repeater {
+                            model: page.availableVersionOptions.length
 
-                            RowLayout {
-                                anchors.centerIn: parent
-                                spacing: 12
-
-                                Rectangle {
-                                    width: 24
-                                    height: 24
-                                    radius: 12
-                                    color: !page.useOpenModules ? page.theme.accentA : "transparent"
-                                    border.width: 3
-                                    border.color: !page.useOpenModules ? page.theme.accentA : page.theme.textSoft
-                                }
-
-                                Label {
-                                    text: qsTr("Proprietary")
-                                    color: page.theme.text
-                                    font.pixelSize: 16
-                                    font.weight: Font.DemiBold
-                                }
-                            }
-
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: page.useOpenModules = false
+                            delegate: VersionRow {
+                                Layout.fillWidth: true
+                                itemIndex: index
+                                optionData: page.availableVersionOptions[index]
                             }
                         }
 
-                        Rectangle {
+                        Label {
                             Layout.fillWidth: true
-                            implicitHeight: 64
-                            radius: 18
-                            color: page.useOpenModules ? page.theme.infoBg : page.theme.card
-                            border.width: page.useOpenModules ? 2 : 1
-                            border.color: page.useOpenModules ? page.theme.accentA : page.theme.border
-
-                            RowLayout {
-                                anchors.centerIn: parent
-                                spacing: 12
-
-                                Rectangle {
-                                    width: 24
-                                    height: 24
-                                    radius: 12
-                                    color: page.useOpenModules ? page.theme.accentA : "transparent"
-                                    border.width: 3
-                                    border.color: page.useOpenModules ? page.theme.accentA : page.theme.textSoft
-                                }
-
-                                Label {
-                                    text: qsTr("Open")
-                                    color: page.theme.text
-                                    font.pixelSize: 16
-                                    font.weight: Font.DemiBold
-                                }
-                            }
-
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: page.useOpenModules = true
-                            }
+                            visible: page.availableVersionOptions.length === 0
+                            text: qsTr("No remote driver versions have been loaded yet. Use refresh to query the repository.")
+                            wrapMode: Text.Wrap
+                            color: page.theme.textSoft
                         }
                     }
                 }
 
-                Rectangle {
+                ColumnLayout {
                     Layout.fillWidth: true
-                    radius: 22
-                    color: Qt.tint(page.theme.warningBg, "#22ffffff")
-                    border.width: 1
-                    border.color: Qt.tint(page.theme.warning, "#55ffffff")
-                    implicitHeight: 82
+                    spacing: 12
+
+                    Label {
+                        text: qsTr("Configuration")
+                        color: page.theme.text
+                        font.pixelSize: 20
+                        font.weight: Font.DemiBold
+                    }
+
+                    SectionPanel {
+                        Layout.fillWidth: true
+                        theme: page.theme
+                        title: qsTr("Kernel Module Type")
+                        subtitle: ""
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 12
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                implicitHeight: 64
+                                radius: 18
+                                color: !page.useOpenModules ? page.theme.infoBg : page.theme.card
+                                border.width: !page.useOpenModules ? 2 : 1
+                                border.color: !page.useOpenModules ? page.theme.accentA : page.theme.border
+
+                                RowLayout {
+                                    anchors.centerIn: parent
+                                    spacing: 12
+
+                                    Rectangle {
+                                        width: 24
+                                        height: 24
+                                        radius: 12
+                                        color: !page.useOpenModules ? page.theme.accentA : "transparent"
+                                        border.width: 3
+                                        border.color: !page.useOpenModules ? page.theme.accentA : page.theme.textSoft
+                                    }
+
+                                    Label {
+                                        text: qsTr("Proprietary")
+                                        color: page.theme.text
+                                        font.pixelSize: 16
+                                        font.weight: Font.DemiBold
+                                    }
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: page.useOpenModules = false
+                                }
+                            }
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                implicitHeight: 64
+                                radius: 18
+                                color: page.useOpenModules ? page.theme.infoBg : page.theme.card
+                                border.width: page.useOpenModules ? 2 : 1
+                                border.color: page.useOpenModules ? page.theme.accentA : page.theme.border
+
+                                RowLayout {
+                                    anchors.centerIn: parent
+                                    spacing: 12
+
+                                    Rectangle {
+                                        width: 24
+                                        height: 24
+                                        radius: 12
+                                        color: page.useOpenModules ? page.theme.accentA : "transparent"
+                                        border.width: 3
+                                        border.color: page.useOpenModules ? page.theme.accentA : page.theme.textSoft
+                                    }
+
+                                    Label {
+                                        text: qsTr("Open")
+                                        color: page.theme.text
+                                        font.pixelSize: 16
+                                        font.weight: Font.DemiBold
+                                    }
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: page.useOpenModules = true
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        radius: 22
+                        color: Qt.tint(page.theme.warningBg, "#22ffffff")
+                        border.width: 1
+                        border.color: Qt.tint(page.theme.warning, "#55ffffff")
+                        implicitHeight: 82
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: 18
+                            anchors.rightMargin: 18
+                            spacing: 14
+
+                            Rectangle {
+                                width: 28
+                                height: 28
+                                radius: 14
+                                color: "transparent"
+                                border.width: 3
+                                border.color: page.deepCleanInstall ? page.theme.text : page.theme.textSoft
+
+                                Rectangle {
+                                    anchors.centerIn: parent
+                                    width: 14
+                                    height: 14
+                                    radius: 7
+                                    visible: page.deepCleanInstall
+                                    color: page.theme.warning
+                                }
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 2
+
+                                Label {
+                                    text: qsTr("Deep Clean Installation")
+                                    color: page.theme.text
+                                    font.pixelSize: 15
+                                    font.weight: Font.DemiBold
+                                }
+
+                                Label {
+                                    text: qsTr("Remove all previous driver configurations and cache")
+                                    color: page.theme.textSoft
+                                    font.pixelSize: 13
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: page.deepCleanInstall = !page.deepCleanInstall
+                        }
+                    }
 
                     RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: 18
-                        anchors.rightMargin: 18
+                        Layout.fillWidth: true
                         spacing: 14
 
                         Rectangle {
-                            width: 28
-                            height: 28
-                            radius: 14
-                            color: "transparent"
-                            border.width: 3
-                            border.color: page.deepCleanInstall ? page.theme.text : page.theme.textSoft
-
-                            Rectangle {
-                                anchors.centerIn: parent
-                                width: 14
-                                height: 14
-                                radius: 7
-                                visible: page.deepCleanInstall
-                                color: page.theme.warning
-                            }
-                        }
-
-                        ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 2
+                            implicitHeight: 64
+                            radius: 20
+                            gradient: Gradient {
+                                orientation: Gradient.Horizontal
+                                GradientStop { position: 0.0; color: "#4b87f4" }
+                                GradientStop { position: 1.0; color: "#8d57f7" }
+                            }
+                            opacity: page.backendBusy ? 0.6 : 1.0
 
                             Label {
-                                text: qsTr("Deep Clean Installation")
-                                color: page.theme.text
-                                font.pixelSize: 15
+                                anchors.centerIn: parent
+                                text: qsTr("Install Selected Version")
+                                color: "#ffffff"
+                                font.pixelSize: 16
                                 font.weight: Font.DemiBold
                             }
 
+                            MouseArea {
+                                anchors.fill: parent
+                                enabled: !page.backendBusy
+                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                onClicked: page.installSelectedVersion()
+                            }
+                        }
+
+                        Rectangle {
+                            Layout.preferredWidth: 190
+                            implicitHeight: 64
+                            radius: 20
+                            gradient: Gradient {
+                                orientation: Gradient.Horizontal
+                                GradientStop { position: 0.0; color: "#ff644f" }
+                                GradientStop { position: 1.0; color: "#ff4a4a" }
+                            }
+                            opacity: nvidiaInstaller.busy ? 0.6 : 1.0
+
                             Label {
-                                text: qsTr("Remove all previous driver configurations and cache")
-                                color: page.theme.textSoft
-                                font.pixelSize: 13
+                                anchors.centerIn: parent
+                                text: qsTr("Remove All")
+                                color: "#ffffff"
+                                font.pixelSize: 16
+                                font.weight: Font.DemiBold
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                enabled: !nvidiaInstaller.busy
+                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                onClicked: {
+                                    page.operationSource = qsTr("Installer");
+                                    page.operationDetail = qsTr("Removing the NVIDIA driver...");
+                                    nvidiaInstaller.remove();
+                                }
                             }
                         }
                     }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: page.deepCleanInstall = !page.deepCleanInstall
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 14
-
-                    Rectangle {
+                    RowLayout {
                         Layout.fillWidth: true
-                        implicitHeight: 64
-                        radius: 20
-                        gradient: Gradient {
-                            orientation: Gradient.Horizontal
-                            GradientStop { position: 0.0; color: "#4b87f4" }
-                            GradientStop { position: 1.0; color: "#8d57f7" }
-                        }
-                        opacity: page.backendBusy ? 0.6 : 1.0
 
-                        Label {
-                            anchors.centerIn: parent
-                            text: qsTr("Install Selected Version")
-                            color: "#ffffff"
-                            font.pixelSize: 16
-                            font.weight: Font.DemiBold
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
+                        ActionButton {
+                            theme: page.theme
+                            text: qsTr("Refresh Versions")
                             enabled: !page.backendBusy
-                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                            onClicked: page.installSelectedVersion()
-                        }
-                    }
-
-                    Rectangle {
-                        Layout.preferredWidth: 190
-                        implicitHeight: 64
-                        radius: 20
-                        gradient: Gradient {
-                            orientation: Gradient.Horizontal
-                            GradientStop { position: 0.0; color: "#ff644f" }
-                            GradientStop { position: 1.0; color: "#ff4a4a" }
-                        }
-                        opacity: nvidiaInstaller.busy ? 0.6 : 1.0
-
-                        Label {
-                            anchors.centerIn: parent
-                            text: qsTr("Remove All")
-                            color: "#ffffff"
-                            font.pixelSize: 16
-                            font.weight: Font.DemiBold
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            enabled: !nvidiaInstaller.busy
-                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                             onClicked: {
-                                page.operationSource = qsTr("Installer");
-                                page.operationDetail = qsTr("Removing the NVIDIA driver...");
-                                nvidiaInstaller.remove();
+                                systemInfo.refresh();
+                                nvidiaDetector.refresh();
+                                nvidiaUpdater.checkForUpdate();
+                                nvidiaUpdater.refreshAvailableVersions();
                             }
                         }
-                    }
-                }
 
-                RowLayout {
-                    Layout.fillWidth: true
+                        Item {
+                            Layout.fillWidth: true
+                        }
 
-                    ActionButton {
-                        theme: page.theme
-                        text: qsTr("Refresh Versions")
-                        enabled: !page.backendBusy
-                        onClicked: {
-                            systemInfo.refresh();
-                            nvidiaDetector.refresh();
-                            nvidiaUpdater.checkForUpdate();
-                            nvidiaUpdater.refreshAvailableVersions();
+                        InfoBadge {
+                            text: page.operationDetail.length > 0
+                                  ? page.operationSource + ": " + page.operationDetail
+                                  : qsTr("Ready")
+                            backgroundColor: page.backendBusy ? page.theme.infoBg : page.theme.cardStrong
+                            foregroundColor: page.theme.text
                         }
                     }
-
-                    Item {
-                        Layout.fillWidth: true
-                    }
-
-                    InfoBadge {
-                        text: page.operationDetail.length > 0
-                              ? page.operationSource + ": " + page.operationDetail
-                              : qsTr("Ready")
-                        backgroundColor: page.backendBusy ? page.theme.infoBg : page.theme.cardStrong
-                        foregroundColor: page.theme.text
-                    }
-                }
-
-                Item {
-                    Layout.fillHeight: true
                 }
             }
         }
