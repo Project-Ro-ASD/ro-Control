@@ -85,6 +85,7 @@ ApplicationWindow {
 
     color: theme.window
     property bool infoDialogOpen: false
+    property bool languageDialogOpen: false
 
     function topBarValue(fallback, preferred) {
         return preferred && preferred.length > 0 ? preferred : fallback;
@@ -106,6 +107,14 @@ ApplicationWindow {
         }
     }
 
+    onLanguageDialogOpenChanged: {
+        if (languageDialogOpen) {
+            languagePopup.open();
+        } else {
+            languagePopup.close();
+        }
+    }
+
     Rectangle {
         anchors.fill: parent
         color: root.theme.window
@@ -114,106 +123,6 @@ ApplicationWindow {
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
-
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 104
-            color: root.theme.topbarBg
-            border.width: 1
-            border.color: root.theme.border
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 32
-                anchors.rightMargin: 32
-                spacing: 18
-
-                Rectangle {
-                    width: 56
-                    height: 56
-                    radius: 20
-                    color: root.theme.accentA
-
-                    Label {
-                        anchors.centerIn: parent
-                        text: "RO"
-                        color: "#ffffff"
-                        font.pixelSize: 20
-                        font.weight: Font.Bold
-                    }
-                }
-
-                ColumnLayout {
-                    spacing: 2
-
-                    Label {
-                        text: qsTr("ro-Control")
-                        color: root.theme.text
-                        font.pixelSize: 24
-                        font.weight: Font.Bold
-                    }
-
-                    Label {
-                        text: qsTr("NVIDIA Driver Manager")
-                        color: root.theme.textSoft
-                        font.pixelSize: 14
-                        font.weight: Font.Medium
-                    }
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                Rectangle {
-                    id: themeButton
-                    width: 42
-                    height: 42
-                    radius: 21
-                    color: root.theme.cardStrong
-                    border.width: 1
-                    border.color: root.theme.border
-
-                    Label {
-                        anchors.centerIn: parent
-                        text: "\u263e"
-                        color: root.theme.text
-                        font.pixelSize: 19
-                        font.weight: Font.Bold
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.toggleThemeMode()
-                    }
-                }
-
-                Rectangle {
-                    id: infoButton
-                    width: 42
-                    height: 42
-                    radius: 21
-                    color: root.theme.cardStrong
-                    border.width: 1
-                    border.color: root.theme.border
-
-                    Label {
-                        anchors.centerIn: parent
-                        text: "\u2139"
-                        color: root.theme.text
-                        font.pixelSize: 20
-                        font.weight: Font.Bold
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.infoDialogOpen = !root.infoDialogOpen
-                    }
-                }
-            }
-        }
 
         Rectangle {
             Layout.fillWidth: true
@@ -226,7 +135,7 @@ ApplicationWindow {
                 anchors.fill: parent
                 anchors.leftMargin: 32
                 anchors.rightMargin: 32
-                spacing: 28
+                spacing: 22
 
                 Repeater {
                     model: [
@@ -241,11 +150,13 @@ ApplicationWindow {
                         },
                         {
                             label: qsTr("Secure Boot"),
-                            value: nvidiaDetector.secureBootEnabled ? qsTr("ON") : qsTr("OFF")
+                            value: nvidiaDetector.secureBootKnown
+                                   ? (nvidiaDetector.secureBootEnabled ? qsTr("ON") : qsTr("OFF"))
+                                   : qsTr("Unknown")
                         },
                         {
                             label: qsTr("GPU"),
-                            value: root.topBarValue(qsTr("Not detected"), nvidiaDetector.gpuName)
+                            value: root.topBarValue(qsTr("Unavailable"), nvidiaDetector.gpuName.length > 0 ? nvidiaDetector.gpuName : nvidiaDetector.displayAdapterName)
                         }
                     ]
 
@@ -280,6 +191,75 @@ ApplicationWindow {
 
                 Item {
                     Layout.fillWidth: true
+                }
+
+                Rectangle {
+                    width: 42
+                    height: 42
+                    radius: 21
+                    color: root.theme.cardStrong
+                    border.width: 1
+                    border.color: root.theme.border
+
+                    Label {
+                        anchors.centerIn: parent
+                        text: "\u263e"
+                        color: root.theme.text
+                        font.pixelSize: 19
+                        font.weight: Font.Bold
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.toggleThemeMode()
+                    }
+                }
+
+                Rectangle {
+                    width: 42
+                    height: 42
+                    radius: 21
+                    color: root.theme.cardStrong
+                    border.width: 1
+                    border.color: root.theme.border
+
+                    Label {
+                        anchors.centerIn: parent
+                        text: "\uD83C\uDF10"
+                        color: root.theme.text
+                        font.pixelSize: 17
+                        font.weight: Font.Bold
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.languageDialogOpen = !root.languageDialogOpen
+                    }
+                }
+
+                Rectangle {
+                    width: 42
+                    height: 42
+                    radius: 21
+                    color: root.theme.cardStrong
+                    border.width: 1
+                    border.color: root.theme.border
+
+                    Label {
+                        anchors.centerIn: parent
+                        text: "\u2139"
+                        color: root.theme.text
+                        font.pixelSize: 20
+                        font.weight: Font.Bold
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.infoDialogOpen = !root.infoDialogOpen
+                    }
                 }
             }
         }
@@ -352,7 +332,7 @@ ApplicationWindow {
         modal: false
         focus: true
         x: root.width - width - 28
-        y: 92
+        y: 72
         width: 360
         height: contentColumn.implicitHeight + 32
         padding: 0
@@ -399,7 +379,7 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 theme: root.theme
                 label: qsTr("GPU")
-                value: root.topBarValue(qsTr("Not detected"), nvidiaDetector.gpuName)
+                value: root.topBarValue(qsTr("Unavailable"), nvidiaDetector.gpuName.length > 0 ? nvidiaDetector.gpuName : nvidiaDetector.displayAdapterName)
             }
 
             DetailRow {
@@ -412,6 +392,66 @@ ApplicationWindow {
                                         : nvidiaUpdater.currentVersion.length > 0
                                           ? "nvidia-" + nvidiaUpdater.currentVersion
                                           : "")
+            }
+        }
+    }
+
+    Popup {
+        id: languagePopup
+        modal: false
+        focus: true
+        x: root.width - width - 76
+        y: 72
+        width: 240
+        height: languageColumn.implicitHeight + 24
+        padding: 0
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        onClosed: root.languageDialogOpen = false
+
+        background: Rectangle {
+            radius: 22
+            color: root.theme.card
+            border.width: 1
+            border.color: root.theme.border
+        }
+
+        ColumnLayout {
+            id: languageColumn
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 8
+
+            Repeater {
+                model: languageManager.availableLanguages
+
+                delegate: Rectangle {
+                    required property var modelData
+                    Layout.fillWidth: true
+                    implicitHeight: 42
+                    radius: 14
+                    color: languageManager.currentLanguage === modelData.code ? root.theme.infoBg : "transparent"
+                    border.width: languageManager.currentLanguage === modelData.code ? 1 : 0
+                    border.color: root.theme.border
+
+                    Label {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: 14
+                        text: modelData.nativeLabel
+                        color: root.theme.text
+                        font.pixelSize: 14
+                        font.weight: Font.DemiBold
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            languageManager.setCurrentLanguage(modelData.code);
+                            root.languageDialogOpen = false;
+                        }
+                    }
+                }
             }
         }
     }

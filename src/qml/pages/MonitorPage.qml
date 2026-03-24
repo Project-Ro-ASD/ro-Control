@@ -273,7 +273,9 @@ Item {
                 InfoTile {
                     Layout.fillWidth: true
                     title: qsTr("GPU")
-                    value: nvidiaDetector.gpuName.length > 0 ? nvidiaDetector.gpuName : qsTr("No NVIDIA GPU")
+                    value: nvidiaDetector.gpuName.length > 0
+                           ? nvidiaDetector.gpuName
+                           : (nvidiaDetector.displayAdapterName.length > 0 ? nvidiaDetector.displayAdapterName : qsTr("Unavailable"))
                     markerText: "GPU"
                     markerColor: "#6a6fff"
                 }

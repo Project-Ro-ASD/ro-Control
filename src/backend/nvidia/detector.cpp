@@ -14,6 +14,7 @@ NvidiaDetector::NvidiaDetector(QObject *parent) : QObject(parent) {}
 NvidiaDetector::GpuInfo NvidiaDetector::detect() const {
   GpuInfo info;
 
+  info.displayAdapterName = detectDisplayAdapterName();
   info.name = detectGpuName();
   info.found = !info.name.isEmpty();
   info.driverVersion = detectDriverVersion();
@@ -50,7 +51,11 @@ QString NvidiaDetector::activeDriver() const {
 }
 
 QString NvidiaDetector::verificationReport() const {
-  const QString gpuText = m_info.found ? m_info.name : tr("None");
+  const QString gpuText = m_info.found
+                              ? m_info.name
+                              : (m_info.displayAdapterName.isEmpty()
+                                     ? tr("None")
+                                     : m_info.displayAdapterName);
   const QString versionText =
       m_info.driverVersion.isEmpty() ? tr("None") : m_info.driverVersion;
 
@@ -68,6 +73,39 @@ QString NvidiaDetector::verificationReport() const {
 void NvidiaDetector::refresh() {
   m_info = detect();
   emit infoChanged();
+}
+
+QString NvidiaDetector::detectDisplayAdapterName() const {
+  if (!CapabilityProbe::isToolAvailable(QStringLiteral("lspci"))) {
+    return {};
+  }
+
+  CommandRunner runner;
+
+  const auto result =
+      runner.run(QStringLiteral("lspci"), {QStringLiteral("-mm")});
+
+  if (!result.success())
+    return {};
+
+  const QStringList lines = result.stdout.split(QLatin1Char('\n'));
+  for (const QString &line : lines) {
+    if (line.contains(QStringLiteral("VGA"), Qt::CaseInsensitive) ||
+        line.contains(QStringLiteral("3D controller"), Qt::CaseInsensitive) ||
+        line.contains(QStringLiteral("Display controller"),
+                      Qt::CaseInsensitive)) {
+      static const QRegularExpression re(QStringLiteral("\"([^\"]+)\""));
+      auto it = re.globalMatch(line);
+      QStringList parts;
+      while (it.hasNext())
+        parts << it.next().captured(1);
+
+      if (parts.size() >= 3)
+        return parts[2];
+    }
+  }
+
+  return {};
 }
 
 QString NvidiaDetector::detectGpuName() const {

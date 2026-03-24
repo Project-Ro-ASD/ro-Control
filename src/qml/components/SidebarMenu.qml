@@ -111,57 +111,5 @@ Rectangle {
         Item {
             Layout.fillHeight: true
         }
-
-        Rectangle {
-            Layout.leftMargin: 22
-            Layout.rightMargin: 22
-            Layout.fillWidth: true
-            implicitHeight: 82
-            radius: 22
-            color: theme.cardStrong
-            border.width: 1
-            border.color: theme.sidebarBorder
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.rightMargin: 20
-                spacing: 14
-
-                Rectangle {
-                    width: 42
-                    height: 42
-                    radius: 14
-                    color: theme.success
-
-                    Label {
-                        anchors.centerIn: parent
-                        text: "V"
-                        color: "#ffffff"
-                        font.pixelSize: 18
-                        font.weight: Font.Bold
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 2
-
-                    Label {
-                        text: qsTr("Version")
-                        color: theme.sidebarHint
-                        font.pixelSize: 12
-                        font.weight: Font.DemiBold
-                    }
-
-                    Label {
-                        text: "v" + Qt.application.version
-                        color: theme.sidebarText
-                        font.pixelSize: 16
-                        font.weight: Font.Bold
-                    }
-                }
-            }
-        }
     }
 }

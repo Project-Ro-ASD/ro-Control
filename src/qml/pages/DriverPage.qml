@@ -36,6 +36,11 @@ Item {
     readonly property string recommendedVersion: latestVersionLabel.length > 0
                                                  ? latestVersionLabel
                                                  : (installedVersionLabel.length > 0 ? installedVersionLabel : qsTr("Waiting for scan"))
+    readonly property string detectedHardwareLabel: nvidiaDetector.gpuName.length > 0
+                                                    ? nvidiaDetector.gpuName
+                                                    : (nvidiaDetector.displayAdapterName.length > 0
+                                                       ? nvidiaDetector.displayAdapterName
+                                                       : qsTr("Hardware information unavailable"))
 
     function classifyOperationPhase(message) {
         const lowered = message.toLowerCase();
@@ -214,24 +219,6 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: page.compactMode ? 14 : 18
 
-                Rectangle {
-                    Layout.alignment: Qt.AlignHCenter
-                    width: 108
-                    height: 108
-                    radius: 28
-                    color: page.theme.accentA
-                    rotation: -2
-                    layer.enabled: true
-
-                    Label {
-                        anchors.centerIn: parent
-                        text: "RO"
-                        color: "#ffffff"
-                        font.pixelSize: 30
-                        font.weight: Font.Bold
-                    }
-                }
-
                 Label {
                     Layout.alignment: Qt.AlignHCenter
                     text: qsTr("Select Installation Type")
@@ -330,7 +317,7 @@ Item {
                             Label {
                                 Layout.fillWidth: true
                                 text: "nvidia-" + page.recommendedVersion + " • "
-                                      + (nvidiaDetector.gpuFound ? qsTr("Verified Compatible") : qsTr("Waiting for GPU detection"))
+                                      + (nvidiaDetector.gpuFound ? qsTr("Verified Compatible") : page.detectedHardwareLabel)
                                 color: page.theme.success
                                 font.pixelSize: 14
                                 font.weight: Font.Bold
@@ -647,7 +634,11 @@ Item {
                         wrapMode: Text.Wrap
                         color: page.theme.textSoft
                         text: qsTr("GPU: %1\nActive driver: %2\nInstalled version: %3")
-                              .arg(nvidiaDetector.gpuName.length > 0 ? nvidiaDetector.gpuName : qsTr("Not detected"))
+                              .arg(nvidiaDetector.gpuName.length > 0
+                                   ? nvidiaDetector.gpuName
+                                   : (nvidiaDetector.displayAdapterName.length > 0
+                                      ? nvidiaDetector.displayAdapterName
+                                      : qsTr("Unavailable")))
                               .arg(nvidiaDetector.activeDriver.length > 0 ? nvidiaDetector.activeDriver : qsTr("Unknown"))
                               .arg(page.installedVersionLabel.length > 0 ? page.installedVersionLabel : qsTr("None"))
                     }
