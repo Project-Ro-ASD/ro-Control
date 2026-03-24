@@ -60,8 +60,12 @@ The GitHub release workflow builds:
 - source archives (`.tar.gz`, `.zip`)
 - one Fedora binary RPM for `x86_64`
 - one Fedora binary RPM for `aarch64`
+- one Fedora release bundle for `x86_64`
+- one Fedora release bundle for `aarch64`
 - one source RPM
 
 Each architecture job also performs a smoke install with `dnf install` and
 verifies that `ro-control --version` matches the tagged release version before
-publishing assets.
+publishing assets. Each release bundle contains the architecture-specific RPM,
+package metadata, dependency list, and checksum manifest for easier download
+from the GitHub Releases page.

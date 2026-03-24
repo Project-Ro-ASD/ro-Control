@@ -101,7 +101,7 @@ Daha geniş mağaza / distro dağıtımı öncesinde PNG ekran görüntüleri ek
 
 ### RPM Paketi
 
-[Releases](https://github.com/Project-Ro-ASD/ro-Control/releases) sayfasından sistem mimarinize (`x86_64` veya `aarch64`) uygun en güncel Fedora `.rpm` paketini indirin:
+[Releases](https://github.com/Project-Ro-ASD/ro-Control/releases) sayfasından sistem mimarinize uygun en güncel Fedora `.rpm` paketini veya release bundle dosyasını indirin (`x86_64` = 64-bit x86 sistemler, `aarch64` = ARM64 sistemler):
 
 ```bash
 sudo dnf install ./ro-control-*.rpm

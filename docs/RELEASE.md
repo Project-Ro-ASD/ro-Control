@@ -36,7 +36,7 @@ Use this checklist for every production release.
 
 - [ ] Create annotated tag: `vX.Y.Z`.
 - [ ] Push tag to trigger release workflow.
-- [ ] Verify GitHub Release includes source archives, one `x86_64` RPM, one `aarch64` RPM, and one source RPM.
+- [ ] Verify GitHub Release includes source archives, one `x86_64` RPM, one `aarch64` RPM, per-arch release bundles, and one source RPM.
 - [ ] Verify the attached checksum and RPM metadata files are present.
 
 ## 6. Post-release
