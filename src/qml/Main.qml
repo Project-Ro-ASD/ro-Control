@@ -10,6 +10,7 @@ ApplicationWindow {
     minimumWidth: 1120
     minimumHeight: 760
     title: qsTr("ro-Control")
+    font.family: "Noto Sans"
 
     readonly property string themeMode: "light"
     readonly property bool darkMode: false
@@ -116,8 +117,8 @@ ApplicationWindow {
                         Label {
                             text: modelData.label + ":"
                             color: root.theme.textSoft
-                            font.pixelSize: 14
-                            font.weight: Font.DemiBold
+                            font.pixelSize: 13
+                            font.weight: Font.Medium
                         }
 
                         Rectangle {
@@ -131,8 +132,8 @@ ApplicationWindow {
                                 anchors.centerIn: parent
                                 text: modelData.value
                                 color: root.theme.topbarValue
-                                font.pixelSize: 14
-                                font.weight: Font.Bold
+                                font.pixelSize: 13
+                                font.weight: Font.DemiBold
                             }
                         }
                     }
@@ -154,8 +155,8 @@ ApplicationWindow {
                         anchors.centerIn: parent
                         text: "\uD83C\uDF10"
                         color: root.theme.text
-                        font.pixelSize: 17
-                        font.weight: Font.Bold
+                        font.pixelSize: 16
+                        font.weight: Font.Medium
                     }
 
                     MouseArea {

@@ -40,6 +40,7 @@ Item {
                                                     : (nvidiaDetector.displayAdapterName.length > 0
                                                        ? nvidiaDetector.displayAdapterName
                                                        : qsTr("Hardware information unavailable"))
+    readonly property bool wideLayout: width >= 1240
 
     function classifyOperationPhase(message) {
         const lowered = message.toLowerCase();
@@ -189,97 +190,96 @@ Item {
         }
     }
 
-    ScrollView {
-        id: pageScroll
+    ColumnLayout {
         anchors.fill: parent
-        clip: true
-        contentWidth: availableWidth
+        anchors.margins: 16
+        spacing: page.compactMode ? 14 : 16
+
+        StatusBanner {
+            Layout.fillWidth: true
+            theme: page.theme
+            tone: page.bannerTone
+            text: page.bannerText
+        }
 
         ColumnLayout {
-            width: pageScroll.availableWidth
-            spacing: page.compactMode ? 16 : 22
+            Layout.fillWidth: true
+            spacing: 6
 
-            StatusBanner {
-                Layout.fillWidth: true
-                theme: page.theme
-                tone: page.bannerTone
-                text: page.bannerText
+            Label {
+                text: qsTr("Select Installation Type")
+                color: page.theme.text
+                font.pixelSize: 28
+                font.weight: Font.DemiBold
             }
 
-            ColumnLayout {
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignHCenter
-                spacing: page.compactMode ? 14 : 18
-
-                Label {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: qsTr("Select Installation Type")
-                    color: page.theme.text
-                    font.pixelSize: page.compactMode ? 34 : 40
-                    font.weight: Font.Bold
-                }
-
-                Label {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: qsTr("Optimized for your hardware")
-                    color: page.theme.textSoft
-                    font.pixelSize: 17
-                }
+            Label {
+                text: qsTr("Optimized for your hardware")
+                color: page.theme.textSoft
+                font.pixelSize: 15
+                font.weight: Font.Medium
             }
+        }
+
+        GridLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            columns: page.wideLayout ? 2 : 1
+            columnSpacing: 16
+            rowSpacing: 16
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.maximumWidth: 1080
-                Layout.alignment: Qt.AlignHCenter
+                Layout.fillHeight: true
                 radius: 26
                 color: page.theme.card
                 border.width: 1
                 border.color: page.theme.border
-                implicitHeight: expressColumn.implicitHeight + 42
+                implicitHeight: expressColumn.implicitHeight + 34
                 layer.enabled: true
 
                 ColumnLayout {
                     id: expressColumn
-                    x: 30
-                    y: 26
-                    width: parent.width - 60
-                    spacing: 18
+                    x: 24
+                    y: 20
+                    width: parent.width - 48
+                    spacing: 14
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 18
+                        spacing: 14
 
                         Rectangle {
-                            width: 46
-                            height: 46
-                            radius: 15
+                            width: 42
+                            height: 42
+                            radius: 14
                             color: page.theme.success
 
                             Label {
                                 anchors.centerIn: parent
                                 text: "OK"
                                 color: "#ffffff"
-                                font.pixelSize: 14
-                                font.weight: Font.Bold
+                                font.pixelSize: 13
+                                font.weight: Font.DemiBold
                             }
                         }
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 6
+                            spacing: 4
 
                             Label {
                                 text: qsTr("Express Install")
                                 color: page.theme.text
-                                font.pixelSize: 24
-                                font.weight: Font.Bold
+                                font.pixelSize: 20
+                                font.weight: Font.DemiBold
                             }
 
                             Label {
                                 Layout.fillWidth: true
                                 wrapMode: Text.Wrap
                                 color: page.theme.textSoft
-                                font.pixelSize: 15
+                                font.pixelSize: 14
                                 text: qsTr("Automatically installs the recommended driver version with optimal settings")
                             }
                         }
@@ -291,13 +291,13 @@ Item {
                         color: page.theme.successBg
                         border.width: 1
                         border.color: Qt.tint(page.theme.success, "#55ffffff")
-                        implicitHeight: 44
+                        implicitHeight: 40
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 18
-                            anchors.rightMargin: 18
-                            spacing: 10
+                            anchors.leftMargin: 14
+                            anchors.rightMargin: 14
+                            spacing: 8
 
                             Rectangle {
                                 width: 18
@@ -311,8 +311,8 @@ Item {
                                 text: "nvidia-" + page.recommendedVersion + " • "
                                       + (nvidiaDetector.gpuFound ? qsTr("Verified Compatible") : page.detectedHardwareLabel)
                                 color: page.theme.success
-                                font.pixelSize: 14
-                                font.weight: Font.Bold
+                                font.pixelSize: 13
+                                font.weight: Font.DemiBold
                                 elide: Text.ElideRight
                             }
                         }
@@ -323,7 +323,7 @@ Item {
                         spacing: 12
 
                         ActionButton {
-                            Layout.preferredWidth: 220
+                            Layout.preferredWidth: 210
                             theme: page.theme
                             tone: "primary"
                             text: page.driverInstalledLocally ? qsTr("Reinstall Recommended") : qsTr("Install Recommended")
@@ -361,56 +361,55 @@ Item {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.maximumWidth: 1080
-                Layout.alignment: Qt.AlignHCenter
+                Layout.fillHeight: true
                 radius: 26
                 color: page.theme.card
                 border.width: 1
                 border.color: page.theme.border
-                implicitHeight: customColumn.implicitHeight + 42
+                implicitHeight: customColumn.implicitHeight + 34
 
                 ColumnLayout {
                     id: customColumn
-                    x: 30
-                    y: 26
-                    width: parent.width - 60
-                    spacing: 18
+                    x: 24
+                    y: 20
+                    width: parent.width - 48
+                    spacing: 14
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 18
+                        spacing: 14
 
                         Rectangle {
-                            width: 46
-                            height: 46
-                            radius: 15
+                            width: 42
+                            height: 42
+                            radius: 14
                             color: page.theme.accentA
 
                             Label {
                                 anchors.centerIn: parent
                                 text: "EX"
                                 color: "#ffffff"
-                                font.pixelSize: 14
-                                font.weight: Font.Bold
+                                font.pixelSize: 13
+                                font.weight: Font.DemiBold
                             }
                         }
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 6
+                            spacing: 4
 
                             Label {
                                 text: qsTr("Custom Install")
                                 color: page.theme.text
-                                font.pixelSize: 24
-                                font.weight: Font.Bold
+                                font.pixelSize: 20
+                                font.weight: Font.DemiBold
                             }
 
                             Label {
                                 Layout.fillWidth: true
                                 wrapMode: Text.Wrap
                                 color: page.theme.textSoft
-                                font.pixelSize: 15
+                                font.pixelSize: 14
                                 text: qsTr("Advanced options to choose specific driver version and kernel module type")
                             }
                         }
@@ -445,9 +444,9 @@ Item {
 
                     GridLayout {
                         Layout.fillWidth: true
-                        columns: width > 760 ? 3 : 1
-                        columnSpacing: 12
-                        rowSpacing: 12
+                        columns: 1
+                        columnSpacing: 10
+                        rowSpacing: 10
 
                         ActionButton {
                             Layout.fillWidth: true
@@ -518,56 +517,55 @@ Item {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.maximumWidth: 1080
-                Layout.alignment: Qt.AlignHCenter
+                Layout.columnSpan: page.wideLayout ? 2 : 1
                 radius: 26
                 color: Qt.tint(page.theme.warningBg, page.darkMode ? "#11ffffff" : "#22ffffff")
                 border.width: 1
                 border.color: Qt.tint(page.theme.warning, "#55ffffff")
-                implicitHeight: warningColumn.implicitHeight + 42
+                implicitHeight: warningColumn.implicitHeight + 30
 
                 ColumnLayout {
                     id: warningColumn
-                    x: 30
-                    y: 26
-                    width: parent.width - 60
-                    spacing: 12
+                    x: 24
+                    y: 18
+                    width: parent.width - 48
+                    spacing: 10
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 16
+                        spacing: 12
 
                         Rectangle {
-                            width: 48
-                            height: 48
-                            radius: 16
+                            width: 40
+                            height: 40
+                            radius: 14
                             color: page.theme.warningBg
 
                             Label {
                                 anchors.centerIn: parent
                                 text: "!"
                                 color: page.theme.warning
-                                font.pixelSize: 24
-                                font.weight: Font.Bold
+                                font.pixelSize: 20
+                                font.weight: Font.DemiBold
                             }
                         }
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 8
+                            spacing: 4
 
                             Label {
                                 text: nvidiaDetector.secureBootEnabled ? qsTr("Secure Boot Detected") : qsTr("System Readiness")
                                 color: page.theme.warning
-                                font.pixelSize: 18
-                                font.weight: Font.Bold
+                                font.pixelSize: 16
+                                font.weight: Font.DemiBold
                             }
 
                             Label {
                                 Layout.fillWidth: true
                                 wrapMode: Text.Wrap
                                 color: page.theme.textMuted
-                                font.pixelSize: 14
+                                font.pixelSize: 13
                                 text: nvidiaDetector.secureBootEnabled
                                       ? qsTr("You may need to sign the kernel modules or disable Secure Boot in BIOS to use NVIDIA proprietary drivers.")
                                       : qsTr("No Secure Boot blocker is currently detected. You can continue with the recommended installation path.")
@@ -576,7 +574,6 @@ Item {
                     }
                 }
             }
-
         }
     }
 

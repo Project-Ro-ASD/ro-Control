@@ -69,8 +69,8 @@ Rectangle {
                             anchors.centerIn: parent
                             text: menuCard.modelData.marker
                             color: sidebar.currentIndex === index ? "#ffffff" : theme.sidebarMuted
-                            font.pixelSize: 20
-                            font.weight: Font.Bold
+                            font.pixelSize: 18
+                            font.weight: Font.DemiBold
                         }
                     }
 
@@ -78,8 +78,8 @@ Rectangle {
                         Layout.fillWidth: true
                         text: menuCard.modelData.title
                         color: sidebar.currentIndex === index ? theme.sidebarText : theme.sidebarText
-                        font.pixelSize: 18
-                        font.weight: sidebar.currentIndex === index ? Font.Bold : Font.DemiBold
+                        font.pixelSize: 16
+                        font.weight: sidebar.currentIndex === index ? Font.DemiBold : Font.Medium
                     }
 
                     Rectangle {

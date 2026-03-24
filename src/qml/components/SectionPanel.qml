@@ -29,8 +29,8 @@ Rectangle {
 
             Label {
                 text: panel.title
-                font.pixelSize: 17
-                font.weight: Font.DemiBold
+                font.pixelSize: 16
+                font.weight: Font.Medium
                 color: panel.theme.text
                 visible: text.length > 0
                 Layout.fillWidth: true
