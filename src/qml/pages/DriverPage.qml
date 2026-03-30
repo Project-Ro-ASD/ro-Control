@@ -239,6 +239,7 @@ Item {
                     color: page.theme.card
                     border.width: 1
                     border.color: page.theme.border
+                    opacity: page.backendBusy || !page.canInstallLatestRemoteDriver ? 0.7 : 1.0
                     implicitHeight: expressColumn.implicitHeight + 34
 
                     ColumnLayout {
@@ -311,9 +312,12 @@ Item {
 
                                 Label {
                                     Layout.fillWidth: true
-                                    text: "nvidia-" + page.recommendedVersion + " • "
-                                          + (nvidiaDetector.gpuFound ? qsTr("Verified Compatible") : page.detectedHardwareLabel)
-                                    color: page.theme.success
+                                    text: page.canInstallLatestRemoteDriver
+                                          ? "nvidia-" + page.recommendedVersion + " • " + qsTr("Verified Compatible")
+                                          : (page.remoteDriverCatalogAvailable
+                                             ? qsTr("Compatible NVIDIA hardware not detected")
+                                             : qsTr("Scanning the Fedora repositories..."))
+                                    color: page.canInstallLatestRemoteDriver ? page.theme.success : page.theme.textMuted
                                     font.pixelSize: 13
                                     font.weight: Font.DemiBold
                                     elide: Text.ElideRight
@@ -324,8 +328,8 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
-                        cursorShape: page.backendBusy ? Qt.ArrowCursor : Qt.PointingHandCursor
-                        enabled: !page.backendBusy
+                        cursorShape: !enabled ? Qt.ArrowCursor : Qt.PointingHandCursor
+                        enabled: !page.backendBusy && page.canInstallLatestRemoteDriver
                         onClicked: {
                             page.setOperationState(qsTr("Installer"), qsTr("Installing the proprietary NVIDIA driver (akmod-nvidia)..."), "info", true);
                             nvidiaInstaller.installProprietary(true);
@@ -425,6 +429,7 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.columnSpan: page.wideLayout ? 2 : 1
+                    visible: page.showAdvancedInfo
                     radius: 26
                     color: Qt.tint(page.theme.warningBg, page.darkMode ? "#11ffffff" : "#22ffffff")
                     border.width: 1

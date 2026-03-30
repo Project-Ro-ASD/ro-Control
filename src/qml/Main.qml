@@ -12,11 +12,53 @@ ApplicationWindow {
     title: qsTr("ro-Control")
     font.family: "Noto Sans"
 
-    readonly property string themeMode: "light"
-    readonly property bool darkMode: false
+    SystemPalette {
+        id: systemPalette
+        colorGroup: SystemPalette.Active
+    }
+
+    function isColorDark(colorValue) {
+        return ((0.2126 * colorValue.r) + (0.7152 * colorValue.g) + (0.0722 * colorValue.b)) < 0.5;
+    }
+
+    readonly property string themeMode: uiPreferences.themeMode
+    readonly property bool darkMode: themeMode === "dark"
+                                     || (themeMode === "system" && root.isColorDark(systemPalette.window))
     readonly property bool compactMode: uiPreferences.compactMode
     readonly property bool showAdvancedInfo: uiPreferences.showAdvancedInfo
-    readonly property var theme: ({
+    readonly property var theme: darkMode ? ({
+        window: "#141922",
+        shell: "#10151d",
+        card: "#1b2330",
+        cardStrong: "#212b3a",
+        border: "#2c3748",
+        text: "#edf3ff",
+        textMuted: "#b2bdd1",
+        textSoft: "#8f9bb1",
+        accentA: "#7e90ff",
+        accentB: "#34c7a1",
+        accentC: "#ffbf47",
+        success: "#36c691",
+        warning: "#f2ae2d",
+        danger: "#f17575",
+        successBg: "#173529",
+        warningBg: "#3a2e12",
+        dangerBg: "#3d2024",
+        infoBg: "#1c2941",
+        sidebarBg: "#111722",
+        sidebarText: "#eef3ff",
+        sidebarMuted: "#95a3bb",
+        sidebarAccent: "#7e90ff",
+        sidebarActive: "#1d2940",
+        sidebarHover: "#182131",
+        sidebarBorder: "#253141",
+        sidebarHint: "#8898b0",
+        topbarBg: "#171e29",
+        topbarChip: "#222c3a",
+        topbarValue: "#eef3ff",
+        contentBg: "#121822",
+        contentGlow: "#182131"
+    }) : ({
         window: "#f3f6fb",
         shell: "#edf2f8",
         card: "#ffffff",

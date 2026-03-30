@@ -243,6 +243,7 @@ Item {
 
             Label {
                 text: qsTr("System Information")
+                visible: page.showAdvancedInfo
                 color: page.theme.text
                 font.pixelSize: 28
                 font.weight: Font.DemiBold
@@ -250,6 +251,7 @@ Item {
 
             GridLayout {
                 Layout.fillWidth: true
+                visible: page.showAdvancedInfo
                 columns: 2
                 columnSpacing: 16
                 rowSpacing: 16

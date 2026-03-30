@@ -1,4 +1,4 @@
-%global upstream_version %{!?upstream_version:0.1.0}%{?upstream_version}
+%global upstream_version %{!?upstream_version:0.2.0}%{?upstream_version}
 %global debug_package %{nil}
 
 Name:           ro-control
@@ -76,6 +76,11 @@ tar -xzf %{SOURCE0} --strip-components=1
 %{_datadir}/polkit-1/actions/io.github.ProjectRoASD.rocontrol.policy
 
 %changelog
+* Mon Mar 30 2026 ro-Control Maintainers <noreply@github.com> - 0.2.0-1
+- Fix installed helper path resolution for privileged operations on system installs
+- Activate saved KDE-friendly interface preferences and theme switching in the UI
+- Harden Fedora CI and release validation for metadata and RPM packaging
+
 * Sun Mar 22 2026 ro-Control Maintainers <noreply@github.com> - 0.1.0-1
 - Prepare first GitHub Release RPMs for i686, x86_64, and aarch64
 - Add explicit Fedora runtime command dependencies and recommendations

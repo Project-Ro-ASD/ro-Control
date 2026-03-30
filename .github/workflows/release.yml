@@ -128,7 +128,9 @@ jobs:
             qt6-qttools-devel \
             qt6-qtwayland-devel \
             kf6-qqc2-desktop-style \
-            polkit-devel
+            polkit-devel \
+            desktop-file-utils \
+            appstream
 
       - name: Build RPM artifacts
         env:
@@ -164,6 +166,12 @@ jobs:
 
           rpm -qp --info "${RPM_FILE}" > "dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-info.txt"
           rpm -qp --requires "${RPM_FILE}" | sort > "dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-requires.txt"
+          rpm -qlp "${RPM_FILE}" | sort > "dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-files.txt"
+
+      - name: Validate desktop metadata
+        run: |
+          desktop-file-validate data/icons/io.github.projectroasd.rocontrol.desktop
+          appstreamcli validate --no-net data/icons/io.github.projectroasd.rocontrol.metainfo.xml
 
       - name: Install and smoke-test RPM
         env:
@@ -201,6 +209,7 @@ jobs:
           RPM_FILE="$(find dist/rpm -maxdepth 1 -type f -name "*.${RPM_ARCH}.rpm" | head -n1)"
           INFO_FILE="dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-info.txt"
           REQUIRES_FILE="dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-requires.txt"
+          FILES_FILE="dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-files.txt"
           CHECKSUM_FILE="dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-SHA256SUMS.txt"
           BUNDLE_DIR="dist/release/ro-control-${VERSION}-${RPM_ARCH}"
           BUNDLE_NAME="ro-control-${VERSION}-${RPM_ARCH}-fedora42.tar.gz"
@@ -214,6 +223,7 @@ jobs:
           cp "${RPM_FILE}" "${BUNDLE_DIR}/"
           cp "${INFO_FILE}" "${BUNDLE_DIR}/"
           cp "${REQUIRES_FILE}" "${BUNDLE_DIR}/"
+          cp "${FILES_FILE}" "${BUNDLE_DIR}/"
           cp "${CHECKSUM_FILE}" "${BUNDLE_DIR}/"
 
           tar -C dist/release -czf "dist/release/${BUNDLE_NAME}" "ro-control-${VERSION}-${RPM_ARCH}"
@@ -254,4 +264,5 @@ jobs:
             dist/*SHA256SUMS.txt
             dist/*-requires.txt
             dist/*-info.txt
+            dist/*-files.txt
             dist/*-fedora42.tar.gz
