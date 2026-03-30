@@ -9,12 +9,22 @@
 #include "system/dnfmanager.h"
 #include "system/polkit.h"
 
+namespace {
+
+QTemporaryDir createExecutableTempDir() {
+  const QString basePath =
+      QDir::cleanPath(QDir::currentPath() + QStringLiteral("/ro-control-test-XXXXXX"));
+  return QTemporaryDir(basePath);
+}
+
+}
+
 class TestSystemIntegration : public QObject {
   Q_OBJECT
 
 private slots:
   void testCommandRunnerUsesProgramOverride() {
-    QTemporaryDir tempDir;
+    QTemporaryDir tempDir = createExecutableTempDir();
     QVERIFY(tempDir.isValid());
 
     const QString scriptPath = tempDir.filePath(QStringLiteral("fake-dnf.sh"));
@@ -37,7 +47,7 @@ private slots:
   }
 
   void testCapabilityProbeUsesProgramOverride() {
-    QTemporaryDir tempDir;
+    QTemporaryDir tempDir = createExecutableTempDir();
     QVERIFY(tempDir.isValid());
 
     const QString scriptPath =
