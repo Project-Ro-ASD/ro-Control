@@ -1,6 +1,6 @@
 # Fedora Run Guide
 
-This guide is focused on running `ro-control` on Fedora Workstation/Spin systems.
+This guide is focused on running `ro-control` on Fedora KDE Desktop / Fedora Spin systems.
 
 ## 1) Bootstrap (recommended)
 
@@ -15,6 +15,7 @@ Optional flags via environment variables:
 ```bash
 ENABLE_TESTS=0 BUILD_TYPE=Debug ./scripts/fedora-bootstrap.sh
 INSTALL_AFTER_BUILD=1 INSTALL_PREFIX=/usr ./scripts/fedora-bootstrap.sh
+TARGET_ARCH=i686 ./scripts/fedora-bootstrap.sh
 ```
 
 ## 2) Manual dependency install (equivalent)
@@ -50,6 +51,11 @@ ctest --test-dir build --output-on-failure
 ./build/ro-control
 ```
 
+If you are preparing a Fedora KDE Desktop `i686` build, use a native `i686`
+environment when possible. The bootstrap script labels the target architecture,
+but NVIDIA driver management remains disabled on `i686` because Fedora does not
+ship the required RPM Fusion NVIDIA stack there.
+
 ## 4) Install (optional)
 
 ```bash
@@ -61,6 +67,8 @@ sudo cmake --install build
 - `ro-control` invokes privileged operations through `pkexec`.
 - For proprietary NVIDIA flow, the app enables RPM Fusion and installs
   `akmod-nvidia` using `dnf`.
+- NVIDIA driver management is supported on Fedora `x86_64` and `aarch64`
+  builds. `i686` builds are supported for compilation and monitoring only.
 - A reboot is required after install/update/remove flows.
 - On Secure Boot systems, kernel module signing policy may still require manual steps.
 

@@ -9,6 +9,8 @@ class NvidiaDetector : public QObject {
 
   Q_PROPERTY(bool gpuFound READ gpuFound NOTIFY infoChanged)
   Q_PROPERTY(QString gpuName READ gpuName NOTIFY infoChanged)
+  Q_PROPERTY(QString displayAdapterName READ displayAdapterName NOTIFY
+                 infoChanged)
   Q_PROPERTY(QString driverVersion READ driverVersion NOTIFY infoChanged)
   Q_PROPERTY(bool driverLoaded READ driverLoaded NOTIFY infoChanged)
   Q_PROPERTY(bool nouveauActive READ nouveauActive NOTIFY infoChanged)
@@ -24,6 +26,7 @@ public:
   struct GpuInfo {
     bool found = false;
     QString name;
+    QString displayAdapterName;
     QString driverVersion;
     QString vbiosVersion;
     bool driverLoaded = false;
@@ -38,6 +41,7 @@ public:
 
   bool gpuFound() const { return m_info.found; }
   QString gpuName() const { return m_info.name; }
+  QString displayAdapterName() const { return m_info.displayAdapterName; }
   QString driverVersion() const { return m_info.driverVersion; }
   bool driverLoaded() const { return m_info.driverLoaded; }
   bool nouveauActive() const { return m_info.nouveauActive; }
@@ -63,6 +67,7 @@ signals:
 
 private:
   QString detectGpuName() const;
+  QString detectDisplayAdapterName() const;
   QString detectDriverVersion() const;
   bool isPackageInstalled(const QString &packageName) const;
   bool isModuleLoaded(const QString &moduleName) const;

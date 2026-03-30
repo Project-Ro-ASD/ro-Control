@@ -17,10 +17,7 @@ Rectangle {
                                      : tone === "warning" ? theme.warning
                                      : tone === "error" ? theme.danger
                                      : theme.accentA
-    readonly property color textTone: tone === "success" ? "#16351d"
-                                   : tone === "warning" ? "#4b3202"
-                                   : tone === "error" ? "#5b1820"
-                                   : "#12304f"
+    readonly property color textTone: theme.text
 
     radius: 20
     color: bannerColor

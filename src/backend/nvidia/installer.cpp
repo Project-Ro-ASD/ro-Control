@@ -1,5 +1,6 @@
 #include "installer.h"
 
+#include "system/capabilityprobe.h"
 #include "system/commandrunner.h"
 #include "system/sessionutil.h"
 
@@ -167,6 +168,13 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
     return;
   }
 
+  const QString architectureSupportMessage =
+      CapabilityProbe::fedoraNvidiaDriverFlowSupportMessage();
+  if (!architectureSupportMessage.isEmpty()) {
+    emit installFinished(false, architectureSupportMessage);
+    return;
+  }
+
   QPointer<NvidiaInstaller> guard(this);
   runAsyncTask([guard]() {
     if (!guard) {
@@ -300,6 +308,13 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
 }
 
 void NvidiaInstaller::installOpenSource() {
+  const QString architectureSupportMessage =
+      CapabilityProbe::fedoraNvidiaDriverFlowSupportMessage();
+  if (!architectureSupportMessage.isEmpty()) {
+    emit installFinished(false, architectureSupportMessage);
+    return;
+  }
+
   QPointer<NvidiaInstaller> guard(this);
   runAsyncTask([guard]() {
     if (!guard) {
@@ -408,6 +423,13 @@ void NvidiaInstaller::installOpenSource() {
 }
 
 void NvidiaInstaller::remove() {
+  const QString architectureSupportMessage =
+      CapabilityProbe::fedoraNvidiaDriverFlowSupportMessage();
+  if (!architectureSupportMessage.isEmpty()) {
+    emit removeFinished(false, architectureSupportMessage);
+    return;
+  }
+
   QPointer<NvidiaInstaller> guard(this);
   runAsyncTask([guard]() {
     if (!guard) {
@@ -443,6 +465,13 @@ void NvidiaInstaller::remove() {
 }
 
 void NvidiaInstaller::deepClean() {
+  const QString architectureSupportMessage =
+      CapabilityProbe::fedoraNvidiaDriverFlowSupportMessage();
+  if (!architectureSupportMessage.isEmpty()) {
+    emit removeFinished(false, architectureSupportMessage);
+    return;
+  }
+
   QPointer<NvidiaInstaller> guard(this);
   runAsyncTask([guard]() {
     if (!guard) {

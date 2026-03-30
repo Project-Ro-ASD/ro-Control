@@ -191,15 +191,6 @@ void RamMonitor::refresh() {
     memAvailableKiB = memFreeKiB + buffersKiB + cachedKiB + reclaimable - shmem;
   }
 
-  // TR: Tutarsiz veri geldiyse metrikleri sifirla ve "unavailable" olarak isle.
-  // EN: If metrics are inconsistent, clear values and mark monitor unavailable.
-  if (memTotalKiB <= 0 || memAvailableKiB < 0 ||
-      memAvailableKiB > memTotalKiB) {
-    setAvailable(false);
-    clearMetrics();
-    return;
-  }
-
   RamSnapshot snapshot = buildSnapshot(memTotalKiB, memAvailableKiB);
   if (!snapshot.valid) {
     snapshot = readSnapshotFromFree();

@@ -191,11 +191,41 @@ jobs:
             sha256sum * > "ro-control-${VERSION}-${RPM_ARCH}-SHA256SUMS.txt"
           )
 
+      - name: Create per-arch release bundle
+        env:
+          VERSION: ${{ needs.metadata.outputs.version }}
+          RPM_ARCH: ${{ matrix.arch }}
+        run: |
+          mkdir -p dist/release
+
+          RPM_FILE="$(find dist/rpm -maxdepth 1 -type f -name "*.${RPM_ARCH}.rpm" | head -n1)"
+          INFO_FILE="dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-info.txt"
+          REQUIRES_FILE="dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-requires.txt"
+          CHECKSUM_FILE="dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-SHA256SUMS.txt"
+          BUNDLE_DIR="dist/release/ro-control-${VERSION}-${RPM_ARCH}"
+          BUNDLE_NAME="ro-control-${VERSION}-${RPM_ARCH}-fedora42.tar.gz"
+
+          if [[ -z "${RPM_FILE}" ]]; then
+            echo "Failed to locate built ${RPM_ARCH} RPM for release bundling." >&2
+            exit 1
+          fi
+
+          mkdir -p "${BUNDLE_DIR}"
+          cp "${RPM_FILE}" "${BUNDLE_DIR}/"
+          cp "${INFO_FILE}" "${BUNDLE_DIR}/"
+          cp "${REQUIRES_FILE}" "${BUNDLE_DIR}/"
+          cp "${CHECKSUM_FILE}" "${BUNDLE_DIR}/"
+
+          tar -C dist/release -czf "dist/release/${BUNDLE_NAME}" "ro-control-${VERSION}-${RPM_ARCH}"
+          rm -rf "${BUNDLE_DIR}"
+
       - name: Upload RPM artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ro-control-rpm-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
-          path: dist/rpm/*
+          path: |
+            dist/rpm/*
+            dist/release/*
 
   release:
     name: Create GitHub Release
@@ -224,3 +254,4 @@ jobs:
             dist/*SHA256SUMS.txt
             dist/*-requires.txt
             dist/*-info.txt
+            dist/*-fedora42.tar.gz

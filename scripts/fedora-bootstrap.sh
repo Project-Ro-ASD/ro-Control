@@ -8,6 +8,7 @@ GENERATOR="${GENERATOR:-Ninja}"
 ENABLE_TESTS="${ENABLE_TESTS:-1}"
 INSTALL_AFTER_BUILD="${INSTALL_AFTER_BUILD:-0}"
 INSTALL_PREFIX="${INSTALL_PREFIX:-/usr/local}"
+TARGET_ARCH="${TARGET_ARCH:-$(uname -m)}"
 
 build_reqs=(
   cmake
@@ -29,6 +30,23 @@ runtime_tools=(
   mokutil
   kmod
 )
+
+case "$TARGET_ARCH" in
+  i386|i486|i586|i686|x86)
+    TARGET_ARCH="i686"
+    ;;
+  x86_64|amd64)
+    TARGET_ARCH="x86_64"
+    ;;
+  aarch64|arm64)
+    TARGET_ARCH="aarch64"
+    ;;
+esac
+
+echo "Detected Fedora target architecture: $TARGET_ARCH"
+if [[ "$TARGET_ARCH" == "i686" ]]; then
+  echo "Preparing a 32-bit x86 Fedora build. NVIDIA driver management remains unavailable on i686."
+fi
 
 echo "[1/4] Installing Fedora build dependencies..."
 sudo dnf install -y "${build_reqs[@]}"

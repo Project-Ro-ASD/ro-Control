@@ -9,6 +9,7 @@ Item {
     property bool darkMode: false
     property bool compactMode: false
     property bool showAdvancedInfo: true
+    property var navigateToPage
 
     property string bannerText: ""
     property string bannerTone: "info"
@@ -17,11 +18,30 @@ Item {
     property string operationDetail: ""
     property bool operationActive: false
     property double operationStartedAt: 0
-    property double lastLogAt: 0
     property int operationElapsedSeconds: 0
     readonly property string nvidiaLicenseUrl: "https://www.nvidia.com/en-us/drivers/nvidia-license/"
     readonly property bool backendBusy: nvidiaInstaller.busy || nvidiaUpdater.busy
     readonly property bool operationRunning: page.operationActive || page.backendBusy
+    readonly property bool remoteDriverCatalogAvailable: nvidiaUpdater.availableVersions.length > 0
+    readonly property bool canInstallLatestRemoteDriver: nvidiaDetector.gpuFound && remoteDriverCatalogAvailable
+    readonly property bool driverInstalledLocally: nvidiaDetector.driverVersion.length > 0 || nvidiaUpdater.currentVersion.length > 0
+    readonly property string installedVersionLabel: nvidiaDetector.driverVersion.length > 0 ? nvidiaDetector.driverVersion : nvidiaUpdater.currentVersion
+    readonly property string latestVersionLabel: cleanVersionLabel(nvidiaUpdater.latestVersion)
+    readonly property var availableVersionOptions: buildAvailableVersionOptions(nvidiaUpdater.availableVersions)
+    readonly property string recommendedTitle: driverInstalledLocally
+                                               ? qsTr("Driver installed and ready")
+                                               : remoteDriverCatalogAvailable
+                                                 ? qsTr("Recommended package available")
+                                                 : qsTr("Preparing recommendation")
+    readonly property string recommendedVersion: latestVersionLabel.length > 0
+                                                 ? latestVersionLabel
+                                                 : (installedVersionLabel.length > 0 ? installedVersionLabel : qsTr("Waiting for scan"))
+    readonly property string detectedHardwareLabel: nvidiaDetector.gpuName.length > 0
+                                                    ? nvidiaDetector.gpuName
+                                                    : (nvidiaDetector.displayAdapterName.length > 0
+                                                       ? nvidiaDetector.displayAdapterName
+                                                       : qsTr("Hardware information unavailable"))
+    readonly property bool wideLayout: width >= 1240
 
     function classifyOperationPhase(message) {
         const lowered = message.toLowerCase();
@@ -89,7 +109,7 @@ Item {
         if (epochIndex >= 0)
             normalized = normalized.substring(epochIndex + 1);
 
-        const releaseMatch = normalized.match(/^([0-9]+(?:\.[0-9]+)+)/);
+        const releaseMatch = normalized.match(/([0-9]+(?:\.[0-9]+)+)/);
         if (releaseMatch && releaseMatch.length > 1)
             return releaseMatch[1];
 
@@ -161,13 +181,6 @@ Item {
         return options;
     }
 
-    function appendLog(source, message) {
-        const now = Date.now();
-        lastLogAt = now;
-        logArea.append("[" + formatTimestamp(now) + "] " + source + ": " + message);
-        logArea.cursorPosition = logArea.length;
-    }
-
     Timer {
         interval: 1000
         repeat: true
@@ -178,13 +191,6 @@ Item {
         }
     }
 
-    readonly property bool remoteDriverCatalogAvailable: nvidiaUpdater.availableVersions.length > 0
-    readonly property bool canInstallLatestRemoteDriver: nvidiaDetector.gpuFound && remoteDriverCatalogAvailable
-    readonly property bool driverInstalledLocally: nvidiaDetector.driverVersion.length > 0 || nvidiaUpdater.currentVersion.length > 0
-    readonly property string installedVersionLabel: nvidiaDetector.driverVersion.length > 0 ? nvidiaDetector.driverVersion : nvidiaUpdater.currentVersion
-    readonly property string latestVersionLabel: cleanVersionLabel(nvidiaUpdater.latestVersion)
-    readonly property var availableVersionOptions: buildAvailableVersionOptions(nvidiaUpdater.availableVersions)
-
     ScrollView {
         id: pageScroll
         anchors.fill: parent
@@ -193,7 +199,7 @@ Item {
 
         ColumnLayout {
             width: pageScroll.availableWidth
-            spacing: page.compactMode ? 12 : 16
+            spacing: page.compactMode ? 14 : 16
 
             StatusBanner {
                 Layout.fillWidth: true
@@ -202,397 +208,276 @@ Item {
                 text: page.bannerText
             }
 
-            GridLayout {
+            ColumnLayout {
                 Layout.fillWidth: true
-                columns: width > 980 ? 4 : 2
-                columnSpacing: 12
-                rowSpacing: 12
+                spacing: 6
 
-                StatCard {
-                    Layout.fillWidth: true
-                    theme: page.theme
-                    title: qsTr("GPU Detection")
-                    value: nvidiaDetector.gpuFound ? qsTr("Detected") : qsTr("Missing")
-                    subtitle: nvidiaDetector.gpuFound ? nvidiaDetector.gpuName : qsTr("No NVIDIA GPU was detected on this system.")
-                    accentColor: page.theme.accentA
-                    emphasized: nvidiaDetector.gpuFound
+                Label {
+                    text: qsTr("Select Installation Type")
+                    color: page.theme.text
+                    font.pixelSize: 28
+                    font.weight: Font.DemiBold
                 }
 
-                StatCard {
-                    Layout.fillWidth: true
-                    theme: page.theme
-                    title: qsTr("Active Driver")
-                    value: nvidiaDetector.activeDriver
-                    subtitle: qsTr("Session: ") + (nvidiaDetector.sessionType.length > 0 ? nvidiaDetector.sessionType : qsTr("Unknown"))
-                    accentColor: page.theme.accentB
-                }
-
-                StatCard {
-                    Layout.fillWidth: true
-                    theme: page.theme
-                    title: qsTr("Installed Version")
-                    value: page.installedVersionLabel.length > 0 ? page.installedVersionLabel : qsTr("None")
-                    subtitle: page.driverInstalledLocally
-                              ? (nvidiaUpdater.updateAvailable
-                                 ? qsTr("Latest available online: ") + page.latestVersionLabel
-                                 : qsTr("No pending online package update detected."))
-                              : (page.remoteDriverCatalogAvailable
-                                 ? qsTr("Latest driver found online: ") + page.latestVersionLabel
-                                 : qsTr("No online driver catalog has been loaded yet."))
-                    accentColor: page.theme.accentC
-                    busy: page.operationRunning
-                }
-
-                StatCard {
-                    Layout.fillWidth: true
-                    theme: page.theme
-                    title: qsTr("Secure Boot")
-                    value: nvidiaDetector.secureBootEnabled ? qsTr("Enabled") : qsTr("Disabled / Unknown")
-                    subtitle: nvidiaDetector.secureBootEnabled
-                              ? qsTr("Unsigned kernel modules may require manual signing.")
-                              : qsTr("No Secure Boot blocker is currently detected.")
-                    accentColor: nvidiaDetector.secureBootEnabled ? page.theme.warning : page.theme.success
-                    emphasized: nvidiaDetector.secureBootEnabled
+                Label {
+                    text: qsTr("Optimized for your hardware")
+                    color: page.theme.textSoft
+                    font.pixelSize: 15
+                    font.weight: Font.Medium
                 }
             }
 
             GridLayout {
                 Layout.fillWidth: true
-                columns: width > 980 ? 2 : 1
+                columns: page.wideLayout ? 2 : 1
                 columnSpacing: 16
                 rowSpacing: 16
 
-                SectionPanel {
+                Rectangle {
                     Layout.fillWidth: true
-                    theme: page.theme
-                    title: qsTr("Verification")
-                    subtitle: qsTr("Review driver prerequisites before changing packages.")
+                    radius: 26
+                    color: page.theme.card
+                    border.width: 1
+                    border.color: page.theme.border
+                    implicitHeight: expressColumn.implicitHeight + 34
 
-                    Flow {
-                        Layout.fillWidth: true
-                        spacing: 8
+                    ColumnLayout {
+                        id: expressColumn
+                        x: 24
+                        y: 20
+                        width: parent.width - 48
+                        spacing: 14
 
-                        InfoBadge {
-                            text: nvidiaDetector.gpuFound ? qsTr("GPU Ready") : qsTr("GPU Missing")
-                            backgroundColor: nvidiaDetector.gpuFound ? page.theme.successBg : page.theme.dangerBg
-                            foregroundColor: page.theme.text
-                        }
-
-                        InfoBadge {
-                            text: nvidiaDetector.waylandSession ? qsTr("Wayland Session") : qsTr("X11 / Other Session")
-                            backgroundColor: page.theme.infoBg
-                            foregroundColor: page.theme.text
-                        }
-
-                        InfoBadge {
-                            text: nvidiaDetector.nouveauActive ? qsTr("Fallback Open Driver Active") : qsTr("Fallback Open Driver Inactive")
-                            backgroundColor: nvidiaDetector.nouveauActive ? page.theme.warningBg : page.theme.cardStrong
-                            foregroundColor: page.theme.text
-                        }
-
-                        InfoBadge {
-                            text: nvidiaDetector.driverLoaded ? qsTr("Kernel Module Loaded") : qsTr("Kernel Module Missing")
-                            backgroundColor: nvidiaDetector.driverLoaded ? page.theme.successBg : page.theme.warningBg
-                            foregroundColor: page.theme.text
-                        }
-                    }
-
-                    Label {
-                        Layout.fillWidth: true
-                        wrapMode: Text.Wrap
-                        color: page.theme.textSoft
-                        text: nvidiaDetector.waylandSession
-                              ? qsTr("Wayland sessions automatically need the nvidia-drm.modeset=1 kernel argument.")
-                              : qsTr("X11 sessions require matching userspace packages after install or update.")
-                    }
-
-                    Rectangle {
-                        Layout.fillWidth: true
-                        color: page.theme.cardStrong
-                        border.width: 1
-                        border.color: page.theme.border
-                        radius: 16
-                        implicitHeight: verificationText.implicitHeight + 24
-                        visible: page.showAdvancedInfo
-
-                        Label {
-                            id: verificationText
-                            x: 12
-                            y: 12
-                            width: parent.width - 24
-                            text: nvidiaDetector.verificationReport
-                            wrapMode: Text.Wrap
-                            color: page.theme.text
-                        }
-                    }
-                }
-
-                SectionPanel {
-                    Layout.fillWidth: true
-                    theme: page.theme
-                    title: qsTr("Driver Actions")
-                    subtitle: qsTr("Use guided actions to install, switch or remove the current stack.")
-
-                    Flow {
-                        Layout.fillWidth: true
-                        spacing: 8
-                        visible: page.operationDetail.length > 0
-
-                        InfoBadge {
-                            text: qsTr("Source: ") + (page.operationSource.length > 0 ? page.operationSource : qsTr("Idle"))
-                            backgroundColor: page.theme.cardStrong
-                            foregroundColor: page.theme.text
-                        }
-
-                        InfoBadge {
-                            text: qsTr("Phase: ") + (page.operationPhase.length > 0 ? page.operationPhase : qsTr("Idle"))
-                            backgroundColor: page.operationRunning ? page.theme.infoBg : page.theme.cardStrong
-                            foregroundColor: page.theme.text
-                        }
-
-                        InfoBadge {
-                            text: page.operationRunning ? qsTr("Running") : qsTr("Idle")
-                            backgroundColor: page.operationRunning ? page.theme.warningBg : page.theme.successBg
-                            foregroundColor: page.theme.text
-                        }
-
-                        InfoBadge {
-                            text: qsTr("Elapsed: ") + page.formatDuration(page.operationElapsedSeconds)
-                            backgroundColor: page.theme.cardStrong
-                            foregroundColor: page.theme.text
-                            visible: page.operationRunning || page.operationElapsedSeconds > 0
-                        }
-
-                        InfoBadge {
-                            text: qsTr("Last Log: ") + page.formatTimestamp(page.lastLogAt)
-                            backgroundColor: page.theme.cardStrong
-                            foregroundColor: page.theme.text
-                            visible: page.lastLogAt > 0
-                        }
-                    }
-
-                    StatusBanner {
-                        Layout.fillWidth: true
-                        theme: page.theme
-                        tone: "warning"
-                        text: nvidiaInstaller.proprietaryAgreementRequired ? nvidiaInstaller.proprietaryAgreementText : ""
-                    }
-
-                    CheckBox {
-                        id: eulaAccept
-                        visible: nvidiaInstaller.proprietaryAgreementRequired
-                        text: qsTr("I reviewed the NVIDIA license terms")
-                    }
-
-                    Label {
-                        Layout.fillWidth: true
-                        visible: nvidiaInstaller.proprietaryAgreementRequired
-                        textFormat: Text.RichText
-                        wrapMode: Text.Wrap
-                        color: page.theme.textSoft
-                        text: qsTr("Official NVIDIA license: <a href=\"%1\">%1</a>").arg(page.nvidiaLicenseUrl)
-                        onLinkActivated: function(link) { Qt.openUrlExternally(link) }
-                    }
-
-                    GridLayout {
-                        Layout.fillWidth: true
-                        columns: width > 460 ? 2 : 1
-                        columnSpacing: 10
-                        rowSpacing: 10
-
-                        ActionButton {
+                        RowLayout {
                             Layout.fillWidth: true
-                            theme: page.theme
-                            tone: "primary"
-                            text: qsTr("Install NVIDIA Driver")
-                            enabled: !nvidiaInstaller.busy && (!nvidiaInstaller.proprietaryAgreementRequired || eulaAccept.checked)
-                            onClicked: {
-                                page.setOperationState(qsTr("Installer"), qsTr("Installing the proprietary NVIDIA driver (akmod-nvidia)..."), "info", true);
-                                nvidiaInstaller.installProprietary(eulaAccept.checked);
+                            spacing: 14
+
+                            Rectangle {
+                                width: 42
+                                height: 42
+                                radius: 14
+                                color: page.theme.success
+
+                                Label {
+                                    anchors.centerIn: parent
+                                    text: "OK"
+                                    color: "#ffffff"
+                                    font.pixelSize: 13
+                                    font.weight: Font.DemiBold
+                                }
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 4
+
+                                Label {
+                                    text: qsTr("Express Install")
+                                    color: page.theme.text
+                                    font.pixelSize: 20
+                                    font.weight: Font.DemiBold
+                                }
+
+                                Label {
+                                    Layout.fillWidth: true
+                                    wrapMode: Text.Wrap
+                                    color: page.theme.textSoft
+                                    font.pixelSize: 14
+                                    text: qsTr("Automatically installs the recommended driver version with optimal settings")
+                                }
                             }
                         }
 
-                        ActionButton {
+                        Rectangle {
                             Layout.fillWidth: true
-                            theme: page.theme
-                            text: qsTr("Install Open Kernel Modules")
-                            enabled: !nvidiaInstaller.busy
-                            onClicked: {
-                                page.setOperationState(qsTr("Installer"), qsTr("Switching to NVIDIA open kernel modules..."), "info", true);
-                                nvidiaInstaller.installOpenSource();
-                            }
-                        }
-
-                        ActionButton {
-                            Layout.fillWidth: true
-                            theme: page.theme
-                            tone: "danger"
-                            text: qsTr("Remove Driver")
-                            enabled: !nvidiaInstaller.busy
-                            onClicked: {
-                                page.setOperationState(qsTr("Installer"), qsTr("Removing the NVIDIA driver..."), "info", true);
-                                nvidiaInstaller.remove();
-                            }
-                        }
-
-                        ActionButton {
-                            Layout.fillWidth: true
-                            theme: page.theme
-                            text: qsTr("Deep Clean")
-                            enabled: !nvidiaInstaller.busy
-                            onClicked: {
-                                page.setOperationState(qsTr("Installer"), qsTr("Cleaning legacy driver leftovers..."), "info", true);
-                                nvidiaInstaller.deepClean();
-                            }
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-
-                        ActionButton {
-                            theme: page.theme
-                            text: qsTr("Rescan System")
-                            enabled: !nvidiaInstaller.busy && !nvidiaUpdater.busy
-                            onClicked: {
-                                nvidiaDetector.refresh();
-                                nvidiaInstaller.refreshProprietaryAgreement();
-                                nvidiaUpdater.refreshAvailableVersions();
-                            }
-                        }
-
-                        Item {
-                            Layout.fillWidth: true
-                        }
-
-                        BusyIndicator {
-                            running: nvidiaInstaller.busy || nvidiaUpdater.busy
-                            visible: running
-                        }
-                    }
-                }
-
-                SectionPanel {
-                    Layout.fillWidth: true
-                    theme: page.theme
-                    title: qsTr("Update Center")
-                    subtitle: qsTr("Search the online package catalog, then download and install a matching driver build.")
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
-
-                        InfoBadge {
-                            text: qsTr("Installed: ") + (page.installedVersionLabel.length > 0 ? page.installedVersionLabel : qsTr("None"))
-                            backgroundColor: page.theme.cardStrong
-                            foregroundColor: page.theme.text
-                        }
-
-                        InfoBadge {
-                            text: page.driverInstalledLocally
-                                  ? (nvidiaUpdater.updateAvailable ? qsTr("Update Available") : qsTr("Up to Date"))
-                                  : (page.remoteDriverCatalogAvailable ? qsTr("Remote Driver Available") : qsTr("Catalog Not Ready"))
-                            backgroundColor: page.driverInstalledLocally
-                                             ? (nvidiaUpdater.updateAvailable ? page.theme.warningBg : page.theme.successBg)
-                                             : (page.remoteDriverCatalogAvailable ? page.theme.successBg : page.theme.warningBg)
-                            foregroundColor: page.theme.text
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-
-                        ActionButton {
-                            theme: page.theme
-                            text: qsTr("Check for Updates")
-                            enabled: !nvidiaUpdater.busy && !nvidiaInstaller.busy
-                            onClicked: {
-                                page.setOperationState(qsTr("Updater"), qsTr("Searching the online NVIDIA package catalog..."), "info", true);
-                                nvidiaUpdater.checkForUpdate();
-                            }
-                        }
-
-                        ActionButton {
-                            theme: page.theme
-                            tone: "primary"
-                            text: page.driverInstalledLocally ? qsTr("Apply Latest") : qsTr("Install Latest")
-                            enabled: !nvidiaUpdater.busy && !nvidiaInstaller.busy && (nvidiaUpdater.updateAvailable || page.canInstallLatestRemoteDriver)
-                            onClicked: {
-                                page.setOperationState(qsTr("Updater"), page.driverInstalledLocally
-                                                       ? qsTr("Updating NVIDIA driver to the latest online version...")
-                                                       : qsTr("Downloading and installing the latest online NVIDIA driver..."),
-                                                       "info", true);
-                                nvidiaUpdater.applyUpdate();
-                            }
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-                        visible: page.availableVersionOptions.length > 0
-
-                        ComboBox {
-                            id: versionPicker
-                            Layout.fillWidth: true
-                            model: page.availableVersionOptions
-                            textRole: "versionTitle"
-                        }
-
-                        ActionButton {
-                            theme: page.theme
-                            text: qsTr("Apply Selected")
-                            enabled: !nvidiaUpdater.busy && !nvidiaInstaller.busy && versionPicker.currentIndex >= 0 && page.remoteDriverCatalogAvailable
-                            onClicked: {
-                                page.setOperationState(qsTr("Updater"), page.driverInstalledLocally
-                                                       ? qsTr("Switching NVIDIA driver to selected online version: ") + versionPicker.currentText
-                                                       : qsTr("Downloading and installing selected NVIDIA driver version: ") + versionPicker.currentText,
-                                                       "info", true);
-                                nvidiaUpdater.applyVersion(page.availableVersionOptions[versionPicker.currentIndex].rawVersion);
-                            }
-                        }
-                    }
-
-                    Label {
-                        Layout.fillWidth: true
-                        wrapMode: Text.Wrap
-                        color: page.theme.textSoft
-                        text: nvidiaUpdater.availableVersions.length > 0
-                              ? qsTr("Online repository versions loaded: ") + nvidiaUpdater.availableVersions.length
-                              : qsTr("No online repository version list has been loaded yet.")
-                    }
-                }
-
-                SectionPanel {
-                    Layout.fillWidth: true
-                    theme: page.theme
-                    title: qsTr("Activity Log")
-                    subtitle: qsTr("Operation output is streamed here in real time.")
-
-                    TextArea {
-                        id: logArea
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 240
-                        readOnly: true
-                        wrapMode: Text.Wrap
-                        color: page.theme.text
-                        selectedTextColor: "#ffffff"
-                        selectionColor: page.theme.accentA
-                        background: Rectangle {
-                            radius: 16
-                            color: page.theme.cardStrong
+                            radius: 18
+                            color: page.theme.successBg
                             border.width: 1
-                            border.color: page.theme.border
+                            border.color: Qt.tint(page.theme.success, "#55ffffff")
+                            implicitHeight: 40
+
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.leftMargin: 14
+                                anchors.rightMargin: 14
+                                spacing: 8
+
+                                Rectangle {
+                                    width: 18
+                                    height: 18
+                                    radius: 9
+                                    color: page.theme.success
+                                }
+
+                                Label {
+                                    Layout.fillWidth: true
+                                    text: "nvidia-" + page.recommendedVersion + " • "
+                                          + (nvidiaDetector.gpuFound ? qsTr("Verified Compatible") : page.detectedHardwareLabel)
+                                    color: page.theme.success
+                                    font.pixelSize: 13
+                                    font.weight: Font.DemiBold
+                                    elide: Text.ElideRight
+                                }
+                            }
                         }
                     }
 
-                    ActionButton {
-                        theme: page.theme
-                        text: qsTr("Clear Log")
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: page.backendBusy ? Qt.ArrowCursor : Qt.PointingHandCursor
+                        enabled: !page.backendBusy
                         onClicked: {
-                            logArea.text = ""
-                            page.lastLogAt = 0
+                            page.setOperationState(qsTr("Installer"), qsTr("Installing the proprietary NVIDIA driver (akmod-nvidia)..."), "info", true);
+                            nvidiaInstaller.installProprietary(true);
+                        }
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    radius: 26
+                    color: page.theme.card
+                    border.width: 1
+                    border.color: page.theme.border
+                    implicitHeight: customColumn.implicitHeight + 34
+
+                    ColumnLayout {
+                        id: customColumn
+                        x: 24
+                        y: 20
+                        width: parent.width - 48
+                        spacing: 14
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 14
+
+                            Rectangle {
+                                width: 42
+                                height: 42
+                                radius: 14
+                                color: page.theme.accentA
+
+                                Label {
+                                    anchors.centerIn: parent
+                                    text: "EX"
+                                    color: "#ffffff"
+                                    font.pixelSize: 13
+                                    font.weight: Font.DemiBold
+                                }
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 4
+
+                                Label {
+                                    text: qsTr("Custom Install")
+                                    color: page.theme.text
+                                    font.pixelSize: 20
+                                    font.weight: Font.DemiBold
+                                }
+
+                                Label {
+                                    Layout.fillWidth: true
+                                    wrapMode: Text.Wrap
+                                    color: page.theme.textSoft
+                                    font.pixelSize: 14
+                                    text: qsTr("Open the expert page to choose a specific driver version and kernel module type")
+                                }
+                            }
+                        }
+
+                        Flow {
+                            Layout.fillWidth: true
+                            spacing: 8
+
+                            InfoBadge {
+                                text: qsTr("Expert Mode")
+                                backgroundColor: page.theme.cardStrong
+                                foregroundColor: page.theme.textMuted
+                            }
+
+                            InfoBadge {
+                                text: qsTr("Installed: ") + (page.installedVersionLabel.length > 0 ? page.installedVersionLabel : qsTr("None"))
+                                backgroundColor: page.theme.cardStrong
+                                foregroundColor: page.theme.textMuted
+                            }
+
+                            InfoBadge {
+                                text: qsTr("Choose version, module type and cleanup options")
+                                backgroundColor: page.theme.infoBg
+                                foregroundColor: page.theme.text
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            if (page.navigateToPage)
+                                page.navigateToPage(1);
+                        }
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.columnSpan: page.wideLayout ? 2 : 1
+                    radius: 26
+                    color: Qt.tint(page.theme.warningBg, page.darkMode ? "#11ffffff" : "#22ffffff")
+                    border.width: 1
+                    border.color: Qt.tint(page.theme.warning, "#55ffffff")
+                    implicitHeight: warningColumn.implicitHeight + 30
+
+                    ColumnLayout {
+                        id: warningColumn
+                        x: 24
+                        y: 18
+                        width: parent.width - 48
+                        spacing: 10
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 12
+
+                            Rectangle {
+                                width: 40
+                                height: 40
+                                radius: 14
+                                color: page.theme.warningBg
+
+                                Label {
+                                    anchors.centerIn: parent
+                                    text: "!"
+                                    color: page.theme.warning
+                                    font.pixelSize: 20
+                                    font.weight: Font.DemiBold
+                                }
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 4
+
+                                Label {
+                                    text: nvidiaDetector.secureBootEnabled ? qsTr("Secure Boot Detected") : qsTr("System Readiness")
+                                    color: page.theme.warning
+                                    font.pixelSize: 16
+                                    font.weight: Font.DemiBold
+                                }
+
+                                Label {
+                                    Layout.fillWidth: true
+                                    wrapMode: Text.Wrap
+                                    color: page.theme.textMuted
+                                    font.pixelSize: 13
+                                    text: nvidiaDetector.secureBootEnabled
+                                          ? qsTr("You may need to sign the kernel modules or disable Secure Boot in BIOS to use NVIDIA proprietary drivers.")
+                                          : qsTr("No Secure Boot blocker is currently detected. You can continue with the recommended installation path.")
+                                }
+                            }
                         }
                     }
                 }
@@ -603,22 +488,18 @@ Item {
     Connections {
         target: nvidiaInstaller
 
-        function onProgressMessage(message) {
-            page.appendLog(qsTr("Installer"), message);
+    function onProgressMessage(message) {
             page.setOperationState(qsTr("Installer"), message, "info", true);
         }
 
         function onInstallFinished(success, message) {
-            page.appendLog(qsTr("Installer"), message);
             page.finishOperation(qsTr("Installer"), success, message);
             nvidiaDetector.refresh();
             nvidiaUpdater.checkForUpdate();
             nvidiaInstaller.refreshProprietaryAgreement();
-            eulaAccept.checked = false;
         }
 
         function onRemoveFinished(success, message) {
-            page.appendLog(qsTr("Installer"), message);
             page.finishOperation(qsTr("Installer"), success, message);
             nvidiaDetector.refresh();
             nvidiaUpdater.checkForUpdate();
@@ -630,12 +511,10 @@ Item {
         target: nvidiaUpdater
 
         function onProgressMessage(message) {
-            page.appendLog(qsTr("Updater"), message);
             page.setOperationState(qsTr("Updater"), message, "info", true);
         }
 
         function onUpdateFinished(success, message) {
-            page.appendLog(qsTr("Updater"), message);
             page.finishOperation(qsTr("Updater"), success, message);
             nvidiaDetector.refresh();
             nvidiaUpdater.checkForUpdate();

@@ -1,6 +1,8 @@
 #include "gpumonitor.h"
 #include "system/commandrunner.h"
 
+#include <QDir>
+#include <QFile>
 #include <QRegularExpression>
 #include <algorithm>
 
@@ -35,6 +37,119 @@ bool parseMetricInt(const QString &field, int *value) {
 
   *value = parsedValue;
   return true;
+}
+
+QString drmRootPath() {
+  const QString overridePath =
+      qEnvironmentVariable("RO_CONTROL_DRM_ROOT").trimmed();
+  return overridePath.isEmpty() ? QStringLiteral("/sys/class/drm")
+                                : overridePath;
+}
+
+QString readFileText(const QString &path) {
+  QFile file(path);
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    return {};
+  }
+
+  return QString::fromUtf8(file.readAll()).trimmed();
+}
+
+bool readIntegerFile(const QString &path, qint64 *value) {
+  if (value == nullptr) {
+    return false;
+  }
+
+  bool ok = false;
+  const qint64 parsedValue = readFileText(path).toLongLong(&ok);
+  if (!ok) {
+    return false;
+  }
+
+  *value = parsedValue;
+  return true;
+}
+
+bool readFirstTemperatureFromHwmon(const QString &basePath, int *value) {
+  const QFileInfoList hwmonEntries =
+      QDir(basePath).entryInfoList({QStringLiteral("hwmon*")},
+                                   QDir::Dirs | QDir::NoDotAndDotDot,
+                                   QDir::Name);
+  for (const QFileInfo &entry : hwmonEntries) {
+    const QFileInfoList inputs = QDir(entry.absoluteFilePath())
+                                     .entryInfoList({QStringLiteral("temp*_input")},
+                                                    QDir::Files, QDir::Name);
+    for (const QFileInfo &input : inputs) {
+      qint64 milliC = 0;
+      if (readIntegerFile(input.absoluteFilePath(), &milliC) && milliC > 0) {
+        *value = static_cast<int>(milliC / 1000);
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+bool readGenericLinuxGpuMetrics(int *temperatureC, int *utilizationPercent,
+                                int *memoryUsedMiB, int *memoryTotalMiB) {
+  const QFileInfoList cardEntries =
+      QDir(drmRootPath()).entryInfoList({QStringLiteral("card*")},
+                                        QDir::Dirs | QDir::NoDotAndDotDot,
+                                        QDir::Name);
+
+  bool anyMetric = false;
+  for (const QFileInfo &cardEntry : cardEntries) {
+    const QString devicePath =
+        cardEntry.absoluteFilePath() + QStringLiteral("/device");
+    if (!QFile::exists(devicePath)) {
+      continue;
+    }
+
+    int tempValue = 0;
+    if (temperatureC != nullptr &&
+        readFirstTemperatureFromHwmon(devicePath, &tempValue)) {
+      *temperatureC = tempValue;
+      anyMetric = true;
+    }
+
+    qint64 busyPercent = 0;
+    if (utilizationPercent != nullptr &&
+        readIntegerFile(devicePath + QStringLiteral("/gpu_busy_percent"),
+                        &busyPercent)) {
+      *utilizationPercent =
+          std::clamp(static_cast<int>(busyPercent), 0, 100);
+      anyMetric = true;
+    }
+
+    qint64 usedBytes = 0;
+    qint64 totalBytes = 0;
+    const bool usedOk =
+        readIntegerFile(devicePath + QStringLiteral("/mem_info_vram_used"),
+                        &usedBytes);
+    const bool totalOk =
+        readIntegerFile(devicePath + QStringLiteral("/mem_info_vram_total"),
+                        &totalBytes);
+    if (usedOk && totalOk && totalBytes > 0) {
+      if (memoryUsedMiB != nullptr) {
+        *memoryUsedMiB =
+            std::max(0, static_cast<int>(static_cast<qint64>(usedBytes) /
+                                         (1024 * 1024)));
+      }
+      if (memoryTotalMiB != nullptr) {
+        *memoryTotalMiB =
+            std::max(0, static_cast<int>(static_cast<qint64>(totalBytes) /
+                                         (1024 * 1024)));
+      }
+      anyMetric = true;
+    }
+
+    if (anyMetric) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 } // namespace
@@ -80,8 +195,48 @@ void GpuMonitor::refresh() {
       options);
 
   if (!result.success()) {
-    setAvailable(false);
-    clearMetrics();
+    int nextTemp = 0;
+    int nextUtil = 0;
+    int nextUsed = 0;
+    int nextTotal = 0;
+
+    if (!readGenericLinuxGpuMetrics(&nextTemp, &nextUtil, &nextUsed,
+                                    &nextTotal)) {
+      setAvailable(false);
+      clearMetrics();
+      return;
+    }
+
+    if (m_temperatureC != nextTemp) {
+      m_temperatureC = nextTemp;
+      emit temperatureCChanged();
+    }
+    if (m_utilizationPercent != nextUtil) {
+      m_utilizationPercent = nextUtil;
+      emit utilizationPercentChanged();
+    }
+    if (m_memoryUsedMiB != nextUsed) {
+      m_memoryUsedMiB = nextUsed;
+      emit memoryUsedMiBChanged();
+    }
+    if (m_memoryTotalMiB != nextTotal) {
+      m_memoryTotalMiB = nextTotal;
+      emit memoryTotalMiBChanged();
+    }
+
+    const int usagePercent =
+        nextTotal > 0
+            ? std::clamp(static_cast<int>((static_cast<double>(nextUsed) /
+                                           static_cast<double>(nextTotal)) *
+                                          100.0),
+                         0, 100)
+            : 0;
+    if (m_memoryUsagePercent != usagePercent) {
+      m_memoryUsagePercent = usagePercent;
+      emit memoryUsagePercentChanged();
+    }
+
+    setAvailable(true);
     return;
   }
 

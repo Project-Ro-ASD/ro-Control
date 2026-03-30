@@ -1,44 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="ro-Control icon">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#252C33"/>
-      <stop offset="100%" stop-color="#13181D"/>
-    </linearGradient>
-    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#7CDB55"/>
-      <stop offset="100%" stop-color="#57B83D"/>
-    </linearGradient>
-  </defs>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background card -->
+  <rect x="0" y="0" width="256" height="256" rx="56" fill="#141a12"/>
 
-  <rect width="256" height="256" rx="52" fill="url(#bg)"/>
+  <!-- Ring track -->
+  <circle cx="128" cy="128" r="88" fill="none" stroke="#1e2e1a" stroke-width="10"/>
 
-  <g fill="#313941">
-    <rect x="74" y="28" width="12" height="28" rx="4"/>
-    <rect x="104" y="28" width="12" height="28" rx="4"/>
-    <rect x="140" y="28" width="12" height="28" rx="4"/>
-    <rect x="170" y="28" width="12" height="28" rx="4"/>
+  <!-- Progress ring ~270° -->
+  <circle cx="128" cy="128" r="88"
+    fill="none"
+    stroke="#76b900"
+    stroke-width="10"
+    stroke-linecap="round"
+    stroke-dasharray="414 553"
+    stroke-dashoffset="138"
+    transform="rotate(-90 128 128)"/>
 
-    <rect x="74" y="200" width="12" height="28" rx="4"/>
-    <rect x="104" y="200" width="12" height="28" rx="4"/>
-    <rect x="140" y="200" width="12" height="28" rx="4"/>
-    <rect x="170" y="200" width="12" height="28" rx="4"/>
+  <!-- Inner glow circles -->
+  <circle cx="128" cy="128" r="62" fill="#76b900" opacity="0.10"/>
+  <circle cx="128" cy="128" r="44" fill="#76b900" opacity="0.16"/>
 
-    <rect x="28" y="74" width="28" height="12" rx="4"/>
-    <rect x="28" y="104" width="28" height="12" rx="4"/>
-    <rect x="28" y="140" width="28" height="12" rx="4"/>
-    <rect x="28" y="170" width="28" height="12" rx="4"/>
+  <!-- Up arrow shaft -->
+  <line x1="128" y1="160" x2="128" y2="106"
+    stroke="#76b900" stroke-width="9"
+    stroke-linecap="round"/>
 
-    <rect x="200" y="74" width="28" height="12" rx="4"/>
-    <rect x="200" y="104" width="28" height="12" rx="4"/>
-    <rect x="200" y="140" width="28" height="12" rx="4"/>
-    <rect x="200" y="170" width="28" height="12" rx="4"/>
-  </g>
+  <!-- Arrow left leg -->
+  <line x1="128" y1="105" x2="108" y2="128"
+    stroke="#76b900" stroke-width="9"
+    stroke-linecap="round" stroke-linejoin="round"/>
 
-  <rect x="56" y="56" width="144" height="144" rx="32" fill="#1A2026"/>
-  <rect x="72" y="72" width="112" height="112" rx="24" fill="#11161B" stroke="#3C454E" stroke-width="4"/>
+  <!-- Arrow right leg -->
+  <line x1="128" y1="105" x2="148" y2="128"
+    stroke="#76b900" stroke-width="9"
+    stroke-linecap="round" stroke-linejoin="round"/>
 
-  <circle cx="128" cy="128" r="38" fill="none" stroke="url(#core)" stroke-width="14"/>
-  <path d="M128 92v18" stroke="#EAF5E4" stroke-width="10" stroke-linecap="round"/>
-  <path d="M128 146h22" stroke="#EAF5E4" stroke-width="10" stroke-linecap="round"/>
-  <circle cx="128" cy="128" r="8" fill="#EAF5E4"/>
+  <!-- Ring end cap dot -->
+  <circle cx="128" cy="40" r="7" fill="#76b900"/>
 </svg>

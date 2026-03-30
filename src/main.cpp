@@ -22,6 +22,7 @@
 #include "backend/nvidia/installer.h"
 #include "backend/nvidia/updater.h"
 #include "backend/system/languagemanager.h"
+#include "backend/system/systeminfoprovider.h"
 #include "backend/system/uipreferencesmanager.h"
 #include "cli/cli.h"
 
@@ -265,6 +266,7 @@ int main(int argc, char *argv[]) {
   CpuMonitor cpuMonitor;
   GpuMonitor gpuMonitor;
   RamMonitor ramMonitor;
+  SystemInfoProvider systemInfo;
 
   QQmlApplicationEngine engine;
   LanguageManager languageManager(&app, &engine, &translator);
@@ -277,6 +279,7 @@ int main(int argc, char *argv[]) {
   engine.rootContext()->setContextProperty("cpuMonitor", &cpuMonitor);
   engine.rootContext()->setContextProperty("gpuMonitor", &gpuMonitor);
   engine.rootContext()->setContextProperty("ramMonitor", &ramMonitor);
+  engine.rootContext()->setContextProperty("systemInfo", &systemInfo);
   engine.rootContext()->setContextProperty("languageManager", &languageManager);
   engine.rootContext()->setContextProperty("uiPreferences",
                                            &uiPreferencesManager);

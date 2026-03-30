@@ -75,6 +75,7 @@ set(BACKEND_SOURCES
     src/backend/system/capabilityprobe.cpp
     src/backend/system/languagemanager.cpp
     src/backend/system/uipreferencesmanager.cpp
+    src/backend/system/systeminfoprovider.cpp
 )
 
 set(APP_SOURCES
@@ -268,6 +269,7 @@ message(STATUS "")
 message(STATUS "ro-control ${PROJECT_VERSION}")
 message(STATUS "  Build type : ${CMAKE_BUILD_TYPE}")
 message(STATUS "  C++ std    : C++${CMAKE_CXX_STANDARD}")
+message(STATUS "  CPU arch   : ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "  Qt version : ${Qt6_VERSION}")
 message(STATUS "  Install to : ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "")
