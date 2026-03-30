@@ -71,14 +71,14 @@ bool readIntegerFile(const QString &path, qint64 *value) {
 }
 
 bool readFirstTemperatureFromHwmon(const QString &basePath, int *value) {
-  const QFileInfoList hwmonEntries =
-      QDir(basePath).entryInfoList({QStringLiteral("hwmon*")},
-                                   QDir::Dirs | QDir::NoDotAndDotDot,
-                                   QDir::Name);
+  const QFileInfoList hwmonEntries = QDir(basePath).entryInfoList(
+      {QStringLiteral("hwmon*")}, QDir::Dirs | QDir::NoDotAndDotDot,
+      QDir::Name);
   for (const QFileInfo &entry : hwmonEntries) {
-    const QFileInfoList inputs = QDir(entry.absoluteFilePath())
-                                     .entryInfoList({QStringLiteral("temp*_input")},
-                                                    QDir::Files, QDir::Name);
+    const QFileInfoList inputs =
+        QDir(entry.absoluteFilePath())
+            .entryInfoList({QStringLiteral("temp*_input")}, QDir::Files,
+                           QDir::Name);
     for (const QFileInfo &input : inputs) {
       qint64 milliC = 0;
       if (readIntegerFile(input.absoluteFilePath(), &milliC) && milliC > 0) {
@@ -94,9 +94,9 @@ bool readFirstTemperatureFromHwmon(const QString &basePath, int *value) {
 bool readGenericLinuxGpuMetrics(int *temperatureC, int *utilizationPercent,
                                 int *memoryUsedMiB, int *memoryTotalMiB) {
   const QFileInfoList cardEntries =
-      QDir(drmRootPath()).entryInfoList({QStringLiteral("card*")},
-                                        QDir::Dirs | QDir::NoDotAndDotDot,
-                                        QDir::Name);
+      QDir(drmRootPath())
+          .entryInfoList({QStringLiteral("card*")},
+                         QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
 
   bool anyMetric = false;
   for (const QFileInfo &cardEntry : cardEntries) {
@@ -117,19 +117,16 @@ bool readGenericLinuxGpuMetrics(int *temperatureC, int *utilizationPercent,
     if (utilizationPercent != nullptr &&
         readIntegerFile(devicePath + QStringLiteral("/gpu_busy_percent"),
                         &busyPercent)) {
-      *utilizationPercent =
-          std::clamp(static_cast<int>(busyPercent), 0, 100);
+      *utilizationPercent = std::clamp(static_cast<int>(busyPercent), 0, 100);
       anyMetric = true;
     }
 
     qint64 usedBytes = 0;
     qint64 totalBytes = 0;
-    const bool usedOk =
-        readIntegerFile(devicePath + QStringLiteral("/mem_info_vram_used"),
-                        &usedBytes);
-    const bool totalOk =
-        readIntegerFile(devicePath + QStringLiteral("/mem_info_vram_total"),
-                        &totalBytes);
+    const bool usedOk = readIntegerFile(
+        devicePath + QStringLiteral("/mem_info_vram_used"), &usedBytes);
+    const bool totalOk = readIntegerFile(
+        devicePath + QStringLiteral("/mem_info_vram_total"), &totalBytes);
     if (usedOk && totalOk && totalBytes > 0) {
       if (memoryUsedMiB != nullptr) {
         *memoryUsedMiB =

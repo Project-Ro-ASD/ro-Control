@@ -9,8 +9,8 @@ class NvidiaDetector : public QObject {
 
   Q_PROPERTY(bool gpuFound READ gpuFound NOTIFY infoChanged)
   Q_PROPERTY(QString gpuName READ gpuName NOTIFY infoChanged)
-  Q_PROPERTY(QString displayAdapterName READ displayAdapterName NOTIFY
-                 infoChanged)
+  Q_PROPERTY(
+      QString displayAdapterName READ displayAdapterName NOTIFY infoChanged)
   Q_PROPERTY(QString driverVersion READ driverVersion NOTIFY infoChanged)
   Q_PROPERTY(bool driverLoaded READ driverLoaded NOTIFY infoChanged)
   Q_PROPERTY(bool nouveauActive READ nouveauActive NOTIFY infoChanged)

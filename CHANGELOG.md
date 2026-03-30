@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-03-30
+
+### Changed
+- GitHub Releases now publish only `x86_64`, `aarch64`, `noarch`, and `src` RPM outputs
+- Shared desktop assets and metadata now ship in a dedicated `noarch` companion RPM
+
 ## [0.2.0] - 2026-03-30
 
 ### Changed
