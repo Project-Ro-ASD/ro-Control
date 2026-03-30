@@ -7,7 +7,8 @@ class SystemInfoProvider : public QObject {
   Q_OBJECT
 
   Q_PROPERTY(QString osName READ osName NOTIFY infoChanged)
-  Q_PROPERTY(QString desktopEnvironment READ desktopEnvironment NOTIFY infoChanged)
+  Q_PROPERTY(
+      QString desktopEnvironment READ desktopEnvironment NOTIFY infoChanged)
   Q_PROPERTY(QString kernelVersion READ kernelVersion NOTIFY infoChanged)
   Q_PROPERTY(QString cpuModel READ cpuModel NOTIFY infoChanged)
 

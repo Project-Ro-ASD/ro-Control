@@ -51,11 +51,10 @@ QString NvidiaDetector::activeDriver() const {
 }
 
 QString NvidiaDetector::verificationReport() const {
-  const QString gpuText = m_info.found
-                              ? m_info.name
-                              : (m_info.displayAdapterName.isEmpty()
-                                     ? tr("None")
-                                     : m_info.displayAdapterName);
+  const QString gpuText = m_info.found ? m_info.name
+                                       : (m_info.displayAdapterName.isEmpty()
+                                              ? tr("None")
+                                              : m_info.displayAdapterName);
   const QString versionText =
       m_info.driverVersion.isEmpty() ? tr("None") : m_info.driverVersion;
 

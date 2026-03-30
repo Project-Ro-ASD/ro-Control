@@ -3,8 +3,8 @@
 #include "commandrunner.h"
 
 #include <QFile>
-#include <QStringList>
 #include <QRegularExpression>
+#include <QStringList>
 #include <QSysInfo>
 #include <QTextStream>
 
@@ -67,8 +67,8 @@ QString valueFromOsRelease(const QString &key) {
     }
 
     QString value = line.mid(key.size() + 1).trimmed();
-    if (value.startsWith(QLatin1Char('"')) && value.endsWith(QLatin1Char('"')) &&
-        value.size() >= 2) {
+    if (value.startsWith(QLatin1Char('"')) &&
+        value.endsWith(QLatin1Char('"')) && value.size() >= 2) {
       value = value.mid(1, value.size() - 2);
     }
     return value;
@@ -77,7 +77,7 @@ QString valueFromOsRelease(const QString &key) {
   return {};
 }
 
-}  // namespace
+} // namespace
 
 SystemInfoProvider::SystemInfoProvider(QObject *parent) : QObject(parent) {
   refresh();
@@ -118,7 +118,7 @@ QString SystemInfoProvider::detectOsName() const {
 
 QString SystemInfoProvider::detectKernelVersion() const {
 #if defined(Q_OS_UNIX)
-  utsname name {};
+  utsname name{};
   if (uname(&name) == 0) {
     return QString::fromLocal8Bit(name.release);
   }
@@ -173,7 +173,8 @@ QString SystemInfoProvider::detectCpuModel() const {
   }
 
   const auto virtResult =
-      runner.run(QStringLiteral("systemd-detect-virt"), {QStringLiteral("--quiet"), QStringLiteral("--vm")});
+      runner.run(QStringLiteral("systemd-detect-virt"),
+                 {QStringLiteral("--quiet"), QStringLiteral("--vm")});
   if (virtResult.success()) {
     const auto virtName = runner.run(QStringLiteral("systemd-detect-virt"));
     if (virtName.success()) {
@@ -188,9 +189,9 @@ QString SystemInfoProvider::detectCpuModel() const {
   }
 #elif defined(Q_OS_MACOS)
   CommandRunner runner;
-  const auto result =
-      runner.run(QStringLiteral("sysctl"),
-                 {QStringLiteral("-n"), QStringLiteral("machdep.cpu.brand_string")});
+  const auto result = runner.run(
+      QStringLiteral("sysctl"),
+      {QStringLiteral("-n"), QStringLiteral("machdep.cpu.brand_string")});
   if (result.success()) {
     const QString value = result.stdout.trimmed();
     if (!value.isEmpty()) {

@@ -77,8 +77,9 @@ QString fedoraNvidiaDriverFlowSupportMessage() {
   }
 
   return QStringLiteral(
-      "Fedora NVIDIA driver management is currently supported only on x86_64 "
-      "and aarch64 builds. The current build architecture is %1.")
+             "Fedora NVIDIA driver management is currently supported only on "
+             "x86_64 "
+             "and aarch64 builds. The current build architecture is %1.")
       .arg(normalizedCpuArchitecture());
 }
 
