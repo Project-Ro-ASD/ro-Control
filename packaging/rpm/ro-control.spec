@@ -9,7 +9,7 @@ Summary:        Smart NVIDIA driver manager and system monitor
 License:        GPL-3.0-or-later
 URL:            https://github.com/Project-Ro-ASD/ro-Control
 Source0:        %{name}-%{version}.tar.gz
-ExclusiveArch:  x86_64 aarch64
+ExclusiveArch:  i686 x86_64 aarch64
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -77,6 +77,6 @@ tar -xzf %{SOURCE0} --strip-components=1
 
 %changelog
 * Sun Mar 22 2026 ro-Control Maintainers <noreply@github.com> - 0.1.0-1
-- Prepare first GitHub Release RPMs for x86_64 and aarch64
+- Prepare first GitHub Release RPMs for i686, x86_64, and aarch64
 - Add explicit Fedora runtime command dependencies and recommendations
 - Align RPM release automation with tagged versioned source archives

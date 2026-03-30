@@ -22,7 +22,7 @@ ro-Control, **C++20** ve **Qt6/QML** ile geliştirilmiş, Linux üzerinde NVIDIA
 
 ## Proje Durumu
 
-ro-Control, Fedora odaklı NVIDIA sürücü iş akışları için aktif geliştirilen bir masaüstü yardımcı uygulamasıdır.
+ro-Control, Fedora odaklı NVIDIA sürücü iş akışları için aktif geliştirilen bir masaüstü yardımcı uygulamasıdır ve birincil hedef ortam Fedora KDE Desktop'tır.
 Mevcut kod tabanı özellikle şu alanlara odaklanır:
 
 - Script sarmalayıcıları yerine yerel Qt/QML masaüstü deneyimi
@@ -101,7 +101,7 @@ Daha geniş mağaza / distro dağıtımı öncesinde PNG ekran görüntüleri ek
 
 ### RPM Paketi
 
-[Releases](https://github.com/Project-Ro-ASD/ro-Control/releases) sayfasından sistem mimarinize uygun en güncel Fedora `.rpm` paketini veya release bundle dosyasını indirin (`x86_64` = 64-bit x86 sistemler, `aarch64` = ARM64 sistemler):
+[Releases](https://github.com/Project-Ro-ASD/ro-Control/releases) sayfasından sistem mimarinize uygun en güncel Fedora `.rpm` paketini veya release bundle dosyasını indirin (`i686` = 32-bit x86 sistemler, `x86_64` = 64-bit x86 sistemler, `aarch64` = ARM64 sistemler):
 
 ```bash
 sudo dnf install ./ro-control-*.rpm
@@ -116,6 +116,16 @@ Fedora hızlı kurulum:
 ```bash
 ./scripts/fedora-bootstrap.sh
 ```
+
+Fedora KDE Desktop üzerinde native `i686` derleme:
+
+```bash
+TARGET_ARCH=i686 ./scripts/fedora-bootstrap.sh
+```
+
+`i686` build desteği derleme, arayüz, CLI ve izleme özelliklerini kapsar.
+Fedora NVIDIA sürücü kurulum/güncelleme/kaldırma akışları ise yalnızca
+`x86_64` ve `aarch64` build'lerde etkindir.
 
 Fedora çalışma notları için [docs/FEDORA.md](docs/FEDORA.md) dosyasına bakın.
 

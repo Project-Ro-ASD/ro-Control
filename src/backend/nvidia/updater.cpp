@@ -105,6 +105,13 @@ UpdateStatusSnapshot collectUpdateStatus() {
   const QString kernelPackageName = detectInstalledKernelPackageName();
   snapshot.currentVersion = detector.installedDriverVersion();
 
+  const QString architectureSupportMessage =
+      CapabilityProbe::fedoraNvidiaDriverFlowSupportMessage();
+  if (!architectureSupportMessage.isEmpty()) {
+    snapshot.message = architectureSupportMessage;
+    return snapshot;
+  }
+
   if (QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty()) {
     snapshot.message = NvidiaUpdater::tr("dnf not found.");
     return snapshot;
@@ -446,6 +453,14 @@ void NvidiaUpdater::applyUpdate() { applyVersion(QString()); }
 void NvidiaUpdater::applyVersion(const QString &version) {
   const QString trimmedVersion = version.trimmed();
   const QStringList knownVersions = m_availableVersions;
+  const QString architectureSupportMessage =
+      CapabilityProbe::fedoraNvidiaDriverFlowSupportMessage();
+
+  if (!architectureSupportMessage.isEmpty()) {
+    emit updateFinished(false, architectureSupportMessage);
+    return;
+  }
+
   QPointer<NvidiaUpdater> guard(this);
 
   runAsyncTask([guard, trimmedVersion, knownVersions]() {

@@ -27,7 +27,7 @@ Use this checklist for every production release.
 ## 4. Packaging
 
 - [ ] `packaging/rpm/ro-control.spec` release/version fields are correct.
-- [ ] Build Fedora RPM artifacts successfully for both `x86_64` and `aarch64`.
+- [ ] Build Fedora RPM artifacts successfully for `i686`, `x86_64`, and `aarch64`.
 - [ ] Verify installation and launch on the target desktop environment.
 - [ ] Verify `man ro-control` and shell completions install correctly.
 - [ ] Confirm release tag version matches `CMakeLists.txt` and `packaging/rpm/ro-control.spec`.
@@ -36,7 +36,7 @@ Use this checklist for every production release.
 
 - [ ] Create annotated tag: `vX.Y.Z`.
 - [ ] Push tag to trigger release workflow.
-- [ ] Verify GitHub Release includes source archives, one `x86_64` RPM, one `aarch64` RPM, per-arch release bundles, and one source RPM.
+- [ ] Verify GitHub Release includes source archives, `i686`, `x86_64`, and `aarch64` RPMs, per-arch release bundles, and one source RPM.
 - [ ] Verify the attached checksum and RPM metadata files are present.
 
 ## 6. Post-release
