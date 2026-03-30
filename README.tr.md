@@ -101,10 +101,10 @@ Daha geniş mağaza / distro dağıtımı öncesinde PNG ekran görüntüleri ek
 
 ### RPM Paketi
 
-[Releases](https://github.com/Project-Ro-ASD/ro-Control/releases) sayfasından sistem mimarinize uygun en güncel Fedora `.rpm` paketini veya release bundle dosyasını indirin (`i686` = 32-bit x86 sistemler, `x86_64` = 64-bit x86 sistemler, `aarch64` = ARM64 sistemler):
+[Releases](https://github.com/Project-Ro-ASD/ro-Control/releases) sayfasından sistem mimarinize uygun en güncel Fedora `.rpm` paketini indirin (`x86_64` = 64-bit x86 sistemler, `aarch64` = ARM64 sistemler). Ortak dosyalar eşlik eden `noarch` RPM içinde gelir:
 
 ```bash
-sudo dnf install ./ro-control-*.rpm
+sudo dnf install ./ro-control-*.<arch>.rpm ./ro-control-common-*.noarch.rpm
 ```
 
 ### Kaynaktan Derleme
@@ -117,15 +117,7 @@ Fedora hızlı kurulum:
 ./scripts/fedora-bootstrap.sh
 ```
 
-Fedora KDE Desktop üzerinde native `i686` derleme:
-
-```bash
-TARGET_ARCH=i686 ./scripts/fedora-bootstrap.sh
-```
-
-`i686` build desteği derleme, arayüz, CLI ve izleme özelliklerini kapsar.
-Fedora NVIDIA sürücü kurulum/güncelleme/kaldırma akışları ise yalnızca
-`x86_64` ve `aarch64` build'lerde etkindir.
+GitHub Releases yalnızca `x86_64`, `aarch64`, `noarch` ve `src` RPM çıktıları yayınlar.
 
 Fedora çalışma notları için [docs/FEDORA.md](docs/FEDORA.md) dosyasına bakın.
 

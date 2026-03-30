@@ -1,8 +1,8 @@
 # Building ro-Control from Source
 
 This guide covers building ro-Control from source on Linux systems with Qt 6 and CMake.
-The primary target is Fedora KDE Desktop, including native `i686`, `x86_64`,
-and `aarch64` builds.
+The primary target is Fedora KDE Desktop, with official release artifacts for
+`x86_64`, `aarch64`, `noarch`, and `src`.
 
 ---
 
@@ -26,7 +26,7 @@ and `aarch64` builds.
 
 The script installs Fedora dependencies, builds the app, and runs tests by default.
 It auto-detects the host architecture and reports whether the resulting build is
-`i686`, `x86_64`, or `aarch64`.
+`x86_64` or `aarch64`.
 For Fedora-specific runtime notes, see [FEDORA.md](FEDORA.md).
 
 ---
@@ -47,9 +47,8 @@ sudo dnf install \
   polkit-devel
 ```
 
-On Fedora KDE Desktop `i686`, the application still builds normally, but the
-NVIDIA driver install/update/remove workflows are intentionally disabled at
-runtime because Fedora NVIDIA packages are not shipped for that architecture.
+Official release outputs do not include `i686`. Driver install/update/remove
+workflows are supported on `x86_64` and `aarch64` release builds.
 
 Runtime tools used by diagnostics and driver operations:
 
@@ -84,15 +83,14 @@ cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j$(nproc)
 ```
 
-### Native Fedora KDE Desktop x86 (`i686`) build
+### Official Fedora Release Outputs
 
-```bash
-TARGET_ARCH=i686 ./scripts/fedora-bootstrap.sh
-```
+The GitHub release pipeline publishes only:
 
-For native 32-bit Fedora hosts this is just a convenience flag. On `x86_64`
-Fedora, prefer a native `i686` builder or chroot/container when you need a real
-32-bit RPM output.
+- `x86_64` RPM
+- `aarch64` RPM
+- `noarch` RPM
+- `src` RPM
 
 ### Refresh translations (recommended before release)
 

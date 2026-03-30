@@ -77,7 +77,6 @@ jobs:
           ARCHIVE_PREFIX: ${{ needs.metadata.outputs.archive_prefix }}
         run: |
           git archive --format=tar.gz --prefix="${ARCHIVE_PREFIX}/" --output="${ARCHIVE_PREFIX}.tar.gz" "${GITHUB_SHA}"
-          git archive --format=zip --prefix="${ARCHIVE_PREFIX}/" --output="${ARCHIVE_PREFIX}.zip" "${GITHUB_SHA}"
 
       - name: Upload source archives
         uses: actions/upload-artifact@v4
@@ -85,7 +84,6 @@ jobs:
           name: ro-control-source-${{ needs.metadata.outputs.version }}
           path: |
             ${{ needs.metadata.outputs.archive_prefix }}.tar.gz
-            ${{ needs.metadata.outputs.archive_prefix }}.zip
 
   rpm:
     name: Build Fedora RPM (${{ matrix.arch }})
@@ -150,6 +148,7 @@ jobs:
           find ~/rpmbuild/RPMS -maxdepth 2 -type f -name "ro-control-[0-9]*.${RPM_ARCH}.rpm" -exec cp {} dist/rpm/ \;
 
           if [[ "${RPM_ARCH}" == "x86_64" ]]; then
+            find ~/rpmbuild/RPMS -maxdepth 2 -type f -name "ro-control-common-[0-9]*.noarch.rpm" -exec cp {} dist/rpm/ \;
             cp ~/rpmbuild/SRPMS/*.src.rpm dist/rpm/
           fi
 
@@ -179,7 +178,12 @@ jobs:
           RPM_ARCH: ${{ matrix.arch }}
         run: |
           RPM_FILE="$(find dist/rpm -maxdepth 1 -type f -name "*.${RPM_ARCH}.rpm" | head -n1)"
-          dnf install -y --nogpgcheck "${RPM_FILE}"
+          if [[ "${RPM_ARCH}" == "x86_64" ]]; then
+            NOARCH_FILE="$(find dist/rpm -maxdepth 1 -type f -name "*.noarch.rpm" | head -n1)"
+            dnf install -y --nogpgcheck "${RPM_FILE}" "${NOARCH_FILE}"
+          else
+            dnf install -y --nogpgcheck "${RPM_FILE}"
+          fi
 
           INSTALLED_VERSION="$(ro-control --version | tr -d '\n')"
           if [[ "${INSTALLED_VERSION}" != "${VERSION}" ]]; then
@@ -199,43 +203,12 @@ jobs:
             sha256sum * > "ro-control-${VERSION}-${RPM_ARCH}-SHA256SUMS.txt"
           )
 
-      - name: Create per-arch release bundle
-        env:
-          VERSION: ${{ needs.metadata.outputs.version }}
-          RPM_ARCH: ${{ matrix.arch }}
-        run: |
-          mkdir -p dist/release
-
-          RPM_FILE="$(find dist/rpm -maxdepth 1 -type f -name "*.${RPM_ARCH}.rpm" | head -n1)"
-          INFO_FILE="dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-info.txt"
-          REQUIRES_FILE="dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-requires.txt"
-          FILES_FILE="dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-files.txt"
-          CHECKSUM_FILE="dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-SHA256SUMS.txt"
-          BUNDLE_DIR="dist/release/ro-control-${VERSION}-${RPM_ARCH}"
-          BUNDLE_NAME="ro-control-${VERSION}-${RPM_ARCH}-fedora42.tar.gz"
-
-          if [[ -z "${RPM_FILE}" ]]; then
-            echo "Failed to locate built ${RPM_ARCH} RPM for release bundling." >&2
-            exit 1
-          fi
-
-          mkdir -p "${BUNDLE_DIR}"
-          cp "${RPM_FILE}" "${BUNDLE_DIR}/"
-          cp "${INFO_FILE}" "${BUNDLE_DIR}/"
-          cp "${REQUIRES_FILE}" "${BUNDLE_DIR}/"
-          cp "${FILES_FILE}" "${BUNDLE_DIR}/"
-          cp "${CHECKSUM_FILE}" "${BUNDLE_DIR}/"
-
-          tar -C dist/release -czf "dist/release/${BUNDLE_NAME}" "ro-control-${VERSION}-${RPM_ARCH}"
-          rm -rf "${BUNDLE_DIR}"
-
       - name: Upload RPM artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ro-control-rpm-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
           path: |
             dist/rpm/*
-            dist/release/*
 
   release:
     name: Create GitHub Release
@@ -257,12 +230,11 @@ jobs:
           target_commitish: ${{ github.sha }}
           generate_release_notes: true
           files: |
-            dist/ro-control-${{ needs.metadata.outputs.version }}.tar.gz
-            dist/ro-control-${{ needs.metadata.outputs.version }}.zip
-            dist/*.rpm
+            dist/*.x86_64.rpm
+            dist/*.aarch64.rpm
+            dist/*.noarch.rpm
             dist/*.src.rpm
             dist/*SHA256SUMS.txt
             dist/*-requires.txt
             dist/*-info.txt
             dist/*-files.txt
-            dist/*-fedora42.tar.gz

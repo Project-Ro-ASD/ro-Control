@@ -9,7 +9,7 @@ Summary:        Smart NVIDIA driver manager and system monitor
 License:        GPL-3.0-or-later
 URL:            https://github.com/Project-Ro-ASD/ro-Control
 Source0:        %{name}-%{version}.tar.gz
-ExclusiveArch:  i686 x86_64 aarch64
+ExclusiveArch:  x86_64 aarch64
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -23,9 +23,19 @@ BuildRequires:  qt6-qtwayland-devel
 BuildRequires:  kf6-qqc2-desktop-style
 BuildRequires:  polkit-devel
 
+Requires:       %{name}-common = %{version}-%{release}
 Requires:       qt6-qtbase
 Requires:       qt6-qtdeclarative
 Requires:       qt6-qtwayland
+
+%description
+ro-Control is a Qt6/KDE Plasma desktop application that helps users
+manage NVIDIA drivers and monitor core system metrics.
+
+%package common
+Summary:        Shared assets for the ro-Control desktop application
+BuildArch:      noarch
+
 Requires:       kf6-qqc2-desktop-style
 Requires:       polkit
 Requires:       /usr/bin/dnf
@@ -40,9 +50,10 @@ Recommends:     /usr/sbin/akmods
 Recommends:     /usr/bin/dracut
 Recommends:     /usr/sbin/grubby
 
-%description
-ro-Control is a Qt6/KDE Plasma desktop application that helps users
-manage NVIDIA drivers and monitor core system metrics.
+%description common
+ro-Control common ships the desktop entry, helper script, shell completions,
+metadata, icons, PolicyKit action, and documentation shared by all supported
+CPU architectures.
 
 %prep
 %autosetup -c -T -n %{name}-%{version}
@@ -61,9 +72,11 @@ tar -xzf %{SOURCE0} --strip-components=1
 %ctest --output-on-failure
 
 %files
+%{_bindir}/ro-control
+
+%files common
 %license LICENSE
 %doc README.md README.tr.md CHANGELOG.md
-%{_bindir}/ro-control
 %{_datadir}/applications/io.github.projectroasd.rocontrol.desktop
 %{_datadir}/man/man1/ro-control.1*
 %{_datadir}/metainfo/io.github.projectroasd.rocontrol.metainfo.xml
@@ -80,6 +93,7 @@ tar -xzf %{SOURCE0} --strip-components=1
 - Fix installed helper path resolution for privileged operations on system installs
 - Activate saved KDE-friendly interface preferences and theme switching in the UI
 - Harden Fedora CI and release validation for metadata and RPM packaging
+- Limit published RPM outputs to x86_64, aarch64, src, and noarch artifacts only
 
 * Sun Mar 22 2026 ro-Control Maintainers <noreply@github.com> - 0.1.0-1
 - Prepare first GitHub Release RPMs for i686, x86_64, and aarch64
