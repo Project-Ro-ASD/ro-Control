@@ -1,4 +1,4 @@
-%global upstream_version %{!?upstream_version:0.2.0}%{?upstream_version}
+%global upstream_version %{!?upstream_version:0.2.1}%{?upstream_version}
 %global debug_package %{nil}
 
 Name:           ro-control
@@ -89,6 +89,10 @@ tar -xzf %{SOURCE0} --strip-components=1
 %{_datadir}/polkit-1/actions/io.github.ProjectRoASD.rocontrol.policy
 
 %changelog
+* Mon Mar 30 2026 ro-Control Maintainers <noreply@github.com> - 0.2.1-1
+- Limit release outputs to x86_64, aarch64, noarch, and src RPM artifacts
+- Split shared desktop assets into a noarch companion package
+
 * Mon Mar 30 2026 ro-Control Maintainers <noreply@github.com> - 0.2.0-1
 - Fix installed helper path resolution for privileged operations on system installs
 - Activate saved KDE-friendly interface preferences and theme switching in the UI

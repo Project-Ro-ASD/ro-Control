@@ -12,7 +12,7 @@ private slots:
         RoControlCli::parseArguments({QStringLiteral("ro-control"),
                                       QStringLiteral("--help")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action, RoControlCli::CommandAction::PrintHelp);
     QVERIFY(command.payload.contains(QStringLiteral("driver install")));
@@ -24,10 +24,10 @@ private slots:
         RoControlCli::parseArguments({QStringLiteral("ro-control"),
                                       QStringLiteral("--version")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action, RoControlCli::CommandAction::PrintVersion);
-    QCOMPARE(command.payload, QStringLiteral("0.2.0"));
+    QCOMPARE(command.payload, QStringLiteral("0.2.1"));
   }
 
   void testJsonRequiresDiagnostics() {
@@ -35,7 +35,7 @@ private slots:
         RoControlCli::parseArguments({QStringLiteral("ro-control"),
                                       QStringLiteral("--json")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action, RoControlCli::CommandAction::Invalid);
     QVERIFY(command.payload.contains(QStringLiteral("--json")));
@@ -46,7 +46,7 @@ private slots:
         RoControlCli::parseArguments({QStringLiteral("ro-control"),
                                       QStringLiteral("status")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action, RoControlCli::CommandAction::PrintStatusText);
   }
@@ -57,7 +57,7 @@ private slots:
                                       QStringLiteral("status"),
                                       QStringLiteral("--json")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action, RoControlCli::CommandAction::PrintStatusJson);
   }
@@ -67,7 +67,7 @@ private slots:
         RoControlCli::parseArguments({QStringLiteral("ro-control"),
                                       QStringLiteral("diagnostics")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action, RoControlCli::CommandAction::PrintDiagnosticsText);
   }
@@ -78,7 +78,7 @@ private slots:
                                       QStringLiteral("diagnostics"),
                                       QStringLiteral("--json")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action, RoControlCli::CommandAction::PrintDiagnosticsJson);
   }
@@ -89,7 +89,7 @@ private slots:
                                       QStringLiteral("--diagnostics"),
                                       QStringLiteral("--json")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action, RoControlCli::CommandAction::PrintDiagnosticsJson);
   }
@@ -100,7 +100,7 @@ private slots:
                                       QStringLiteral("driver"),
                                       QStringLiteral("install")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action,
              RoControlCli::CommandAction::InstallProprietaryDriver);
@@ -114,7 +114,7 @@ private slots:
                                       QStringLiteral("install"),
                                       QStringLiteral("--open-source")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action,
              RoControlCli::CommandAction::InstallOpenSourceDriver);
@@ -128,7 +128,7 @@ private slots:
                                       QStringLiteral("--proprietary"),
                                       QStringLiteral("--accept-license")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action,
              RoControlCli::CommandAction::InstallProprietaryDriver);
@@ -141,7 +141,7 @@ private slots:
                                       QStringLiteral("driver"),
                                       QStringLiteral("update")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action, RoControlCli::CommandAction::UpdateDriver);
   }
@@ -153,7 +153,7 @@ private slots:
                                       QStringLiteral("install"),
                                       QStringLiteral("--json")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action, RoControlCli::CommandAction::Invalid);
     QVERIFY(command.payload.contains(QStringLiteral("--json")));
@@ -167,7 +167,7 @@ private slots:
                                       QStringLiteral("--proprietary"),
                                       QStringLiteral("--open-source")},
                                      QStringLiteral("ro-control"),
-                                     QStringLiteral("0.2.0"),
+                                     QStringLiteral("0.2.1"),
                                      QStringLiteral("CLI test"));
     QCOMPARE(command.action, RoControlCli::CommandAction::Invalid);
     QVERIFY(command.payload.contains(QStringLiteral("cannot be used together")));
@@ -176,7 +176,7 @@ private slots:
   void testRenderDiagnosticsText() {
     RoControlCli::DiagnosticsSnapshot snapshot;
     snapshot.applicationName = QStringLiteral("ro-control");
-    snapshot.applicationVersion = QStringLiteral("0.2.0");
+    snapshot.applicationVersion = QStringLiteral("0.2.1");
     snapshot.locale = QStringLiteral("en_US");
     snapshot.gpuFound = true;
     snapshot.gpuName = QStringLiteral("Example GPU");
@@ -193,7 +193,7 @@ private slots:
   void testRenderStatusText() {
     RoControlCli::DiagnosticsSnapshot snapshot;
     snapshot.applicationName = QStringLiteral("ro-control");
-    snapshot.applicationVersion = QStringLiteral("0.2.0");
+    snapshot.applicationVersion = QStringLiteral("0.2.1");
     snapshot.activeDriver = QStringLiteral("Proprietary");
     snapshot.updateAvailable = true;
 
@@ -206,7 +206,7 @@ private slots:
   void testRenderDiagnosticsJsonObject() {
     RoControlCli::DiagnosticsSnapshot snapshot;
     snapshot.applicationName = QStringLiteral("ro-control");
-    snapshot.applicationVersion = QStringLiteral("0.2.0");
+    snapshot.applicationVersion = QStringLiteral("0.2.1");
     snapshot.gpuFound = true;
     snapshot.ramUsagePercent = 42;
 
@@ -221,7 +221,7 @@ private slots:
   void testRenderStatusJsonObject() {
     RoControlCli::DiagnosticsSnapshot snapshot;
     snapshot.applicationName = QStringLiteral("ro-control");
-    snapshot.applicationVersion = QStringLiteral("0.2.0");
+    snapshot.applicationVersion = QStringLiteral("0.2.1");
     snapshot.updateAvailable = true;
 
     const QJsonObject object = RoControlCli::renderStatusJsonObject(snapshot);
