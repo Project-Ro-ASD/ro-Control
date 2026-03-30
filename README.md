@@ -115,10 +115,10 @@ Additional PNG screenshots should be added before wider store distribution.
 
 ### RPM Package
 
-Download the latest Fedora `.rpm` or the matching release bundle from [Releases](https://github.com/Project-Ro-ASD/ro-Control/releases), then choose the asset that matches your machine architecture (`i686` for 32-bit x86 systems, `x86_64` for 64-bit x86 systems, or `aarch64` for ARM64 systems):
+Download the latest Fedora `.rpm` from [Releases](https://github.com/Project-Ro-ASD/ro-Control/releases), then choose the asset that matches your machine architecture (`x86_64` for 64-bit x86 systems or `aarch64` for ARM64 systems). Shared assets are shipped in the companion `noarch` RPM:
 
 ```bash
-sudo dnf install ./ro-control-*.rpm
+sudo dnf install ./ro-control-*.<arch>.rpm ./ro-control-common-*.noarch.rpm
 ```
 
 ### Building from Source
@@ -131,15 +131,7 @@ Fedora quick bootstrap:
 ./scripts/fedora-bootstrap.sh
 ```
 
-Native Fedora KDE Desktop `i686` build:
-
-```bash
-TARGET_ARCH=i686 ./scripts/fedora-bootstrap.sh
-```
-
-`i686` builds are supported for compilation, UI, CLI, and monitoring. Fedora
-NVIDIA driver install/update/remove flows remain available only on `x86_64` and
-`aarch64`.
+GitHub Releases publish only `x86_64`, `aarch64`, `noarch`, and `src` RPM artifacts.
 
 For Fedora-specific runtime notes, see [docs/FEDORA.md](docs/FEDORA.md).
 
