@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, dev, feature/**, fix/**]
+    branches: [main, dev, feat/**, feature/**, fix/**, hotfix/**, chore/**]
   pull_request:
     branches: [main, dev]
 
@@ -42,7 +42,9 @@ jobs:
             kf6-qqc2-desktop-style \
             polkit-devel \
             clang-tools-extra \
-            qt6-qtbase-private-devel
+            qt6-qtbase-private-devel \
+            desktop-file-utils \
+            appstream
 
       - name: Configure (CMake)
         run: |
@@ -57,6 +59,11 @@ jobs:
 
       - name: Run tests
         run: ctest --test-dir build --output-on-failure
+
+      - name: Validate desktop metadata
+        run: |
+          desktop-file-validate data/icons/io.github.projectroasd.rocontrol.desktop
+          appstreamcli validate --no-net data/icons/io.github.projectroasd.rocontrol.metainfo.xml
 
       - name: Check formatting (clang-format)
         run: |
@@ -92,12 +99,14 @@ jobs:
             polkit-devel
 
       - name: Prepare source tarball
+        id: prep
         run: |
           VERSION="$(sed -n 's/^[[:space:]]*VERSION[[:space:]]\([0-9.][0-9.]*\)$/\1/p' CMakeLists.txt | head -n1)"
           if [[ -z "${VERSION}" ]]; then
             echo "Failed to read project version from CMakeLists.txt" >&2
             exit 1
           fi
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
           ARCHIVE_BASENAME="ro-control-${VERSION}"
           mkdir -p ~/rpmbuild/SOURCES ~/rpmbuild/SPECS
           STAGE_DIR="$(mktemp -d)"
@@ -113,7 +122,7 @@ jobs:
         run: |
           rpmbuild -ba "${HOME}/rpmbuild/SPECS/ro-control.spec" \
             --define "_topdir ${HOME}/rpmbuild" \
-            --define "upstream_version ${VERSION}"
+            --define "upstream_version ${{ steps.prep.outputs.version }}"
 
       - name: Lint built RPMs
         run: |

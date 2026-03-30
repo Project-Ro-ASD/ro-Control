@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-03-30
+
+### Changed
+- KDE desktop preferences now apply at runtime, including saved theme mode selection
+- Fedora CI now validates desktop/AppStream metadata and follows `feat/*` branches
+- Release packaging now records installed RPM file manifests for smoke validation
+
+### Fixed
+- Installed builds now resolve the privileged helper from the correct libexec path
+- RPM CI now propagates the detected project version correctly into `rpmbuild`
+- System integration tests no longer depend on executable `/tmp` mounts
+
 ### Added
 - NVIDIA detection pipeline with driver/module verification report
 - Secure Boot detection and session type (Wayland/X11) detection

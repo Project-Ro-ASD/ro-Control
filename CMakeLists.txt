@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 project(ro-control
-    VERSION 0.1.0
+    VERSION 0.2.0
     DESCRIPTION "Smart NVIDIA Driver Manager & System Monitor for Linux"
     HOMEPAGE_URL "https://github.com/Project-Ro-ASD/ro-Control"
     LANGUAGES CXX
@@ -81,6 +81,16 @@ set(BACKEND_SOURCES
 set(APP_SOURCES
     src/main.cpp
     src/cli/cli.cpp
+)
+
+# ─── Install Paths ────────────────────────────────────────────────────────────
+include(GNUInstallDirs)
+
+set(RO_CONTROL_HELPER_INSTALL_PATH
+    "${CMAKE_INSTALL_FULL_LIBEXECDIR}/${RO_CONTROL_HELPER_NAME}"
+)
+set(RO_CONTROL_POLICY_BUILD_PATH
+    "${CMAKE_CURRENT_BINARY_DIR}/io.github.ProjectRoASD.rocontrol.policy"
 )
 
 # ─── QML Resources ────────────────────────────────────────────────────────────
@@ -173,16 +183,6 @@ target_compile_options(ro-control PRIVATE
     $<$<CONFIG:Release>:-O2>
 )
 
-# ─── Install Targets ──────────────────────────────────────────────────────────
-include(GNUInstallDirs)
-
-set(RO_CONTROL_HELPER_INSTALL_PATH
-    "${CMAKE_INSTALL_FULL_LIBEXECDIR}/${RO_CONTROL_HELPER_NAME}"
-)
-set(RO_CONTROL_POLICY_BUILD_PATH
-    "${CMAKE_CURRENT_BINARY_DIR}/io.github.ProjectRoASD.rocontrol.policy"
-)
-
 # ─── Include Directories ──────────────────────────────────────────────────────
 target_include_directories(ro-control PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -191,6 +191,7 @@ target_include_directories(ro-control PRIVATE
 
 target_compile_definitions(ro-control PRIVATE
     RO_CONTROL_POLICY_ID="${RO_CONTROL_POLICY_ID}"
+    RO_CONTROL_APP_VERSION="${PROJECT_VERSION}"
 )
 
 configure_file(

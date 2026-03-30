@@ -165,6 +165,16 @@ private slots:
         runner.run(QStringLiteral("nvidia-smi"), {QStringLiteral("--help")});
     QVERIFY(result.success() || result.exitCode == 0);
   }
+
+  void testHelperPathsAreCompiledForBuildAndInstallModes() {
+    const QString helperBuildPath = QStringLiteral(RO_CONTROL_HELPER_BUILD_PATH);
+    const QString helperInstallPath =
+        QStringLiteral(RO_CONTROL_HELPER_INSTALL_PATH);
+
+    QVERIFY(!helperBuildPath.trimmed().isEmpty());
+    QVERIFY(!helperInstallPath.trimmed().isEmpty());
+    QVERIFY(helperInstallPath.contains(QStringLiteral("ro-control-helper")));
+  }
 };
 
 QTEST_MAIN(TestSystemIntegration)

@@ -298,6 +298,111 @@ Item {
         }
     }
 
+    component PreferenceChoice: Rectangle {
+        id: preferenceChoice
+        required property string title
+        required property string subtitle
+        required property bool selected
+        required property var action
+
+        radius: 18
+        color: selected ? page.theme.infoBg : page.theme.cardStrong
+        border.width: selected ? 2 : 1
+        border.color: selected ? page.theme.accentA : page.theme.border
+        implicitHeight: 68
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.topMargin: 12
+            anchors.bottomMargin: 12
+            spacing: 3
+
+            Label {
+                text: preferenceChoice.title
+                color: page.theme.text
+                font.pixelSize: 15
+                font.weight: Font.DemiBold
+            }
+
+            Label {
+                text: preferenceChoice.subtitle
+                color: page.theme.textSoft
+                font.pixelSize: 12
+                wrapMode: Text.Wrap
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: preferenceChoice.action()
+        }
+    }
+
+    component PreferenceToggle: Rectangle {
+        id: preferenceToggle
+        required property string title
+        required property string subtitle
+        required property bool checked
+        required property var action
+
+        radius: 18
+        color: page.theme.cardStrong
+        border.width: 1
+        border.color: page.theme.border
+        implicitHeight: 76
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            spacing: 14
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 2
+
+                Label {
+                    text: preferenceToggle.title
+                    color: page.theme.text
+                    font.pixelSize: 15
+                    font.weight: Font.DemiBold
+                }
+
+                Label {
+                    text: preferenceToggle.subtitle
+                    color: page.theme.textSoft
+                    font.pixelSize: 12
+                    wrapMode: Text.Wrap
+                }
+            }
+
+            Rectangle {
+                width: 46
+                height: 28
+                radius: 14
+                color: preferenceToggle.checked ? page.theme.accentA : page.theme.border
+
+                Rectangle {
+                    x: preferenceToggle.checked ? parent.width - width - 3 : 3
+                    y: 3
+                    width: 22
+                    height: 22
+                    radius: 11
+                    color: "#ffffff"
+                }
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: preferenceToggle.action()
+        }
+    }
+
     ScrollView {
         id: pageScroll
         anchors.fill: parent
@@ -320,6 +425,58 @@ Item {
                 columns: page.wideLayout ? 2 : 1
                 columnSpacing: 16
                 rowSpacing: 16
+
+                SectionPanel {
+                    Layout.fillWidth: true
+                    Layout.columnSpan: page.wideLayout ? 2 : 1
+                    theme: page.theme
+                    title: qsTr("Interface Preferences")
+                    subtitle: qsTr("Control the application appearance and density")
+
+                    Flow {
+                        Layout.fillWidth: true
+                        spacing: 12
+
+                        Repeater {
+                            model: uiPreferences.availableThemeModes
+
+                            delegate: PreferenceChoice {
+                                width: page.wideLayout ? ((parent.width - 24) / 3) : parent.width
+                                title: modelData.label
+                                subtitle: modelData.code === "system"
+                                          ? qsTr("Match the current desktop appearance")
+                                          : modelData.code === "dark"
+                                            ? qsTr("Use the darker application palette")
+                                            : qsTr("Use the brighter application palette")
+                                selected: uiPreferences.themeMode === modelData.code
+                                action: function() { uiPreferences.setThemeMode(modelData.code); }
+                            }
+                        }
+                    }
+
+                    PreferenceToggle {
+                        Layout.fillWidth: true
+                        title: qsTr("Compact Layout")
+                        subtitle: qsTr("Reduce outer spacing for denser dashboard layouts")
+                        checked: uiPreferences.compactMode
+                        action: function() { uiPreferences.setCompactMode(!uiPreferences.compactMode); }
+                    }
+
+                    PreferenceToggle {
+                        Layout.fillWidth: true
+                        title: qsTr("Show Advanced Information")
+                        subtitle: qsTr("Display expert hardware and diagnostic context across pages")
+                        checked: uiPreferences.showAdvancedInfo
+                        action: function() { uiPreferences.setShowAdvancedInfo(!uiPreferences.showAdvancedInfo); }
+                    }
+
+                    ActionButton {
+                        theme: page.theme
+                        text: qsTr("Reset Interface Defaults")
+                        tone: "neutral"
+                        onClicked: uiPreferences.resetToDefaults()
+                    }
+                }
 
                 ColumnLayout {
                     Layout.fillWidth: true

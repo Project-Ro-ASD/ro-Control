@@ -70,6 +70,14 @@ private slots:
     QVERIFY(screenshotRe.match(metainfo).hasMatch());
   }
 
+  void testAppStreamContainsCurrentReleaseVersion() {
+    const QString metainfo = readFile(QStringLiteral(
+        "data/icons/io.github.projectroasd.rocontrol.metainfo.xml"));
+    QVERIFY(!metainfo.isEmpty());
+    QVERIFY(metainfo.contains(
+        QStringLiteral("<release version=\"0.2.0\" date=\"2026-03-30\" />")));
+  }
+
   void testCliDocumentationAssetsExist() {
     const QString manPage = readFile(QStringLiteral("docs/man/ro-control.1"));
     const QString bashCompletion =

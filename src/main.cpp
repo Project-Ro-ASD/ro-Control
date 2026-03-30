@@ -193,7 +193,7 @@ void configureGuiGraphicsEnvironment() {
 int main(int argc, char *argv[]) {
   constexpr auto kApplicationName = "ro-control";
   constexpr auto kDisplayName = "ro-Control";
-  constexpr auto kApplicationVersion = "0.1.0";
+  constexpr auto kApplicationVersion = RO_CONTROL_APP_VERSION;
   const QString applicationDescription =
       QStringLiteral("ro-Control GPU driver manager and diagnostics CLI.");
 
