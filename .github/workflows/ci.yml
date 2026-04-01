@@ -15,14 +15,120 @@ concurrency:
 
 jobs:
   build:
-    name: Build & Test
+    name: Build & Test (Fedora ${{ matrix.fedora }}, ${{ matrix.compiler }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         fedora: [41, 42]
+        compiler: [gcc, clang]
     container:
       image: fedora:${{ matrix.fedora }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ runner.os }}-fedora${{ matrix.fedora }}-${{ matrix.compiler }}-${{ hashFiles('**/CMakeLists.txt', 'src/**') }}
+          max-size: 500M
+
+      - name: Install dependencies
+        run: |
+          dnf install -y \
+            cmake \
+            extra-cmake-modules \
+            gcc-c++ \
+            clang \
+            ninja-build \
+            qt6-qtbase-devel \
+            qt6-qtdeclarative-devel \
+            qt6-qttools-devel \
+            qt6-qtwayland-devel \
+            kf6-qqc2-desktop-style \
+            polkit-devel \
+            clang-tools-extra \
+            qt6-qtbase-private-devel \
+            desktop-file-utils \
+            appstream \
+            ccache
+
+      - name: Setup compiler environment
+        run: |
+          if [ "${{ matrix.compiler }}" = "clang" ]; then
+            echo "CC=clang" >> $GITHUB_ENV
+            echo "CXX=clang++" >> $GITHUB_ENV
+          else
+            echo "CC=gcc" >> $GITHUB_ENV
+            echo "CXX=g++" >> $GITHUB_ENV
+          fi
+          echo "CMAKE_C_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
+          echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
+
+      - name: Configure (CMake)
+        run: |
+          cmake -B build \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=${{ env.CC }} \
+            -DCMAKE_CXX_COMPILER=${{ env.CXX }} \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DBUILD_TESTS=ON \
+            -DREQUIRE_TRANSLATIONS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: ccache statistics
+        run: ccache -s
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Validate desktop metadata
+        run: |
+          desktop-file-validate data/icons/io.github.projectroasd.rocontrol.desktop
+          appstreamcli validate --no-net data/icons/io.github.projectroasd.rocontrol.metainfo.xml
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.compiler == 'gcc' && matrix.fedora == 42
+        with:
+          name: ro-control-binary-fedora${{ matrix.fedora }}-${{ matrix.compiler }}
+          path: |
+            build/ro-control
+            build/*.qm
+          retention-days: 7
+
+  lint:
+    name: Code Linting
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:42
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          dnf install -y \
+            clang-tools-extra \
+            git
+
+      - name: Check formatting (clang-format)
+        run: |
+          find src \( -name "*.cpp" -o -name "*.h" \) -print0 | \
+          xargs -0 clang-format --dry-run --Werror
+
+  security:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:42
 
     steps:
       - name: Checkout repository
@@ -41,34 +147,19 @@ jobs:
             qt6-qtwayland-devel \
             kf6-qqc2-desktop-style \
             polkit-devel \
-            clang-tools-extra \
-            qt6-qtbase-private-devel \
-            desktop-file-utils \
-            appstream
+            clang-tools-extra
 
-      - name: Configure (CMake)
+      - name: Run clang-tidy
         run: |
           cmake -B build \
             -GNinja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_TESTS=ON \
-            -DREQUIRE_TRANSLATIONS=ON
-
-      - name: Build
-        run: cmake --build build --parallel
-
-      - name: Run tests
-        run: ctest --test-dir build --output-on-failure
-
-      - name: Validate desktop metadata
-        run: |
-          desktop-file-validate data/icons/io.github.projectroasd.rocontrol.desktop
-          appstreamcli validate --no-net data/icons/io.github.projectroasd.rocontrol.metainfo.xml
-
-      - name: Check formatting (clang-format)
-        run: |
-          find src \( -name "*.cpp" -o -name "*.h" \) -print0 | \
-          xargs -0 clang-format --dry-run --Werror
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DBUILD_TESTS=OFF \
+            -DREQUIRE_TRANSLATIONS=OFF
+          
+          find src/backend -name "*.cpp" | xargs -I {} \
+            clang-tidy {} -p build --warnings-as-errors="" || true
 
   package-rpm:
     name: RPM Build Check
@@ -79,6 +170,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Cache DNF packages
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/dnf
+          key: ${{ runner.os }}-dnf-rpm-${{ hashFiles('packaging/rpm/ro-control.spec') }}
+          restore-keys: |
+            ${{ runner.os }}-dnf-rpm-
 
       - name: Install RPM tooling and dependencies
         run: |
@@ -127,3 +226,12 @@ jobs:
       - name: Lint built RPMs
         run: |
           rpmlint ~/rpmbuild/RPMS/*/*.rpm || true
+
+      - name: Upload RPM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpm-packages-ci
+          path: |
+            ~/rpmbuild/RPMS/*/*.rpm
+            ~/rpmbuild/SRPMS/*.rpm
+          retention-days: 7
