@@ -20,6 +20,7 @@ Popup {
     property bool editingFanName: false
     property string pendingFanName: ""
     property real fanAngle: 0
+    readonly property bool compactLayout: width < Math.round(520 * popup.uiScale)
 
     readonly property color bgColor: theme && theme.card ? theme.card : (popup.darkMode ? "#241E34" : "#FFFFFF")
     readonly property color cardColor: theme && theme.cardStrong ? theme.cardStrong : (popup.darkMode ? "#2E2742" : "#F8FAFC")
@@ -37,8 +38,8 @@ Popup {
     modal: true
     focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-    width: Math.min(parent ? parent.width - 40 : 580, Math.round(580 * popup.uiScale))
-    height: Math.min(parent ? parent.height - 60 : 560, Math.round(560 * popup.uiScale))
+    width: Math.max(0, Math.min(parent ? parent.width - 24 : 580, Math.round(580 * popup.uiScale)))
+    height: Math.max(0, Math.min(parent ? parent.height - 24 : 560, Math.round(560 * popup.uiScale)))
     x: Math.round(((parent ? parent.width : 600) - width) / 2)
     y: Math.round(((parent ? parent.height : 600) - height) / 2)
     padding: Math.round(16 * popup.uiScale)
@@ -216,6 +217,7 @@ Popup {
             spacing: 12
 
             Rectangle {
+                visible: !popup.compactLayout
                 implicitWidth: Math.round(36 * popup.uiScale)
                 implicitHeight: Math.round(36 * popup.uiScale)
                 radius: Math.round(18 * popup.uiScale)
@@ -240,6 +242,7 @@ Popup {
                 spacing: 2
 
                 RowLayout {
+                    Layout.fillWidth: true
                     spacing: 8
                     Label {
                         visible: !popup.editingFanName
@@ -248,6 +251,8 @@ Popup {
                         font.pixelSize: Math.round(16 * popup.uiScale)
                         font.weight: Font.DemiBold
                         elide: Text.ElideRight
+                        Layout.fillWidth: true
+                        Layout.minimumWidth: 0
                     }
 
                     TextField {
@@ -306,6 +311,7 @@ Popup {
                     }
 
                     Rectangle {
+                        visible: !popup.compactLayout
                         implicitWidth: fanTypeBadge.implicitWidth + 12
                         implicitHeight: Math.round(20 * popup.uiScale)
                         radius: 4
@@ -323,9 +329,11 @@ Popup {
                 }
 
                 Label {
+                    Layout.fillWidth: true
                     text: popup.currentFan ? (qsTr("Hardware Channel: %1 • Interface: %2").arg(popup.currentFan.id).arg(popup.currentFan.channel || "PWM")) : ""
                     color: popup.softTextColor
                     font.pixelSize: Math.round(11 * popup.uiScale)
+                    elide: Text.ElideMiddle
                 }
             }
 
@@ -387,11 +395,13 @@ Popup {
                     border.color: popup.borderColor
                     implicitHeight: liveMetricsRow.implicitHeight + 20
 
-                    RowLayout {
+                    GridLayout {
                         id: liveMetricsRow
                         anchors.fill: parent
                         anchors.margins: 12
-                        spacing: 12
+                        columnSpacing: 12
+                        rowSpacing: 10
+                        columns: popup.compactLayout ? 1 : 5
 
                         // Live Speed Gauge
                         ColumnLayout {
@@ -445,6 +455,7 @@ Popup {
                         }
 
                         Rectangle {
+                            visible: !popup.compactLayout
                             implicitWidth: 1
                             Layout.fillHeight: true
                             color: popup.borderColor
@@ -489,6 +500,7 @@ Popup {
                         }
 
                         Rectangle {
+                            visible: !popup.compactLayout
                             implicitWidth: 1
                             Layout.fillHeight: true
                             color: popup.borderColor
@@ -682,11 +694,15 @@ Popup {
                                 }
                             }
 
-                            RowLayout {
+                            GridLayout {
                                 Layout.fillWidth: true
-                                spacing: 8
+                                columnSpacing: 8
+                                rowSpacing: 8
+                                columns: popup.compactLayout ? 2 : 6
 
                                 Label {
+                                    Layout.columnSpan: popup.compactLayout ? 2 : 1
+                                    Layout.fillWidth: true
                                     text: qsTr("Quick Speed Presets:")
                                     color: popup.softTextColor
                                     font.pixelSize: Math.round(11 * popup.uiScale)
@@ -700,6 +716,7 @@ Popup {
                                         required property int modelData
                                         text: presetBtn.modelData === 0 ? qsTr("0% (Stop)") : (presetBtn.modelData + "%")
                                         implicitHeight: Math.round(28 * popup.uiScale)
+                                        Layout.fillWidth: true
                                         hoverEnabled: true
 
                                         background: Rectangle {
@@ -1242,15 +1259,18 @@ Popup {
         }
 
         // Pinned Action Buttons Footer (Always visible at bottom)
-        RowLayout {
+        GridLayout {
             Layout.fillWidth: true
-            spacing: 8
+            columnSpacing: 8
+            rowSpacing: 8
+            columns: popup.compactLayout ? 1 : 4
 
             Button {
                 id: testBtn
                 visible: popup.currentFan && popup.currentFan.id === "gpu_0"
                 text: popup.testingFanActive ? qsTr("Testing (100%)...") : qsTr("Quick Test 100%")
                 implicitHeight: Math.round(36 * popup.uiScale)
+                Layout.fillWidth: popup.compactLayout
                 hoverEnabled: true
                 enabled: popup.fanController && popup.fanController.controlSupported
 
@@ -1276,6 +1296,7 @@ Popup {
 
             Label {
                 visible: testBtn.visible && !testBtn.enabled
+                Layout.fillWidth: popup.compactLayout
                 text: qsTr("Direct fan control unavailable")
                 color: popup.softTextColor
                 font.pixelSize: Math.round(10 * popup.uiScale)
@@ -1284,6 +1305,7 @@ Popup {
             Label {
                 visible: popup.fanTestFailed
                 Layout.fillWidth: true
+                Layout.columnSpan: popup.compactLayout ? 1 : 4
                 text: qsTr("GPU fan test could not start. Enable NVIDIA Coolbits / fan control first.")
                 color: popup.warningText
                 font.pixelSize: Math.round(11 * popup.uiScale)
@@ -1294,6 +1316,7 @@ Popup {
                 id: resetToAutoBtn
                 text: qsTr("Reset to Auto")
                 implicitHeight: Math.round(36 * popup.uiScale)
+                Layout.fillWidth: popup.compactLayout
                 hoverEnabled: true
 
                 background: Rectangle {
@@ -1317,12 +1340,11 @@ Popup {
                 onClicked: popup.resetToAutoMode()
             }
 
-            Item { Layout.fillWidth: true }
-
             Button {
                 id: applyBtn
                 text: qsTr("Apply & Save Settings")
                 implicitHeight: Math.round(36 * popup.uiScale)
+                Layout.fillWidth: popup.compactLayout
                 hoverEnabled: true
 
                 background: Rectangle {

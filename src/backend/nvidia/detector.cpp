@@ -13,6 +13,8 @@
 #include <QTextStream>
 #include <QtGlobal>
 
+#include <optional>
+
 namespace {
 
 QString normalizedRpmDriverVersion(const QString &packageVersion) {
@@ -28,6 +30,46 @@ QString normalizedRpmDriverVersion(const QString &packageVersion) {
   }
 
   return version.trimmed();
+}
+
+QString overriddenSystemPath(const char *environmentVariable,
+                             const QString &fallback) {
+  const QString overridePath =
+      qEnvironmentVariable(environmentVariable).trimmed();
+  return overridePath.isEmpty() ? fallback : overridePath;
+}
+
+std::optional<bool> runningNvidiaModuleIsOpen() {
+  QFile openRm(overriddenSystemPath(
+      "RO_CONTROL_NVIDIA_OPENRM_PATH",
+      QStringLiteral("/sys/module/nvidia/parameters/NVreg_OpenRm")));
+  if (openRm.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    const QString value = QString::fromUtf8(openRm.readAll()).trimmed();
+    if (value == QStringLiteral("1")) {
+      return true;
+    }
+    if (value == QStringLiteral("0")) {
+      return false;
+    }
+  }
+
+  QFile procVersion(
+      overriddenSystemPath("RO_CONTROL_NVIDIA_PROC_VERSION_PATH",
+                           QStringLiteral("/proc/driver/nvidia/version")));
+  if (!procVersion.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    return std::nullopt;
+  }
+
+  const QString content = QString::fromUtf8(procVersion.readAll());
+  if (content.contains(QStringLiteral("Open Kernel Module"),
+                       Qt::CaseInsensitive)) {
+    return true;
+  }
+  if (content.contains(QStringLiteral("NVRM version"), Qt::CaseInsensitive) ||
+      content.contains(QStringLiteral("NVIDIA UNIX"), Qt::CaseInsensitive)) {
+    return false;
+  }
+  return std::nullopt;
 }
 
 } // namespace
@@ -404,17 +446,22 @@ InstalledPackagesSnapshot queryInstalledDriverPackages() {
   static QElapsedTimer cacheTimer;
   static bool cacheValid = false;
   static QMutex cacheMutex;
+  static QString cachedRpmPath;
 
   QMutexLocker locker(&cacheMutex);
-  if (cacheValid && cacheTimer.isValid() && cacheTimer.elapsed() < 5000) {
+  const QString rpmPath =
+      CommandRunner::resolveProgramPath(QStringLiteral("rpm"));
+  if (cacheValid && cachedRpmPath == rpmPath && cacheTimer.isValid() &&
+      cacheTimer.elapsed() < 5000) {
     return cached;
   }
 
   cached.installedPackages.clear();
   cached.detectedVersion.clear();
 
-  if (!CapabilityProbe::isToolAvailable(QStringLiteral("rpm"))) {
+  if (rpmPath.isEmpty()) {
     cacheValid = false;
+    cachedRpmPath.clear();
     return cached;
   }
 
@@ -450,6 +497,7 @@ InstalledPackagesSnapshot queryInstalledDriverPackages() {
   }
 
   cacheTimer.start();
+  cachedRpmPath = rpmPath;
   cacheValid = true;
   return cached;
 }
@@ -466,20 +514,16 @@ bool NvidiaDetector::detectDriverPackageInstalled() const {
 
 bool NvidiaDetector::detectClosedSourceDriverInstalled() const {
   const auto snapshot = queryInstalledDriverPackages();
-  if (snapshot.installedPackages.contains(QStringLiteral("akmod-nvidia")) ||
-      snapshot.installedPackages.contains(
-          QStringLiteral("xorg-x11-drv-nvidia"))) {
+  // xorg-x11-drv-nvidia is shared by both kernel-module variants on Fedora.
+  // Only the akmod package (or the running module) identifies the source.
+  if (snapshot.installedPackages.contains(QStringLiteral("akmod-nvidia"))) {
     return true;
   }
 
-  QFile openRm(QStringLiteral("/sys/module/nvidia/parameters/NVreg_OpenRm"));
-  if (openRm.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    const QString val = QString::fromUtf8(openRm.readAll()).trimmed();
-    if (val == QStringLiteral("0")) {
-      return true;
-    }
-    if (val == QStringLiteral("1")) {
-      return false;
+  if (isModuleLoaded(QStringLiteral("nvidia"))) {
+    const std::optional<bool> runningOpen = runningNvidiaModuleIsOpen();
+    if (runningOpen.has_value()) {
+      return !runningOpen.value();
     }
   }
 
@@ -502,19 +546,10 @@ bool NvidiaDetector::detectOpenSourceDriverInstalled() const {
     return true;
   }
 
-  QFile openRm(QStringLiteral("/sys/module/nvidia/parameters/NVreg_OpenRm"));
-  if (openRm.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    const QString val = QString::fromUtf8(openRm.readAll()).trimmed();
-    if (val == QStringLiteral("1")) {
-      return true;
-    }
-  }
-
-  QFile procVersion(QStringLiteral("/proc/driver/nvidia/version"));
-  if (procVersion.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    const QString content = QString::fromUtf8(procVersion.readAll());
-    if (content.contains(QStringLiteral("Open UNIX"), Qt::CaseInsensitive)) {
-      return true;
+  if (isModuleLoaded(QStringLiteral("nvidia"))) {
+    const std::optional<bool> runningOpen = runningNvidiaModuleIsOpen();
+    if (runningOpen.has_value()) {
+      return runningOpen.value();
     }
   }
 
@@ -533,7 +568,8 @@ bool NvidiaDetector::isPackageInstalled(const QString &packageName) const {
 }
 
 bool NvidiaDetector::isModuleLoaded(const QString &moduleName) const {
-  QFile modules(QStringLiteral("/proc/modules"));
+  QFile modules(overriddenSystemPath("RO_CONTROL_PROC_MODULES_PATH",
+                                     QStringLiteral("/proc/modules")));
   if (!modules.open(QIODevice::ReadOnly | QIODevice::Text))
     return false;
 
