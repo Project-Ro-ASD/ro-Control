@@ -680,17 +680,18 @@ Item {
                     }
 
                     ToolButton {
+                        id: closeDiagnosticReportButton
                         text: "✕"
                         implicitWidth: Math.round(32 * page.uiScale)
                         implicitHeight: Math.round(32 * page.uiScale)
                         hoverEnabled: true
                         background: Rectangle {
                             radius: 8
-                            color: parent.hovered ? (page.darkMode ? "#43385E" : "#E2E8F0") : "transparent"
+                            color: closeDiagnosticReportButton.hovered ? (page.darkMode ? "#43385E" : "#E2E8F0") : "transparent"
                         }
                         contentItem: Text {
                             text: "✕"
-                            color: parent.hovered ? page.textColor : page.softTextColor
+                            color: closeDiagnosticReportButton.hovered ? page.textColor : page.softTextColor
                             font.pixelSize: Math.round(14 * page.uiScale)
                             font.weight: Font.Bold
                             horizontalAlignment: Text.AlignHCenter
@@ -1436,8 +1437,9 @@ Item {
     Dialog {
         id: rebootConfirmDialog
         modal: true
+        focus: true
         anchors.centerIn: parent
-        width: Math.min(page.width * 0.88, Math.round(440 * page.uiScale))
+        width: Math.max(0, Math.min(page.width - Math.round(24 * page.uiScale), Math.round(440 * page.uiScale)))
         padding: 0
         header: null
         footer: null
@@ -1520,23 +1522,27 @@ Item {
             // Footer
             Rectangle {
                 Layout.fillWidth: true
-                implicitHeight: Math.round(58 * page.uiScale)
+                implicitHeight: firmwareButtons.columns === 1
+                                ? Math.round(104 * page.uiScale)
+                                : Math.round(58 * page.uiScale)
                 color: "transparent"
 
-                RowLayout {
+                GridLayout {
+                    id: firmwareButtons
                     anchors.fill: parent
                     anchors.leftMargin: Math.round(18 * page.uiScale)
                     anchors.rightMargin: Math.round(18 * page.uiScale)
                     anchors.bottomMargin: Math.round(14 * page.uiScale)
-                    spacing: Math.round(10 * page.uiScale)
-
-                    Item { Layout.fillWidth: true }
+                    columnSpacing: Math.round(10 * page.uiScale)
+                    rowSpacing: Math.round(8 * page.uiScale)
+                    columns: rebootConfirmDialog.width < Math.round(340 * page.uiScale) ? 1 : 2
 
                     Button {
                         id: cancelRebootBtn
                         text: qsTr("Cancel")
                         implicitHeight: Math.round(36 * page.uiScale)
                         implicitWidth: Math.round(80 * page.uiScale)
+                        Layout.fillWidth: firmwareButtons.columns === 1
                         hoverEnabled: true
 
                         background: Rectangle {
@@ -1565,6 +1571,7 @@ Item {
                         text: qsTr("Restart Now ↻")
                         implicitHeight: Math.round(36 * page.uiScale)
                         implicitWidth: Math.round(120 * page.uiScale)
+                        Layout.fillWidth: firmwareButtons.columns === 1
                         hoverEnabled: true
 
                         background: Rectangle {
