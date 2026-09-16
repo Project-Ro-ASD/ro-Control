@@ -439,6 +439,7 @@ Item {
                                         }
 
                                         ToolButton {
+                                            id: fanSettingsButton
                                             visible: !page.reorderMode
                                             text: "⚙"
                                             implicitWidth: Math.round(28 * page.uiScale)
@@ -446,11 +447,11 @@ Item {
                                             hoverEnabled: true
                                             background: Rectangle {
                                                 radius: width / 2
-                                                color: parent.hovered ? (page.darkMode ? "#3B3156" : "#E2E8F0") : "transparent"
+                                                color: fanSettingsButton.hovered ? (page.darkMode ? "#3B3156" : "#E2E8F0") : "transparent"
                                             }
                                             contentItem: Label {
-                                                text: parent.text
-                                                color: parent.hovered ? page.accentColor : page.softTextColor
+                                                text: fanSettingsButton.text
+                                                color: fanSettingsButton.hovered ? page.accentColor : page.softTextColor
                                                 font.pixelSize: Math.round(15 * page.uiScale)
                                                 horizontalAlignment: Text.AlignHCenter
                                                 verticalAlignment: Text.AlignVCenter
