@@ -84,6 +84,50 @@ private slots:
     QVERIFY(!detector.activeDriver().trimmed().isEmpty());
   }
 
+  void testOpenKernelModuleIsNotMisclassifiedAsMixed() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString rpmPath = tempDir.filePath(QStringLiteral("fake-rpm.sh"));
+    QFile rpm(rpmPath);
+    QVERIFY(rpm.open(QIODevice::WriteOnly | QIODevice::Text));
+    rpm.write("#!/bin/sh\n"
+              "printf 'akmod-nvidia-open|0:570.1-1.fc42\\n'\n"
+              "printf 'xorg-x11-drv-nvidia|0:570.1-1.fc42\\n'\n");
+    rpm.close();
+    QVERIFY(QFile::setPermissions(rpmPath, QFileDevice::ReadOwner |
+                                               QFileDevice::WriteOwner |
+                                               QFileDevice::ExeOwner));
+
+    const QString modulesPath = tempDir.filePath(QStringLiteral("modules"));
+    QFile modules(modulesPath);
+    QVERIFY(modules.open(QIODevice::WriteOnly | QIODevice::Text));
+    modules.write("nvidia 1 0 - Live 0x0\n");
+    modules.close();
+
+    const QString versionPath =
+        tempDir.filePath(QStringLiteral("nvidia-version"));
+    QFile version(versionPath);
+    QVERIFY(version.open(QIODevice::WriteOnly | QIODevice::Text));
+    version.write("NVRM version: NVIDIA UNIX Open Kernel Module for x86_64\n");
+    version.close();
+
+    qputenv("RO_CONTROL_COMMAND_RPM", rpmPath.toUtf8());
+    qputenv("RO_CONTROL_PROC_MODULES_PATH", modulesPath.toUtf8());
+    qputenv("RO_CONTROL_NVIDIA_PROC_VERSION_PATH", versionPath.toUtf8());
+    qputenv("RO_CONTROL_NVIDIA_OPENRM_PATH",
+            tempDir.filePath(QStringLiteral("missing-openrm")).toUtf8());
+
+    NvidiaDetector detector;
+    detector.setDetectionResult(detector.detect());
+    QCOMPARE(detector.installedDriverSource(), QStringLiteral("open-source"));
+
+    qunsetenv("RO_CONTROL_COMMAND_RPM");
+    qunsetenv("RO_CONTROL_PROC_MODULES_PATH");
+    qunsetenv("RO_CONTROL_NVIDIA_PROC_VERSION_PATH");
+    qunsetenv("RO_CONTROL_NVIDIA_OPENRM_PATH");
+  }
+
   void testSecureBootEfivarOverride() {
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());
