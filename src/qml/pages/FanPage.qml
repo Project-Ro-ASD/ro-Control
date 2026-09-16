@@ -327,8 +327,6 @@ Item {
                             }
 
                             onClicked: {
-                                if (page.fanController)
-                                    page.fanController.runHardwareSetup();
                                 fanRescanPopup.openWizard();
                             }
                         }

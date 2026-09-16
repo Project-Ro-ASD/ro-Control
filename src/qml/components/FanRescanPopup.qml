@@ -80,6 +80,8 @@ Popup {
         step = "scanning";
         scanProgress = 15;
         currentPhaseText = qsTr("Probing Linux HWMON & ACPI kernel thermal controllers...");
+        if (popup.fanController)
+            popup.fanController.runHardwareSetup();
         phase1Timer.start();
     }
 
@@ -901,4 +903,3 @@ Popup {
         }
     }
 }
-

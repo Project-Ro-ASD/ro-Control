@@ -219,6 +219,13 @@ bool FanController::hardwareSetupComplete() const {
 
 void FanController::runHardwareSetup() {
   // A topology can change after docking, so a setup is always a fresh probe.
+  s_cachedCoretempInput.clear();
+  s_cachedAcpitzInput.clear();
+  s_cachedCpuFanRpmInput.clear();
+  s_cachedSysFanRpmInput.clear();
+  s_extraFanChannels.clear();
+  s_hwmonTopologyProbed = false;
+  s_extraFanChannelsProbed = false;
   detectHardwareCapabilities(true);
   readCurrentFanTelemetry();
   const bool wasComplete = m_hardwareSetupComplete;
@@ -1069,7 +1076,8 @@ void FanController::updateSystemFansTelemetry() {
         if (isGpuHwmon(chipName)) {
           continue;
         }
-        const QString baseName = fFile.completeBaseName();
+        QString baseName = fFile.fileName();
+        baseName.remove(QRegularExpression(QStringLiteral("_input$")));
         const QString label =
             readTextFile(basePath + QStringLiteral("/%1_label").arg(baseName));
         const QString normalizedLabel = label.toLower();
@@ -1107,7 +1115,8 @@ void FanController::updateSystemFansTelemetry() {
         ExtraFanChannel channel;
         channel.gpuHwmon = gpuHwmon;
         channel.basePath = basePath;
-        channel.inputName = fFile.completeBaseName();
+        channel.inputName = fFile.fileName();
+        channel.inputName.remove(QRegularExpression(QStringLiteral("_input$")));
         channel.label = readTextFile(
             basePath + QStringLiteral("/%1_label").arg(channel.inputName));
         channel.id =
@@ -1134,13 +1143,13 @@ void FanController::updateSystemFansTelemetry() {
   if (!s_cachedCpuFanRpmInput.isEmpty()) {
     bool ok = false;
     const int rpm = readTextFile(s_cachedCpuFanRpmInput).toInt(&ok);
-    if (ok && rpm > 0) {
-      cpuRpm = rpm;
+    if (ok && rpm >= 0) {
+      cpuRpm = std::clamp(rpm, 0, 100000);
     }
   }
 
-  // A temperature sensor alone is not a detected fan channel.
-  const bool cpuTelemetryAvailable = cpuRpm > 0;
+  // A readable tachometer remains a real fan channel while stopped/at 0 RPM.
+  const bool cpuTelemetryAvailable = !s_cachedCpuFanRpmInput.isEmpty();
   int cpuSpeedPct = 0;
   if (cpuTelemetryAvailable) {
     switch (m_cpuProfile.mode) {
@@ -1214,11 +1223,11 @@ void FanController::updateSystemFansTelemetry() {
   if (!s_cachedSysFanRpmInput.isEmpty()) {
     bool ok = false;
     const int rpm = readTextFile(s_cachedSysFanRpmInput).toInt(&ok);
-    if (ok && rpm > 0) {
-      sysRpm = rpm;
+    if (ok && rpm >= 0) {
+      sysRpm = std::clamp(rpm, 0, 100000);
     }
   }
-  const bool sysTelemetryAvailable = sysRpm > 0;
+  const bool sysTelemetryAvailable = !s_cachedSysFanRpmInput.isEmpty();
   int sysSpeedPct = 0;
   if (sysTelemetryAvailable) {
     switch (m_sysProfile.mode) {
@@ -1297,7 +1306,7 @@ void FanController::updateSystemFansTelemetry() {
     const int rpm = readTextFile(channel.basePath + QLatin1Char('/') +
                                  channel.inputName + QStringLiteral("_input"))
                         .toInt(&ok);
-    if (!ok || rpm <= 0) {
+    if (!ok || rpm < 0) {
       continue;
     }
 
@@ -1317,7 +1326,7 @@ void FanController::updateSystemFansTelemetry() {
     detectedFan.insert(QStringLiteral("type"), type);
     detectedFan.insert(QStringLiteral("speedPercent"), 0);
     detectedFan.insert(QStringLiteral("rpm"), rpm);
-    detectedFan.insert(QStringLiteral("isZeroRpm"), false);
+    detectedFan.insert(QStringLiteral("isZeroRpm"), rpm == 0);
     detectedFan.insert(QStringLiteral("temperatureC"),
                        type == QStringLiteral("CPU")   ? cpuTemp
                        : type == QStringLiteral("GPU") ? m_gpuTemperatureC

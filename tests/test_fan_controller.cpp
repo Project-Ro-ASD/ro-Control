@@ -324,6 +324,43 @@ private slots:
     QCOMPARE(fan.currentRpm(), 1850);
   }
 
+  void testFullScanKeepsStoppedFanChannelsVisible() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString hwmonDir = tempDir.filePath(QStringLiteral("hwmon0"));
+    QVERIFY(QDir().mkpath(hwmonDir));
+
+    QFile nameFile(hwmonDir + QStringLiteral("/name"));
+    QVERIFY(nameFile.open(QIODevice::WriteOnly | QIODevice::Text));
+    nameFile.write("nct6798\n");
+    nameFile.close();
+
+    QFile labelFile(hwmonDir + QStringLiteral("/fan1_label"));
+    QVERIFY(labelFile.open(QIODevice::WriteOnly | QIODevice::Text));
+    labelFile.write("CPU_FAN\n");
+    labelFile.close();
+
+    QFile fanInput(hwmonDir + QStringLiteral("/fan1_input"));
+    QVERIFY(fanInput.open(QIODevice::WriteOnly | QIODevice::Text));
+    fanInput.write("0\n");
+    fanInput.close();
+
+    qputenv("RO_CONTROL_FAN_SYSFS_ROOT", tempDir.path().toUtf8());
+    FanController fan;
+    fan.stop();
+    fan.runHardwareSetup();
+
+    QCOMPARE(fan.systemFanCount(), 1);
+    const QVariantMap detected = fan.systemFans().first().toMap();
+    QCOMPARE(detected.value(QStringLiteral("type")).toString(),
+             QStringLiteral("CPU"));
+    QCOMPARE(detected.value(QStringLiteral("rpm")).toInt(), 0);
+    QVERIFY(detected.value(QStringLiteral("telemetryAvailable")).toBool());
+
+    qunsetenv("RO_CONTROL_FAN_SYSFS_ROOT");
+  }
+
   void testMockNvidiaSettingsCommand() {
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());
