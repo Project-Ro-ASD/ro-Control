@@ -4,12 +4,12 @@
 <context>
     <name>CpuMonitor</name>
     <message>
-        <location filename="../src/backend/monitor/cpumonitor.cpp" line="347"/>
+        <location filename="../src/backend/monitor/cpumonitor.cpp" line="357"/>
         <source>CPU temperature is being read from system sensors.</source>
         <translation>La temperatura de la CPU se lee desde los sensores del sistema.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/cpumonitor.cpp" line="348"/>
+        <location filename="../src/backend/monitor/cpumonitor.cpp" line="358"/>
         <source>CPU temperature sensor is not exposed by the kernel.</source>
         <translation>El kernel no expone el sensor de temperatura de la CPU.</translation>
     </message>
@@ -18,847 +18,921 @@
     <name>DriverPage</name>
     <message>
         <location filename="../src/qml/pages/DriverPage.qml" line="18"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="318"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1173"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="315"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1241"/>
         <source>Ready</source>
         <translation>Listo</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="306"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="303"/>
         <source>Update</source>
         <translation>Actualización</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="308"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="305"/>
         <source>Package</source>
         <translation>Paquete</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="310"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="307"/>
         <source>Kernel</source>
         <translation>Kernel</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="330"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="327"/>
         <source>%1 completed: %2</source>
         <translation>%1 completado: %2</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="331"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="328"/>
         <source>%1 failed: %2</source>
         <translation>%1 falló: %2</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="339"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="340"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="336"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="337"/>
         <source>Cancel requested. Waiting for the active command to stop safely...</source>
         <translation>Cancelación solicitada. Esperando a que el comando activo se detenga de forma segura...</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="345"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="346"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="342"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="343"/>
         <source>Restart request failed. Please restart the computer manually.</source>
         <translation>No se pudo solicitar el reinicio. Reinicie el equipo manualmente.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="350"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="351"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="347"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="348"/>
         <source>Restart requested.</source>
         <translation>Reinicio solicitado.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="368"/>
-        <source>Closed-source driver prepared: %1. Restart required.</source>
-        <translation>Controlador cerrado preparado: %1. Se requiere reiniciar.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="369"/>
-        <source>Closed-source driver prepared. Restart required.</source>
-        <translation>Controlador cerrado preparado. Se requiere reiniciar.</translation>
-    </message>
-    <message>
         <location filename="../src/qml/pages/DriverPage.qml" line="372"/>
-        <source>Open-source graphics stack prepared. Restart required.</source>
-        <translation>Pila gráfica abierta preparada. Se requiere reiniciar.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="375"/>
         <source>NVIDIA driver cleanup completed. Restart recommended.</source>
         <translation>Limpieza del controlador NVIDIA completada. Se recomienda reiniciar.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="382"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="379"/>
         <source>Refreshing driver status shown on this page...</source>
         <translation>Actualizando el estado del controlador mostrado en esta página...</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="405"/>
-        <source>Closed-Source NVIDIA Driver (Proprietary)</source>
-        <translation>Controlador NVIDIA de código cerrado (propietario)</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="406"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="422"/>
         <source>Official Package • akmod-nvidia &amp; CUDA libraries</source>
         <translation>Paquete oficial • akmod-nvidia y bibliotecas CUDA</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="408"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="424"/>
         <source>Installs NVIDIA&apos;s official proprietary binary driver stack. This stack delivers full hardware feature support including DLSS, CUDA acceleration, NVENC hardware encoding, OptiX, and Ray Tracing.</source>
         <translation>Instala la pila oficial de controladores binarios propietarios de NVIDIA. Proporciona soporte completo de hardware incluyendo DLSS, aceleración CUDA, codificación NVENC, OptiX y Ray Tracing.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="410"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="426"/>
         <source>Downloads and installs akmod-nvidia, xorg-x11-drv-nvidia, and core libraries.</source>
         <translation>Descarga e instala akmod-nvidia, xorg-x11-drv-nvidia y bibliotecas principales.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="411"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="427"/>
         <source>Compiles the proprietary kernel module against your active Linux kernel (%1).</source>
         <translation>Compila el módulo de kernel propietario para su kernel de Linux activo (%1).</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="412"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="428"/>
         <source>Configures kernel parameters (nvidia-drm.modeset=1) and updates initramfs.</source>
         <translation>Configura parámetros del kernel (nvidia-drm.modeset=1) y actualiza initramfs.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="414"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="432"/>
         <source>A system reboot is required after installation to activate the kernel driver.</source>
         <translation>Se requiere reiniciar el sistema tras la instalación para activar el controlador del kernel.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="415"/>
-        <source>Install Closed-Source</source>
-        <translation>Instalar controlador propietario</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="425"/>
-        <source>Open-Source NVIDIA Driver (akmod-nvidia-open)</source>
-        <translation>Controlador NVIDIA de código abierto (akmod-nvidia-open)</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="426"/>
-        <source>Community &amp; NVIDIA Open Kernel Modules</source>
-        <translation>Módulos de kernel abiertos de NVIDIA y la comunidad</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="428"/>
-        <source>Installs NVIDIA&apos;s open-source kernel modules (GPL-compliant). Ideal for native Linux kernel integration, Wayland compositors, and modern containerized workloads.</source>
-        <translation>Instala los módulos de kernel de código abierto de NVIDIA (compatibles con GPL). Ideal para integración nativa con el kernel de Linux, compositores Wayland y contenedores modernos.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="430"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="448"/>
         <source>Hardware Requirement: Turing (RTX 2000 / GTX 1600) or newer GPU architecture.</source>
         <translation>Requisito de hardware: Arquitectura de GPU Turing (RTX 2000 / GTX 1600) o más reciente.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="431"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="449"/>
         <source>Compiles akmod-nvidia-open module directly with standard Linux kernel interfaces.</source>
         <translation>Compila el módulo akmod-nvidia-open directamente con interfaces estándar del kernel de Linux.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="432"/>
-        <source>Updates bootloader image (dracut initramfs) with open-source driver modules.</source>
-        <translation>Actualiza la imagen del gestor de arranque (dracut initramfs) con módulos de código abierto.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="434"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="454"/>
         <source>Older architectures (Pascal/Maxwell/GTX 1000 and earlier) are not supported by the open kernel module.</source>
         <translation>Las arquitecturas antiguas (Pascal/Maxwell/GTX 1000 y anteriores) no son compatibles con el módulo de kernel abierto.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="435"/>
-        <source>Install Open-Source</source>
-        <translation>Instalar código abierto</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="440"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="460"/>
         <source>Deep Clean &amp; Module Purge</source>
         <translation>Limpieza profunda y purga de módulos</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="441"/>
-        <source>Purge Stale Build Trees &amp; Lingering Artifacts</source>
-        <translation>Purgar árboles de compilación antiguos y artefactos residuales</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="443"/>
-        <source>Performs a complete diagnostic purge of obsolete NVIDIA DKMS builds, akmod compilation residues, broken kernel links, and lingering driver configurations.</source>
-        <translation>Realiza una purga completa de compilaciones DKMS obsoletas de NVIDIA, residuos de compilación akmod, enlaces rotos del kernel y configuraciones residuales.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="445"/>
-        <source>Cleans orphaned build artifacts in /var/cache/akmods and /lib/modules.</source>
-        <translation>Limpia artefactos huérfanos en /var/cache/akmods y /lib/modules.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="446"/>
-        <source>Restores pristine modprobe configurations and resets fallback driver options.</source>
-        <translation>Restaura configuraciones originales de modprobe y restablece opciones de controladores alternativos.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="447"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="467"/>
         <source>Prepares system for a clean, conflict-free driver installation or stack switch.</source>
         <translation>Prepara el sistema para una instalación limpia y sin conflictos o cambio de pila de controladores.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="449"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="469"/>
         <source>Does not delete personal files or desktop settings. Restart is recommended after cleanup.</source>
         <translation>No elimina archivos personales ni configuraciones del escritorio. Se recomienda reiniciar tras la limpieza.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="450"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="470"/>
         <source>Run Deep Clean</source>
         <translation>Ejecutar limpieza profunda</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="455"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="475"/>
         <source>Rebuild Kernel Modules &amp; Initramfs</source>
         <translation>Reconstruir módulos de kernel e Initramfs</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="456"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="476"/>
         <source>Akmods Force Recompilation &amp; Dracut Image Regeneration</source>
         <translation>Forzar recompilación de Akmods y regeneración de Dracut</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="458"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="478"/>
         <source>Forces a complete recompilation of NVIDIA kernel modules against the currently running Linux kernel and updates the early boot ramdisk (initramfs).</source>
         <translation>Fuerza una recompilación completa de módulos de NVIDIA para el kernel actual y actualiza el disco RAM de arranque temprano (initramfs).</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="460"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="480"/>
         <source>Executes &apos;akmods --force&apos; to recompile the driver for kernel: %1.</source>
         <translation>Ejecuta &apos;akmods --force&apos; para recompilar el controlador para el kernel: %1.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="461"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="481"/>
         <source>Executes &apos;dracut -f&apos; to package the compiled modules into the bootloader image.</source>
         <translation>Ejecuta &apos;dracut -f&apos; para empaquetar los módulos compilados en la imagen de arranque.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="462"/>
-        <source>Resolves black screens and Nouveau fallback issues caused by recent Linux kernel updates.</source>
-        <translation>Resuelve pantallas negras y problemas de retorno a Nouveau causados por actualizaciones recientes del kernel de Linux.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="464"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="484"/>
         <source>This operation may take 30 to 90 seconds depending on system CPU speed.</source>
         <translation>Esta operación puede tardar de 30 a 90 segundos según la velocidad de la CPU.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="476"/>
-        <source>Switching to the open-source NVIDIA driver stack...</source>
-        <translation>Cambiando a la pila de controladores NVIDIA de código abierto...</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="513"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="537"/>
         <source>Latest available: %1</source>
         <translation>Más reciente disponible: %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="515"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="539"/>
         <source>Driver catalog loaded</source>
         <translation>Catálogo de controladores cargado</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="516"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="540"/>
         <source>Driver scan pending</source>
         <translation>Escaneo de controladores pendiente</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="538"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="562"/>
         <source>New version available: %1</source>
         <translation>Nueva version disponible: %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="611"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="643"/>
         <source>Restart required — the installed NVIDIA driver will be active after reboot.</source>
         <translation>Se requiere reiniciar — el controlador NVIDIA instalado se activará después del reinicio.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="802"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="834"/>
         <source>UEFI Secure Boot is active.
 Third-party akmod modules require MOK signing.</source>
         <translation>UEFI Secure Boot está activo.
 Los módulos akmod de terceros requieren firma MOK.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="855"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="887"/>
         <source>NVIDIA driver controls are disabled because no NVIDIA GPU is detected. CPU, memory, and non-NVIDIA hardware monitoring remain available.</source>
         <translation>Los controles del controlador NVIDIA están deshabilitados porque no se detectó ninguna GPU NVIDIA. La monitorización de CPU, memoria y hardware no NVIDIA sigue disponible.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="874"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="886"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="896"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="906"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="626"/>
         <source>An NVIDIA GPU or NVIDIA passthrough device is required.</source>
         <translation>Se requiere una GPU NVIDIA o un dispositivo de paso NVIDIA (passthrough).</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="992"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="886"/>
+        <source>Manage proprietary NVIDIA modules and NVIDIA Open Kernel Modules. Switching modules requires Deep Clean first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="905"/>
+        <source>Managed installation and updates are available only in a Wayland session. Switch sessions, then refresh this page.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="919"/>
+        <source>NVIDIA Proprietary Module</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="927"/>
+        <source>Deep Clean is required before switching from NVIDIA Open Kernel Modules to the proprietary module.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="927"/>
+        <source>Install the proprietary NVIDIA kernel module (akmod-nvidia).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="933"/>
+        <source>akmod-nvidia-open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="940"/>
+        <source>Deep Clean is required before switching from the proprietary module to NVIDIA Open Kernel Modules.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="940"/>
+        <source>Install NVIDIA Open Kernel Modules (akmod-nvidia-open).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="946"/>
+        <source>Remove NVIDIA packages and clear DNF cache</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="950"/>
+        <source>An installed NVIDIA driver is required for cleanup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="951"/>
+        <source>Remove NVIDIA packages and clear cached repository metadata.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1060"/>
         <source>Collapse</source>
         <translation>Contraer</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="992"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1060"/>
         <source>View log</source>
         <translation>Ver registro</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1002"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1070"/>
         <source>Operation is running. Open the log to follow progress.</source>
         <translation>La operación está en curso. Abra el registro para seguir el progreso.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1004"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1072"/>
         <source>Latest activity is available. Open the log to review it.</source>
         <translation>La actividad más reciente está disponible. Abra el registro para revisarla.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1005"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1073"/>
         <source>No active driver operation.</source>
         <translation>No hay ninguna operación activa del controlador.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1561"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1486"/>
+        <source>NVIDIA Open Kernel Modules are currently detected. Run Deep Clean before installing the proprietary NVIDIA module.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1487"/>
+        <source>The proprietary NVIDIA module is currently detected. Run Deep Clean before installing NVIDIA Open Kernel Modules.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1656"/>
         <source>Proceed</source>
         <translation>Continuar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1779"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1889"/>
         <source>Secure Boot MOK Enrollment</source>
         <translation>Registro MOK de Secure Boot</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1787"/>
-        <source>One-time key authentication for signed NVIDIA modules</source>
-        <translation>Autenticación única de clave para módulos NVIDIA firmados</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1821"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1931"/>
         <source>Reboot &amp; Intercept</source>
         <translation>Reiniciar e interceptar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1822"/>
-        <source>Restart your computer. When prompted on the blue screen, press any key to enter Shim UEFI Key Management.</source>
-        <translation>Reinicie su equipo. Cuando se le solicite en la pantalla azul, presione cualquier tecla para entrar en la gestión de claves UEFI Shim.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1826"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1936"/>
         <source>Select &apos;Enroll MOK&apos;</source>
         <translation>Seleccione &apos;Enroll MOK&apos;</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1827"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1937"/>
         <source>Choose &apos;Enroll MOK&apos; from the menu, select &apos;Continue&apos;, and confirm with &apos;Yes&apos;.</source>
         <translation>Elija &apos;Enroll MOK&apos; en el menú, seleccione &apos;Continue&apos; y confirme con &apos;Yes&apos;.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1831"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1941"/>
         <source>Confirm &amp; Reboot</source>
         <translation>Confirmar y reiniciar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1832"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1942"/>
         <source>Enter your enrollment password if prompted, then select &apos;Reboot&apos;. Your modules are now permanently trusted.</source>
         <translation>Introduzca su contraseña de registro si se le solicita y seleccione &apos;Reboot&apos;. Sus módulos ahora son de confianza permanente.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1902"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="2012"/>
         <source>Got It</source>
         <translation>Entendido</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="339"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="340"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="345"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="346"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="350"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="351"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="382"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="558"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1181"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="336"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="337"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="342"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="343"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="347"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="348"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="379"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="582"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1249"/>
         <source>System</source>
         <translation>Sistema</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="205"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="201"/>
         <source>ACTIVE</source>
         <translation>ACTIVO</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="502"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1544"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="526"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1639"/>
         <source>Installing closed-source NVIDIA driver...</source>
         <translation>Instalando controlador NVIDIA de código cerrado...</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="584"/>
-        <source>Closed-source</source>
-        <translation>Código cerrado</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="586"/>
-        <source>Open-source</source>
-        <translation>Código abierto</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="588"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="612"/>
         <source>Mixed driver state</source>
         <translation>Estado mixto del controlador</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="589"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="613"/>
         <source>Not detected</source>
         <translation>No detectado</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="677"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="709"/>
         <source>Driver</source>
         <translation>Controlador</translation>
     </message>
     <message>
-        <source>Stack: %1</source>
-        <translation type="vanished">Pila: %1</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="868"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="920"/>
         <source>NVIDIA Official Release • Proprietary</source>
         <translation>Lanzamiento oficial de NVIDIA • Propietario</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="871"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="883"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="923"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="936"/>
         <source>INSTALLED</source>
         <translation>INSTALADO</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="874"/>
-        <source>Deep Clean is required before switching from open-source to closed-source.</source>
-        <translation>Se requiere Limpieza Profunda antes de cambiar de código abierto a código cerrado.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="874"/>
-        <source>Install official proprietary NVIDIA driver release (akmod-nvidia).</source>
-        <translation>Instalar la versión oficial del controlador privativo de NVIDIA (akmod-nvidia).</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="880"/>
-        <source>Community Release • akmod-open</source>
-        <translation>Versión comunitaria • akmod-open</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="886"/>
-        <source>Deep Clean is required before switching from closed-source to open-source.</source>
-        <translation>Se requiere Limpieza Profunda antes de cambiar de código cerrado a código abierto.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="886"/>
-        <source>Install community open-source kernel driver package (akmod-nvidia-open).</source>
-        <translation>Instalar paquete de controlador de kernel de código abierto comunitario (akmod-nvidia-open).</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="892"/>
-        <source>Purge artifacts &amp; stale DKMS</source>
-        <translation>Purgar artefactos y DKMS obsoletos</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="896"/>
-        <source>Remove leftover configurations and prepare system for clean driver installation.</source>
-        <translation>Eliminar configuraciones residuales y preparar el sistema para una instalación limpia del controlador.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="902"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="957"/>
         <source>Akmods &amp; initramfs regeneration</source>
         <translation>Regeneración de Akmods e initramfs</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="912"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="961"/>
+        <source>An installed NVIDIA driver is required to rebuild modules.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="961"/>
+        <source>Managed NVIDIA maintenance requires a Wayland session.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="969"/>
+        <source>Apply the latest compatible package version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="974"/>
+        <source>Install the available NVIDIA driver update.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="980"/>
         <source>Restart System</source>
         <translation>Reiniciar sistema</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="913"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="981"/>
         <source>Reboot to activate new driver</source>
         <translation>Reiniciar para activar el nuevo controlador</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="916"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="984"/>
         <source>System restart required to load newly installed kernel driver.</source>
         <translation>Se requiere reiniciar el sistema para cargar el controlador de kernel recién instalado.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="982"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1050"/>
         <source>Live</source>
         <translation>En vivo</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="982"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1050"/>
         <source>Reading</source>
         <translation>Leyendo</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1039"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1107"/>
         <source>&gt; Ready. Awaiting driver tasks, updates, or kernel operations...</source>
         <translation>&gt; Listo. Esperando tareas de controlador, actualizaciones u operaciones de kernel...</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1086"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1154"/>
         <source>Paused for reading</source>
         <translation>Pausado para lectura</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1093"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1161"/>
         <source>Copied ✓</source>
         <translation>Copiado ✓</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1093"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1161"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1111"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1179"/>
         <source>Follow</source>
         <translation>Seguir</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1178"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1246"/>
         <source>Driver is already up to date.</source>
         <translation>El controlador ya está actualizado.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1181"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1249"/>
         <source>Driver page status refreshed.</source>
         <translation>Estado de la página del controlador actualizado.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1181"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1249"/>
         <source>Driver page status refresh failed.</source>
         <translation>No se pudo actualizar el estado de la página del controlador.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1227"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1303"/>
         <source>Restart Computer</source>
         <translation>Reiniciar equipo</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1235"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1311"/>
         <source>A driver operation has completed and the computer must restart before the new graphics stack is active.</source>
         <translation>Una operación del controlador se completó y el equipo debe reiniciarse antes de que la nueva pila gráfica esté activa.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1264"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1340"/>
         <source>Secure Boot active: If prompted on restart, complete the one-time MOK enrollment to authenticate the driver.</source>
         <translation>Secure Boot activo: Si se le solicita al reiniciar, complete el registro MOK para autenticar el controlador.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1271"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1347"/>
         <source>MOK Guide</source>
         <translation>Guía MOK</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1292"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1368"/>
         <source>Restart Now</source>
         <translation>Reiniciar ahora</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1325"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1410"/>
         <source>Driver Is Already Current</source>
         <translation>El controlador ya está actualizado</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1333"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1418"/>
         <source>The installed NVIDIA driver already matches the latest version available from the configured driver sources. Reinstall only if you want to rebuild the driver packages and kernel module.</source>
         <translation>El controlador NVIDIA instalado ya coincide con la versión más reciente disponible en las fuentes de controladores configuradas. Reinstálelo solo si desea reconstruir los paquetes del controlador y el módulo del kernel.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1118"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1286"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1343"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1403"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1700"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1186"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1362"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1428"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1497"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1801"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="529"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="365"/>
+        <source>NVIDIA proprietary kernel module prepared: %1. Restart required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="366"/>
+        <source>NVIDIA proprietary kernel module prepared. Restart required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="369"/>
+        <source>NVIDIA Open Kernel Modules prepared. Restart required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="393"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="968"/>
+        <source>Update NVIDIA Driver</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="394"/>
+        <source>Apply the latest version from configured repositories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="396"/>
+        <source>Updates the installed NVIDIA driver package set, rebuilds its kernel module, and regenerates initramfs.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="398"/>
+        <source>Applies the latest compatible driver package version.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="399"/>
+        <source>Rebuilds the active NVIDIA kernel module with akmods.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="400"/>
+        <source>A restart is required before the updated kernel module is active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="403"/>
+        <source>Secure Boot is enabled. Confirm that a MOK key is enrolled before restarting, or the NVIDIA module may not load.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="404"/>
+        <source>The display session must be Wayland for this managed update flow.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="405"/>
+        <source>Update Driver</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="421"/>
+        <source>NVIDIA Proprietary Kernel Module (akmod-nvidia)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="431"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="453"/>
+        <source>Secure Boot is enabled. Enroll the akmods MOK key before restarting, or the NVIDIA module may not load.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="433"/>
+        <source>Install Proprietary Module</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="443"/>
+        <source>NVIDIA Open Kernel Modules (akmod-nvidia-open)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="444"/>
+        <source>NVIDIA driver with open kernel modules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="446"/>
+        <source>Installs NVIDIA Open Kernel Modules. This is not a full community graphics stack: NVIDIA userspace components remain part of the installation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="450"/>
+        <source>Updates bootloader image (dracut initramfs) with NVIDIA Open Kernel Modules.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="455"/>
+        <source>Install Open Kernel Modules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="461"/>
+        <source>Remove NVIDIA packages and clear cached metadata</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="463"/>
+        <source>Removes installed NVIDIA driver packages and clears DNF&apos;s cached metadata so a later installation starts from a clean package state.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="465"/>
+        <source>Removes akmod-nvidia, akmod-nvidia-open, NVIDIA Xorg packages, and nvidia-settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="466"/>
+        <source>Runs &apos;dnf clean all&apos; to remove cached repository metadata.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="482"/>
+        <source>Repairs NVIDIA module build failures that can follow Linux kernel updates.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="496"/>
+        <source>Installing NVIDIA Open Kernel Modules...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="508"/>
+        <source>Updating NVIDIA driver...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="553"/>
         <source>VM detected. NVIDIA passthrough required.</source>
         <translation>Máquina virtual detectada. Se requiere NVIDIA passthrough.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="531"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="555"/>
         <source>No NVIDIA GPU or driver.</source>
         <translation>No se detectó GPU NVIDIA ni controlador.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="533"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="557"/>
         <source>Refreshing status...</source>
         <translation>Actualizando estado...</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="535"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="559"/>
         <source>Restart may be required.</source>
         <translation>Es posible que sea necesario reiniciar.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="539"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="563"/>
         <source>Up to date.</source>
         <translation>Actualizado.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="542"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="566"/>
         <source>Installed.</source>
         <translation>Instalado.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="544"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="568"/>
         <source>Latest: %1</source>
         <translation>Más reciente: %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="546"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="570"/>
         <source>Catalog loaded.</source>
         <translation>Catálogo cargado.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="547"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="571"/>
         <source>Checking updates...</source>
         <translation>Buscando actualizaciones...</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="594"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="608"/>
+        <source>NVIDIA Proprietary Kernel Module</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="610"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="932"/>
+        <source>NVIDIA Open Kernel Modules</source>
+        <translation type="unfinished">Módulos abiertos del kernel NVIDIA</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="618"/>
         <source>State unreadable.</source>
         <translation>Estado no legible.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="596"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="620"/>
         <source>Signing may be required.</source>
         <translation>Puede requerirse firma.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="597"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="621"/>
         <source>No signing required.</source>
         <translation>No se requiere firma.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="648"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="628"/>
+        <source>Managed NVIDIA installation and updates require a Wayland session.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="680"/>
         <source>VM display. Use NVIDIA passthrough.</source>
         <translation>Pantalla VM. Utilice NVIDIA passthrough.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="649"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="681"/>
         <source>NVIDIA hardware required.</source>
         <translation>Se requiere hardware NVIDIA.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="697"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="729"/>
         <source>UPDATE AVAILABLE</source>
         <translation>ACTUALIZACIÓN DISPONIBLE</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="780"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="812"/>
         <source>MOK GUIDE ↗</source>
         <translation>GUÍA MOK ↗</translation>
     </message>
     <message>
-        <source>UEFI Secure Boot is active. Third-party akmod modules require MOK signing.</source>
-        <translation type="vanished">UEFI Secure Boot está activo. Los módulos akmod de terceros requieren firma MOK.</translation>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1897"/>
+        <source>Required before restarting after an NVIDIA driver installation</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="833"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1932"/>
+        <source>Before installation, generate and import the akmods key using your Fedora Secure Boot procedure. Then restart and enter Shim UEFI Key Management when prompted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="865"/>
         <source>Driver Stack</source>
         <translation>Pila de controladores</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="854"/>
-        <source>Manage closed-source and open-source NVIDIA stacks. Switching stacks requires Deep Clean first.</source>
-        <translation>Gestione pilas de controladores NVIDIA de código cerrado y abierto. Cambiar de pila requiere Limpieza Profunda primero.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="867"/>
-        <source>Closed Source</source>
-        <translation>Código Cerrado</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="879"/>
-        <source>Open Source</source>
-        <translation>Código Abierto</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="465"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="901"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="485"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="956"/>
         <source>Rebuild Modules</source>
         <translation>Reconstruir módulos</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="484"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="504"/>
         <source>Rebuilding kernel modules &amp; initramfs...</source>
         <translation>Reconstruyendo módulos de kernel e initramfs...</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="906"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="962"/>
         <source>Force-rebuilds akmod kernel modules and regenerates initramfs after kernel updates.</source>
         <translation>Fuerza la reconstrucción de módulos akmod y regenera initramfs tras actualizaciones del kernel.</translation>
     </message>
     <message>
-        <source>Restart</source>
-        <translation type="vanished">Reiniciar</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1085"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1153"/>
         <source>Command output is being captured.</source>
         <translation>Se está capturando la salida del comando.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1086"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1154"/>
         <source>Following output</source>
         <translation>Salida continua</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1349"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1434"/>
         <source>Reinstall Anyway</source>
         <translation>Reinstalar de todos modos</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1383"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1477"/>
         <source>Deep Clean Required</source>
         <translation>Limpieza Profunda Requerida</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1392"/>
-        <source>An open-source driver stack is currently detected. Run Deep Clean before installing the closed-source driver.</source>
-        <translation>Se detecta una pila de controladores de código abierto. Ejecute Limpieza Profunda antes de instalar el controlador de código cerrado.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1393"/>
-        <source>A closed-source driver stack is currently detected. Run Deep Clean before installing the open-source driver.</source>
-        <translation>Se detecta una pila de controladores de código cerrado. Ejecute Limpieza Profunda antes de instalar el controlador de código abierto.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1450"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1545"/>
         <source>NVIDIA License Review</source>
         <translation>Revisión de licencia NVIDIA</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1468"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1563"/>
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1531"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1626"/>
         <source>Reject</source>
         <translation>Rechazar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1539"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1634"/>
         <source>Accept</source>
         <translation>Aceptar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="634"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="666"/>
         <source>GPU</source>
         <translation>GPU</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="480"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1415"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="500"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1509"/>
         <source>Cleaning NVIDIA artifacts...</source>
         <translation>Limpiando restos de NVIDIA...</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="946"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1014"/>
         <source>Activity</source>
         <translation>Actividad</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1125"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1193"/>
         <source>Clear</source>
         <translation>Limpiar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="311"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="308"/>
         <source>General</source>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="554"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="578"/>
         <source>Closed-source NVIDIA driver installation requires reviewing and accepting the NVIDIA license terms before ro-Control can start the closed-source install workflow.</source>
         <translation>La instalación del controlador NVIDIA de código cerrado requiere revisar y aceptar los términos de licencia de NVIDIA antes de que ro-Control pueda iniciar el flujo de instalación de código cerrado.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="575"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="599"/>
         <source>Checking official NVIDIA driver sources...</source>
         <translation>Comprobando fuentes oficiales de controladores NVIDIA...</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="524"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="548"/>
         <source>No NVIDIA GPU</source>
         <translation>Sin GPU NVIDIA</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="744"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="776"/>
         <source>Secure Boot</source>
         <translation>Arranque seguro</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="791"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="823"/>
         <source>Enabled</source>
         <translation>Activado</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="792"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="824"/>
         <source>Disabled</source>
         <translation>Desactivado</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="793"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="825"/>
         <source>Unknown</source>
         <translation>Desconocido</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="846"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="878"/>
         <source>Rescan and check updates</source>
         <translation>Volver a escanear y buscar actualizaciones</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="476"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="480"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="484"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="502"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1142"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1143"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1147"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1148"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1150"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1155"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1156"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1158"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1415"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1544"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="496"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="500"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="504"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="526"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1210"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1211"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1215"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1216"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1218"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1223"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1224"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1226"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1509"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1639"/>
         <source>Installer</source>
         <translation>Instalador</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="575"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1167"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1168"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1173"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1175"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1176"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1178"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1187"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1188"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1192"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="508"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="599"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1235"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1236"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1241"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1243"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1244"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1246"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1255"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1256"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1260"/>
         <source>Updater</source>
         <translation>Actualizador</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="891"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1409"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="945"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1503"/>
         <source>Deep Clean</source>
         <translation>Limpieza profunda</translation>
     </message>
@@ -866,117 +940,117 @@ Los módulos akmod de terceros requieren firma MOK.</translation>
 <context>
     <name>FanController</name>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="210"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="234"/>
         <source>Hardware fan scan complete: %1 channel(s) detected.</source>
         <translation>Escaneo de ventiladores de hardware completado: %1 canal(es) detectado(s).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="280"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="313"/>
         <source>Polkit (pkexec) is not available to configure Coolbits.</source>
         <translation>Polkit (pkexec) no está disponible para configurar Coolbits.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="303"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="336"/>
         <source>Coolbits enabled successfully! A session restart or reboot is required to activate manual fan control.</source>
         <translation>¡Coolbits activado con éxito! Se requiere reiniciar la sesión o el equipo para habilitar el control manual del ventilador.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="311"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="344"/>
         <source>Failed to enable Coolbits: %1</source>
         <translation>No se pudo habilitar Coolbits: %1</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="866"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="920"/>
         <source>Automatic Mode: NVIDIA telemetry active.</source>
         <translation>Modo automático: Telemetría de NVIDIA activa.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="987"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1041"/>
         <source>Controllable</source>
         <translation>Controlable</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="988"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1042"/>
         <source>0 RPM (Silent)</source>
         <translation>0 RPM (Silencioso)</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="989"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1043"/>
         <source>Active (Auto)</source>
         <translation>Activo (Automático)</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="993"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1047"/>
         <source>Direct hardware fan control active via NV-CONTROL.</source>
         <translation>Control directo de hardware de ventilador activo mediante NV-CONTROL.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="995"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1049"/>
         <source>GPU is in 0 RPM silent mode (temperature &lt; 50°C). Fans automatically spin up under load.</source>
         <translation>La GPU está en modo silencioso de 0 RPM (temperatura &lt; 50°C). Los ventiladores giran automáticamente bajo carga.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="997"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1051"/>
         <source>Automatic VBIOS cooling curve active.</source>
         <translation>Curva de refrigeración automática de VBIOS activa.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1146"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1227"/>
         <source>Hardware BIOS thermal curve active with dynamic acoustic regulation.</source>
         <translation>Curva térmica de BIOS de hardware activa con regulación acústica dinámica.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1227"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1308"/>
         <source>Motherboard chassis airflow management curve active.</source>
         <translation>Curva de gestión de flujo de aire del chasis activa.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1296"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1354"/>
         <source>Hardware-managed</source>
         <translation>Administrado por hardware</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1300"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1358"/>
         <source>Live RPM telemetry is available; this channel is managed by system firmware.</source>
         <translation>Telemetría RPM en vivo disponible; este canal es administrado por el firmware del sistema.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1570"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1552"/>
         <source>Safety Override Active: GPU is hot (%1°C &gt;= %2°C). Fan forced to 100%.</source>
         <translation>Protección de seguridad activa: la GPU está caliente (%1°C &gt;= %2°C). Ventilador forzado al 100%.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1579"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1561"/>
         <source>Automatic Mode: Managed by VBIOS and driver.</source>
         <translation>Modo automático: Administrado por VBIOS y el controlador.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1584"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1566"/>
         <source>Silent Profile Active (%1% @ %2°C).</source>
         <translation>Perfil silencioso activo (%1% a %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1591"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1573"/>
         <source>Balanced Optimization Active (%1% @ %2°C).</source>
         <translation>Optimización equilibrada activa (%1% a %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1598"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1580"/>
         <source>Performance Profile Active (%1% @ %2°C).</source>
         <translation>Perfil de rendimiento activo (%1% a %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1605"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1587"/>
         <source>Manual Fan Speed Locked at %1%.</source>
         <translation>Velocidad manual del ventilador bloqueada al %1%.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1610"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1592"/>
         <source>Custom Curve Active (%1% @ %2°C).</source>
         <translation>Curva personalizada activa (%1% a %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1709"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1691"/>
         <source>NVIDIA fan control rejected by driver: Coolbits option is required in Xorg configuration.</source>
         <translation>El controlador rechazó el control del ventilador NVIDIA: se requiere la opción Coolbits en la configuración de Xorg.</translation>
     </message>
@@ -985,38 +1059,38 @@ Los módulos akmod de terceros requieren firma MOK.</translation>
     <name>FanPage</name>
     <message>
         <location filename="../src/qml/pages/FanPage.qml" line="186"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="751"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
         <source>Silent</source>
         <translation>Silencioso</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/FanPage.qml" line="187"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="752"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="999"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="751"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="996"/>
         <source>Balanced</source>
         <translation>Equilibrado</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/FanPage.qml" line="188"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="753"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="752"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/FanPage.qml" line="189"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="754"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="753"/>
         <source>Manual</source>
         <translation>Manual</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/FanPage.qml" line="190"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="755"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="754"/>
         <source>Custom</source>
         <translation>Personalizado</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/FanPage.qml" line="192"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="749"/>
         <source>Auto</source>
         <translation>Automático</translation>
     </message>
@@ -1041,144 +1115,124 @@ Los módulos akmod de terceros requieren firma MOK.</translation>
         <translation>Canales de refrigeración (%1)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="461"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="460"/>
         <source>Open fan settings</source>
         <translation>Abrir ajustes del ventilador</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="480"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="479"/>
         <source>SPEED</source>
         <translation>VELOCIDAD</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="545"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="544"/>
         <source>TEMPERATURE</source>
         <translation>TEMPERATURA</translation>
     </message>
     <message>
-        <source>Status unavailable</source>
-        <translation type="vanished">Estado no disponible</translation>
-    </message>
-    <message>
-        <source>Guard %1 °C</source>
-        <translation type="vanished">Protección %1 °C</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="627"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="626"/>
         <source>Slot %1</source>
         <translation>Ranura %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="682"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="681"/>
         <source>Only one RPM channel is exposed by Linux. CPU and chassis fans will appear automatically when the motherboard firmware or kernel sensor driver publishes their RPM telemetry.</source>
         <translation>Linux expone solo un canal de RPM. Los ventiladores de CPU y chasis aparecerán automáticamente cuando el firmware de la placa base o el controlador de sensores del kernel publiquen su telemetría.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="749"/>
         <source>Hardware dynamic</source>
         <translation>Dinámico por hardware</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="751"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
         <source>Zero-dB quiet</source>
         <translation>Silencioso Zero-dB</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="752"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="751"/>
         <source>Optimized blend</source>
         <translation>Equilibrio optimizado</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="753"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="752"/>
         <source>Maximum airflow</source>
         <translation>Flujo de aire máximo</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="754"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="753"/>
         <source>Locked speed</source>
         <translation>Velocidad fija</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="755"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="754"/>
         <source>User curve</source>
         <translation>Curva personalizada</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="847"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="844"/>
         <source>Custom Fan Curve Dynamics &amp; Control Points</source>
         <translation>Dinámica y puntos de control de curva personalizada</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="854"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="851"/>
         <source>Multi-point linear temperature ramp curve mapped to cooling PWM controllers.</source>
         <translation>Curva lineal de temperatura multipunto asignada a los controladores PWM de refrigeración.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="862"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="859"/>
         <source>Open Curve Studio &amp; Live Tuner ↗</source>
         <translation>Abrir estudio de curvas y sintonizador en vivo ↗</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="990"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="987"/>
         <source>Curve Presets:</source>
         <translation>Ajustes predefinidos de curva:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="998"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="995"/>
         <source>Zero-dB Stealth</source>
         <translation>Zero-dB Silencioso</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1000"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="997"/>
         <source>Aggressive</source>
         <translation>Agresivo</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1001"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="998"/>
         <source>Stepped</source>
         <translation>Escalonado</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1065"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1062"/>
         <source>Response Smoothing</source>
         <translation>Suavizado de respuesta</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1074"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1071"/>
         <source>Active — GPU changes are rate-limited (%1°C hysteresis).</source>
         <translation>Activo — Los cambios de GPU están limitados por velocidad (%1°C histéresis).</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1075"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1072"/>
         <source>Disabled — GPU changes apply immediately.</source>
         <translation>Deshabilitado — Los cambios de GPU se aplican de inmediato.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1146"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1142"/>
         <source>Disabled — does not alter fan profiles on battery.</source>
         <translation>Deshabilitado — No altera los perfiles de ventilador con batería.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1148"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1144"/>
         <source>Active — controllable GPU fan uses Silent on battery.</source>
         <translation>Activo — El ventilador controlable de la GPU utiliza Silencioso con batería.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1149"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1145"/>
         <source>Armed — uses Silent when battery power begins.</source>
         <translation>Preparado — Utiliza Silencioso cuando comienza la energía de la batería.</translation>
-    </message>
-    <message>
-        <source>Smooth transitions using hysteresis (%1°C).</source>
-        <translation type="vanished">Transiciones suaves usando histéresis (%1°C).</translation>
-    </message>
-    <message>
-        <source>Auto mode fallback when operating on battery.</source>
-        <translation type="vanished">Retorno a modo automático cuando funciona con batería.</translation>
-    </message>
-    <message>
-        <source>Acoustic priority profile. Maintains low fan speeds and delays ramp-up for quiet operation.</source>
-        <translation type="vanished">Perfil de prioridad acústica. Mantiene velocidades bajas y retrasa la aceleración para un funcionamiento silencioso.</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/FanPage.qml" line="201"/>
@@ -1196,34 +1250,14 @@ Los módulos akmod de terceros requieren firma MOK.</translation>
         <translation>Porcentaje fijo de velocidad del ventilador definido directamente por el control deslizante.</translation>
     </message>
     <message>
-        <source>Interpolated multi-point temperature-to-speed fan curve.</source>
-        <translation type="vanished">Curva de ventilador interpolada de temperatura a velocidad multipunto.</translation>
-    </message>
-    <message>
         <location filename="../src/qml/pages/FanPage.qml" line="210"/>
         <source>Default automatic profile managed natively by hardware VBIOS and kernel drivers.</source>
         <translation>Perfil automático predeterminado administrado de forma nativa por VBIOS y controladores del núcleo.</translation>
     </message>
     <message>
-        <source>Cooling &amp; Fan Management</source>
-        <translation type="vanished">Refrigeración y Gestión de Ventiladores</translation>
-    </message>
-    <message>
-        <source>Hardware-aware telemetry, cooling profiles, and multi-fan controls across the system.</source>
-        <translation type="vanished">Telemetría de hardware, perfiles de refrigeración y controles multiventilador en todo el sistema.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="342"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="340"/>
         <source>Refresh fan telemetry</source>
         <translation>Actualizar telemetría de ventiladores</translation>
-    </message>
-    <message>
-        <source>Unknown</source>
-        <translation type="obsolete">Desconocido</translation>
-    </message>
-    <message>
-        <source>Detected System Fans (%1)</source>
-        <translation type="vanished">Ventiladores del sistema detectados (%1)</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/FanPage.qml" line="278"/>
@@ -1236,126 +1270,55 @@ Los módulos akmod de terceros requieren firma MOK.</translation>
         <translation>Asistente de configuración de ventiladores</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="435"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="433"/>
         <source>Fan Device</source>
         <translation>Dispositivo de ventilador</translation>
     </message>
     <message>
-        <source>Speed</source>
-        <translation type="vanished">Velocidad</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="510"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="509"/>
         <source>RPM</source>
         <translation>RPM</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="489"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="519"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="552"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="488"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="518"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="551"/>
         <source>--</source>
         <translation>--</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="522"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="521"/>
         <source>0 RPM</source>
         <translation>0 RPM</translation>
     </message>
     <message>
-        <source>Temperature</source>
-        <translation type="vanished">Temperatura</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="711"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="710"/>
         <source>Optimization Profiles &amp; Control</source>
         <translation>Perfiles de Optimización y Control</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="731"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="730"/>
         <source>ACTIVE: %1</source>
         <translation>ACTIVO: %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="732"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="731"/>
         <source>MANAGED: %1</source>
         <translation>ADMINISTRADO: %1</translation>
     </message>
     <message>
-        <source>Default</source>
-        <translation type="vanished">Predeterminado</translation>
-    </message>
-    <message>
-        <source>Quiet</source>
-        <translation type="vanished">Silencioso</translation>
-    </message>
-    <message>
-        <source>Optimized</source>
-        <translation type="vanished">Optimizado</translation>
-    </message>
-    <message>
-        <source>Cooling</source>
-        <translation type="vanished">Refrigeración</translation>
-    </message>
-    <message>
-        <source>Fixed</source>
-        <translation type="vanished">Fijo</translation>
-    </message>
-    <message>
-        <source>Curve</source>
-        <translation type="vanished">Curva</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1137"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1133"/>
         <source>Battery Profile Sync</source>
         <translation>Sincronización de perfil de batería</translation>
-    </message>
-    <message>
-        <source>Automatically switch to Auto mode when running on battery to preserve energy.</source>
-        <translation type="vanished">Cambiar automáticamente al modo Automático cuando funciona con batería para ahorrar energía.</translation>
-    </message>
-    <message>
-        <source>Target Manual Speed</source>
-        <translation type="vanished">Velocidad manual objetivo</translation>
-    </message>
-    <message>
-        <source>Presets:</source>
-        <translation type="vanished">Ajustes predefinidos:</translation>
-    </message>
-    <message>
-        <source>Custom Temperature-Speed Curve</source>
-        <translation type="vanished">Curva personalizada de temperatura y velocidad</translation>
-    </message>
-    <message>
-        <source>Reset to Default Curve</source>
-        <translation type="vanished">Restablecer a curva predeterminada</translation>
-    </message>
-    <message>
-        <source>Point %1: %2 °C</source>
-        <translation type="vanished">Punto %1: %2 °C</translation>
     </message>
 </context>
 <context>
     <name>FanRescanPopup</name>
     <message>
         <location filename="../src/qml/components/FanRescanPopup.qml" line="15"/>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="75"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="88"/>
         <source>Initializing Hardware Probe...</source>
         <translation>Inicializando sondeo de hardware...</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="82"/>
-        <source>Probing Linux HWMON &amp; ACPI kernel thermal controllers...</source>
-        <translation>Sondeando controladores térmicos HWMON y ACPI del kernel...</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="134"/>
-        <source>Querying NVIDIA NV-CONTROL &amp; GPU fan tachometers...</source>
-        <translation>Consultando tacómetros de ventilador NV-CONTROL y GPU...</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="146"/>
-        <source>Calibrating zero-RPM thresholds &amp; refreshing telemetry...</source>
-        <translation>Calibrando umbrales zero-RPM y actualizando telemetría...</translation>
     </message>
     <message>
         <location filename="../src/qml/components/FanRescanPopup.qml" line="205"/>
@@ -1373,171 +1336,197 @@ Los módulos akmod de terceros requieren firma MOK.</translation>
         <translation>Detección de hardware completada</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="216"/>
-        <source>Enumerate cooling fans, calibrate PWM headers, and sync sensor registers</source>
-        <translation>Enumerar ventiladores, calibrar puertos PWM y sincronizar registros de sensores</translation>
-    </message>
-    <message>
         <location filename="../src/qml/components/FanRescanPopup.qml" line="218"/>
         <source>Please wait while hardware sensors are probed...</source>
         <translation>Espere mientras se sondean los sensores de hardware...</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="219"/>
-        <source>All system cooling devices have been synchronized</source>
-        <translation>Todos los dispositivos de refrigeración han sido sincronizados</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="251"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="253"/>
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="291"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="293"/>
         <source>What will this hardware setup wizard do?</source>
         <translation>¿Qué hará este asistente de configuración de hardware?</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="316"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="318"/>
         <source>Kernel &amp; HWMON Thermal Zones</source>
         <translation>Zonas térmicas del kernel y HWMON</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="322"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="324"/>
         <source>Scans /sys/class/thermal and motherboard hardware monitoring chips</source>
         <translation>Escanea /sys/class/thermal y los chips de monitoreo de hardware de la placa base</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="348"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="350"/>
         <source>NVIDIA NV-CONTROL &amp; Fan Tachometers</source>
         <translation>NVIDIA NV-CONTROL y tacómetros de ventilador</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="354"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="356"/>
         <source>Probes dedicated GPU cooling channels and PWM control registers</source>
         <translation>Sondea los canales de refrigeración de la GPU y los registros de control PWM</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="380"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="382"/>
         <source>Profile &amp; Zero-dB Calibration</source>
         <translation>Calibración de perfil y Zero-dB</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="386"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="388"/>
         <source>Recalibrates zero-RPM stops, baseline curves, and safety overrides</source>
         <translation>Recalibra las paradas a cero RPM, las curvas base y las anulaciones de seguridad</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="414"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="416"/>
         <source>Non-intrusive probe: Fan speeds will not be interrupted during this scan.</source>
         <translation>Sonda no intrusiva: las velocidades del ventilador no se interrumpirán durante este escaneo.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="672"/>
-        <source>%1 Active cooling fan device(s) synchronized and calibrated.</source>
-        <translation>%1 dispositivo(s) de ventilador de refrigeración activo(s) sincronizado(s) y calibrado(s).</translation>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="95"/>
+        <source>Preparing a read-only hardware probe...</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="684"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="101"/>
+        <source>Probing Linux HWMON, ACPI, and NVIDIA fan interfaces...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="113"/>
+        <source>Scan complete: %1 readable fan channel(s) found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="114"/>
+        <source>Scan complete: no readable fan channels were exposed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="216"/>
+        <source>Enumerate cooling fans and refresh exposed sensor telemetry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="220"/>
+        <source>Detected cooling telemetry is ready to review</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="221"/>
+        <source>No readable fan telemetry was exposed by this system</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="625"/>
+        <source>Telemetry Refresh &amp; Sensor Sync</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="667"/>
+        <source>Hardware Scan Completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="668"/>
+        <source>Scan Completed Without Readable Fan Channels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="677"/>
+        <source>%1 cooling channel(s) reported live telemetry. %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="680"/>
+        <source>The scan is complete, but firmware or the driver did not expose readable fan telemetry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="691"/>
         <source>Discovered Cooling Channels</source>
         <translation>Canales de refrigeración detectados</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="691"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="698"/>
         <source>found</source>
         <translation>encontrados</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="748"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="755"/>
         <source>Fan Channel</source>
         <translation>Canal de ventilador</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="757"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="764"/>
         <source>%1 RPM • %2%</source>
         <translation>%1 RPM • %2%</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="758"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="765"/>
         <source>0 RPM • Zero-dB / Passive</source>
         <translation>0 RPM • Zero-dB / Pasivo</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="777"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="784"/>
         <source>Controllable</source>
         <translation>Controlable</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="777"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="784"/>
         <source>Monitored</source>
         <translation>Solo monitorización</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="804"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="811"/>
         <source>ACPI Standard Thermal Mode</source>
         <translation>Modo térmico estándar ACPI</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="811"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="818"/>
         <source>Direct PWM fan tachometers are not exposed by the hardware. Thermal management is handled automatically via motherboard ACPI profiles.</source>
         <translation>Los tacómetros PWM directos del ventilador no están expuestos por el hardware. La gestión térmica se maneja automáticamente mediante los perfiles ACPI de la placa base.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="827"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="834"/>
         <source>Testing Airflow... (%1s)</source>
         <translation>Probando flujo de aire... (%1s)</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="827"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="834"/>
         <source>Quick Acoustic Test (4s)</source>
         <translation>Prueba acústica rápida (4s)</translation>
     </message>
     <message>
-        <source>• Scans kernel thermal zones (/sys/class/thermal) and Linux HWMON sensor chips.
-• Probes NVIDIA NV-CONTROL driver registers for dedicated GPU fans.
-• Detects newly connected PWM chassis coolers and GPU fans.
-• Recalibrates RPM tachometers, zero-dB points, and baseline curves.</source>
-        <translation type="vanished">• Escanea zonas térmicas del kernel (/sys/class/thermal) y chips HWMON.
-• Sondea registros del controlador NVIDIA NV-CONTROL para ventiladores GPU.
-• Detecta nuevos ventiladores de chasis PWM y GPU.
-• Recalibra tacómetros RPM, puntos zero-dB y curvas base.</translation>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="876"/>
+        <source>A readable fan channel was found, but this hardware does not expose manual fan control.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="431"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="433"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="459"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="461"/>
         <source>Run Setup Wizard</source>
         <translation>Ejecutar asistente</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="577"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="579"/>
         <source>Linux HWMON &amp; ACPI Controllers</source>
         <translation>Controladores Linux HWMON y ACPI</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="600"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="602"/>
         <source>NVIDIA GPU NV-CONTROL Interfaces</source>
         <translation>Interfaces NVIDIA GPU NV-CONTROL</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="623"/>
-        <source>Telemetry Calibration &amp; Sensor Sync</source>
-        <translation>Calibración de telemetría y sincronización</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="664"/>
-        <source>Hardware Scan Successfully Completed!</source>
-        <translation>¡Escaneo de hardware completado con éxito!</translation>
-    </message>
-    <message>
-        <source>%1 Active cooling fan device(s) synchronized and ready for curve tuning.</source>
-        <translation type="vanished">%1 dispositivo(s) de ventilador sincronizado(s) y listo(s) para ajuste de curva.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/FanRescanPopup.qml" line="870"/>
+        <location filename="../src/qml/components/FanRescanPopup.qml" line="885"/>
         <source>Done</source>
         <translation>Listo</translation>
     </message>
@@ -1545,380 +1534,264 @@ Los módulos akmod de terceros requieren firma MOK.</translation>
 <context>
     <name>FanSettingsPopup</name>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="560"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="572"/>
         <source>Silent</source>
         <translation>Silencioso</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="561"/>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="826"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="573"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="841"/>
         <source>Balanced</source>
         <translation>Equilibrado</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="562"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="574"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="563"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="575"/>
         <source>Manual</source>
         <translation>Manual</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="564"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="576"/>
         <source>Custom</source>
         <translation>Personalizado</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="559"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="571"/>
         <source>Auto</source>
         <translation>Automático</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="122"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="123"/>
         <source>Acoustic priority profile. Minimizes fan noise and delays speed ramp-up for quiet operation.</source>
         <translation>Perfil de prioridad acústica. Minimiza el ruido del ventilador para un funcionamiento silencioso.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="124"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="125"/>
         <source>Dynamically balances thermal dissipation and acoustic comfort based on workload.</source>
         <translation>Equilibra dinámicamente la disipación térmica y el confort acústico según la carga de trabajo.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="126"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="127"/>
         <source>Aggressive cooling profile providing maximum sustained airflow for heavy loads.</source>
         <translation>Perfil de refrigeración agresivo que proporciona el máximo flujo de aire continuo.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="128"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="129"/>
         <source>Locked fixed fan speed percentage set directly by the manual slider.</source>
         <translation>Porcentaje de velocidad fija bloqueada establecida directamente mediante el control manual.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="130"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="131"/>
         <source>Multi-point custom temperature-to-speed fan curve with smooth interpolation.</source>
         <translation>Curva de temperatura a velocidad personalizada multipunto con interpolación suave.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="133"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="134"/>
         <source>Automatic cooling curve managed natively by hardware VBIOS / BIOS thermal controllers.</source>
         <translation>Curva de refrigeración automática administrada de forma nativa por controladores térmicos de hardware.</translation>
     </message>
     <message>
-        <source>Fan Settings</source>
-        <translation type="vanished">Configuración de Ventiladores</translation>
-    </message>
-    <message>
-        <source>Device Identifier: %1</source>
-        <translation type="vanished">Identificador de dispositivo: %1</translation>
-    </message>
-    <message>
-        <source>Live Speed</source>
-        <translation type="vanished">Velocidad en vivo</translation>
-    </message>
-    <message>
-        <source>Live RPM</source>
-        <translation type="vanished">RPM en vivo</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="469"/>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="514"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="480"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="526"/>
         <source>--</source>
         <translation>--</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="471"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="482"/>
         <source>0 RPM</source>
         <translation>0 RPM</translation>
     </message>
     <message>
-        <source>0 RPM Silent Mode</source>
-        <translation type="vanished">Modo silencioso 0 RPM</translation>
-    </message>
-    <message>
-        <source>Active Cooling Airflow</source>
-        <translation type="vanished">Flujo de aire de refrigeración activo</translation>
-    </message>
-    <message>
-        <source>Temperature</source>
-        <translation type="vanished">Temperatura</translation>
-    </message>
-    <message>
-        <source>High Load</source>
-        <translation type="vanished">Carga alta</translation>
-    </message>
-    <message>
-        <source>Moderate</source>
-        <translation type="vanished">Moderada</translation>
-    </message>
-    <message>
-        <source>Cool / Normal</source>
-        <translation type="vanished">Fresco / Normal</translation>
-    </message>
-    <message>
-        <source>Optimization Profile</source>
-        <translation type="vanished">Perfil de optimización</translation>
-    </message>
-    <message>
-        <source>Default</source>
-        <translation type="vanished">Predeterminado</translation>
-    </message>
-    <message>
-        <source>Quiet</source>
-        <translation type="vanished">Silencioso</translation>
-    </message>
-    <message>
-        <source>Optimized</source>
-        <translation type="vanished">Optimizado</translation>
-    </message>
-    <message>
-        <source>Cooling</source>
-        <translation type="vanished">Refrigeración</translation>
-    </message>
-    <message>
-        <source>Fixed</source>
-        <translation type="vanished">Fijo</translation>
-    </message>
-    <message>
-        <source>Curve</source>
-        <translation type="vanished">Curva</translation>
-    </message>
-    <message>
-        <source>Manual Fixed Fan Speed</source>
-        <translation type="vanished">Velocidad fija manual</translation>
-    </message>
-    <message>
-        <source>Quick Presets:</source>
-        <translation type="vanished">Ajustes rápidos:</translation>
-    </message>
-    <message>
-        <source>Custom Temperature Curve Points</source>
-        <translation type="vanished">Puntos de curva de temperatura personalizados</translation>
-    </message>
-    <message>
-        <source>Reset Curve</source>
-        <translation type="vanished">Restablecer curva</translation>
-    </message>
-    <message>
-        <source>Point %1: %2 °C</source>
-        <translation type="vanished">Punto %1: %2 °C</translation>
-    </message>
-    <message>
-        <source>Profile Cooling Behavior</source>
-        <translation type="vanished">Comportamiento de refrigeración del perfil</translation>
-    </message>
-    <message>
-        <source>Fans stay at 0% RPM under 45°C, ramping up smoothly to 50% at 68°C and 100% at 85°C.</source>
-        <translation type="vanished">Los ventiladores se mantienen a 0% RPM bajo 45°C, aumentando suavemente al 50% a 68°C y al 100% a 85°C.</translation>
-    </message>
-    <message>
-        <source>Active cooling floor at 45% speed, aggressively ramping to 80% at 65°C and 100% at 82°C.</source>
-        <translation type="vanished">Piso de refrigeración activa al 45%, aumentando agresivamente al 80% a 65°C y al 100% a 82°C.</translation>
-    </message>
-    <message>
-        <source>Standard curve: 30% baseline cooling, smoothly ramping to 65% at 68°C and 100% at 85°C.</source>
-        <translation type="vanished">Curva estándar: refrigeración base del 30%, aumentando suavemente al 65% a 68°C y al 100% a 85°C.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1140"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1155"/>
         <source>Native automatic curve dynamically controlled by hardware thermals and firmware.</source>
         <translation>Curva automática nativa controlada dinámicamente por la temperatura del hardware y firmware.</translation>
     </message>
     <message>
-        <source>Emergency 100% Thermal Guard</source>
-        <translation type="vanished">Protección térmica de emergencia al 100%</translation>
-    </message>
-    <message>
-        <source>✓ Fan configuration applied and saved successfully!</source>
-        <translation type="vanished">✓ ¡Configuración del ventilador aplicada y guardada con éxito!</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1297"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1317"/>
         <source>Reset to Auto</source>
         <translation>Restablecer a Auto</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="361"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="369"/>
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="246"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="249"/>
         <source>Fan Settings &amp; Dynamics</source>
         <translation>Ajustes y dinámica de ventilador</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="305"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="310"/>
         <source>Save name</source>
         <translation>Guardar nombre</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="305"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="310"/>
         <source>Rename fan</source>
         <translation>Renombrar ventilador</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="326"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="333"/>
         <source>Hardware Channel: %1 • Interface: %2</source>
         <translation>Canal de hardware: %1 • Interfaz: %2</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="404"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="414"/>
         <source>LIVE SPEED</source>
         <translation>VELOCIDAD EN VIVO</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="461"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="472"/>
         <source>TACHOMETER</source>
         <translation>TACÓMETRO</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="481"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="492"/>
         <source>Silent Zero-RPM Active</source>
         <translation>Modo silencioso Zero-RPM activo</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="482"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="493"/>
         <source>Active Airflow Cooling</source>
         <translation>Refrigeración activa por flujo de aire</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="505"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="517"/>
         <source>TEMPERATURE</source>
         <translation>TEMPERATURA</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="528"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="540"/>
         <source>Thermal Load Elevated</source>
         <translation>Carga térmica elevada</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="529"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="541"/>
         <source>Moderate Thermals</source>
         <translation>Temperatura moderada</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="530"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="542"/>
         <source>Optimal Thermal State</source>
         <translation>Estado térmico óptimo</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="545"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="557"/>
         <source>Select Optimization Profile</source>
         <translation>Seleccionar perfil de optimización</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="624"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="635"/>
         <source>Manual Fixed Fan Speed Target</source>
         <translation>Velocidad fija manual de ventilador</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="691"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="706"/>
         <source>Quick Speed Presets:</source>
         <translation>Ajustes rápidos de velocidad:</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="702"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="717"/>
         <source>0% (Stop)</source>
         <translation>0% (Detener)</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="741"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="757"/>
         <source>Interactive Custom Fan Curve &amp; Presets</source>
         <translation>Curva personalizada interactiva y ajustes predefinidos</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="750"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="766"/>
         <source>Reset curve</source>
         <translation>Restablecer curva</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="788"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="803"/>
         <source>Restore the default balanced fan curve</source>
         <translation>Restaurar la curva equilibrada predeterminada del ventilador</translation>
     </message>
     <message>
-        <source>Reset Baseline</source>
-        <translation type="vanished">Restablecer base</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="806"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="821"/>
         <source>Presets:</source>
         <translation>Ajustes predefinidos:</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="816"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="831"/>
         <source>Zero-dB Stealth</source>
         <translation>Zero-dB Silencioso</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="836"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="851"/>
         <source>Aggressive</source>
         <translation>Agresivo</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="846"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="861"/>
         <source>Stepped</source>
         <translation>Escalonado</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1057"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1072"/>
         <source>Point %1 (%2°C)</source>
         <translation>Punto %1 (%2°C)</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1126"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1141"/>
         <source>Profile Cooling Dynamics</source>
         <translation>Dinámica de refrigeración del perfil</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1135"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1150"/>
         <source>Acoustic priority: Fans remain in Zero-dB silent state under 45°C, ramping gently to 50% at 68°C and 100% at 85°C.</source>
         <translation>Prioridad acústica: Ventiladores en silencio Zero-dB bajo 45°C, subiendo suavemente a 50% a 68°C y 100% a 85°C.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1137"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1152"/>
         <source>Aggressive cooling: 45% minimum speed floor, ramping rapidly to 80% at 65°C and 100% at 82°C for heavy compute/gaming.</source>
         <translation>Refrigeración agresiva: 45% de velocidad mínima, subiendo rápidamente a 80% a 65°C y 100% a 82°C para cargas pesadas.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1139"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1154"/>
         <source>Optimized baseline: 30% speed floor, dynamically balancing acoustic comfort and thermal dissipation.</source>
         <translation>Base optimizada: 30% de velocidad mínima, equilibrando confort acústico y disipación térmica.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1158"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1173"/>
         <source>Emergency 100% Thermal Guard Threshold</source>
         <translation>Umbral de protección térmica de emergencia al 100%</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1235"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1250"/>
         <source>Fan configuration applied and saved successfully!</source>
         <translation>¡Configuración de ventilador aplicada y guardada correctamente!</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1254"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1271"/>
         <source>Testing (100%)...</source>
         <translation>Probando (100%)...</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1254"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1271"/>
         <source>Quick Test 100%</source>
         <translation>Prueba rápida 100%</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1281"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1300"/>
         <source>Direct fan control unavailable</source>
         <translation>El control directo del ventilador no está disponible</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1289"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1309"/>
         <source>GPU fan test could not start. Enable NVIDIA Coolbits / fan control first.</source>
         <translation>No se pudo iniciar la prueba del ventilador de la GPU. Active primero NVIDIA Coolbits o el control del ventilador.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1326"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1345"/>
         <source>Apply &amp; Save Settings</source>
         <translation>Aplicar y guardar configuración</translation>
     </message>
@@ -1926,37 +1799,37 @@ Los módulos akmod de terceros requieren firma MOK.</translation>
 <context>
     <name>GpuMonitor</name>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="622"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="658"/>
         <source>No NVIDIA GPU detected in this session.</source>
         <translation>No se detectó ninguna GPU NVIDIA en esta sesión.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="625"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="661"/>
         <source>NVIDIA driver is not exposing telemetry on this system.</source>
         <translation>El controlador NVIDIA no expone telemetría en este sistema.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="689"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="725"/>
         <source>GPU telemetry is being read from Linux metrics.</source>
         <translation>La telemetría de la GPU se lee desde métricas de Linux.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="690"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="726"/>
         <source>GPU temperature is being read from system sensors.</source>
         <translation>La temperatura de la GPU se lee desde los sensores del sistema.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="700"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="736"/>
         <source>GPU telemetry output could not be parsed.</source>
         <translation>No se pudo analizar la salida de telemetría de la GPU.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="785"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="826"/>
         <source>GPU telemetry output did not contain usable metrics.</source>
         <translation>La salida de telemetría de la GPU no contenía métricas utilizables.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="874"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="920"/>
         <source>GPU telemetry is being read from nvidia-smi.</source>
         <translation>La telemetría de la GPU se lee desde nvidia-smi.</translation>
     </message>
@@ -2134,10 +2007,6 @@ Los módulos akmod de terceros requieren firma MOK.</translation>
         <translation>Tema</translation>
     </message>
     <message>
-        <source>Ro-ASD driver control and system diagnostics</source>
-        <translation type="vanished">Control de controladores y diagnóstico del sistema Ro-ASD</translation>
-    </message>
-    <message>
         <location filename="../src/qml/Main.qml" line="258"/>
         <source>Cooling &amp; Fans</source>
         <translation>Refrigeración y Ventiladores</translation>
@@ -2153,59 +2022,59 @@ Los módulos akmod de terceros requieren firma MOK.</translation>
         <translation>Monitor</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="758"/>
+        <location filename="../src/main.cpp" line="780"/>
         <source>Open ro-Control</source>
         <translation>Abrir ro-Control</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="762"/>
+        <location filename="../src/main.cpp" line="784"/>
         <source>Fan Profile</source>
         <translation>Perfil de ventilador</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="764"/>
+        <location filename="../src/main.cpp" line="786"/>
         <source>Auto</source>
         <translation>Automático</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="766"/>
+        <location filename="../src/main.cpp" line="788"/>
         <source>Silent</source>
         <translation>Silencioso</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="768"/>
-        <location filename="../src/main.cpp" line="796"/>
+        <location filename="../src/main.cpp" line="790"/>
+        <location filename="../src/main.cpp" line="818"/>
         <source>Balanced</source>
         <translation>Equilibrado</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="770"/>
-        <location filename="../src/main.cpp" line="798"/>
+        <location filename="../src/main.cpp" line="792"/>
+        <location filename="../src/main.cpp" line="820"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="792"/>
+        <location filename="../src/main.cpp" line="814"/>
         <source>Power Preset</source>
         <translation>Ajuste de energía</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="794"/>
+        <location filename="../src/main.cpp" line="816"/>
         <source>Eco</source>
         <translation>Eco</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="829"/>
+        <location filename="../src/main.cpp" line="851"/>
         <source>Fan Profile: %1</source>
         <translation>Perfil de ventilador: %1</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="831"/>
+        <location filename="../src/main.cpp" line="853"/>
         <source>Power Preset: %1</source>
         <translation>Preajuste de energía: %1</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="842"/>
+        <location filename="../src/main.cpp" line="864"/>
         <source>Quit</source>
         <translation>Salir</translation>
     </message>
@@ -2284,10 +2153,6 @@ Los módulos akmod de terceros requieren firma MOK.</translation>
         <location filename="../src/qml/pages/MonitorPage.qml" line="151"/>
         <source>HARDWARE MANAGED</source>
         <translation>ADMINISTRADO POR HARDWARE</translation>
-    </message>
-    <message>
-        <source>GPU telemetry unavailable — check NVIDIA driver session permissions, then refresh.</source>
-        <translation type="vanished">La telemetría de la GPU no está disponible — compruebe los permisos de sesión del controlador NVIDIA y actualice.</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/MonitorPage.qml" line="267"/>
@@ -2381,48 +2246,44 @@ Haga clic para cambiar de GPU (%2 disponible)</translation>
         <translation>Límite:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="969"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="968"/>
         <source>Show less</source>
         <translation>Mostrar menos</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="969"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="968"/>
         <source>All processes</source>
         <translation>Todos los procesos</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1087"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1086"/>
         <source>VRAM ALLOCATION</source>
         <translation>ASIGNACIÓN VRAM</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1220"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1219"/>
         <source>End Task</source>
         <translation>Finalizar tarea</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1282"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1281"/>
         <source>End GPU process?</source>
         <translation>¿Finalizar el proceso de la GPU?</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1289"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1288"/>
         <source>%1 (PID %2) will be terminated. Unsaved work may be lost.</source>
         <translation>Se finalizará %1 (PID %2). El trabajo no guardado podría perderse.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1299"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1298"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1303"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1302"/>
         <source>End process</source>
         <translation>Finalizar proceso</translation>
-    </message>
-    <message>
-        <source>Temperature: %1</source>
-        <translation type="vanished">Temperatura: %1</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/MonitorPage.qml" line="342"/>
@@ -2430,69 +2291,9 @@ Haga clic para cambiar de GPU (%2 disponible)</translation>
         <translation>GPU</translation>
     </message>
     <message>
-        <source>Temp: %1 | Fan: %2% (%3 RPM)</source>
-        <translation type="vanished">Temp: %1 | Ventilador: %2% (%3 RPM)</translation>
-    </message>
-    <message>
-        <source>Temp: %1 | Fan: 0% (0 RPM)</source>
-        <translation type="vanished">Temp: %1 | Ventilador: 0% (0 RPM)</translation>
-    </message>
-    <message>
-        <source>Temp: %1 | Fan: %2%</source>
-        <translation type="vanished">Temp: %1 | Ventilador: %2%</translation>
-    </message>
-    <message>
         <location filename="../src/qml/pages/MonitorPage.qml" line="503"/>
         <source>Memory</source>
         <translation>Memoria</translation>
-    </message>
-    <message>
-        <source>Usage: %1</source>
-        <translation type="vanished">Uso: %1</translation>
-    </message>
-    <message>
-        <source>System</source>
-        <translation type="vanished">Sistema</translation>
-    </message>
-    <message>
-        <source>Operating System</source>
-        <translation type="vanished">Sistema operativo</translation>
-    </message>
-    <message>
-        <source>Desktop</source>
-        <translation type="vanished">Escritorio</translation>
-    </message>
-    <message>
-        <source>Kernel</source>
-        <translation type="vanished">Kernel</translation>
-    </message>
-    <message>
-        <source>Device Type</source>
-        <translation type="vanished">Tipo de dispositivo</translation>
-    </message>
-    <message>
-        <source>GPU Fan Speed</source>
-        <translation type="vanished">Velocidad del Ventilador de GPU</translation>
-    </message>
-    <message>
-        <source>Speed: %1% | Target: %2% | RPM: %3</source>
-        <translation type="vanished">Velocidad: %1% | Objetivo: %2% | RPM: %3</translation>
-    </message>
-    <message>
-        <source>Auto</source>
-        <translation type="vanished">Automático</translation>
-    </message>
-    <message>
-        <source>Usage: %1 (%2%)</source>
-        <translation type="vanished">Uso: %1 (%2%)</translation>
-    </message>
-    <message>
-        <source>Live Resource Bars</source>
-        <translation type="vanished">Barras de recursos en vivo</translation>
-    </message>
-    <message>
-        <source>Power Source</source>
-        <translation type="vanished">Fuente de energía</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/MonitorPage.qml" line="688"/>
@@ -2500,17 +2301,9 @@ Haga clic para cambiar de GPU (%2 disponible)</translation>
         <translation>Rendimiento y energía de la GPU</translation>
     </message>
     <message>
-        <source>Power Draw / Limit</source>
-        <translation type="vanished">Consumo / Límite de energía</translation>
-    </message>
-    <message>
         <location filename="../src/qml/pages/MonitorPage.qml" line="713"/>
         <source>Dynamic Power</source>
         <translation>Energía dinámica</translation>
-    </message>
-    <message>
-        <source>Graphics Clock</source>
-        <translation type="vanished">Reloj de gráficos</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/MonitorPage.qml" line="707"/>
@@ -2518,29 +2311,9 @@ Haga clic para cambiar de GPU (%2 disponible)</translation>
         <translation>Reloj dinámico</translation>
     </message>
     <message>
-        <source>Memory Clock</source>
-        <translation type="vanished">Reloj de memoria</translation>
-    </message>
-    <message>
-        <source>PCIe Link</source>
-        <translation type="vanished">Enlace PCIe</translation>
-    </message>
-    <message>
-        <source>PCIe Auto</source>
-        <translation type="vanished">PCIe Automático</translation>
-    </message>
-    <message>
         <location filename="../src/qml/pages/MonitorPage.qml" line="716"/>
         <source>VRAM Allocation</source>
         <translation>Asignación de VRAM</translation>
-    </message>
-    <message>
-        <source>Hotspot / VRAM Temp</source>
-        <translation type="vanished">Temp. Hotspot / VRAM</translation>
-    </message>
-    <message>
-        <source>Nominal Core</source>
-        <translation type="vanished">Núcleo nominal</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/MonitorPage.qml" line="942"/>
@@ -2548,76 +2321,44 @@ Haga clic para cambiar de GPU (%2 disponible)</translation>
         <translation>Administrador de tareas y procesos activos de GPU</translation>
     </message>
     <message>
-        <source>%1 ACTIVE</source>
-        <translation type="vanished">%1 ACTIVO</translation>
-    </message>
-    <message>
-        <source>0 ACTIVE</source>
-        <translation type="vanished">0 ACTIVO</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1032"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1031"/>
         <source>No Active GPU Processes</source>
         <translation>No hay procesos activos en la GPU</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1039"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1038"/>
         <source>No applications are currently allocating VRAM or compute resources on this GPU.</source>
         <translation>Ninguna aplicación está utilizando VRAM o recursos de cálculo en esta GPU actualmente.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1063"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1062"/>
         <source>PID</source>
         <translation>PID</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1071"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1070"/>
         <source>PROCESS NAME</source>
         <translation>NOMBRE DEL PROCESO</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1079"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1078"/>
         <source>TYPE</source>
         <translation>TIPO</translation>
     </message>
     <message>
-        <source>VRAM USAGE</source>
-        <translation type="vanished">USO DE VRAM</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1096"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1095"/>
         <source>ACTION</source>
         <translation>ACCIÓN</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1171"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1170"/>
         <source>Compute</source>
         <translation>Cálculo</translation>
-    </message>
-    <message>
-        <source>End</source>
-        <translation type="vanished">Finalizar</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/MonitorPage.qml" line="793"/>
         <source>GPU Power &amp; Performance Management</source>
         <translation>Gestión de energía y rendimiento de GPU</translation>
-    </message>
-    <message>
-        <source>PERSISTENCE ON</source>
-        <translation type="vanished">PERSISTENCIA ACTIVADA</translation>
-    </message>
-    <message>
-        <source>STANDARD</source>
-        <translation type="vanished">ESTÁNDAR</translation>
-    </message>
-    <message>
-        <source>Current Draw: %1 W</source>
-        <translation type="vanished">Consumo actual: %1 W</translation>
-    </message>
-    <message>
-        <source>Power Limit: %1 W</source>
-        <translation type="vanished">Límite de potencia: %1 W</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/MonitorPage.qml" line="874"/>
@@ -2640,14 +2381,6 @@ Haga clic para cambiar de GPU (%2 disponible)</translation>
         <translation>Gestión de energía y rendimiento</translation>
     </message>
     <message>
-        <source>System Profile:</source>
-        <translation type="vanished">Perfil del sistema:</translation>
-    </message>
-    <message>
-        <source>ZRAM: %1 / %2 MiB</source>
-        <translation type="vanished">ZRAM: %1 / %2 MiB</translation>
-    </message>
-    <message>
         <location filename="../src/qml/pages/MonitorPage.qml" line="628"/>
         <source>Compression: %1×</source>
         <translation>Compresión: %1×</translation>
@@ -2657,112 +2390,79 @@ Haga clic para cambiar de GPU (%2 disponible)</translation>
         <source>zswap enabled</source>
         <translation>zswap activado</translation>
     </message>
-    <message>
-        <source>Refresh telemetry</source>
-        <translation type="vanished">Actualizar telemetría</translation>
-    </message>
-    <message>
-        <source>Usage: %1% | Temperature: %2</source>
-        <translation type="vanished">Uso: %1% | Temperatura: %2</translation>
-    </message>
-    <message>
-        <source>RAM</source>
-        <translation type="vanished">RAM</translation>
-    </message>
 </context>
 <context>
     <name>NvidiaDetector</name>
     <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="86"/>
+        <location filename="../src/backend/nvidia/detector.cpp" line="129"/>
         <source>NVIDIA Open Kernel Modules</source>
         <translation>Módulos abiertos del kernel NVIDIA</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="88"/>
+        <location filename="../src/backend/nvidia/detector.cpp" line="131"/>
         <source>NVIDIA Driver</source>
         <translation>Controlador NVIDIA</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="91"/>
+        <location filename="../src/backend/nvidia/detector.cpp" line="134"/>
         <source>Installed, Restart Required</source>
         <translation>Instalado, reinicio requerido</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="93"/>
-        <source>Fallback Open Driver</source>
-        <translation>Controlador abierto alternativo</translation>
+        <location filename="../src/backend/nvidia/detector.cpp" line="154"/>
+        <source>NVIDIA Proprietary Kernel Module detected</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="94"/>
-        <source>Not Installed</source>
-        <translation>No instalado</translation>
+        <location filename="../src/backend/nvidia/detector.cpp" line="157"/>
+        <source>NVIDIA Open Kernel Modules detected</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="113"/>
-        <source>Closed-source driver detected</source>
-        <translation>Controlador de código cerrado detectado</translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="116"/>
-        <source>Open-source driver detected</source>
-        <translation>Controlador de código abierto detectado</translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="119"/>
-        <source>Mixed driver state detected</source>
-        <translation>Estado mixto de controlador detectado</translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="121"/>
-        <source>No driver source detected</source>
-        <translation>No se detectó origen de controlador</translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="127"/>
-        <location filename="../src/backend/nvidia/detector.cpp" line="130"/>
-        <source>Unavailable</source>
-        <translation>No disponible</translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="132"/>
+        <location filename="../src/backend/nvidia/detector.cpp" line="173"/>
         <source>GPU: %1
 Driver Version: %2
 Secure Boot: %3
 Session: %4
-Active Stack: %5
-Fallback Open Driver: %6</source>
-        <translation>GPU: %1
-Versión del controlador: %2
-Arranque seguro: %3
-Sesión: %4
-Pila activa: %5
-Controlador abierto alternativo: %6</translation>
+Active Stack: %5</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="136"/>
+        <location filename="../src/backend/nvidia/detector.cpp" line="135"/>
+        <source>Not Installed</source>
+        <translation>No instalado</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/detector.cpp" line="160"/>
+        <source>Mixed driver state detected</source>
+        <translation>Estado mixto de controlador detectado</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/detector.cpp" line="162"/>
+        <source>No driver source detected</source>
+        <translation>No se detectó origen de controlador</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/detector.cpp" line="168"/>
+        <location filename="../src/backend/nvidia/detector.cpp" line="171"/>
+        <source>Unavailable</source>
+        <translation>No disponible</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/detector.cpp" line="177"/>
         <source>Enabled</source>
         <translation>Activado</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="136"/>
+        <location filename="../src/backend/nvidia/detector.cpp" line="177"/>
         <source>Disabled</source>
         <translation>Desactivado</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="137"/>
-        <location filename="../src/backend/nvidia/detector.cpp" line="138"/>
+        <location filename="../src/backend/nvidia/detector.cpp" line="178"/>
+        <location filename="../src/backend/nvidia/detector.cpp" line="179"/>
         <source>Unknown</source>
         <translation>Desconocido</translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="140"/>
-        <source>Active</source>
-        <translation>Activo</translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/detector.cpp" line="140"/>
-        <source>Inactive</source>
-        <translation>Inactivo</translation>
     </message>
 </context>
 <context>
@@ -2818,12 +2518,13 @@ Elija Aceptar para continuar con la instalación de código cerrado o Rechazar p
     </message>
     <message>
         <location filename="../src/backend/nvidia/installer.cpp" line="269"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="429"/>
         <source>Platform version could not be detected.</source>
         <translation>No se pudo detectar la versión de la plataforma.</translation>
     </message>
     <message>
         <location filename="../src/backend/nvidia/installer.cpp" line="286"/>
-        <location filename="../src/backend/nvidia/installer.cpp" line="427"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="444"/>
         <source>The active display session could not be detected as Wayland. ro-Control supports Wayland driver setup only.</source>
         <translation>No se pudo detectar la sesión de pantalla activa como Wayland. ro-Control solo admite la configuración del controlador en Wayland.</translation>
     </message>
@@ -2834,10 +2535,10 @@ Elija Aceptar para continuar con la instalación de código cerrado o Rechazar p
     </message>
     <message>
         <location filename="../src/backend/nvidia/installer.cpp" line="354"/>
-        <location filename="../src/backend/nvidia/installer.cpp" line="473"/>
-        <location filename="../src/backend/nvidia/installer.cpp" line="534"/>
-        <location filename="../src/backend/nvidia/installer.cpp" line="581"/>
-        <location filename="../src/backend/nvidia/installer.cpp" line="601"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="500"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="561"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="608"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="628"/>
         <source>Operation canceled by user.</source>
         <translation>Operación cancelada por el usuario.</translation>
     </message>
@@ -2852,87 +2553,97 @@ Elija Aceptar para continuar con la instalación de código cerrado o Rechazar p
         <translation>El controlador NVIDIA de código cerrado se instaló correctamente. Reinicie el sistema.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="415"/>
-        <source>Switching to the open-source NVIDIA driver stack...</source>
-        <translation>Cambiando a la pila de controladores NVIDIA de código abierto...</translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="439"/>
-        <source>Open-source NVIDIA install packages: %1</source>
-        <translation>Paquetes de instalación de NVIDIA de código abierto: %1</translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="474"/>
-        <source>Open-source NVIDIA driver installation failed: </source>
-        <translation>Falló la instalación del controlador NVIDIA de código abierto: </translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="493"/>
-        <source>The open-source NVIDIA driver stack was prepared successfully. Please restart the system.</source>
-        <translation>La pila de controladores NVIDIA de código abierto se preparó correctamente. Reinicie el sistema.</translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="650"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="677"/>
         <source>Rebuilding NVIDIA kernel modules and initramfs...</source>
         <translation>Reconstruyendo módulos de kernel de NVIDIA e initramfs...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="665"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="692"/>
         <source>Kernel module rebuild canceled by user.</source>
         <translation>Reconstrucción del módulo del kernel cancelada por el usuario.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="666"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="693"/>
         <source>Kernel module rebuild failed: </source>
         <translation>Error al reconstruir el módulo del kernel: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="683"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="710"/>
         <source>Kernel modules and initramfs rebuilt successfully.</source>
         <translation>Módulos de kernel e initramfs reconstruidos con éxito.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="686"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="713"/>
         <source>NVIDIA kernel modules rebuilt successfully.</source>
         <translation>Módulos de kernel de NVIDIA reconstruidos con éxito.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="476"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="503"/>
         <source>unknown error</source>
         <translation>error desconocido</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="522"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="74"/>
+        <source>NVIDIA Open Kernel Modules detected. Run Deep Clean before installing the proprietary NVIDIA kernel module.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/installer.cpp" line="80"/>
+        <source>Proprietary NVIDIA kernel module detected. Run Deep Clean before installing NVIDIA Open Kernel Modules.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/installer.cpp" line="415"/>
+        <source>Installing NVIDIA Open Kernel Modules...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/installer.cpp" line="456"/>
+        <source>NVIDIA Open Kernel Modules packages: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/installer.cpp" line="501"/>
+        <source>NVIDIA Open Kernel Modules installation failed: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/installer.cpp" line="520"/>
+        <source>NVIDIA Open Kernel Modules were prepared successfully. Please restart the system.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/backend/nvidia/installer.cpp" line="549"/>
         <source>Removing the NVIDIA driver...</source>
         <translation>Eliminando el controlador NVIDIA...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="532"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="559"/>
         <source>Driver removed successfully.</source>
         <translation>Controlador eliminado correctamente.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="535"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="562"/>
         <source>Removal failed: </source>
         <translation>La eliminación falló: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="568"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="595"/>
         <source>Cleaning legacy driver leftovers...</source>
         <translation>Limpiando restos de controladores antiguos...</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="582"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="609"/>
         <source>Deep clean failed: </source>
         <translation>La limpieza profunda falló: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="602"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="629"/>
         <source>DNF cache cleanup failed: </source>
         <translation>La limpieza de caché de DNF falló: </translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="620"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="647"/>
         <source>Deep clean completed.</source>
         <translation>Limpieza profunda completada.</translation>
     </message>
@@ -2942,30 +2653,20 @@ Elija Aceptar para continuar con la instalación de código cerrado o Rechazar p
         <translation>Ya hay otra operación de controlador en curso.</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="74"/>
-        <source>Open-source driver stack detected. Run Deep Clean before installing the closed-source driver.</source>
-        <translation>Pila de controladores de código abierto detectada. Ejecute Limpieza Profunda antes de instalar el controlador de código cerrado.</translation>
-    </message>
-    <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="80"/>
-        <source>Closed-source driver stack detected. Run Deep Clean before installing the open-source driver.</source>
-        <translation>Pila de controladores de código cerrado detectada. Ejecute Limpieza Profunda antes de instalar el controlador de código abierto.</translation>
-    </message>
-    <message>
         <location filename="../src/backend/nvidia/installer.cpp" line="298"/>
         <source>Installing the closed-source NVIDIA driver with one privileged authorization...</source>
         <translation>Instalando el controlador NVIDIA cerrado con una única autorización privilegiada...</translation>
     </message>
     <message>
         <location filename="../src/backend/nvidia/installer.cpp" line="341"/>
-        <location filename="../src/backend/nvidia/installer.cpp" line="460"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="487"/>
         <source>Detected %1 session via %2.</source>
         <translation>Sesión %1 detectada mediante %2.</translation>
     </message>
     <message>
         <location filename="../src/backend/nvidia/installer.cpp" line="303"/>
         <location filename="../src/backend/nvidia/installer.cpp" line="343"/>
-        <location filename="../src/backend/nvidia/installer.cpp" line="462"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="489"/>
         <source>Wayland</source>
         <translation>Wayland</translation>
     </message>
@@ -2976,12 +2677,12 @@ Elija Aceptar para continuar con la instalación de código cerrado o Rechazar p
     </message>
     <message>
         <location filename="../src/backend/nvidia/installer.cpp" line="346"/>
-        <location filename="../src/backend/nvidia/installer.cpp" line="465"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="492"/>
         <source>session probe</source>
         <translation>sondeo de sesión</translation>
     </message>
     <message>
-        <location filename="../src/backend/nvidia/installer.cpp" line="622"/>
+        <location filename="../src/backend/nvidia/installer.cpp" line="649"/>
         <source>Legacy NVIDIA cleanup completed.</source>
         <translation>Limpieza de NVIDIA antiguo completada.</translation>
     </message>
@@ -3181,10 +2882,6 @@ Elija Aceptar para continuar con la instalación de código cerrado o Rechazar p
 <context>
     <name>SystemPage</name>
     <message>
-        <source>Unavailable</source>
-        <translation type="vanished">No disponible</translation>
-    </message>
-    <message>
         <location filename="../src/qml/pages/SystemPage.qml" line="68"/>
         <source>Bare Metal</source>
         <translation>Hardware físico</translation>
@@ -3205,22 +2902,6 @@ Elija Aceptar para continuar con la instalación de código cerrado o Rechazar p
         <location filename="../src/qml/pages/SystemPage.qml" line="231"/>
         <source>System health</source>
         <translation>Estado del sistema</translation>
-    </message>
-    <message>
-        <source>Driver: %1 • GPU telemetry: %2 • Secure Boot: %3</source>
-        <translation type="vanished">Controlador: %1 • Telemetría de GPU: %2 • Arranque seguro: %3</translation>
-    </message>
-    <message>
-        <source>Available</source>
-        <translation type="vanished">Disponible</translation>
-    </message>
-    <message>
-        <source>On</source>
-        <translation type="vanished">Activado</translation>
-    </message>
-    <message>
-        <source>Off</source>
-        <translation type="vanished">Desactivado</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/SystemPage.qml" line="252"/>
@@ -3294,146 +2975,142 @@ Elija Aceptar para continuar con la instalación de código cerrado o Rechazar p
         <translation>Genere un informe del sistema para compartir o reinicie directamente en la configuración del firmware.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="454"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="452"/>
         <source>Diagnostic Report</source>
         <translation>Informe de diagnóstico</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="461"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="459"/>
         <source>Preview, format, and share live system details</source>
         <translation>Previsualice, dé formato y comparta detalles del sistema en vivo</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="485"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="482"/>
         <source>Open</source>
         <translation>Abrir</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="548"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="541"/>
         <source>UEFI / BIOS Firmware</source>
         <translation>Firmware UEFI / BIOS</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="555"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="548"/>
         <source>Restart directly into firmware setup</source>
         <translation>Reiniciar directamente en la configuración del firmware</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="579"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="571"/>
         <source>Restart</source>
         <translation>Reiniciar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="680"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="670"/>
         <source>System Diagnostic Report</source>
         <translation>Informe de diagnóstico del sistema</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="686"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="676"/>
         <source>System hardware, kernel, driver and security telemetry snapshot</source>
         <translation>Instantánea de telemetría de hardware, kernel, controlador y seguridad del sistema</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="755"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="746"/>
         <source>Overview Cards</source>
         <translation>Tarjetas de resumen</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="777"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="768"/>
         <source>Code / Export</source>
         <translation>Código / Exportar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="821"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="811"/>
         <source>Filter properties...</source>
         <translation>Filtrar propiedades...</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="859"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="849"/>
         <source>Format:</source>
         <translation>Formato:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="891"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="926"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="881"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="916"/>
         <source>Plain Text</source>
         <translation>Texto plano</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="987"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="976"/>
         <source>Action:</source>
         <translation>Acción:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1018"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1053"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1007"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1042"/>
         <source>Copy on Open</source>
         <translation>Copiar al abrir</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1019"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1052"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1008"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1041"/>
         <source>Preview</source>
         <translation>Vista previa</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1173"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1161"/>
         <source>items</source>
         <translation>elementos</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1275"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1261"/>
         <source>No matching properties found</source>
         <translation>No se encontraron propiedades coincidentes</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1283"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1269"/>
         <source>Try a different search term or clear the filter.</source>
         <translation>Pruebe con un término de búsqueda diferente o limpie el filtro.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1290"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1276"/>
         <source>Clear Filter</source>
         <translation>Limpiar filtro</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1375"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1361"/>
         <source>Copied to clipboard!</source>
         <translation>¡Copiado al portapapeles!</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1388"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1374"/>
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1417"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1403"/>
         <source>Copy Full Report</source>
         <translation>Copiar informe completo</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1504"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1490"/>
         <source>Reboot to UEFI / BIOS</source>
         <translation>Reiniciar en UEFI / BIOS</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1528"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1514"/>
         <source>Make sure any unsaved work in other applications is saved before continuing.</source>
         <translation>Asegúrese de guardar el trabajo no guardado en otras aplicaciones antes de continuar.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1553"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1548"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1581"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1578"/>
         <source>Restart Now ↻</source>
         <translation>Reiniciar ahora ↻</translation>
-    </message>
-    <message>
-        <source>PCIe Auto</source>
-        <translation type="vanished">PCIe Automático</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/SystemPage.qml" line="105"/>
@@ -3469,10 +3146,6 @@ Elija Aceptar para continuar con la instalación de código cerrado o Rechazar p
         <location filename="../src/qml/pages/SystemPage.qml" line="137"/>
         <source>Display Server / Session</source>
         <translation>Servidor de pantalla / Sesión</translation>
-    </message>
-    <message>
-        <source>Wayland</source>
-        <translation type="vanished">Wayland</translation>
     </message>
     <message>
         <location filename="../src/qml/pages/SystemPage.qml" line="121"/>
@@ -3527,25 +3200,9 @@ Elija Aceptar para continuar con la instalación de código cerrado o Rechazar p
         <translation>Diagnósticos y control del sistema</translation>
     </message>
     <message>
-        <source>Report Copied to Clipboard!</source>
-        <translation type="vanished">¡Informe copiado al portapapeles!</translation>
-    </message>
-    <message>
-        <source>Copy Diagnostic Report</source>
-        <translation type="vanished">Copiar informe de diagnóstico</translation>
-    </message>
-    <message>
-        <source>Reboot to UEFI / BIOS Firmware</source>
-        <translation type="vanished">Reiniciar en firmware UEFI / BIOS</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1520"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1506"/>
         <source>Your system will restart immediately and boot directly into the UEFI / BIOS firmware setup utility.</source>
         <translation>El sistema se reiniciará de inmediato y arrancará directamente en la utilidad de configuración UEFI / BIOS.</translation>
-    </message>
-    <message>
-        <source>Make sure any unsaved work in other applications is saved.</source>
-        <translation type="vanished">Asegúrese de guardar cualquier trabajo pendiente en otras aplicaciones.</translation>
     </message>
 </context>
 <context>
