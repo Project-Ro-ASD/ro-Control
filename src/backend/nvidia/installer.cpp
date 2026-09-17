@@ -415,6 +415,23 @@ void NvidiaInstaller::installOpenSource() {
         guard, NvidiaInstaller::tr(
                    "Installing NVIDIA Open Kernel Modules..."));
 
+    CommandRunner rpmRunner;
+    const auto platformVersionResult =
+        rpmRunner.run(QStringLiteral("rpm"),
+                      {QStringLiteral("-E"), QStringLiteral("%fedora")});
+    const QString platformVersion = platformVersionResult.stdout.trimmed();
+    if (platformVersion.isEmpty()) {
+      QMetaObject::invokeMethod(
+          guard,
+          [guard]() {
+            if (guard)
+              emit guard->installFinished(
+                  false, NvidiaInstaller::tr("Platform version could not be detected."));
+          },
+          Qt::QueuedConnection);
+      return;
+    }
+
     const SessionUtil::SessionInfo sessionInfo =
         SessionUtil::detectSessionInfo();
     const QString sessionType = sessionInfo.type.trimmed().toLower();
@@ -446,6 +463,16 @@ void NvidiaInstaller::installOpenSource() {
     installArgs << buildOpenSourceDriverInstallTargets(sessionType);
 
     QList<CommandRunner::RootCommand> rootCommands;
+    rootCommands.append(
+        {QStringLiteral("env"),
+         {QStringLiteral("LANG=C"), QStringLiteral("dnf"),
+          QStringLiteral("install"), QStringLiteral("-y"),
+          QStringLiteral("https://mirrors.rpmfusion.org/free/fedora/"
+                         "rpmfusion-free-release-%1.noarch.rpm")
+              .arg(platformVersion),
+          QStringLiteral("https://mirrors.rpmfusion.org/nonfree/fedora/"
+                         "rpmfusion-nonfree-release-%1.noarch.rpm")
+              .arg(platformVersion)}});
     {
       QStringList installLangArgs = {QStringLiteral("LANG=C"),
                                      QStringLiteral("dnf")};
