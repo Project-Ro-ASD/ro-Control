@@ -88,7 +88,6 @@ NvidiaDetector::GpuInfo NvidiaDetector::detect() const {
   }
   info.driverPackageInstalled = detectDriverPackageInstalled();
   info.driverLoaded = isModuleLoaded(QStringLiteral("nvidia"));
-  info.nouveauActive = isModuleLoaded(QStringLiteral("nouveau"));
   info.openSourceDriverInstalled = detectOpenSourceDriverInstalled();
   info.closedSourceDriverInstalled = detectClosedSourceDriverInstalled();
   info.openKernelModulesInstalled = info.openSourceDriverInstalled;
@@ -133,8 +132,6 @@ QString NvidiaDetector::activeDriver() const {
   }
   if (m_info.driverPackageInstalled)
     return tr("Installed, Restart Required");
-  if (m_info.nouveauActive)
-    return tr("Fallback Open Driver");
   return tr("Not Installed");
 }
 
@@ -174,14 +171,13 @@ QString NvidiaDetector::verificationReport() const {
       m_info.driverVersion.isEmpty() ? tr("Unavailable") : m_info.driverVersion;
 
   return tr("GPU: %1\nDriver Version: %2\nSecure Boot: %3\nSession: %4\n"
-            "Active Stack: %5\nFallback Open Driver: %6")
+            "Active Stack: %5")
       .arg(gpuText, versionText,
            m_info.secureBootKnown
                ? (m_info.secureBootEnabled ? tr("Enabled") : tr("Disabled"))
                : tr("Unknown"),
            m_info.sessionType.isEmpty() ? tr("Unknown") : m_info.sessionType,
-           activeDriver(),
-           m_info.nouveauActive ? tr("Active") : tr("Inactive"));
+           activeDriver());
 }
 
 void NvidiaDetector::refresh() {

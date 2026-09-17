@@ -21,7 +21,6 @@ private slots:
     QVERIFY(info.driverVersion.isEmpty());
     QCOMPARE(info.driverPackageInstalled, false);
     QCOMPARE(info.driverLoaded, false);
-    QCOMPARE(info.nouveauActive, false);
     QCOMPARE(info.openKernelModulesInstalled, false);
     QCOMPARE(info.secureBootEnabled, false);
   }
