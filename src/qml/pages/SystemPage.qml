@@ -1535,26 +1535,33 @@ Item {
                     anchors.bottomMargin: Math.round(14 * page.uiScale)
                     columnSpacing: Math.round(10 * page.uiScale)
                     rowSpacing: Math.round(8 * page.uiScale)
-                    columns: rebootConfirmDialog.width < Math.round(340 * page.uiScale) ? 1 : 2
+                    columns: rebootConfirmDialog.width < Math.round(340 * page.uiScale) ? 1 : 3
+
+                    Item {
+                        visible: firmwareButtons.columns > 1
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                    }
 
                     Button {
                         id: cancelRebootBtn
                         text: qsTr("Cancel")
                         implicitHeight: Math.round(36 * page.uiScale)
-                        implicitWidth: Math.round(80 * page.uiScale)
+                        implicitWidth: cancelRebootLabel.implicitWidth + Math.round(32 * page.uiScale)
                         Layout.fillWidth: firmwareButtons.columns === 1
                         hoverEnabled: true
 
                         background: Rectangle {
                             radius: 8
-                            color: cancelRebootBtn.hovered
-                                   ? (page.darkMode ? "#3B3156" : "#E2E8F0")
-                                   : page.bgColor
+                            color: cancelRebootBtn.down
+                                   ? (page.darkMode ? "#342A4E" : "#CBD5E1")
+                                   : (cancelRebootBtn.hovered ? (page.darkMode ? "#3B3156" : "#E2E8F0") : page.bgColor)
                             border.width: 1
                             border.color: cancelRebootBtn.hovered ? page.accentColor : page.borderColor
                         }
 
                         contentItem: Label {
+                            id: cancelRebootLabel
                             text: cancelRebootBtn.text
                             color: cancelRebootBtn.hovered ? page.textColor : page.softTextColor
                             font.pixelSize: Math.round(13 * page.uiScale)
@@ -1570,7 +1577,7 @@ Item {
                         id: confirmRebootBtn
                         text: qsTr("Restart Now ↻")
                         implicitHeight: Math.round(36 * page.uiScale)
-                        implicitWidth: Math.round(120 * page.uiScale)
+                        implicitWidth: confirmRebootLabel.implicitWidth + Math.round(32 * page.uiScale)
                         Layout.fillWidth: firmwareButtons.columns === 1
                         hoverEnabled: true
 
@@ -1582,6 +1589,7 @@ Item {
                         }
 
                         contentItem: Label {
+                            id: confirmRebootLabel
                             text: confirmRebootBtn.text
                             color: "#FFFFFF"
                             font.pixelSize: Math.round(13 * page.uiScale)
