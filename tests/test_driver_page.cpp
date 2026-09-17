@@ -21,8 +21,6 @@ class DetectorMock : public QObject {
                  setDriverPackageInstalled NOTIFY infoChanged)
   Q_PROPERTY(bool driverLoaded READ driverLoaded WRITE setDriverLoaded NOTIFY
                  infoChanged)
-  Q_PROPERTY(bool nouveauActive READ nouveauActive WRITE setNouveauActive NOTIFY
-                 infoChanged)
   Q_PROPERTY(QString installedDriverSource READ installedDriverSource WRITE
                  setInstalledDriverSource NOTIFY infoChanged)
   Q_PROPERTY(QString installedDriverSourceLabel READ installedDriverSourceLabel
@@ -47,7 +45,6 @@ public:
   QString driverVersion() const { return m_driverVersion; }
   bool driverPackageInstalled() const { return m_driverPackageInstalled; }
   bool driverLoaded() const { return m_driverLoaded; }
-  bool nouveauActive() const { return m_nouveauActive; }
   QString installedDriverSource() const { return m_installedDriverSource; }
   QString installedDriverSourceLabel() const {
     return m_installedDriverSourceLabel;
@@ -107,13 +104,6 @@ public:
     emit infoChanged();
   }
 
-  void setNouveauActive(bool value) {
-    if (m_nouveauActive == value) {
-      return;
-    }
-    m_nouveauActive = value;
-    emit infoChanged();
-  }
 
   void setInstalledDriverSource(const QString &value) {
     if (m_installedDriverSource == value) {
@@ -191,7 +181,6 @@ private:
   QString m_driverVersion;
   bool m_driverPackageInstalled = false;
   bool m_driverLoaded = false;
-  bool m_nouveauActive = false;
   QString m_installedDriverSource = QStringLiteral("none");
   QString m_installedDriverSourceLabel =
       QStringLiteral("No driver source detected");
@@ -328,12 +317,13 @@ public:
   }
 
   Q_INVOKABLE void checkForUpdate() {}
-  Q_INVOKABLE void applyUpdate() {}
+  Q_INVOKABLE void applyUpdate() { ++m_applyUpdateCount; }
   Q_INVOKABLE void applyVersion(const QString &) {}
   Q_INVOKABLE void refreshAvailableVersions() {}
   Q_INVOKABLE void cancelOperation() {
     emit progressMessage(QStringLiteral("Cancel requested."));
   }
+  int applyUpdateCount() const { return m_applyUpdateCount; }
 
 signals:
   void updateAvailableChanged();
@@ -351,6 +341,7 @@ private:
   QString m_latestVersion;
   QStringList m_availableVersions;
   bool m_busy = false;
+  int m_applyUpdateCount = 0;
 };
 
 class TestDriverPage : public QObject {
@@ -361,6 +352,8 @@ private slots:
   void testNvidiaHardwareAvailabilityRequiresDetectedGpu();
   void testOperationRunningStillTracksBackendBusyAfterManualStateChanges();
   void testCompletedInstallImmediatelyUpdatesDriverState();
+  void testUpdateActionInvokesUpdater();
+  void testWaylandRequirementIsExposedToPage();
 
 private:
   QObject *createPage(DetectorMock *detector, InstallerMock *installer,
@@ -566,6 +559,42 @@ void TestDriverPage::testCompletedInstallImmediatelyUpdatesDriverState() {
   QVERIFY(page->property("pendingDriverStateText")
               .toString()
               .contains(QStringLiteral("595.71.05")));
+}
+
+void TestDriverPage::testUpdateActionInvokesUpdater() {
+  QQmlEngine engine;
+  DetectorMock detector;
+  InstallerMock installer;
+  UpdaterMock updater;
+  detector.setGpuFound(true);
+  detector.setSessionType(QStringLiteral("wayland"));
+
+  QScopedPointer<QObject> page(
+      createPage(&detector, &installer, &updater, &engine));
+  QVERIFY(QMetaObject::invokeMethod(
+      page.get(), "executeDriverAction",
+      Q_ARG(QVariant, QVariant(QStringLiteral("update")))));
+  QCOMPARE(updater.applyUpdateCount(), 1);
+  QCOMPARE(page->property("requestedDriverAction").toString(),
+           QStringLiteral("closed-update"));
+}
+
+void TestDriverPage::testWaylandRequirementIsExposedToPage() {
+  QQmlEngine engine;
+  DetectorMock detector;
+  InstallerMock installer;
+  UpdaterMock updater;
+  detector.setGpuFound(true);
+  detector.setSessionType(QStringLiteral("x11"));
+
+  QScopedPointer<QObject> page(
+      createPage(&detector, &installer, &updater, &engine));
+  QVERIFY(!page->property("waylandDriverFlowSupported").toBool());
+  QVERIFY(!page->property("canRunDriverMutation").toBool());
+  QVariant reason;
+  QVERIFY(QMetaObject::invokeMethod(page.get(), "driverMutationBlockedReason",
+                                    Q_RETURN_ARG(QVariant, reason)));
+  QVERIFY(!reason.toString().isEmpty());
 }
 
 int main(int argc, char **argv) {

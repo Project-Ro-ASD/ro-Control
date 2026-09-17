@@ -43,6 +43,8 @@ Item {
     // Driver installation and module operations only make sense when the
     // physical NVIDIA device (or a passthrough device) is present.
     readonly property bool nvidiaHardwareAvailable: page.nvidiaDetector.gpuFound
+    readonly property bool waylandDriverFlowSupported: page.nvidiaDetector.sessionType.toLowerCase() === "wayland"
+    readonly property bool canRunDriverMutation: page.nvidiaHardwareAvailable && page.waylandDriverFlowSupported
     readonly property bool closedSourceDriverDetected: page.installedDriverSource === "closed-source" || page.installedDriverSource === "mixed"
     readonly property bool openSourceDriverDetected: page.installedDriverSource === "open-source" || page.installedDriverSource === "mixed"
     readonly property string installedVersionLabel: page.nvidiaDetector.driverVersion.length > 0 ? page.nvidiaDetector.driverVersion : page.nvidiaUpdater.currentVersion
@@ -79,6 +81,7 @@ Item {
         property bool activeBadge: false
         property string badgeText: ""
         property string tooltipText: ""
+        property string disabledReason: ""
         property bool busy: false
 
         Layout.fillWidth: true
@@ -205,7 +208,8 @@ Item {
 
             Label {
                 Layout.fillWidth: true
-                text: tile.subtitle
+                text: !tile.enabled && tile.disabledReason.length > 0
+                      ? tile.disabledReason : tile.subtitle
                 color: page.softTextColor
                 font.pixelSize: Math.round(11 * page.uiScale)
                 elide: Text.ElideRight
@@ -362,7 +366,7 @@ Item {
                                      : qsTr("NVIDIA proprietary kernel module prepared. Restart required.");
             pendingDriverStateTone = "success";
         } else if (requestedDriverAction === "open-install") {
-            pendingDriverStateText = qsTr("Open-source graphics stack prepared. Restart required.");
+            pendingDriverStateText = qsTr("NVIDIA Open Kernel Modules prepared. Restart required.");
             pendingDriverStateTone = "success";
         } else if (requestedDriverAction === "deep-clean") {
             pendingDriverStateText = qsTr("NVIDIA driver cleanup completed. Restart recommended.");
@@ -384,6 +388,25 @@ Item {
     }
 
     function openDriverActionInfo(action) {
+        if (action === "update") {
+            driverActionModalPopup.actionKey = "update";
+            driverActionModalPopup.actionTitle = qsTr("Update NVIDIA Driver");
+            driverActionModalPopup.actionSubtitle = qsTr("Apply the latest version from configured repositories");
+            driverActionModalPopup.actionAccentColor = "#2563EB";
+            driverActionModalPopup.actionDescription = qsTr("Updates the installed NVIDIA driver package set, rebuilds its kernel module, and regenerates initramfs.");
+            driverActionModalPopup.actionPoints = [
+                qsTr("Applies the latest compatible driver package version."),
+                qsTr("Rebuilds the active NVIDIA kernel module with akmods."),
+                qsTr("A restart is required before the updated kernel module is active.")
+            ];
+            driverActionModalPopup.actionWarning = page.nvidiaDetector.secureBootEnabled
+                    ? qsTr("Secure Boot is enabled. Confirm that a MOK key is enrolled before restarting, or the NVIDIA module may not load.")
+                    : qsTr("The display session must be Wayland for this managed update flow.");
+            driverActionModalPopup.actionConfirmText = qsTr("Update Driver");
+            driverActionModalPopup.actionConfirmTone = "primary";
+            driverActionModalPopup.open();
+            return;
+        }
         if (action === "closed") {
             if (page.openSourceDriverDetected) {
                 sourceSwitchBlockedPopup.requestedTarget = "closed";
@@ -404,7 +427,9 @@ Item {
                 qsTr("Compiles the proprietary kernel module against your active Linux kernel (%1).").arg(page.systemInfo ? page.systemInfo.kernelVersion : "active"),
                 qsTr("Configures kernel parameters (nvidia-drm.modeset=1) and updates initramfs.")
             ];
-            driverActionModalPopup.actionWarning = qsTr("A system reboot is required after installation to activate the kernel driver.");
+            driverActionModalPopup.actionWarning = page.nvidiaDetector.secureBootEnabled
+                    ? qsTr("Secure Boot is enabled. Enroll the akmods MOK key before restarting, or the NVIDIA module may not load.")
+                    : qsTr("A system reboot is required after installation to activate the kernel driver.");
             driverActionModalPopup.actionConfirmText = qsTr("Install Proprietary Module");
             driverActionModalPopup.actionConfirmTone = "primary";
             driverActionModalPopup.open();
@@ -424,19 +449,21 @@ Item {
                 qsTr("Compiles akmod-nvidia-open module directly with standard Linux kernel interfaces."),
                 qsTr("Updates bootloader image (dracut initramfs) with NVIDIA Open Kernel Modules.")
             ];
-            driverActionModalPopup.actionWarning = qsTr("Older architectures (Pascal/Maxwell/GTX 1000 and earlier) are not supported by the open kernel module.");
+            driverActionModalPopup.actionWarning = page.nvidiaDetector.secureBootEnabled
+                    ? qsTr("Secure Boot is enabled. Enroll the akmods MOK key before restarting, or the NVIDIA module may not load.")
+                    : qsTr("Older architectures (Pascal/Maxwell/GTX 1000 and earlier) are not supported by the open kernel module.");
             driverActionModalPopup.actionConfirmText = qsTr("Install Open Kernel Modules");
             driverActionModalPopup.actionConfirmTone = "primary";
             driverActionModalPopup.open();
         } else if (action === "clean") {
             driverActionModalPopup.actionKey = "clean";
             driverActionModalPopup.actionTitle = qsTr("Deep Clean & Module Purge");
-            driverActionModalPopup.actionSubtitle = qsTr("Purge Stale Build Trees & Lingering Artifacts");
+            driverActionModalPopup.actionSubtitle = qsTr("Remove NVIDIA packages and clear cached metadata");
             driverActionModalPopup.actionAccentColor = "#F59E0B";
-            driverActionModalPopup.actionDescription = qsTr("Performs a complete diagnostic purge of obsolete NVIDIA DKMS builds, akmod compilation residues, broken kernel links, and lingering driver configurations.");
+            driverActionModalPopup.actionDescription = qsTr("Removes installed NVIDIA driver packages and clears DNF's cached metadata so a later installation starts from a clean package state.");
             driverActionModalPopup.actionPoints = [
-                qsTr("Cleans orphaned build artifacts in /var/cache/akmods and /lib/modules."),
-                qsTr("Restores pristine modprobe configurations and resets fallback driver options."),
+                qsTr("Removes akmod-nvidia, akmod-nvidia-open, NVIDIA Xorg packages, and nvidia-settings."),
+                qsTr("Runs 'dnf clean all' to remove cached repository metadata."),
                 qsTr("Prepares system for a clean, conflict-free driver installation or stack switch.")
             ];
             driverActionModalPopup.actionWarning = qsTr("Does not delete personal files or desktop settings. Restart is recommended after cleanup.");
@@ -452,7 +479,7 @@ Item {
             driverActionModalPopup.actionPoints = [
                 qsTr("Executes 'akmods --force' to recompile the driver for kernel: %1.").arg(page.systemInfo ? page.systemInfo.kernelVersion : "Linux"),
                 qsTr("Executes 'dracut -f' to package the compiled modules into the bootloader image."),
-                qsTr("Resolves black screens and Nouveau fallback issues caused by recent Linux kernel updates.")
+                qsTr("Repairs NVIDIA module build failures that can follow Linux kernel updates.")
             ];
             driverActionModalPopup.actionWarning = qsTr("This operation may take 30 to 90 seconds depending on system CPU speed.");
             driverActionModalPopup.actionConfirmText = qsTr("Rebuild Modules");
@@ -476,6 +503,10 @@ Item {
             page.markDriverActionStarted("rebuild-modules");
             page.setOperationState(qsTr("Installer"), qsTr("Rebuilding kernel modules & initramfs..."), "info", true);
             page.nvidiaInstaller.rebuildKernelModules();
+        } else if (action === "update") {
+            page.markDriverActionStarted("closed-update");
+            page.setOperationState(qsTr("Updater"), qsTr("Updating NVIDIA driver..."), "info", true);
+            page.nvidiaUpdater.applyUpdate();
         }
     }
 
@@ -588,6 +619,14 @@ Item {
         return page.nvidiaDetector.secureBootEnabled
                ? qsTr("Signing may be required.")
                : qsTr("No signing required.");
+    }
+
+    function driverMutationBlockedReason() {
+        if (!page.nvidiaHardwareAvailable)
+            return qsTr("An NVIDIA GPU or NVIDIA passthrough device is required.");
+        if (!page.waylandDriverFlowSupported)
+            return qsTr("Managed NVIDIA installation and updates require a Wayland session.");
+        return "";
     }
 
     ScrollView {
@@ -831,7 +870,7 @@ Item {
 
                         Components.RefreshToolButton {
                             id: refreshButton
-                            enabled: page.nvidiaHardwareAvailable && !page.nvidiaUpdater.busy && !page.nvidiaInstaller.busy
+                            enabled: page.canManageDriverStack && !page.nvidiaUpdater.busy && !page.nvidiaInstaller.busy
                             busy: page.nvidiaUpdater.busy
                             theme: page.theme
                             darkMode: page.darkMode
@@ -850,6 +889,26 @@ Item {
                         wrapMode: Text.Wrap
                     }
 
+                    Rectangle {
+                        visible: page.nvidiaHardwareAvailable && !page.waylandDriverFlowSupported
+                        Layout.fillWidth: true
+                        radius: 8
+                        color: page.warningBg
+                        border.width: 1
+                        border.color: page.theme && page.theme.warning ? page.theme.warning : page.borderColor
+                        implicitHeight: sessionWarning.implicitHeight + Math.round(16 * page.uiScale)
+
+                        Label {
+                            id: sessionWarning
+                            anchors.fill: parent
+                            anchors.margins: Math.round(8 * page.uiScale)
+                            text: qsTr("Managed installation and updates are available only in a Wayland session. Switch sessions, then refresh this page.")
+                            color: page.textColor
+                            wrapMode: Text.Wrap
+                            font.pixelSize: Math.round(11 * page.uiScale)
+                        }
+                    }
+
                     GridLayout {
                         Layout.fillWidth: true
                         columns: width > 920 ? (page.pendingDriverStateText.length > 0 ? 5 : 4) : (width > 560 ? 2 : 1)
@@ -863,8 +922,9 @@ Item {
                             activeBadge: page.closedSourceDriverDetected
                             badgeText: qsTr("INSTALLED")
                             busy: page.requestedDriverAction === "closed-install" && page.operationRunning
-                            enabled: page.nvidiaHardwareAvailable && !page.openSourceDriverDetected && !page.nvidiaInstaller.busy && !page.operationRunning
-                            tooltipText: !page.nvidiaHardwareAvailable ? qsTr("An NVIDIA GPU or NVIDIA passthrough device is required.") : (page.openSourceDriverDetected ? qsTr("Deep Clean is required before switching from NVIDIA Open Kernel Modules to the proprietary module.") : qsTr("Install the proprietary NVIDIA kernel module (akmod-nvidia)."))
+                            enabled: page.canRunDriverMutation && !page.openSourceDriverDetected && !page.nvidiaInstaller.busy && !page.operationRunning
+                            disabledReason: page.driverMutationBlockedReason()
+                            tooltipText: page.driverMutationBlockedReason().length > 0 ? page.driverMutationBlockedReason() : (page.openSourceDriverDetected ? qsTr("Deep Clean is required before switching from NVIDIA Open Kernel Modules to the proprietary module.") : qsTr("Install the proprietary NVIDIA kernel module (akmod-nvidia)."))
                             onClicked: page.beginClosedSourceInstall()
                         }
 
@@ -875,18 +935,20 @@ Item {
                             activeBadge: page.openSourceDriverDetected
                             badgeText: qsTr("INSTALLED")
                             busy: page.requestedDriverAction === "open-install" && page.operationRunning
-                            enabled: page.nvidiaHardwareAvailable && !page.closedSourceDriverDetected && !page.nvidiaInstaller.busy && !page.operationRunning
-                            tooltipText: !page.nvidiaHardwareAvailable ? qsTr("An NVIDIA GPU or NVIDIA passthrough device is required.") : (page.closedSourceDriverDetected ? qsTr("Deep Clean is required before switching from the proprietary module to NVIDIA Open Kernel Modules.") : qsTr("Install NVIDIA Open Kernel Modules (akmod-nvidia-open)."))
+                            enabled: page.canRunDriverMutation && !page.closedSourceDriverDetected && !page.nvidiaInstaller.busy && !page.operationRunning
+                            disabledReason: page.driverMutationBlockedReason()
+                            tooltipText: page.driverMutationBlockedReason().length > 0 ? page.driverMutationBlockedReason() : (page.closedSourceDriverDetected ? qsTr("Deep Clean is required before switching from the proprietary module to NVIDIA Open Kernel Modules.") : qsTr("Install NVIDIA Open Kernel Modules (akmod-nvidia-open)."))
                             onClicked: page.beginOpenSourceInstall()
                         }
 
                         DriverActionTile {
                             title: qsTr("Deep Clean")
-                            subtitle: qsTr("Purge artifacts & stale DKMS")
+                            subtitle: qsTr("Remove NVIDIA packages and clear DNF cache")
                             accentColor: "#F59E0B"
                             busy: page.requestedDriverAction === "deep-clean" && page.operationRunning
-                            enabled: page.nvidiaHardwareAvailable && page.driverInstalledLocally && !page.nvidiaInstaller.busy && !page.operationRunning
-                            tooltipText: !page.nvidiaHardwareAvailable ? qsTr("An NVIDIA GPU or NVIDIA passthrough device is required.") : qsTr("Remove leftover configurations and prepare system for clean driver installation.")
+                            enabled: page.driverInstalledLocally && !page.nvidiaInstaller.busy && !page.operationRunning
+                            disabledReason: !page.driverInstalledLocally ? qsTr("An installed NVIDIA driver is required for cleanup.") : ""
+                            tooltipText: qsTr("Remove NVIDIA packages and clear cached repository metadata.")
                             onClicked: page.openDriverActionInfo("clean")
                         }
 
@@ -895,9 +957,22 @@ Item {
                             subtitle: qsTr("Akmods & initramfs regeneration")
                             accentColor: "#8B5CF6"
                             busy: page.requestedDriverAction === "rebuild-modules" && page.operationRunning
-                            enabled: page.nvidiaHardwareAvailable && page.driverInstalledLocally && !page.nvidiaInstaller.busy && !page.operationRunning
-                            tooltipText: !page.nvidiaHardwareAvailable ? qsTr("An NVIDIA GPU or NVIDIA passthrough device is required.") : qsTr("Force-rebuilds akmod kernel modules and regenerates initramfs after kernel updates.")
+                            enabled: page.driverInstalledLocally && page.waylandDriverFlowSupported && !page.nvidiaInstaller.busy && !page.operationRunning
+                            disabledReason: !page.driverInstalledLocally ? qsTr("An installed NVIDIA driver is required to rebuild modules.") : (!page.waylandDriverFlowSupported ? qsTr("Managed NVIDIA maintenance requires a Wayland session.") : "")
+                            tooltipText: qsTr("Force-rebuilds akmod kernel modules and regenerates initramfs after kernel updates.")
                             onClicked: page.openDriverActionInfo("rebuild")
+                        }
+
+                        DriverActionTile {
+                            visible: page.nvidiaUpdater.updateAvailable
+                            title: qsTr("Update NVIDIA Driver")
+                            subtitle: qsTr("Apply the latest compatible package version")
+                            accentColor: "#2563EB"
+                            busy: page.requestedDriverAction === "closed-update" && page.operationRunning
+                            enabled: visible && page.canRunDriverMutation && !page.nvidiaUpdater.busy && !page.operationRunning
+                            disabledReason: page.driverMutationBlockedReason()
+                            tooltipText: page.driverMutationBlockedReason().length > 0 ? page.driverMutationBlockedReason() : qsTr("Install the available NVIDIA driver update.")
+                            onClicked: page.openDriverActionInfo("update")
                         }
 
                         DriverActionTile {
@@ -1580,6 +1655,9 @@ Item {
         property string actionWarning: ""
         property string actionConfirmText: qsTr("Proceed")
         property string actionConfirmTone: "primary"
+        property bool secureBootAcknowledged: false
+        readonly property bool secureBootAcknowledgementRequired: page.nvidiaDetector.secureBootEnabled
+                                                            && (actionKey === "closed" || actionKey === "open" || actionKey === "update")
 
         modal: true
         focus: true
@@ -1589,6 +1667,8 @@ Item {
         y: Math.round((page.height - height) / 2)
         padding: Math.round(18 * page.uiScale)
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        onOpened: secureBootAcknowledged = false
 
         background: Rectangle {
             radius: Math.round(14 * page.uiScale)
@@ -1643,6 +1723,14 @@ Item {
                 Layout.fillWidth: true
                 height: 1
                 color: page.borderColor
+            }
+
+            CheckBox {
+                visible: driverActionModalPopup.secureBootAcknowledgementRequired
+                Layout.fillWidth: true
+                text: qsTr("I have completed the required akmods MOK key enrollment and understand that the NVIDIA module will not load without it.")
+                checked: driverActionModalPopup.secureBootAcknowledged
+                onToggled: driverActionModalPopup.secureBootAcknowledged = checked
             }
 
             Label {
@@ -1721,19 +1809,18 @@ Item {
                 Layout.fillWidth: true
                 spacing: Math.round(10 * page.uiScale)
 
-                Item { Layout.fillWidth: true }
-
                 ModernDialogButton {
-                    Layout.preferredWidth: Math.round(120 * page.uiScale)
+                    Layout.preferredWidth: 0
                     text: qsTr("Cancel")
                     tone: "neutral"
                     onClicked: driverActionModalPopup.close()
                 }
 
                 ModernDialogButton {
-                    Layout.preferredWidth: Math.round(170 * page.uiScale)
+                    Layout.preferredWidth: 0
                     text: driverActionModalPopup.actionConfirmText
                     tone: driverActionModalPopup.actionConfirmTone
+                    enabled: !driverActionModalPopup.secureBootAcknowledgementRequired || driverActionModalPopup.secureBootAcknowledged
                     onClicked: {
                         driverActionModalPopup.close();
                         page.executeDriverAction(driverActionModalPopup.actionKey);
@@ -1821,7 +1908,7 @@ Item {
 
                     Label {
                         Layout.fillWidth: true
-                        text: qsTr("One-time key authentication for signed NVIDIA modules")
+                        text: qsTr("Required before restarting after an NVIDIA driver installation")
                         color: page.softTextColor
                         font.pixelSize: Math.round(11 * page.uiScale)
                     }
@@ -1856,7 +1943,7 @@ Item {
                         {
                             step: "1",
                             title: qsTr("Reboot & Intercept"),
-                            desc: qsTr("Restart your computer. When prompted on the blue screen, press any key to enter Shim UEFI Key Management.")
+                            desc: qsTr("Before installation, generate and import the akmods key using your Fedora Secure Boot procedure. Then restart and enter Shim UEFI Key Management when prompted.")
                         },
                         {
                             step: "2",
