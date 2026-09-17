@@ -1,0 +1,15 @@
+[Unit]
+Description=ro-Control User Session Daemon and D-Bus Telemetry Provider
+Documentation=man:ro-control(1) https://github.com/Project-Ro-ASD/ro-Control
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/ro-control --daemon
+Restart=on-failure
+RestartSec=5s
+Slice=session.slice
+
+[Install]
+WantedBy=graphical-session.target

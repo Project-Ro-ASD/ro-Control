@@ -1,13 +1,14 @@
-.TH RO-CONTROL 1 "May 2026" "ro-control 1.1.0" "User Commands"
+.TH RO-CONTROL 1 "September 2026" "ro-control 1.3.0" "User Commands"
 .SH NAME
-ro-control \- NVIDIA driver management and diagnostics CLI
+ro-control \- NVIDIA driver manager, cooling controller, and hardware diagnostics suite for Ro-ASD
 .SH SYNOPSIS
 .B ro-control
 [\fICOMMAND\fR] [\fIOPTIONS\fR]
 .SH DESCRIPTION
 .B ro-control
-provides a desktop application and a command-line interface for inspecting
-system status, collecting diagnostics, and managing NVIDIA driver operations.
+provides the central hardware management desktop application and command-line
+utility developed for Ro-ASD. It manages NVIDIA drivers, fan cooling profiles,
+power limits, and real-time system telemetry.
 When no command is provided, the graphical interface is launched.
 .SH COMMANDS
 .TP
@@ -34,6 +35,48 @@ Update the installed NVIDIA driver.
 .TP
 .B driver deep-clean
 Remove legacy NVIDIA leftovers.
+.TP
+.B fan status [--json]
+Display fan telemetry, RPM, current mode, and hardware capability.
+.TP
+.BI "fan set-speed " "<0-100>"
+Manually set the target fan speed percentage.
+.TP
+.BI "fan set-mode " "<auto|silent|balanced|performance|manual|custom>"
+Set the active fan cooling profile.
+.TP
+.BI "fan set-smoothing " "<on|off> [ramp_up] [ramp_down] [hysteresis]"
+Configure fan smoothing and dynamic ramp rates.
+.TP
+.B fan reset
+Restore default automatic hardware fan control curve.
+.TP
+.B power status [--json]
+Display GPU power draw, default and current TDP limits, and persistence state.
+.TP
+.BI "power set-limit " "<watts>"
+Set the GPU power limit in Watts (within hardware min/max bounds).
+.TP
+.BI "power set-preset " "<eco|balanced|performance|custom>"
+Apply a predefined or custom GPU power preset.
+.TP
+.BI "power set-clocks " "<core_mhz> <mem_mhz>"
+Set GPU core and memory clock offsets in MHz.
+.TP
+.BI "power set-persistence " "<on|off>"
+Enable or disable NVIDIA driver persistence daemon mode.
+.TP
+.B processes [--json]
+List active compute and graphics processes running on the GPU.
+.TP
+.BI "kill-process " "<pid>"
+Terminate a GPU compute process by process ID.
+.TP
+.B gpus [--json]
+List all detected GPU devices and active index.
+.TP
+.BI "select-gpu " "<index>"
+Select active GPU device by index for multi-GPU systems.
 .SH OPTIONS
 .TP
 .B \-h, \-\-help
@@ -42,15 +85,21 @@ Show help text and exit.
 .B \-v, \-\-version
 Show the application version and exit.
 .TP
+.B \-\-daemon
+Run headless background daemon with native D-Bus IPC service.
+.TP
 .B \-d, \-\-diagnostics
 Legacy alias for
 .BR diagnostics .
 .TP
 .B \-\-json
 Render
-.BR status
+.BR status ,
+.BR diagnostics ,
+.BR power ,
+.BR fan ,
 or
-.BR diagnostics
+.BR processes
 output as JSON.
 .TP
 .B \-\-proprietary
@@ -84,6 +133,15 @@ Install the proprietary driver stack with explicit license confirmation.
 .TP
 .B ro-control driver update
 Update the installed NVIDIA driver.
+.TP
+.B ro-control fan status --json
+Print machine-readable fan telemetry and mode status.
+.TP
+.B ro-control fan set-mode performance
+Engage performance cooling mode for high compute workloads.
+.TP
+.B ro-control fan set-speed 75
+Manually fix fan speed to 75%.
 .SH FILES
 .TP
 .I /usr/bin/ro-control

@@ -2,50 +2,32 @@
 <component type="desktop-application">
 	<id>io.github.projectroasd.rocontrol.desktop</id>
 	<name>ro-Control</name>
-	<summary>NVIDIA driver manager and system monitor</summary>
-	<summary xml:lang="tr">NVIDIA sürücü yöneticisi ve sistem monitörü</summary>
+	<summary>Linux hardware monitor and cooling controller with NVIDIA driver management for Ro-ASD</summary>
+	<summary xml:lang="tr">Ro-ASD için NVIDIA sürücü yönetimi içeren Linux donanım izleyicisi ve soğutma denetleyicisi</summary>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>GPL-3.0-or-later</project_license>
-	<developer_name>Project Ro ASD</developer_name>
+	<developer id="io.github.projectroasd">
+		<name>Sopwit</name>
+	</developer>
+	<project_group>Sopwit</project_group>
 	<content_rating type="oars-1.1" />
 
 	<description>
 		<p>
-			ro-Control is a Ro-ASD desktop utility for NVIDIA driver
-			management and live system diagnostics. It helps users detect GPUs,
-			install or update drivers through DNF, and inspect GPU, CPU, and RAM
-			telemetry from a native Qt interface.
+			ro-Control is the central Linux hardware control suite developed for Ro-ASD.
+			It provides CPU and memory monitoring, generic Linux sensor and fan telemetry, real-time hardware
+			diagnostics, and automatic emergency thermal protection on supported devices. NVIDIA systems also
+			receive driver management, telemetry, and compatible GPU power and cooling controls. Driver package
+			management is currently provided for Fedora-family systems.
 		</p>
 		<p xml:lang="tr">
-			ro-Control, Ro-ASD odaklı bir NVIDIA sürücü yönetimi ve canlı sistem
-			tanılama masaüstü aracıdır. Kullanıcıların GPU'ları tespit etmesine,
-			sürücüleri DNF üzerinden kurup güncellemesine ve GPU, CPU, RAM
-			telemetrisini yerel bir Qt arayüzünden izlemesine yardımcı olur.
+			ro-Control, Ro-ASD için geliştirilmiş merkezi Linux donanım yönetim aracıdır.
+			Desteklenen cihazlarda CPU ve bellek izleme, genel Linux sensör ve fan telemetrisi, canlı donanım
+			tanılama ve otomatik acil termal koruma sağlar. NVIDIA sistemlerinde ayrıca sürücü yönetimi,
+			telemetri ve uyumlu GPU güç ve soğutma denetimleri sunar. Sürücü paketi yönetimi şu anda
+			Fedora ailesi sistemlerde sağlanır.
 		</p>
 	</description>
-
-	<screenshots>
-		<screenshot type="default">
-			<caption>Driver management view in the light theme</caption>
-			<caption xml:lang="tr">Açık temada sürücü yönetimi görünümü</caption>
-			<image type="source">https://raw.githubusercontent.com/Project-Ro-ASD/ro-Control/main/docs/screenshots/driver-light.png</image>
-		</screenshot>
-		<screenshot>
-			<caption>Hardware monitor view in the light theme</caption>
-			<caption xml:lang="tr">Açık temada donanım izleme görünümü</caption>
-			<image type="source">https://raw.githubusercontent.com/Project-Ro-ASD/ro-Control/main/docs/screenshots/monitor-light.png</image>
-		</screenshot>
-		<screenshot>
-			<caption>Driver management view in the dark theme</caption>
-			<caption xml:lang="tr">Koyu temada sürücü yönetimi görünümü</caption>
-			<image type="source">https://raw.githubusercontent.com/Project-Ro-ASD/ro-Control/main/docs/screenshots/driver-dark.png</image>
-		</screenshot>
-		<screenshot>
-			<caption>Hardware monitor view in the dark theme</caption>
-			<caption xml:lang="tr">Koyu temada donanım izleme görünümü</caption>
-			<image type="source">https://raw.githubusercontent.com/Project-Ro-ASD/ro-Control/main/docs/screenshots/monitor-dark.png</image>
-		</screenshot>
-	</screenshots>
 
 	<keywords>
 		<keyword>NVIDIA</keyword>
@@ -53,6 +35,8 @@
 		<keyword>Diagnostics</keyword>
 		<keyword>Telemetry</keyword>
 		<keyword>Ro-ASD</keyword>
+		<keyword>Cooling</keyword>
+		<keyword>Fans</keyword>
 	</keywords>
 
 	<categories>
@@ -62,24 +46,38 @@
 	</categories>
 
 	<releases>
-		<release version="1.1.0" date="2026-05-10" />
+		<release version="1.3.1" date="2026-09-07">
+			<description>
+				<p>Improves responsiveness by moving user-triggered GPU refresh work off the UI thread and backing off optional NVIDIA fan RPM probes when NV-CONTROL is unavailable, while retaining live sysfs telemetry and thermal safety monitoring.</p>
+				<p xml:lang="tr">Kullanıcı tetiklemeli GPU yenileme işini arayüz iş parçacığından çıkarır; NV-CONTROL kullanılamadığında isteğe bağlı NVIDIA fan RPM sorgularını seyrekleştirir. Canlı sysfs telemetrisi ve termal güvenlik izleme korunur.</p>
+			</description>
+		</release>
+		<release version="1.3.0" date="2026-09-01">
+			<description>
+				<p>Major feature release adding GPU Power and TDP management, background Health Guard with thermal notifications, system tray integration, and Sentinel D-Bus IPC service.</p>
+				<p xml:lang="tr">GPU Güç ve TDP yönetimi, masaüstü termal uyarı bildirimli Health Guard, sistem tepsisi entegrasyonu ve Sentinel D-Bus IPC servisini getiren ana sürüm.</p>
+			</description>
+		</release>
+		<release version="1.2.0" date="2026-08-27">
+			<description>
+				<p>Major release adding advanced fan management and telemetry subsystem, dedicated CPU and GPU fan curves, and headless CI resilience.</p>
+				<p xml:lang="tr">Gelişmiş fan yönetimi ve telemetri alt sistemi, özel CPU ve GPU fan eğrileri ile headless CI kararlılığını getiren ana sürüm.</p>
+			</description>
+		</release>
+		<release version="1.1.0" date="2026-05-10">
+			<description>
+				<p>Standalone dual-architecture RPM releases for x86_64 and aarch64, updated AppStream metadata, and shell completions.</p>
+				<p xml:lang="tr">x86_64 ve aarch64 için bağımsız RPM paketleri, güncellenmiş AppStream metaverisi ve kabuk tamamlama betikleri.</p>
+			</description>
+		</release>
 		<release version="1.0.0" date="2026-04-29" />
 		<release version="0.2.1" date="2026-03-30" />
 	</releases>
-
-	<kudos>
-		<kudo>HiDpiIcon</kudo>
-		<kudo>ModernToolkit</kudo>
-	</kudos>
 
 	<launchable type="desktop-id">io.github.projectroasd.rocontrol.desktop</launchable>
 	<provides>
 		<binary>ro-control</binary>
 	</provides>
-
-	<developer id="io.github.projectroasd">
-		<name>Project Ro ASD</name>
-	</developer>
 
 	<url type="homepage">https://github.com/Project-Ro-ASD/ro-Control</url>
 	<url type="help">https://github.com/Project-Ro-ASD/ro-Control#readme</url>

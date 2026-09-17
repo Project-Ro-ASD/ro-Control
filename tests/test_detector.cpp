@@ -1,6 +1,6 @@
-#include <QTest>
 #include <QFile>
 #include <QTemporaryDir>
+#include <QTest>
 
 #include "nvidia/detector.h"
 
@@ -44,9 +44,8 @@ private slots:
     NvidiaDetector detector;
     const bool installed = detector.isDriverInstalled();
     const auto info = detector.detect();
-    QCOMPARE(installed,
-             !detector.installedDriverVersion().isEmpty() ||
-                 info.driverPackageInstalled);
+    QCOMPARE(installed, !detector.installedDriverVersion().isEmpty() ||
+                            info.driverPackageInstalled);
   }
 
   void testInstalledDriverVersion() {
@@ -85,11 +84,56 @@ private slots:
     QVERIFY(!detector.activeDriver().trimmed().isEmpty());
   }
 
+  void testOpenKernelModuleIsNotMisclassifiedAsMixed() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString rpmPath = tempDir.filePath(QStringLiteral("fake-rpm.sh"));
+    QFile rpm(rpmPath);
+    QVERIFY(rpm.open(QIODevice::WriteOnly | QIODevice::Text));
+    rpm.write("#!/bin/sh\n"
+              "printf 'akmod-nvidia-open|0:570.1-1.fc42\\n'\n"
+              "printf 'xorg-x11-drv-nvidia|0:570.1-1.fc42\\n'\n");
+    rpm.close();
+    QVERIFY(QFile::setPermissions(rpmPath, QFileDevice::ReadOwner |
+                                               QFileDevice::WriteOwner |
+                                               QFileDevice::ExeOwner));
+
+    const QString modulesPath = tempDir.filePath(QStringLiteral("modules"));
+    QFile modules(modulesPath);
+    QVERIFY(modules.open(QIODevice::WriteOnly | QIODevice::Text));
+    modules.write("nvidia 1 0 - Live 0x0\n");
+    modules.close();
+
+    const QString versionPath =
+        tempDir.filePath(QStringLiteral("nvidia-version"));
+    QFile version(versionPath);
+    QVERIFY(version.open(QIODevice::WriteOnly | QIODevice::Text));
+    version.write("NVRM version: NVIDIA UNIX Open Kernel Module for x86_64\n");
+    version.close();
+
+    qputenv("RO_CONTROL_COMMAND_RPM", rpmPath.toUtf8());
+    qputenv("RO_CONTROL_PROC_MODULES_PATH", modulesPath.toUtf8());
+    qputenv("RO_CONTROL_NVIDIA_PROC_VERSION_PATH", versionPath.toUtf8());
+    qputenv("RO_CONTROL_NVIDIA_OPENRM_PATH",
+            tempDir.filePath(QStringLiteral("missing-openrm")).toUtf8());
+
+    NvidiaDetector detector;
+    detector.setDetectionResult(detector.detect());
+    QCOMPARE(detector.installedDriverSource(), QStringLiteral("open-source"));
+
+    qunsetenv("RO_CONTROL_COMMAND_RPM");
+    qunsetenv("RO_CONTROL_PROC_MODULES_PATH");
+    qunsetenv("RO_CONTROL_NVIDIA_PROC_VERSION_PATH");
+    qunsetenv("RO_CONTROL_NVIDIA_OPENRM_PATH");
+  }
+
   void testSecureBootEfivarOverride() {
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());
 
-    const QString efivarPath = tempDir.filePath(QStringLiteral("SecureBoot-test"));
+    const QString efivarPath =
+        tempDir.filePath(QStringLiteral("SecureBoot-test"));
     QFile file(efivarPath);
     QVERIFY(file.open(QIODevice::WriteOnly));
     QVERIFY(file.write(QByteArray::fromHex("0700000001")) == 5);
@@ -103,6 +147,68 @@ private slots:
     QVERIFY(info.secureBootEnabled);
 
     qunsetenv("RO_CONTROL_SECURE_BOOT_EFIVAR_PATH");
+  }
+
+  void testSecureBootEfivarDisabledOverride() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString efivarPath =
+        tempDir.filePath(QStringLiteral("SecureBoot-disabled-test"));
+    QFile file(efivarPath);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    QVERIFY(file.write(QByteArray::fromHex("0700000000")) == 5);
+    file.close();
+
+    qputenv("RO_CONTROL_SECURE_BOOT_EFIVAR_PATH", efivarPath.toUtf8());
+
+    NvidiaDetector detector;
+    const auto info = detector.detect();
+    QVERIFY(info.secureBootKnown);
+    QVERIFY(!info.secureBootEnabled);
+
+    qunsetenv("RO_CONTROL_SECURE_BOOT_EFIVAR_PATH");
+  }
+
+  void testCleanGpuName() {
+    // 1. Bracketed NVIDIA GPU with chip code
+    QCOMPARE(NvidiaDetector::cleanGpuName(
+                 QStringLiteral("TU106 [GeForce RTX 2060 SUPER]")),
+             QStringLiteral("NVIDIA GeForce RTX 2060 SUPER"));
+
+    // 2. Already clean NVIDIA GPU
+    QCOMPARE(NvidiaDetector::cleanGpuName(
+                 QStringLiteral("NVIDIA GeForce RTX 2060 SUPER")),
+             QStringLiteral("NVIDIA GeForce RTX 2060 SUPER"));
+
+    // 3. Bracketed with revision suffix and corporation prefix
+    QCOMPARE(
+        NvidiaDetector::cleanGpuName(
+            QStringLiteral(
+                "NVIDIA Corporation TU106 [GeForce RTX 2060 SUPER] (rev a1)"),
+            QStringLiteral("NVIDIA Corporation")),
+        QStringLiteral("NVIDIA GeForce RTX 2060 SUPER"));
+
+    // 4. Ada Lovelace RTX 4090
+    QCOMPARE(NvidiaDetector::cleanGpuName(
+                 QStringLiteral("AD102 [GeForce RTX 4090]")),
+             QStringLiteral("NVIDIA GeForce RTX 4090"));
+
+    // 5. Intel integrated graphics
+    QCOMPARE(NvidiaDetector::cleanGpuName(
+                 QStringLiteral("Raptor Lake-S GT1 [UHD Graphics 770]"),
+                 QStringLiteral("Intel Corporation")),
+             QStringLiteral("Intel UHD Graphics 770"));
+
+    // 6. AMD Radeon GPU
+    QCOMPARE(NvidiaDetector::cleanGpuName(
+                 QStringLiteral("Navi 21 [Radeon RX 6800/6800 XT / 6900 XT]"),
+                 QStringLiteral("Advanced Micro Devices, Inc. [AMD/ATI]")),
+             QStringLiteral("AMD Radeon RX 6800/6800 XT / 6900 XT"));
+
+    // 7. Quadro GPU
+    QCOMPARE(NvidiaDetector::cleanGpuName(QStringLiteral("Quadro RTX 4000")),
+             QStringLiteral("NVIDIA Quadro RTX 4000"));
   }
 };
 

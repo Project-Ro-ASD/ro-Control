@@ -111,6 +111,7 @@ qt_add_executable(test_metadata
 
 target_compile_definitions(test_metadata PRIVATE
     "RO_CONTROL_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\""
+    "RO_CONTROL_PROJECT_VERSION=\"${PROJECT_VERSION}\""
 )
 
 target_link_libraries(test_metadata PRIVATE
@@ -154,3 +155,62 @@ target_link_libraries(test_driver_page PRIVATE
 )
 
 ro_control_register_test(test_driver_page)
+
+# ─── Power Controller Tests ──────────────────────────────────────────────────
+qt_add_executable(test_power_controller
+    test_power_controller.cpp
+)
+
+ro_control_configure_test(test_power_controller)
+
+target_link_libraries(test_power_controller PRIVATE
+    Qt6::Test
+    ro-control-backend
+)
+
+ro_control_register_test(test_power_controller)
+
+# ─── Health Guard Tests ──────────────────────────────────────────────────────
+qt_add_executable(test_health_guard
+    test_health_guard.cpp
+)
+
+ro_control_configure_test(test_health_guard)
+
+target_link_libraries(test_health_guard PRIVATE
+    Qt6::Test
+    ro-control-backend
+)
+
+ro_control_register_test(test_health_guard)
+
+# ─── Main Window Tests ──────────────────────────────────────────────────────
+qt_add_executable(test_main_window
+    test_main_window.cpp
+)
+
+ro_control_configure_test(test_main_window)
+
+target_link_libraries(test_main_window PRIVATE
+    Qt6::Gui
+    Qt6::Quick
+    Qt6::Test
+    ro-control-backend
+)
+
+ro_control_register_test(test_main_window)
+
+# ─── D-Bus Service Tests ─────────────────────────────────────────────────────
+qt_add_executable(test_dbus_service
+    test_dbus_service.cpp
+)
+
+ro_control_configure_test(test_dbus_service)
+
+target_link_libraries(test_dbus_service PRIVATE
+    Qt6::DBus
+    Qt6::Test
+    ro-control-backend
+)
+
+ro_control_register_test(test_dbus_service)

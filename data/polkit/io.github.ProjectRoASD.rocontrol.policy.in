@@ -11,8 +11,12 @@
     <action id="@RO_CONTROL_POLICY_ID@">
         <description>Manage NVIDIA drivers with ro-Control</description>
         <description xml:lang="tr">ro-Control ile NVIDIA sürücülerini yönet</description>
+        <description xml:lang="de">NVIDIA-Treiber mit ro-Control verwalten</description>
+        <description xml:lang="es">Administrar controladores NVIDIA con ro-Control</description>
         <message>Authentication is required to install, update, remove, and prepare NVIDIA driver packages and kernel modules</message>
         <message xml:lang="tr">NVIDIA sürücü paketlerini ve kernel modüllerini kurmak, güncellemek, kaldırmak ve hazırlamak için kimlik doğrulama gerekli</message>
+        <message xml:lang="de">Zur Installation, Aktualisierung, Entfernung und Vorbereitung von NVIDIA-Treiberpaketen und Kernel-Modulen ist eine Authentifizierung erforderlich</message>
+        <message xml:lang="es">Se requiere autenticación para instalar, actualizar, eliminar y preparar paquetes de controladores NVIDIA y módulos de kernel</message>
         <icon_name>io.github.projectroasd.rocontrol</icon_name>
         <defaults>
             <allow_any>auth_admin</allow_any>

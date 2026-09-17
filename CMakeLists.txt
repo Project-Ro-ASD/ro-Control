@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.22)
 
 project(ro-control
-    VERSION 1.1.0
-    DESCRIPTION "Smart NVIDIA Driver Manager & System Monitor for Linux"
+    VERSION 1.3.1
+    DESCRIPTION "Linux hardware monitor, cooling controller, and NVIDIA driver manager"
     HOMEPAGE_URL "https://github.com/Project-Ro-ASD/ro-Control"
     LANGUAGES CXX
 )
@@ -62,6 +62,7 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS
     Core
+    Concurrent
     Qml
     Quick          # Qt Quick / QML engine
     QuickControls2 # QML controls (Button, Slider, etc.)
@@ -108,6 +109,9 @@ set(BACKEND_SOURCES
     src/backend/system/uipreferencesmanager.cpp
     src/backend/system/systeminfoprovider.cpp
     src/backend/fan/fancontroller.cpp
+    src/backend/power/powercontroller.cpp
+    src/backend/system/healthguard.cpp
+    src/backend/system/dbusservice.cpp
 )
 
 set(APP_SOURCES
@@ -130,6 +134,7 @@ add_library(ro-control-backend STATIC ${BACKEND_SOURCES})
 
 target_link_libraries(ro-control-backend PUBLIC
     Qt6::Core
+    Qt6::Concurrent
     Qt6::DBus
     Qt6::Gui
     Qt6::Qml
@@ -140,8 +145,14 @@ target_compile_options(ro-control-backend PRIVATE
     -Wextra
     -Wpedantic
     $<$<CONFIG:Debug>:-g -O0>
-    $<$<CONFIG:Release>:-O2>
+    $<$<CONFIG:Release>:-O3 -fvisibility=hidden -fvisibility-inlines-hidden -fdata-sections -ffunction-sections>
 )
+
+if(NOT APPLE)
+    target_link_options(ro-control-backend PRIVATE
+        $<$<CONFIG:Release>:-Wl,--gc-sections>
+    )
+endif()
 
 target_include_directories(ro-control-backend PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -176,6 +187,10 @@ set_source_files_properties(src/qml/assets/icon-theme.svg PROPERTIES
     QT_RESOURCE_ALIAS "assets/icon-theme.svg"
 )
 
+set_source_files_properties(src/qml/assets/icon-settings.svg PROPERTIES
+    QT_RESOURCE_ALIAS "assets/icon-settings.svg"
+)
+
 qt_add_qml_module(ro-control
     URI "rocontrol"
     VERSION 1.0
@@ -184,6 +199,7 @@ qt_add_qml_module(ro-control
         src/qml/pages/DriverPage.qml
         src/qml/pages/MonitorPage.qml
         src/qml/pages/FanPage.qml
+        src/qml/pages/SystemPage.qml
         src/qml/components/InfoBadge.qml
         src/qml/components/RefreshToolButton.qml
         src/qml/components/ActionButton.qml
@@ -192,12 +208,15 @@ qt_add_qml_module(ro-control
         src/qml/components/StatusBanner.qml
         src/qml/components/StatCard.qml
         src/qml/components/SidebarMenu.qml
+        src/qml/components/FanSettingsPopup.qml
+        src/qml/components/FanRescanPopup.qml
     RESOURCES
         src/qml/assets/ro-control-logo.svg
         src/qml/assets/icon-language.svg
         src/qml/assets/icon-refresh.svg
         src/qml/assets/icon-refresh-light.svg
         src/qml/assets/icon-theme.svg
+        src/qml/assets/icon-settings.svg
 )
 
 # Keep QML cache generation on the public bytecode path so RPM dependencies do
@@ -235,8 +254,18 @@ target_compile_options(ro-control PRIVATE
     -Wextra
     -Wpedantic
     $<$<CONFIG:Debug>:-g -O0>
-    $<$<CONFIG:Release>:-O2>
+    $<$<CONFIG:Release>:-O3 -fvisibility=hidden -fvisibility-inlines-hidden -fdata-sections -ffunction-sections>
 )
+
+if(APPLE)
+    target_link_options(ro-control PRIVATE
+        $<$<CONFIG:Release>:-Wl,-dead_strip>
+    )
+else()
+    target_link_options(ro-control PRIVATE
+        $<$<CONFIG:Release>:-Wl,--gc-sections -Wl,-O1 -Wl,--as-needed>
+    )
+endif()
 
 # ─── Include Directories ──────────────────────────────────────────────────────
 target_include_directories(ro-control PRIVATE
@@ -329,8 +358,54 @@ install(FILES data/completions/ro-control.fish
     DESTINATION ${CMAKE_INSTALL_DATADIR}/fish/vendor_completions.d
 )
 
+# ─── Systemd Service Units ───────────────────────────────────────────────────
+configure_file(
+    data/systemd/ro-control.service.in
+    ${CMAKE_CURRENT_BINARY_DIR}/ro-control.service
+    @ONLY
+)
+
+configure_file(
+    data/systemd/ro-control-user.service.in
+    ${CMAKE_CURRENT_BINARY_DIR}/ro-control-user.service
+    @ONLY
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ro-control.service
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/systemd/system
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ro-control-user.service
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/systemd/user
+    RENAME ro-control.service
+)
+
+# ─── Formatting ──────────────────────────────────────────────────────────────
+find_program(CLANG_FORMAT_EXE clang-format)
+if(CLANG_FORMAT_EXE)
+    file(GLOB_RECURSE ALL_SOURCE_FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h
+    )
+    add_custom_target(format
+        COMMAND ${CLANG_FORMAT_EXE} -i ${ALL_SOURCE_FILES}
+        COMMENT "Running clang-format on all C++ source files"
+    )
+    add_custom_target(check-format
+        COMMAND ${CLANG_FORMAT_EXE} --dry-run --Werror ${ALL_SOURCE_FILES}
+        COMMENT "Verifying clang-format on all C++ source files"
+    )
+endif()
+
 # ─── Tests ───────────────────────────────────────────────────────────────────
 option(BUILD_TESTS "Build unit tests" OFF)
+
+# Also honour the CMake standard BUILD_TESTING convention
+if(BUILD_TESTING AND NOT BUILD_TESTS)
+    set(BUILD_TESTS ON CACHE BOOL "Build unit tests" FORCE)
+endif()
 
 if(BUILD_TESTS)
     enable_testing()

@@ -1,33 +1,51 @@
+#include <QCoreApplication>
 #include <QDir>
 #include <QFile>
-#include <QTemporaryDir>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QSettings>
+#include <QSignalSpy>
 #include <QStandardPaths>
+#include <QTemporaryDir>
 #include <QTest>
 #include <atomic>
 #include <chrono>
 #include <memory>
 #include <thread>
 
+#include "nvidia/installer.h"
 #include "system/capabilityprobe.h"
 #include "system/commandrunner.h"
 #include "system/dnfmanager.h"
 #include "system/polkit.h"
 #include "system/sessionutil.h"
+#include "system/systeminfoprovider.h"
 
 namespace {
 
 QTemporaryDir createExecutableTempDir() {
-  const QString basePath =
-      QDir::cleanPath(QDir::currentPath() + QStringLiteral("/ro-control-test-XXXXXX"));
+  const QString basePath = QDir::cleanPath(
+      QDir::currentPath() + QStringLiteral("/ro-control-test-XXXXXX"));
   return QTemporaryDir(basePath);
 }
 
-}
+} // namespace
 
 class TestSystemIntegration : public QObject {
   Q_OBJECT
 
 private slots:
+  void init() {
+    QCoreApplication::setOrganizationName(
+        QStringLiteral("Project-Ro-ASD-TestSuite"));
+    QCoreApplication::setApplicationName(
+        QStringLiteral("ro-control-sysintegration-test"));
+
+    QSettings settings;
+    settings.clear();
+    settings.sync();
+  }
+
   void testCommandRunnerUsesProgramOverride() {
     QTemporaryDir tempDir = createExecutableTempDir();
     QVERIFY(tempDir.isValid());
@@ -147,7 +165,8 @@ private slots:
 
     qputenv("RO_CONTROL_COMMAND_NVIDIA_SMI", scriptPath.toUtf8());
 
-    const auto status = CapabilityProbe::probeTool(QStringLiteral("nvidia-smi"));
+    const auto status =
+        CapabilityProbe::probeTool(QStringLiteral("nvidia-smi"));
     QVERIFY(status.available);
     QCOMPARE(QDir::cleanPath(status.resolvedPath), QDir::cleanPath(scriptPath));
 
@@ -275,13 +294,135 @@ private slots:
   }
 
   void testHelperPathsAreCompiledForBuildAndInstallModes() {
-    const QString helperBuildPath = QStringLiteral(RO_CONTROL_HELPER_BUILD_PATH);
+    const QString helperBuildPath =
+        QStringLiteral(RO_CONTROL_HELPER_BUILD_PATH);
     const QString helperInstallPath =
         QStringLiteral(RO_CONTROL_HELPER_INSTALL_PATH);
 
     QVERIFY(!helperBuildPath.trimmed().isEmpty());
     QVERIFY(!helperInstallPath.trimmed().isEmpty());
     QVERIFY(helperInstallPath.contains(QStringLiteral("ro-control-helper")));
+  }
+
+  void testSystemInfoProviderDefaultsAndProperties() {
+    SystemInfoProvider provider;
+    QVERIFY(!provider.osName().isEmpty());
+    QVERIFY(!provider.kernelVersion().isEmpty());
+    QVERIFY(!provider.cpuModel().isEmpty());
+    QCOMPARE(provider.virtualMachine(),
+             !provider.virtualizationType().isEmpty());
+
+    const QString report = provider.generateSystemReport(
+        QStringLiteral("NVIDIA RTX 4080"), QStringLiteral("570.86.16"),
+        QStringLiteral("16 GB"), QStringLiteral("32 GB"),
+        QStringLiteral("Gen4 x16"), QStringLiteral("Secure Boot: Off"));
+    QVERIFY(!report.isEmpty());
+    QVERIFY(report.contains(QStringLiteral("System Diagnostic Report")));
+    QVERIFY(report.contains(QStringLiteral("NVIDIA RTX 4080")));
+
+    const QString plainReport = provider.generateSystemReport(
+        QStringLiteral("NVIDIA RTX 4080"), QStringLiteral("570.86.16"),
+        QStringLiteral("16 GB"), QStringLiteral("32 GB"),
+        QStringLiteral("Gen4 x16"), QStringLiteral("Secure Boot: Off"),
+        QStringLiteral("plain"));
+    QVERIFY(plainReport.contains(QStringLiteral("Operating System:")));
+    QVERIFY(!plainReport.contains(QStringLiteral("**Operating System:**")));
+
+    const auto jsonReport = QJsonDocument::fromJson(
+        provider
+            .generateSystemReport(
+                QStringLiteral("NVIDIA RTX 4080"), QStringLiteral("570.86.16"),
+                QStringLiteral("16 GB"), QStringLiteral("32 GB"),
+                QStringLiteral("Gen4 x16"), QStringLiteral("Secure Boot: Off"),
+                QStringLiteral("json"))
+            .toUtf8());
+    QVERIFY(jsonReport.isObject());
+    QCOMPARE(
+        jsonReport.object().value(QStringLiteral("graphicsCard")).toString(),
+        QStringLiteral("NVIDIA RTX 4080"));
+
+    QSignalSpy prefSpy(&provider,
+                       &SystemInfoProvider::diagnosticReportPreferencesChanged);
+    provider.setDiagnosticReportFormat(QStringLiteral("json"));
+    QCOMPARE(provider.diagnosticReportFormat(), QStringLiteral("json"));
+    QCOMPARE(prefSpy.count(), 1);
+
+    provider.setDiagnosticReportDestination(QStringLiteral("clipboard"));
+    QCOMPARE(provider.diagnosticReportDestination(),
+             QStringLiteral("clipboard"));
+    QCOMPARE(prefSpy.count(), 2);
+
+    QSignalSpy spy(&provider, &SystemInfoProvider::infoChanged);
+    provider.refresh();
+    QCOMPARE(spy.count(), 0);
+  }
+
+  void testSystemInfoProviderDesktopEnvironmentParsing() {
+    const QByteArray prevDesktop = qgetenv("XDG_CURRENT_DESKTOP");
+    const QByteArray prevSession = qgetenv("DESKTOP_SESSION");
+
+    qputenv("XDG_CURRENT_DESKTOP", QByteArrayLiteral("KDE"));
+    qunsetenv("DESKTOP_SESSION");
+
+    SystemInfoProvider kdeProvider;
+    QCOMPARE(kdeProvider.desktopEnvironment(), QStringLiteral("KDE Plasma"));
+
+    qputenv("XDG_CURRENT_DESKTOP", QByteArrayLiteral("GNOME"));
+    SystemInfoProvider gnomeProvider;
+    QCOMPARE(gnomeProvider.desktopEnvironment(), QStringLiteral("GNOME"));
+
+    if (prevDesktop.isNull()) {
+      qunsetenv("XDG_CURRENT_DESKTOP");
+    } else {
+      qputenv("XDG_CURRENT_DESKTOP", prevDesktop);
+    }
+    if (prevSession.isNull()) {
+      qunsetenv("DESKTOP_SESSION");
+    } else {
+      qputenv("DESKTOP_SESSION", prevSession);
+    }
+  }
+
+  void testSystemInfoProviderPowerSupplyDetection() {
+    qputenv("RO_CONTROL_POWER_SUPPLY_ONLINE", "0");
+    {
+      SystemInfoProvider batProvider;
+      QVERIFY(batProvider.onBattery());
+      QCOMPARE(batProvider.powerSource(), QStringLiteral("Battery"));
+    }
+
+    qputenv("RO_CONTROL_POWER_SUPPLY_ONLINE", "1");
+    {
+      SystemInfoProvider acProvider;
+      QVERIFY(!acProvider.onBattery());
+      QCOMPARE(acProvider.powerSource(), QStringLiteral("AC Power"));
+    }
+    qunsetenv("RO_CONTROL_POWER_SUPPLY_ONLINE");
+  }
+
+  void testNvidiaInstallerDefaultsAndCancel() {
+    NvidiaInstaller installer;
+    QCOMPARE(installer.busy(), false);
+    QCOMPARE(installer.proprietaryAgreementRequired(), true);
+    QVERIFY(!installer.proprietaryAgreementText().isEmpty());
+
+    installer.cancelOperation();
+    QCOMPARE(installer.busy(), false);
+  }
+
+  void testLocalizeGpuName() {
+    QCOMPARE(
+        SystemInfoProvider::localizeGpuName(QStringLiteral(
+            "Intel Core Processor Integrated Graphics Controller")),
+        QStringLiteral("Intel Core Processor Integrated Graphics Controller"));
+    QCOMPARE(SystemInfoProvider::localizeGpuName(
+                 QStringLiteral("Intel Integrated Graphics Controller")),
+             QStringLiteral("Intel Integrated Graphics Controller"));
+    QCOMPARE(SystemInfoProvider::localizeGpuName(
+                 QStringLiteral("Intel UHD Graphics 630")),
+             QStringLiteral("Intel UHD Graphics 630"));
+    QCOMPARE(SystemInfoProvider::localizeGpuName(QStringLiteral("")),
+             QStringLiteral(""));
   }
 };
 

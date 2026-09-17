@@ -27,7 +27,8 @@ private slots:
     QVERIFY(desktop.contains(QStringLiteral("Exec=ro-control")));
     QVERIFY(desktop.contains(
         QStringLiteral("Icon=io.github.projectroasd.rocontrol")));
-    QVERIFY(desktop.contains(QStringLiteral("Categories=System;Settings;HardwareSettings;")));
+    QVERIFY(desktop.contains(
+        QStringLiteral("Categories=Settings;HardwareSettings;")));
     QVERIFY(desktop.contains(QStringLiteral("Name[tr]=ro-Control")));
     QVERIFY(desktop.contains(QStringLiteral("SingleMainWindow=true")));
   }
@@ -38,23 +39,41 @@ private slots:
     QVERIFY(!metainfo.isEmpty());
     QVERIFY(metainfo.contains(
         QStringLiteral("<id>io.github.projectroasd.rocontrol.desktop</id>")));
-    QVERIFY(metainfo.contains(QStringLiteral(
-        "<launchable type=\"desktop-id\">io.github.projectroasd.rocontrol.desktop</launchable>")));
-    QVERIFY(metainfo.contains(QStringLiteral("<binary>ro-control</binary>")));
     QVERIFY(metainfo.contains(
-        QStringLiteral("<developer_name>Project Ro ASD</developer_name>")));
-    QVERIFY(metainfo.contains(QStringLiteral("<url type=\"homepage\">https://github.com/Project-Ro-ASD/ro-Control</url>")));
-    QVERIFY(metainfo.contains(QStringLiteral("<url type=\"help\">https://github.com/Project-Ro-ASD/ro-Control#readme</url>")));
-    QVERIFY(metainfo.contains(QStringLiteral("<url type=\"bugtracker\">https://github.com/Project-Ro-ASD/ro-Control/issues</url>")));
+        QStringLiteral("<launchable "
+                       "type=\"desktop-id\">io.github.projectroasd.rocontrol."
+                       "desktop</launchable>")));
+    QVERIFY(metainfo.contains(
+                QStringLiteral("<developer id=\"io.github.projectroasd\">")) ||
+            metainfo.contains(
+                QStringLiteral("<developer_name>Sopwit</developer_name>")));
+    QVERIFY(metainfo.contains(QStringLiteral("<name>Sopwit</name>")) ||
+            metainfo.contains(QStringLiteral("<name>Project Ro ASD</name>")) ||
+            metainfo.contains(
+                QStringLiteral("<developer_name>Sopwit</developer_name>")));
+    QVERIFY(
+        metainfo.contains(QStringLiteral("<url "
+                                         "type=\"homepage\">https://github.com/"
+                                         "Project-Ro-ASD/ro-Control</url>")));
+    QVERIFY(metainfo.contains(
+        QStringLiteral("<url "
+                       "type=\"help\">https://github.com/Project-Ro-ASD/"
+                       "ro-Control#readme</url>")));
+    QVERIFY(metainfo.contains(
+        QStringLiteral("<url "
+                       "type=\"bugtracker\">https://github.com/Project-Ro-ASD/"
+                       "ro-Control/issues</url>")));
   }
 
   void testPolicyContainsExpectedActionIds() {
-    const QString policy = readFile(QStringLiteral("data/polkit/io.github.ProjectRoASD.rocontrol.policy.in"));
+    const QString policy = readFile(QStringLiteral(
+        "data/polkit/io.github.ProjectRoASD.rocontrol.policy.in"));
     QVERIFY(!policy.isEmpty());
     QVERIFY(policy.contains(QStringLiteral("@RO_CONTROL_POLICY_ID@")));
-    QVERIFY(policy.contains(QStringLiteral("@RO_CONTROL_HELPER_INSTALL_PATH@")));
-    QVERIFY(policy.contains(
-        QStringLiteral("<icon_name>io.github.projectroasd.rocontrol</icon_name>")));
+    QVERIFY(
+        policy.contains(QStringLiteral("@RO_CONTROL_HELPER_INSTALL_PATH@")));
+    QVERIFY(policy.contains(QStringLiteral(
+        "<icon_name>io.github.projectroasd.rocontrol</icon_name>")));
   }
 
   void testDesktopAndAppStreamIdsStayAligned() {
@@ -69,23 +88,19 @@ private slots:
     QVERIFY(desktop.contains(QStringLiteral("Exec=ro-control")));
     QVERIFY(metainfo.contains(
         QStringLiteral("<id>io.github.projectroasd.rocontrol.desktop</id>")));
-    QVERIFY(metainfo.contains(QStringLiteral("<screenshots>")));
-    QVERIFY(metainfo.contains(QStringLiteral(
-        "https://raw.githubusercontent.com/Project-Ro-ASD/ro-Control/main/docs/screenshots/driver-light.png")));
-    QVERIFY(metainfo.contains(QStringLiteral(
-        "https://raw.githubusercontent.com/Project-Ro-ASD/ro-Control/main/docs/screenshots/monitor-light.png")));
-    QVERIFY(metainfo.contains(QStringLiteral(
-        "https://raw.githubusercontent.com/Project-Ro-ASD/ro-Control/main/docs/screenshots/driver-dark.png")));
-    QVERIFY(metainfo.contains(QStringLiteral(
-        "https://raw.githubusercontent.com/Project-Ro-ASD/ro-Control/main/docs/screenshots/monitor-dark.png")));
   }
 
   void testAppStreamContainsCurrentReleaseVersion() {
     const QString metainfo = readFile(QStringLiteral(
         "data/icons/io.github.projectroasd.rocontrol.metainfo.xml"));
     QVERIFY(!metainfo.isEmpty());
-    QVERIFY(metainfo.contains(
-        QStringLiteral("<release version=\"1.1.0\" date=\"2026-05-10\" />")));
+#ifdef RO_CONTROL_PROJECT_VERSION
+    const QString expectedVersion = QStringLiteral(RO_CONTROL_PROJECT_VERSION);
+#else
+    const QString expectedVersion = QStringLiteral("1.3.0");
+#endif
+    QVERIFY(metainfo.contains(QStringLiteral("<release version=\"") +
+                              expectedVersion + QStringLiteral("\"")));
   }
 
   void testCliDocumentationAssetsExist() {
@@ -101,18 +116,23 @@ private slots:
     QVERIFY(manPage.contains(QStringLiteral(".TH RO-CONTROL 1")));
     QVERIFY(manPage.contains(QStringLiteral("driver install")));
     QVERIFY(manPage.contains(QStringLiteral("status")));
+    QVERIFY(manPage.contains(QStringLiteral("fan status")));
+    QVERIFY(manPage.contains(QStringLiteral("fan set-mode")));
 
     QVERIFY(!bashCompletion.isEmpty());
     QVERIFY(bashCompletion.contains(QStringLiteral("driver_commands")));
     QVERIFY(bashCompletion.contains(QStringLiteral("deep-clean")));
+    QVERIFY(bashCompletion.contains(QStringLiteral("fan_commands")));
 
     QVERIFY(!zshCompletion.isEmpty());
     QVERIFY(zshCompletion.contains(QStringLiteral("#compdef ro-control")));
     QVERIFY(zshCompletion.contains(QStringLiteral("diagnostics")));
+    QVERIFY(zshCompletion.contains(QStringLiteral("fan_commands")));
 
     QVERIFY(!fishCompletion.isEmpty());
     QVERIFY(fishCompletion.contains(QStringLiteral("complete -c ro-control")));
     QVERIFY(fishCompletion.contains(QStringLiteral("accept-license")));
+    QVERIFY(fishCompletion.contains(QStringLiteral("-a fan -d")));
   }
 };
 

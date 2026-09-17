@@ -55,9 +55,73 @@ LanguageManager::LanguageManager(QCoreApplication *application,
                                  QObject *parent)
     : QObject(parent), m_application(application), m_engine(engine),
       m_translator(translator) {
+  if (m_application != nullptr) {
+    m_application->installEventFilter(this);
+  }
+
   QSettings settings;
+  m_followsSystem =
+      settings.value(QStringLiteral("ui/follow_system_language"), true)
+          .toBool();
+
+  if (m_followsSystem) {
+    const QString systemLanguage = normalizeLanguageCode(systemLanguageCode());
+    loadLanguage(systemLanguage);
+    m_currentLanguage = systemLanguage;
+  } else {
+    const QString savedLanguage =
+        settings.value(QStringLiteral("ui/language")).toString();
+    const QString normalizedLanguage = normalizeLanguageCode(savedLanguage);
+    loadLanguage(normalizedLanguage);
+    m_currentLanguage = normalizedLanguage;
+  }
+}
+
+LanguageManager::~LanguageManager() {
+  if (m_application != nullptr) {
+    m_application->removeEventFilter(this);
+  }
+}
+
+bool LanguageManager::eventFilter(QObject *watched, QEvent *event) {
+  if (event != nullptr && (event->type() == QEvent::LocaleChange ||
+                           event->type() == QEvent::LanguageChange)) {
+    if (m_followsSystem) {
+      applySystemLanguage();
+    }
+  }
+  return QObject::eventFilter(watched, event);
+}
+
+void LanguageManager::applySystemLanguage() {
   const QString systemLanguage = normalizeLanguageCode(systemLanguageCode());
-  setCurrentLanguage(systemLanguage);
+  if (!loadLanguage(systemLanguage)) {
+    return;
+  }
+
+  const bool changed = (m_currentLanguage != systemLanguage);
+  m_currentLanguage = systemLanguage;
+
+  if (changed) {
+    emit currentLanguageChanged();
+  }
+}
+
+bool LanguageManager::followsSystem() const { return m_followsSystem; }
+
+void LanguageManager::setFollowsSystem(bool follow) {
+  if (m_followsSystem == follow) {
+    return;
+  }
+
+  m_followsSystem = follow;
+  QSettings settings;
+  settings.setValue(QStringLiteral("ui/follow_system_language"),
+                    m_followsSystem);
+
+  if (m_followsSystem) {
+    applySystemLanguage();
+  }
 }
 
 QString LanguageManager::currentLanguage() const { return m_currentLanguage; }
@@ -91,7 +155,35 @@ QVariantList LanguageManager::availableLanguages() const {
 }
 
 void LanguageManager::setCurrentLanguage(const QString &languageCode) {
+  const QString trimmed = languageCode.trimmed().toLower();
+  if (trimmed == QStringLiteral("system") ||
+      trimmed == QStringLiteral("auto") || trimmed.isEmpty()) {
+    m_followsSystem = true;
+    QSettings settings;
+    settings.setValue(QStringLiteral("ui/follow_system_language"), true);
+    settings.remove(QStringLiteral("ui/language"));
+
+    const QString systemLanguage = normalizeLanguageCode(systemLanguageCode());
+    const bool changed = (m_currentLanguage != systemLanguage);
+
+    if (!loadLanguage(systemLanguage)) {
+      return;
+    }
+
+    m_currentLanguage = systemLanguage;
+    if (changed) {
+      emit currentLanguageChanged();
+    }
+    return;
+  }
+
   const QString normalizedLanguage = normalizeLanguageCode(languageCode);
+  m_followsSystem = false;
+
+  QSettings settings;
+  settings.setValue(QStringLiteral("ui/follow_system_language"), false);
+  settings.setValue(QStringLiteral("ui/language"), normalizedLanguage);
+
   if (normalizedLanguage == m_currentLanguage) {
     return;
   }
@@ -101,9 +193,6 @@ void LanguageManager::setCurrentLanguage(const QString &languageCode) {
   }
 
   m_currentLanguage = normalizedLanguage;
-
-  QSettings settings;
-  settings.setValue(QStringLiteral("ui/language"), m_currentLanguage);
 
   emit currentLanguageChanged();
 }

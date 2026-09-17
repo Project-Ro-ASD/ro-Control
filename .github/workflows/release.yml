@@ -4,21 +4,6 @@ name: Release
   push:
     tags:
       - "v*"
-  release:
-    types:
-      - published
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Release version without the leading v"
-        required: true
-        type: string
-
-permissions:
-  contents: write
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 concurrency:
   group: release-${{ github.ref }}
@@ -27,110 +12,54 @@ concurrency:
 jobs:
   metadata:
     name: Resolve Release Metadata
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     outputs:
       version: ${{ steps.meta.outputs.version }}
-      raw_tag: ${{ steps.meta.outputs.raw_tag }}
-      tag_name: ${{ steps.meta.outputs.tag_name }}
-      archive_prefix: ${{ steps.meta.outputs.archive_prefix }}
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
-      - name: Resolve version
+      - name: Validate exact tag and version identity
         id: meta
+        shell: bash
         run: |
-          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
-            VERSION="${{ inputs.version }}"
-            VERSION="${VERSION#v}"
-            RAW_TAG="v${VERSION}"
-          else
-            RAW_TAG="${{ github.event.release.tag_name }}"
-            if [[ -z "${RAW_TAG}" ]]; then
-              RAW_TAG="${GITHUB_REF_NAME}"
-            fi
-            VERSION="${RAW_TAG#v}"
-          fi
-
-          if [[ -z "${VERSION}" ]]; then
-            echo "Release version could not be determined." >&2
-            exit 1
-          fi
-
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
           PROJECT_VERSION="$(sed -n 's/^[[:space:]]*VERSION[[:space:]]\([0-9.][0-9.]*\)$/\1/p' CMakeLists.txt | head -n1)"
-          SPEC_DEFAULT_VERSION="$(sed -n 's/^%global upstream_version %{!?upstream_version:\([0-9.][0-9.]*\)}%{?upstream_version}$/\1/p' packaging/rpm/ro-control.spec | head -n1)"
+          SPEC_DEFAULT_VERSION="$(sed -n -E 's/.*upstream_version[[:space:]]+([0-9.]+).*/\1/p; s/.*upstream_version:([0-9.]+).*/\1/p' packaging/rpm/ro-control.spec | head -n1)"
 
-          echo "Resolved release metadata:"
-          echo "  event=${GITHUB_EVENT_NAME}"
-          echo "  ref_name=${GITHUB_REF_NAME}"
-          echo "  version=${VERSION}"
-          echo "  project_version=${PROJECT_VERSION}"
-          echo "  spec_default_version=${SPEC_DEFAULT_VERSION}"
+          [[ "${TAG}" == "v${VERSION}" ]]
+          [[ "${VERSION}" == "${PROJECT_VERSION}" ]]
+          [[ "${VERSION}" == "${SPEC_DEFAULT_VERSION}" ]]
+          [[ "$(git rev-parse HEAD)" == "${GITHUB_SHA}" ]]
+          [[ "$(git rev-parse "refs/tags/${TAG}^{commit}")" == "${GITHUB_SHA}" ]]
 
-          if [[ "${VERSION}" != "${PROJECT_VERSION}" ]]; then
-            echo "Tag/workflow version (${VERSION}) does not match CMake project version (${PROJECT_VERSION})." >&2
-            exit 1
-          fi
-
-          if [[ "${VERSION}" != "${SPEC_DEFAULT_VERSION}" ]]; then
-            echo "Tag/workflow version (${VERSION}) does not match RPM spec default version (${SPEC_DEFAULT_VERSION})." >&2
-            exit 1
-          fi
-
-          echo "raw_tag=${RAW_TAG}" >> "${GITHUB_OUTPUT}"
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
-          echo "tag_name=${RAW_TAG}" >> "${GITHUB_OUTPUT}"
-          echo "archive_prefix=ro-control-${VERSION}" >> "${GITHUB_OUTPUT}"
-
-  source-archives:
-    name: Build Source Archives
-    runs-on: ubuntu-latest
-    needs: metadata
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Create source archives
-        env:
-          ARCHIVE_PREFIX: ${{ needs.metadata.outputs.archive_prefix }}
-        run: |
-          git archive --format=tar.gz --prefix="${ARCHIVE_PREFIX}/" --output="${ARCHIVE_PREFIX}.tar.gz" "${GITHUB_SHA}"
-
-      - name: Upload source archives
-        uses: actions/upload-artifact@v7
-        with:
-          name: ro-control-source-${{ needs.metadata.outputs.version }}
-          path: |
-            ${{ needs.metadata.outputs.archive_prefix }}.tar.gz
 
   rpm:
-    name: Build Fedora RPM (${{ matrix.arch }})
-    needs: [metadata, source-archives]
-    runs-on: ${{ matrix.runs_on }}
+    name: Build Fedora 44 RPM (${{ matrix.arch }})
+    needs: metadata
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         include:
           - arch: x86_64
-            runs_on: ubuntu-24.04
+            runner: ubuntu-24.04
           - arch: aarch64
-            runs_on: ubuntu-24.04-arm
+            runner: ubuntu-24.04-arm
     container:
-      image: fedora:43
+      image: fedora:44
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Download source archives
-        uses: actions/download-artifact@v5
-        with:
-          name: ro-control-source-${{ needs.metadata.outputs.version }}
-          path: dist
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Install packaging dependencies
         run: |
@@ -150,131 +79,195 @@ jobs:
             desktop-file-utils \
             appstream
 
-      - name: Build RPM artifacts
+      - name: Build exact Fedora 44 RPM set
         env:
           VERSION: ${{ needs.metadata.outputs.version }}
-          ARCHIVE_PREFIX: ${{ needs.metadata.outputs.archive_prefix }}
           RPM_ARCH: ${{ matrix.arch }}
+        shell: bash
         run: |
-          mkdir -p ~/rpmbuild/SOURCES ~/rpmbuild/SPECS dist/rpm
-          cp "dist/${ARCHIVE_PREFIX}.tar.gz" "${HOME}/rpmbuild/SOURCES/"
-          cp packaging/rpm/ro-control.spec "${HOME}/rpmbuild/SPECS/ro-control.spec"
-          FEDORA_VERSION=43
-          MAIN_RPM_PATTERN="ro-control-[0-9]*.${RPM_ARCH}.rpm"
+          set -euo pipefail
+          TOPDIR="${HOME}/rpmbuild"
+          mkdir -p "${TOPDIR}"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS} release-rpms
 
-          rpmbuild -ba "${HOME}/rpmbuild/SPECS/ro-control.spec" \
-            --define "_topdir ${HOME}/rpmbuild" \
+          STAGE_DIR="$(mktemp -d)"
+          ARCHIVE_ROOT="ro-control-${VERSION}"
+          mkdir -p "${STAGE_DIR}/${ARCHIVE_ROOT}"
+          git archive "${GITHUB_SHA}" | tar -x -C "${STAGE_DIR}/${ARCHIVE_ROOT}"
+          tar -C "${STAGE_DIR}" -czf "${TOPDIR}/SOURCES/${ARCHIVE_ROOT}.tar.gz" "${ARCHIVE_ROOT}"
+          rm -rf "${STAGE_DIR}"
+
+          cp packaging/rpm/ro-control.spec "${TOPDIR}/SPECS/ro-control.spec"
+          # Ro-Repo V2 requires the real RPM Release field to carry the Fedora 44 dist tag.
+          sed -i -E 's/^Release:[[:space:]]+1$/Release:        1%{?dist}/' "${TOPDIR}/SPECS/ro-control.spec"
+          grep -Eq '^Release:[[:space:]]+1%\{\?dist\}$' "${TOPDIR}/SPECS/ro-control.spec"
+
+          rpmbuild -ba "${TOPDIR}/SPECS/ro-control.spec" \
+            --define "_topdir ${TOPDIR}" \
             --define "upstream_version ${VERSION}" \
-            --define "dist .fc${FEDORA_VERSION}"
+            --define "dist .fc44"
 
-          MAIN_RPM_FILE="$(find ~/rpmbuild/RPMS -maxdepth 2 -type f -name "${MAIN_RPM_PATTERN}" | head -n1)"
-          if [[ -z "${MAIN_RPM_FILE}" ]]; then
-            echo "Failed to find built ${RPM_ARCH} main RPM." >&2
-            exit 1
-          fi
-          cp "${MAIN_RPM_FILE}" "dist/rpm/ro-control-${RPM_ARCH}.rpm"
+          BINARY_RPM="$(find "${TOPDIR}/RPMS" -type f -name "ro-control-*.${RPM_ARCH}.rpm" -print -quit)"
+          test -n "${BINARY_RPM}"
+          [[ "$(rpm -qp --qf '%{NAME}' "${BINARY_RPM}")" == "ro-control" ]]
+          [[ "$(rpm -qp --qf '%{VERSION}' "${BINARY_RPM}")" == "${VERSION}" ]]
+          [[ "$(rpm -qp --qf '%{RELEASE}' "${BINARY_RPM}")" == *.fc44 ]]
+          [[ "$(rpm -qp --qf '%{ARCH}' "${BINARY_RPM}")" == "${RPM_ARCH}" ]]
+          cp "${BINARY_RPM}" release-rpms/
 
-      - name: Verify package metadata
-        env:
-          VERSION: ${{ needs.metadata.outputs.version }}
-          RPM_ARCH: ${{ matrix.arch }}
-        run: |
-          RPM_FILE="dist/rpm/ro-control-${RPM_ARCH}.rpm"
-          if [[ ! -f "${RPM_FILE}" ]]; then
-            echo "Failed to locate built ${RPM_ARCH} RPM." >&2
-            exit 1
+          if [[ "${RPM_ARCH}" == "x86_64" ]]; then
+            SOURCE_RPM="$(find "${TOPDIR}/SRPMS" -type f -name 'ro-control-*.src.rpm' -print -quit)"
+            test -n "${SOURCE_RPM}"
+            [[ "$(rpm -qp --qf '%{RELEASE}' "${SOURCE_RPM}")" == *.fc44 ]]
+            cp "${SOURCE_RPM}" release-rpms/
           fi
 
-          rpm -qp --info "${RPM_FILE}" > "dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-info.txt"
-          rpm -qp --requires "${RPM_FILE}" | sort > "dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-requires.txt"
-          rpm -qlp "${RPM_FILE}" | sort > "dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-files.txt"
-          if grep -E 'PRIVATE_API' "dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-requires.txt"; then
-            echo "Forbidden Qt private ABI dependency detected." >&2
-            exit 1
-          fi
-          grep -Fx '/usr/bin/ro-control' "dist/rpm/ro-control-${VERSION}-${RPM_ARCH}-files.txt"
-
-      - name: Verify package payload
+      - name: Install and smoke-test binary RPM
         env:
           RPM_ARCH: ${{ matrix.arch }}
         run: |
-          MAIN_RPM_FILE="dist/rpm/ro-control-${RPM_ARCH}.rpm"
-
-          if [[ ! -f "${MAIN_RPM_FILE}" ]]; then
-            echo "Main ro-control RPM is missing." >&2
-            exit 1
-          fi
-          rpm -qpl "${MAIN_RPM_FILE}" | grep -Fx '/usr/share/metainfo/io.github.projectroasd.rocontrol.metainfo.xml'
-          rpm -qpl "${MAIN_RPM_FILE}" | grep -Fx '/usr/share/applications/io.github.projectroasd.rocontrol.desktop'
-
-      - name: Validate desktop metadata
-        run: |
-          desktop-file-validate data/icons/io.github.projectroasd.rocontrol.desktop
-          appstreamcli validate --no-net data/icons/io.github.projectroasd.rocontrol.metainfo.xml
-
-      - name: Install and smoke-test RPM
-        if: matrix.arch == 'x86_64'
-        env:
-          VERSION: ${{ needs.metadata.outputs.version }}
-          RPM_ARCH: ${{ matrix.arch }}
-        run: |
-          RPM_FILE="dist/rpm/ro-control-${RPM_ARCH}.rpm"
-
-          if [[ ! -f "${RPM_FILE}" ]]; then
-            echo "Failed to locate built ${RPM_ARCH} RPM for smoke testing." >&2
-            exit 1
-          fi
-
+          set -euo pipefail
+          RPM_FILE="$(find release-rpms -maxdepth 1 -type f -name "*.${RPM_ARCH}.rpm" -print -quit)"
+          test -n "${RPM_FILE}"
           dnf install -y --nogpgcheck "${RPM_FILE}"
-
-          INSTALLED_VERSION="$(ro-control --version | tr -d '\n')"
-          if [[ "${INSTALLED_VERSION}" != "${VERSION}" ]]; then
-            echo "Installed CLI version (${INSTALLED_VERSION}) does not match release version (${VERSION})." >&2
-            exit 1
-          fi
-
           rpm -q ro-control
           command -v ro-control
-          rpm -q --whatprovides /usr/bin/ro-control | grep -E '^ro-control(-|$)'
           ldd -r /usr/bin/ro-control
-          ro-control --help > /dev/null
+          ro-control --help >/dev/null
 
-      - name: Generate per-arch checksums
-        env:
-          VERSION: ${{ needs.metadata.outputs.version }}
-          RPM_ARCH: ${{ matrix.arch }}
-        run: |
-          (
-            cd dist/rpm
-            sha256sum * > "ro-control-${VERSION}-${RPM_ARCH}-SHA256SUMS.txt"
-          )
-
-      - name: Upload RPM artifacts
-        uses: actions/upload-artifact@v7
+      - name: Upload exact RPM build output
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: ro-control-rpm-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
-          path: |
-            dist/rpm/ro-control-${{ matrix.arch }}.rpm
+          name: ro-control-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
+          path: release-rpms/*.rpm
+          if-no-files-found: error
+          retention-days: 14
 
   release:
-    name: Create GitHub Release
-    runs-on: ubuntu-latest
-    needs: [metadata, source-archives, rpm]
+    name: Publish attested Ro-Repo V2 release
+    needs: [metadata, rpm]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+      artifact-metadata: write
 
     steps:
-      - name: Download all release artifacts
-        uses: actions/download-artifact@v5
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Download exact RPM set
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          pattern: ro-control-*
-          path: dist
+          pattern: ro-control-*-${{ needs.metadata.outputs.version }}
+          path: release-assets
           merge-multiple: true
 
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
+      - name: Install release metadata tools
+        run: sudo apt-get update && sudo apt-get install -y rpm jq
+
+      - name: Verify release bundle before publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t RPMS < <(find release-assets -maxdepth 1 -type f -name '*.rpm' -printf '%f\n' | sort)
+          if [[ "${#RPMS[@]}" -ne 3 ]]; then
+            printf 'Expected exactly 3 RPMs, found: %s\n' "${RPMS[*]}" >&2
+            exit 1
+          fi
+
+          ARCHES="$(for rpm in "${RPMS[@]}"; do rpm -qp --qf '%|SOURCEPACKAGE?{src}:%{ARCH}|\n' "release-assets/${rpm}"; done | sort | paste -sd, -)"
+          [[ "${ARCHES}" == "aarch64,src,x86_64" ]]
+
+          for rpm in "${RPMS[@]}"; do
+            [[ "$(rpm -qp --qf '%{NAME}' "release-assets/${rpm}")" == "ro-control" ]]
+            [[ "$(rpm -qp --qf '%{VERSION}' "release-assets/${rpm}")" == "${{ needs.metadata.outputs.version }}" ]]
+            [[ "$(rpm -qp --qf '%{RELEASE}' "release-assets/${rpm}")" == *.fc44 ]]
+          done
+
+          SOURCE_RPM="$(printf '%s\n' "${RPMS[@]}" | grep '\.src\.rpm$')"
+          for rpm in "${RPMS[@]}"; do
+            [[ "${rpm}" == *.src.rpm ]] && continue
+            [[ "$(rpm -qp --qf '%{SOURCERPM}' "release-assets/${rpm}")" == "${SOURCE_RPM}" ]]
+          done
+
+      - name: Create clean draft GitHub Release
+        id: draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          EXISTING="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" 2>/dev/null || true)"
+          if [[ -n "${EXISTING}" ]]; then
+            EXISTING_ID="$(jq -r '.id' <<<"${EXISTING}")"
+            if [[ "$(jq -r '.draft' <<<"${EXISTING}")" == "true" ]]; then
+              gh api --method DELETE "repos/${GITHUB_REPOSITORY}/releases/${EXISTING_ID}"
+            else
+              echo "Published release ${TAG} already exists; tag/release reuse is forbidden." >&2
+              exit 1
+            fi
+          fi
+
+          RELEASE_JSON="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/releases" \
+            -f tag_name="${TAG}" \
+            -f target_commitish="${GITHUB_SHA}" \
+            -f name="${TAG}" \
+            -F draft=true \
+            -F generate_release_notes=true)"
+          RELEASE_ID="$(jq -r '.id' <<<"${RELEASE_JSON}")"
+          test -n "${RELEASE_ID}"
+          echo "release_id=${RELEASE_ID}" >> "${GITHUB_OUTPUT}"
+
+      - name: Generate strict SHA256SUMS
+        working-directory: release-assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t RPMS < <(find . -maxdepth 1 -type f -name '*.rpm' -printf '%f\n' | sort)
+          [[ "${#RPMS[@]}" -eq 3 ]]
+          sha256sum "${RPMS[@]}" > SHA256SUMS
+          [[ "$(wc -l < SHA256SUMS)" -eq 3 ]]
+
+      - name: Generate component artifact manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 packaging/scripts/build-ro-repo-manifest.py \
+            --artifacts-dir release-assets \
+            --output release-assets/component-artifact-manifest-v1.json \
+            --repository "${GITHUB_REPOSITORY}" \
+            --commit "${GITHUB_SHA}" \
+            --tag "${GITHUB_REF_NAME}" \
+            --release-id "${{ steps.draft.outputs.release_id }}" \
+            --workflow-run "${GITHUB_RUN_ID}"
+
+      - name: Attest RPMs, checksum file and manifest
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
         with:
-          tag_name: ${{ needs.metadata.outputs.tag_name }}
-          target_commitish: ${{ github.sha }}
-          generate_release_notes: true
-          files: |
-            dist/*x86_64.rpm
-            dist/*aarch64.rpm
+          subject-path: |
+            release-assets/*.rpm
+            release-assets/SHA256SUMS
+            release-assets/component-artifact-manifest-v1.json
+
+      - name: Upload immutable release asset set
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release upload "${GITHUB_REF_NAME}" \
+            release-assets/*.rpm \
+            release-assets/SHA256SUMS \
+            release-assets/component-artifact-manifest-v1.json \
+            --repo "${GITHUB_REPOSITORY}"
+
+      - name: Publish draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        run: |
+          set -euo pipefail
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" -F draft=false >/dev/null

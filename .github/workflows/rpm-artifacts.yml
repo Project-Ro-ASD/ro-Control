@@ -77,14 +77,14 @@ jobs:
           - arch: aarch64
             runs_on: ubuntu-24.04-arm
     container:
-      image: fedora:43
+      image: fedora:44
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
       - name: Download source archive
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: ro-control-source-${{ needs.metadata.outputs.version }}
           path: dist
@@ -116,7 +116,7 @@ jobs:
           mkdir -p ~/rpmbuild/SOURCES ~/rpmbuild/SPECS dist/rpm
           cp "dist/${ARCHIVE_PREFIX}.tar.gz" "${HOME}/rpmbuild/SOURCES/"
           cp packaging/rpm/ro-control.spec "${HOME}/rpmbuild/SPECS/ro-control.spec"
-          FEDORA_VERSION=43
+          FEDORA_VERSION=44
           MAIN_RPM_PATTERN="ro-control-[0-9]*.${RPM_ARCH}.rpm"
 
           rpmbuild -ba "${HOME}/rpmbuild/SPECS/ro-control.spec" \
@@ -130,7 +130,10 @@ jobs:
             exit 1
           fi
 
-          cp "${MAIN_RPM_FILE}" "dist/rpm/ro-control-${RPM_ARCH}.rpm"
+          cp "${MAIN_RPM_FILE}" dist/rpm/
+          if [[ "${RPM_ARCH}" == "x86_64" ]]; then
+            cp ~/rpmbuild/SRPMS/*.src.rpm dist/rpm/
+          fi
 
       - name: Validate metadata and RPM dependency surface
         env:
@@ -139,7 +142,10 @@ jobs:
           desktop-file-validate data/icons/io.github.projectroasd.rocontrol.desktop
           appstreamcli validate --no-net data/icons/io.github.projectroasd.rocontrol.metainfo.xml
 
-          MAIN_RPM_FILE="dist/rpm/ro-control-${RPM_ARCH}.rpm"
+          MAIN_RPM_FILE="$(find dist/rpm -maxdepth 1 -type f -name "ro-control-*.${RPM_ARCH}.rpm" | head -n1)"
+
+          [[ "$(basename "${MAIN_RPM_FILE}")" == "$(rpm -qp --qf '%{NVRA}.rpm' "${MAIN_RPM_FILE}")" ]]
+          [[ "$(rpm -qp --qf '%{RELEASE}' "${MAIN_RPM_FILE}")" == "1" ]]
 
           rpm -qpR "${MAIN_RPM_FILE}" | tee /tmp/ro-control.requires
           if grep -E 'PRIVATE_API' /tmp/ro-control.requires; then
@@ -154,4 +160,4 @@ jobs:
         with:
           name: ro-control-${{ matrix.arch }}-rpm
           path: |
-            dist/rpm/ro-control-${{ matrix.arch }}.rpm
+            dist/rpm/*.rpm

@@ -1,0 +1,16 @@
+[Unit]
+Description=ro-Control NVIDIA Hardware Telemetry and Fan Daemon
+Documentation=man:ro-control(1) https://github.com/Project-Ro-ASD/ro-Control
+After=network.target dbus.service
+
+[Service]
+Type=simple
+ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/ro-control --daemon
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+AmbientCapabilities=CAP_SYS_ADMIN
+
+[Install]
+WantedBy=multi-user.target

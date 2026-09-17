@@ -25,6 +25,9 @@ run_allowed_command() {
     grubby|/usr/sbin/grubby|/usr/bin/grubby)
       resolved_path="$(command -v grubby 2>/dev/null || true)"
       ;;
+    nvidia-smi|/usr/bin/nvidia-smi)
+      resolved_path="$(command -v nvidia-smi 2>/dev/null || true)"
+      ;;
     *)
       echo "ro-control-helper: command not allowed: ${command_name}" >&2
       exit 64

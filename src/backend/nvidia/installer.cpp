@@ -116,11 +116,10 @@ buildSessionSpecificRootCommands(const QString &sessionType) {
                    {QStringLiteral("--force"), QStringLiteral("--add-drivers"),
                     kNvidiaKernelModules.join(QLatin1Char(' '))}});
 
-  commands.append(
-      {QStringLiteral("env"),
-       {QStringLiteral("LANG=C"), QStringLiteral("dnf"),
-        QStringLiteral("install"), QStringLiteral("-y"),
-        QStringLiteral("egl-wayland")}});
+  commands.append({QStringLiteral("env"),
+                   {QStringLiteral("LANG=C"), QStringLiteral("dnf"),
+                    QStringLiteral("install"), QStringLiteral("-y"),
+                    QStringLiteral("egl-wayland")}});
   commands.append({QStringLiteral("grubby"),
                    {QStringLiteral("--update-kernel=ALL"),
                     QStringLiteral("--args=nvidia-drm.modeset=1 "
@@ -316,8 +315,10 @@ void NvidiaInstaller::installProprietary(bool agreementAccepted) {
     QList<CommandRunner::RootCommand> rootCommands;
     {
       QStringList rpmFusionLangArgs = {
-          QStringLiteral("LANG=C"), QStringLiteral("dnf"),
-          QStringLiteral("install"), QStringLiteral("-y"),
+          QStringLiteral("LANG=C"),
+          QStringLiteral("dnf"),
+          QStringLiteral("install"),
+          QStringLiteral("-y"),
           QStringLiteral("https://mirrors.rpmfusion.org/free/fedora/"
                          "rpmfusion-free-release-%1.noarch.rpm")
               .arg(platformVersion),
@@ -566,12 +567,13 @@ void NvidiaInstaller::deepClean() {
     emitProgressAsync(
         guard, NvidiaInstaller::tr("Cleaning legacy driver leftovers..."));
 
-    const auto removeResult =
-        runner.runAsRoot(QStringLiteral("dnf"),
-                         {QStringLiteral("remove"), QStringLiteral("-y"),
-                          QStringLiteral("*nvidia*"), QStringLiteral("*akmod*"),
-                          QStringLiteral("*nvidia-open*")},
-                         runOptions);
+    const auto removeResult = runner.runAsRoot(
+        QStringLiteral("dnf"),
+        {QStringLiteral("remove"), QStringLiteral("-y"),
+         QStringLiteral("akmod-nvidia"), QStringLiteral("akmod-nvidia-open"),
+         QStringLiteral("xorg-x11-drv-nvidia*"),
+         QStringLiteral("nvidia-settings")},
+        runOptions);
 
     if (!removeResult.success()) {
       const QString error =
@@ -618,6 +620,71 @@ void NvidiaInstaller::deepClean() {
                 NvidiaInstaller::tr("Deep clean completed."));
             emit guard->removeFinished(
                 true, NvidiaInstaller::tr("Legacy NVIDIA cleanup completed."));
+          }
+        },
+        Qt::QueuedConnection);
+  });
+}
+
+void NvidiaInstaller::rebuildKernelModules() {
+  const QString architectureSupportMessage =
+      CapabilityProbe::roAsdNvidiaDriverFlowSupportMessage();
+  if (!architectureSupportMessage.isEmpty()) {
+    emit installFinished(false, architectureSupportMessage);
+    return;
+  }
+
+  QPointer<NvidiaInstaller> guard(this);
+  runAsyncTask([guard]() {
+    if (!guard) {
+      return;
+    }
+
+    CommandRunner runner;
+    attachRunnerLogging(runner, guard);
+    CommandRunner::RunOptions runOptions;
+    runOptions.timeoutMs = 180000;
+    runOptions.cancelRequested = guard->m_cancelRequested;
+
+    emitProgressAsync(guard,
+                      NvidiaInstaller::tr(
+                          "Rebuilding NVIDIA kernel modules and initramfs..."));
+
+    QList<CommandRunner::RootCommand> commands;
+    commands.append({QStringLiteral("akmods"),
+                     {QStringLiteral("--force"), QStringLiteral("--rebuild")}});
+    commands.append(
+        {QStringLiteral("dracut"),
+         {QStringLiteral("--force"), QStringLiteral("--add-drivers"),
+          kNvidiaKernelModules.join(QLatin1Char(' '))}});
+
+    const auto batchResult = runner.runAsRootBatch(commands, runOptions);
+    if (!batchResult.success()) {
+      const QString error =
+          commandCanceled(batchResult)
+              ? NvidiaInstaller::tr("Kernel module rebuild canceled by user.")
+              : NvidiaInstaller::tr("Kernel module rebuild failed: ") +
+                    batchResult.stderr.trimmed();
+      QMetaObject::invokeMethod(
+          guard,
+          [guard, error]() {
+            if (guard) {
+              emit guard->installFinished(false, error);
+            }
+          },
+          Qt::QueuedConnection);
+      return;
+    }
+
+    QMetaObject::invokeMethod(
+        guard,
+        [guard]() {
+          if (guard) {
+            emit guard->progressMessage(NvidiaInstaller::tr(
+                "Kernel modules and initramfs rebuilt successfully."));
+            emit guard->installFinished(
+                true, NvidiaInstaller::tr(
+                          "NVIDIA kernel modules rebuilt successfully."));
           }
         },
         Qt::QueuedConnection);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QEvent>
 #include <QObject>
 #include <QString>
 #include <QVariantList>
@@ -19,21 +20,30 @@ class LanguageManager : public QObject {
   Q_PROPERTY(QString currentLanguageLabel READ currentLanguageLabel NOTIFY
                  currentLanguageChanged)
   Q_PROPERTY(QVariantList availableLanguages READ availableLanguages CONSTANT)
+  Q_PROPERTY(bool followsSystem READ followsSystem WRITE setFollowsSystem NOTIFY
+                 currentLanguageChanged)
 
 public:
   explicit LanguageManager(QCoreApplication *application, QQmlEngine *engine,
                            QTranslator *translator, QObject *parent = nullptr);
+  ~LanguageManager() override;
 
   QString currentLanguage() const;
   QString effectiveLanguage() const;
   QString currentLanguageLabel() const;
   QVariantList availableLanguages() const;
+  bool followsSystem() const;
 
   Q_INVOKABLE void setCurrentLanguage(const QString &languageCode);
+  Q_INVOKABLE void setFollowsSystem(bool follow);
+  Q_INVOKABLE void applySystemLanguage();
   Q_INVOKABLE QString displayNameForLanguage(const QString &languageCode) const;
 
 signals:
   void currentLanguageChanged();
+
+protected:
+  bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
   QString normalizeLanguageCode(const QString &languageCode) const;
@@ -45,4 +55,5 @@ private:
   QQmlEngine *m_engine = nullptr;
   QTranslator *m_translator = nullptr;
   QString m_currentLanguage = QStringLiteral("en");
+  bool m_followsSystem = true;
 };

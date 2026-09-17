@@ -48,6 +48,9 @@ public:
   // Remove legacy NVIDIA leftovers.
   Q_INVOKABLE void deepClean();
 
+  // Rebuild NVIDIA kernel modules via akmods and dracut.
+  Q_INVOKABLE void rebuildKernelModules();
+
   // Best-effort cancellation for the active install or removal flow.
   Q_INVOKABLE void cancelOperation();
 

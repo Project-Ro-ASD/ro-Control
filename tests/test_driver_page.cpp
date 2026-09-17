@@ -1,8 +1,8 @@
+#include <QDir>
+#include <QFile>
 #include <QGuiApplication>
 #include <QQmlComponent>
 #include <QQmlEngine>
-#include <QDir>
-#include <QFile>
 #include <QScopedPointer>
 #include <QStringList>
 #include <QTemporaryDir>
@@ -21,8 +21,8 @@ class DetectorMock : public QObject {
                  setDriverPackageInstalled NOTIFY infoChanged)
   Q_PROPERTY(bool driverLoaded READ driverLoaded WRITE setDriverLoaded NOTIFY
                  infoChanged)
-  Q_PROPERTY(bool nouveauActive READ nouveauActive WRITE setNouveauActive
-                 NOTIFY infoChanged)
+  Q_PROPERTY(bool nouveauActive READ nouveauActive WRITE setNouveauActive NOTIFY
+                 infoChanged)
   Q_PROPERTY(QString installedDriverSource READ installedDriverSource WRITE
                  setInstalledDriverSource NOTIFY infoChanged)
   Q_PROPERTY(QString installedDriverSourceLabel READ installedDriverSourceLabel
@@ -193,7 +193,8 @@ private:
   bool m_driverLoaded = false;
   bool m_nouveauActive = false;
   QString m_installedDriverSource = QStringLiteral("none");
-  QString m_installedDriverSourceLabel = QStringLiteral("No driver source detected");
+  QString m_installedDriverSourceLabel =
+      QStringLiteral("No driver source detected");
   bool m_secureBootEnabled = false;
   bool m_secureBootKnown = false;
   bool m_waylandSession = false;
@@ -204,19 +205,21 @@ private:
 
 class InstallerMock : public QObject {
   Q_OBJECT
-  Q_PROPERTY(bool proprietaryAgreementRequired READ proprietaryAgreementRequired
-                 WRITE setProprietaryAgreementRequired NOTIFY
-                     proprietaryAgreementChanged)
-  Q_PROPERTY(QString proprietaryAgreementText READ proprietaryAgreementText
-                 WRITE setProprietaryAgreementText NOTIFY
-                     proprietaryAgreementChanged)
+  Q_PROPERTY(
+      bool proprietaryAgreementRequired READ proprietaryAgreementRequired WRITE
+          setProprietaryAgreementRequired NOTIFY proprietaryAgreementChanged)
+  Q_PROPERTY(
+      QString proprietaryAgreementText READ proprietaryAgreementText WRITE
+          setProprietaryAgreementText NOTIFY proprietaryAgreementChanged)
   Q_PROPERTY(bool busy READ busy WRITE setBusy NOTIFY busyChanged)
 
 public:
   bool proprietaryAgreementRequired() const {
     return m_proprietaryAgreementRequired;
   }
-  QString proprietaryAgreementText() const { return m_proprietaryAgreementText; }
+  QString proprietaryAgreementText() const {
+    return m_proprietaryAgreementText;
+  }
   bool busy() const { return m_busy; }
 
   void setProprietaryAgreementRequired(bool value) {
@@ -248,7 +251,9 @@ public:
   Q_INVOKABLE void installOpenSource() {}
   Q_INVOKABLE void remove() {}
   Q_INVOKABLE void deepClean() {}
-  Q_INVOKABLE void cancelOperation() { emit progressMessage(QStringLiteral("Cancel requested.")); }
+  Q_INVOKABLE void cancelOperation() {
+    emit progressMessage(QStringLiteral("Cancel requested."));
+  }
 
 signals:
   void progressMessage(const QString &message);
@@ -326,7 +331,9 @@ public:
   Q_INVOKABLE void applyUpdate() {}
   Q_INVOKABLE void applyVersion(const QString &) {}
   Q_INVOKABLE void refreshAvailableVersions() {}
-  Q_INVOKABLE void cancelOperation() { emit progressMessage(QStringLiteral("Cancel requested.")); }
+  Q_INVOKABLE void cancelOperation() {
+    emit progressMessage(QStringLiteral("Cancel requested."));
+  }
 
 signals:
   void updateAvailableChanged();
@@ -351,6 +358,7 @@ class TestDriverPage : public QObject {
 
 private slots:
   void testDriverInstalledLocallyUsesDetectorVersion();
+  void testNvidiaHardwareAvailabilityRequiresDetectedGpu();
   void testOperationRunningStillTracksBackendBusyAfterManualStateChanges();
   void testCompletedInstallImmediatelyUpdatesDriverState();
 
@@ -408,9 +416,10 @@ QObject *TestDriverPage::createPage(DetectorMock *detector,
                                       QStringLiteral("StatCard.qml")};
   for (const QString &fileName : componentFiles) {
     const QString sourceComponentPath =
-        QDir(sourceRoot).filePath(QStringLiteral("src/qml/components/") +
-                                  fileName);
-    const QString targetComponentPath = componentsDir + QLatin1Char('/') + fileName;
+        QDir(sourceRoot)
+            .filePath(QStringLiteral("src/qml/components/") + fileName);
+    const QString targetComponentPath =
+        componentsDir + QLatin1Char('/') + fileName;
     if (!QFile::copy(sourceComponentPath, targetComponentPath)) {
       qFatal("Failed to copy component fixture for DriverPage test");
     }
@@ -483,6 +492,23 @@ void TestDriverPage::testDriverInstalledLocallyUsesDetectorVersion() {
            QStringLiteral("580.126.18"));
 }
 
+void TestDriverPage::testNvidiaHardwareAvailabilityRequiresDetectedGpu() {
+  QQmlEngine engine;
+  DetectorMock detector;
+  InstallerMock installer;
+  UpdaterMock updater;
+
+  detector.setDriverVersion(QStringLiteral("580.126.18"));
+  QScopedPointer<QObject> page(
+      createPage(&detector, &installer, &updater, &engine));
+
+  QVERIFY(page->property("driverInstalledLocally").toBool());
+  QVERIFY(!page->property("nvidiaHardwareAvailable").toBool());
+
+  detector.setGpuFound(true);
+  QTRY_VERIFY(page->property("nvidiaHardwareAvailable").toBool());
+}
+
 void TestDriverPage::
     testOperationRunningStillTracksBackendBusyAfterManualStateChanges() {
   QQmlEngine engine;
@@ -495,17 +521,19 @@ void TestDriverPage::
 
   QVERIFY(!page->property("operationRunning").toBool());
 
-  QVERIFY(QMetaObject::invokeMethod(page.get(), "setOperationState",
-                                    Q_ARG(QVariant, QVariant(QStringLiteral("Updater"))),
-                                    Q_ARG(QVariant, QVariant(QStringLiteral("Checking"))),
-                                    Q_ARG(QVariant, QVariant(QStringLiteral("info"))),
-                                    Q_ARG(QVariant, QVariant(true))));
+  QVERIFY(QMetaObject::invokeMethod(
+      page.get(), "setOperationState",
+      Q_ARG(QVariant, QVariant(QStringLiteral("Updater"))),
+      Q_ARG(QVariant, QVariant(QStringLiteral("Checking"))),
+      Q_ARG(QVariant, QVariant(QStringLiteral("info"))),
+      Q_ARG(QVariant, QVariant(true))));
   QTRY_VERIFY(page->property("operationRunning").toBool());
 
-  QVERIFY(QMetaObject::invokeMethod(page.get(), "finishOperation",
-                                    Q_ARG(QVariant, QVariant(QStringLiteral("Updater"))),
-                                    Q_ARG(QVariant, QVariant(true)),
-                                    Q_ARG(QVariant, QVariant(QStringLiteral("Done")))));
+  QVERIFY(QMetaObject::invokeMethod(
+      page.get(), "finishOperation",
+      Q_ARG(QVariant, QVariant(QStringLiteral("Updater"))),
+      Q_ARG(QVariant, QVariant(true)),
+      Q_ARG(QVariant, QVariant(QStringLiteral("Done")))));
   QTRY_VERIFY(!page->property("operationRunning").toBool());
 
   updater.setBusy(true);

@@ -7,6 +7,12 @@ commands=(
   'status:Show concise system and driver status'
   'diagnostics:Show full diagnostics snapshot'
   'driver:Manage NVIDIA drivers'
+  'fan:Manage cooling and fan profiles'
+  'power:Manage GPU power limits and profiles'
+  'processes:List GPU compute and display processes'
+  'kill-process:Terminate a GPU process'
+  'gpus:List detected GPU devices'
+  'select-gpu:Select active GPU index'
 )
 
 local -a driver_commands
@@ -17,12 +23,49 @@ driver_commands=(
   'deep-clean:Remove legacy NVIDIA leftovers'
 )
 
+local -a fan_commands
+fan_commands=(
+  'status:Show fan status'
+  'set-speed:Set fan speed percentage'
+  'set-mode:Set fan operating mode profile'
+  'set-smoothing:Configure fan curve smoothing'
+  'reset:Restore default automatic fan profile'
+)
+
+local -a power_commands
+power_commands=(
+  'status:Show GPU power status and limits'
+  'set-limit:Set GPU power limit in Watts'
+  'set-preset:Set power preset profile'
+  'set-clocks:Set GPU clock offsets'
+  'set-persistence:Set driver persistence mode'
+)
+
+local -a power_presets
+power_presets=(
+  'eco:Power saving profile'
+  'balanced:Default standard profile'
+  'performance:Maximum TDP ceiling'
+  'custom:Manual custom limits'
+)
+
+local -a fan_modes
+fan_modes=(
+  'auto:Default hardware curve'
+  'silent:Acoustic priority'
+  'balanced:Thermal-acoustic equilibrium'
+  'performance:Maximum airflow cooling'
+  'manual:Fixed speed percentage'
+  'custom:Custom temperature curve'
+)
+
 local -a global_opts
 global_opts=(
   '--help[Show usage information]'
   '--version[Show application version]'
   '--diagnostics[Legacy alias for diagnostics]'
   '--json[Render status or diagnostics output as JSON]'
+  '--daemon[Run headless background service]'
 )
 
 local -a install_opts
@@ -39,7 +82,7 @@ if (( CURRENT == 2 )); then
 fi
 
 case "${words[2]}" in
-  status|diagnostics)
+  status|diagnostics|processes|gpus)
     _describe 'option' '--json[Render output as JSON]'
     ;;
   driver)
@@ -50,6 +93,32 @@ case "${words[2]}" in
 
     if [[ "${words[3]}" == "install" ]]; then
       _describe 'install-option' install_opts
+    fi
+    ;;
+  fan)
+    if (( CURRENT == 3 )); then
+      _describe 'fan-command' fan_commands
+      return
+    fi
+
+    if [[ "${words[3]}" == "status" ]]; then
+      _describe 'option' '--json[Render fan status as JSON]'
+    elif [[ "${words[3]}" == "set-mode" ]]; then
+      _describe 'fan-mode' fan_modes
+    fi
+    ;;
+  power)
+    if (( CURRENT == 3 )); then
+      _describe 'power-command' power_commands
+      return
+    fi
+
+    if [[ "${words[3]}" == "status" ]]; then
+      _describe 'option' '--json[Render power status as JSON]'
+    elif [[ "${words[3]}" == "set-preset" ]]; then
+      _describe 'power-preset' power_presets
+    elif [[ "${words[3]}" == "set-persistence" ]]; then
+      _describe 'persistence-state' '(on off)'
     fi
     ;;
   *)

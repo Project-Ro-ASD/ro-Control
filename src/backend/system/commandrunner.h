@@ -25,7 +25,7 @@ public:
   };
 
   struct Result {
-    int exitCode;
+    int exitCode = 0;
     QString stdout;
     QString stderr;
     int attempt = 1;

@@ -29,6 +29,7 @@ class NvidiaUpdater : public QObject {
   Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
 
 public:
+  friend class TestUpdater;
   explicit NvidiaUpdater(QObject *parent = nullptr);
 
   bool updateAvailable() const { return m_updateAvailable; }
@@ -46,6 +47,15 @@ public:
     m_latestPackageVersion = version;
   }
 
+  bool transactionChanged(const CommandRunner::Result &result) const;
+  QStringList buildTransactionArguments(const QString &requestedVersion,
+                                        const QString &installedVersion,
+                                        const QString &sessionType,
+                                        const QString &kernelPackageName) const;
+  QStringList buildDriverTargets(const QString &version,
+                                 const QString &sessionType,
+                                 const QString &kernelPackageName) const;
+
 signals:
   void updateAvailableChanged();
   void currentVersionChanged();
@@ -61,15 +71,7 @@ private:
   void runAsyncTask(const std::function<void()> &task);
   void setLatestVersion(const QString &version);
   void setAvailableVersions(const QStringList &versions);
-  bool transactionChanged(const CommandRunner::Result &result) const;
   QString detectInstalledKernelPackageName() const;
-  QStringList buildTransactionArguments(const QString &requestedVersion,
-                                        const QString &installedVersion,
-                                        const QString &sessionType,
-                                        const QString &kernelPackageName) const;
-  QStringList buildDriverTargets(const QString &version,
-                                 const QString &sessionType,
-                                 const QString &kernelPackageName) const;
   SessionUtil::SessionInfo detectSessionInfo() const;
   QString m_latestPackageVersion;
   bool m_updateAvailable = false;

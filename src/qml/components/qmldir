@@ -1,5 +1,6 @@
 ActionButton 1.0 ActionButton.qml
 DetailRow 1.0 DetailRow.qml
+FanSettingsPopup 1.0 FanSettingsPopup.qml
 InfoBadge 1.0 InfoBadge.qml
 RefreshToolButton 1.0 RefreshToolButton.qml
 SectionPanel 1.0 SectionPanel.qml

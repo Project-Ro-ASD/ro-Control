@@ -20,8 +20,7 @@ void emitProgressAsync(const QPointer<T> &guard, const QString &message) {
 }
 
 template <typename T>
-void attachRunnerLogging(CommandRunner &runner,
-                         const QPointer<T> &guard) {
+void attachRunnerLogging(CommandRunner &runner, const QPointer<T> &guard) {
   QObject::connect(
       &runner, &CommandRunner::outputLine, guard,
       [guard](const QString &message) { emitProgressAsync(guard, message); });
@@ -46,20 +45,19 @@ void attachRunnerLogging(CommandRunner &runner,
 
         if (program == QStringLiteral("pkexec") && privilegedBatch) {
           emitProgressAsync(
-              guard, T::tr(
-                         "Starting privileged transaction batch "
-                         "(attempt %1). The exact commands and package manager "
-                         "output will appear below.")
-                         .arg(attempt));
+              guard,
+              T::tr("Starting privileged transaction batch "
+                    "(attempt %1). The exact commands and package manager "
+                    "output will appear below.")
+                  .arg(attempt));
           return;
         }
 
         const QString commandLine = QStringLiteral("$ %1 %2").arg(
             program, visibleArgs.join(QLatin1Char(' ')).trimmed());
-        emitProgressAsync(guard,
-                          T::tr("Starting command (attempt %1): %2")
-                              .arg(attempt)
-                              .arg(commandLine.trimmed()));
+        emitProgressAsync(guard, T::tr("Starting command (attempt %1): %2")
+                                     .arg(attempt)
+                                     .arg(commandLine.trimmed()));
       });
 
   QObject::connect(

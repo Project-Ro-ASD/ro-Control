@@ -1,8 +1,6 @@
 #include <QTest>
 
-#define private public
 #include "nvidia/updater.h"
-#undef private
 #include "nvidia/versionparser.h"
 
 class TestUpdater : public QObject {
@@ -57,12 +55,11 @@ private slots:
 
   void testBuildTransactionArgumentsForFreshInstallStaysScoped() {
     NvidiaUpdater updater;
-    updater.m_latestPackageVersion = QStringLiteral("3:570.153.02-1.fc42");
+    updater.setLatestPackageVersion(QStringLiteral("3:570.153.02-1.fc42"));
 
-    const QStringList args =
-        updater.buildTransactionArguments(QString(), QString(),
-                                         QStringLiteral("wayland"),
-                                         QStringLiteral("akmod-nvidia"));
+    const QStringList args = updater.buildTransactionArguments(
+        QString(), QString(), QStringLiteral("wayland"),
+        QStringLiteral("akmod-nvidia"));
 
     QCOMPARE(args.value(0), QStringLiteral("install"));
     QVERIFY(args.contains(QStringLiteral("--refresh")));
@@ -76,7 +73,7 @@ private slots:
 
   void testBuildTransactionArgumentsForInstalledDriverAvoidsBroadUpdate() {
     NvidiaUpdater updater;
-    updater.m_latestPackageVersion = QStringLiteral("3:570.153.02-1.fc42");
+    updater.setLatestPackageVersion(QStringLiteral("3:570.153.02-1.fc42"));
 
     const QStringList args = updater.buildTransactionArguments(
         QString(), QStringLiteral("3:565.77-1.fc42"), QStringLiteral("wayland"),
@@ -95,7 +92,8 @@ private slots:
     NvidiaUpdater updater;
     CommandRunner::Result result{
         .exitCode = 0,
-        .stdout = QStringLiteral("Last metadata expiration check: 0:00:12 ago.\nNothing to do.\n"),
+        .stdout = QStringLiteral(
+            "Last metadata expiration check: 0:00:12 ago.\nNothing to do.\n"),
         .stderr = QString(),
         .attempt = 1,
     };
@@ -107,7 +105,8 @@ private slots:
     NvidiaUpdater updater;
     CommandRunner::Result result{
         .exitCode = 0,
-        .stdout = QStringLiteral("Installing:\nakmod-nvidia.x86_64 3:570.153.02-1.fc42\nComplete!\n"),
+        .stdout = QStringLiteral("Installing:\nakmod-nvidia.x86_64 "
+                                 "3:570.153.02-1.fc42\nComplete!\n"),
         .stderr = QString(),
         .attempt = 1,
     };
@@ -117,14 +116,14 @@ private slots:
 
   void testBuildTransactionArgumentsForOpenKernelModules() {
     NvidiaUpdater updater;
-    updater.m_latestPackageVersion = QStringLiteral("3:570.153.02-1.fc42");
+    updater.setLatestPackageVersion(QStringLiteral("3:570.153.02-1.fc42"));
 
     const QStringList args = updater.buildTransactionArguments(
         QString(), QStringLiteral("3:565.77-1.fc42"), QStringLiteral("wayland"),
         QStringLiteral("akmod-nvidia-open"));
 
-    QVERIFY(args.contains(
-        QStringLiteral("akmod-nvidia-open-3:570.153.02-1.fc42")));
+    QVERIFY(
+        args.contains(QStringLiteral("akmod-nvidia-open-3:570.153.02-1.fc42")));
   }
 
   void testParseOfficialUnixDriverVersions() {

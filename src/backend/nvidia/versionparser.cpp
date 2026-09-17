@@ -97,7 +97,7 @@ QStringList parseOfficialUnixDriverVersions(const QString &pageText,
 
   const QString sectionText =
       plainText.mid(sectionStart, sectionEnd - sectionStart);
-  const QRegularExpression versionPattern(
+  static const QRegularExpression versionPattern(
       QStringLiteral(R"(Latest [^:]+:\s*([0-9]+(?:\.[0-9]+)+))"));
 
   QStringList versions;
@@ -119,7 +119,7 @@ QString normalizedDriverVersion(const QString &version) {
     normalized = normalized.mid(epochSeparator + 1);
   }
 
-  const QRegularExpression versionPattern(
+  static const QRegularExpression versionPattern(
       QStringLiteral(R"(([0-9]+(?:\.[0-9]+)+))"));
   const auto match = versionPattern.match(normalized);
   return match.hasMatch() ? match.captured(1) : QString();

@@ -14,20 +14,24 @@
 
 namespace {
 
-const QStringList kCommonVersionLockedDriverPackages;
+QStringList commonVersionLockedDriverPackages() { return {}; }
 
-const QStringList kFloatingDriverPackages = {
-    QStringLiteral("nvidia-modprobe"),
-    QStringLiteral("nvidia-persistenced"),
-    QStringLiteral("nvidia-settings"),
-};
+QStringList floatingDriverPackages() {
+  return {
+      QStringLiteral("nvidia-modprobe"),
+      QStringLiteral("nvidia-persistenced"),
+      QStringLiteral("nvidia-settings"),
+  };
+}
 
-const QStringList kNvidiaKernelModules = {
-    QStringLiteral("nvidia"),
-    QStringLiteral("nvidia_modeset"),
-    QStringLiteral("nvidia_uvm"),
-    QStringLiteral("nvidia_drm"),
-};
+QStringList nvidiaKernelModules() {
+  return {
+      QStringLiteral("nvidia"),
+      QStringLiteral("nvidia_modeset"),
+      QStringLiteral("nvidia_uvm"),
+      QStringLiteral("nvidia_drm"),
+  };
+}
 
 QString commandError(const CommandRunner::Result &result,
                      const QString &fallback) {
@@ -80,13 +84,12 @@ buildSessionSpecificRootCommands(const QString &sessionType) {
   QList<CommandRunner::RootCommand> commands;
   commands.append({QStringLiteral("dracut"),
                    {QStringLiteral("--force"), QStringLiteral("--add-drivers"),
-                    kNvidiaKernelModules.join(QLatin1Char(' '))}});
+                    nvidiaKernelModules().join(QLatin1Char(' '))}});
 
-  commands.append(
-      {QStringLiteral("env"),
-       {QStringLiteral("LANG=C"), QStringLiteral("dnf"),
-        QStringLiteral("install"), QStringLiteral("-y"),
-        QStringLiteral("egl-wayland")}});
+  commands.append({QStringLiteral("env"),
+                   {QStringLiteral("LANG=C"), QStringLiteral("dnf"),
+                    QStringLiteral("install"), QStringLiteral("-y"),
+                    QStringLiteral("egl-wayland")}});
   commands.append({QStringLiteral("grubby"),
                    {QStringLiteral("--update-kernel=ALL"),
                     QStringLiteral("--args=nvidia-drm.modeset=1 "
@@ -153,25 +156,25 @@ QString fetchTextFromUrl(CommandRunner &runner, const QString &url) {
   CommandRunner::RunOptions options;
   options.timeoutMs = 10000;
 
-  const QString userAgent =
-      QStringLiteral("ro-Control/%1").arg(QCoreApplication::applicationVersion());
+  const QString userAgent = QStringLiteral("ro-Control/%1")
+                                .arg(QCoreApplication::applicationVersion());
 
   if (CapabilityProbe::isToolAvailable(QStringLiteral("curl"))) {
-    const auto result = runner.run(
-        QStringLiteral("curl"),
-        {QStringLiteral("-fsSL"), QStringLiteral("--compressed"),
-         QStringLiteral("-A"), userAgent, url},
-        options);
+    const auto result =
+        runner.run(QStringLiteral("curl"),
+                   {QStringLiteral("-fsSL"), QStringLiteral("--compressed"),
+                    QStringLiteral("-A"), userAgent, url},
+                   options);
     if (result.success()) {
       return result.stdout;
     }
   }
 
   if (CapabilityProbe::isToolAvailable(QStringLiteral("wget"))) {
-    const auto result =
-        runner.run(QStringLiteral("wget"),
-                   {QStringLiteral("-qO-"), QStringLiteral("-U"), userAgent, url},
-                   options);
+    const auto result = runner.run(
+        QStringLiteral("wget"),
+        {QStringLiteral("-qO-"), QStringLiteral("-U"), userAgent, url},
+        options);
     if (result.success()) {
       return result.stdout;
     }
@@ -413,14 +416,22 @@ QStringList
 NvidiaUpdater::buildDriverTargets(const QString &version,
                                   const QString &sessionType,
                                   const QString &kernelPackageName) const {
-  QStringList targets;
-  QStringList versionLockedPackages{kernelPackageName};
-  versionLockedPackages << kCommonVersionLockedDriverPackages;
   Q_UNUSED(sessionType);
-  targets << NvidiaVersionParser::buildVersionedPackageSpecs(
-      versionLockedPackages, version);
-  targets << kFloatingDriverPackages;
+  QStringList versionLockedPackages;
+  if (!kernelPackageName.isEmpty()) {
+    versionLockedPackages.append(kernelPackageName);
+  }
+  const QStringList locked = commonVersionLockedDriverPackages();
+  for (const QString &pkg : locked) {
+    versionLockedPackages.append(pkg);
+  }
 
+  QStringList targets = NvidiaVersionParser::buildVersionedPackageSpecs(
+      versionLockedPackages, version);
+  const QStringList floating = floatingDriverPackages();
+  for (const QString &pkg : floating) {
+    targets.append(pkg);
+  }
   return targets;
 }
 
@@ -435,23 +446,28 @@ QStringList NvidiaUpdater::buildTransactionArguments(
 
   QStringList args;
   if (normalizedInstalledVersion.isEmpty()) {
-    args << QStringLiteral("install");
+    args.append(QStringLiteral("install"));
   } else if (!targetVersion.isEmpty()) {
-    args << QStringLiteral("distro-sync");
+    args.append(QStringLiteral("distro-sync"));
   } else {
     // Installing the named NVIDIA package set keeps the transaction scoped to
     // the driver stack instead of invoking a broad system update.
-    args << QStringLiteral("install");
+    args.append(QStringLiteral("install"));
   }
 
-  args << QStringLiteral("-y") << QStringLiteral("--refresh")
-       << QStringLiteral("--best");
+  args.append(QStringLiteral("-y"));
+  args.append(QStringLiteral("--refresh"));
+  args.append(QStringLiteral("--best"));
 
   if (!normalizedInstalledVersion.isEmpty()) {
-    args << QStringLiteral("--allowerasing");
+    args.append(QStringLiteral("--allowerasing"));
   }
 
-  args << buildDriverTargets(targetVersion, sessionType, kernelPackageName);
+  const QStringList driverTargets =
+      buildDriverTargets(targetVersion, sessionType, kernelPackageName);
+  for (const QString &target : driverTargets) {
+    args.append(target);
+  }
   return args;
 }
 

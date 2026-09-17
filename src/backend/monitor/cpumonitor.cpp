@@ -4,6 +4,7 @@
 #include "system/commandrunner.h"
 
 #include <QDir>
+#include <QElapsedTimer>
 #include <QFile>
 #include <QRegularExpression>
 #include <QTextStream>
@@ -13,6 +14,7 @@
 namespace {
 
 constexpr qint64 kMinimumUsageSampleMs = 650;
+constexpr qint64 kSensorsCacheWindowMs = 15000;
 
 QString readFileText(const QString &path) {
   QFile file(path);
@@ -46,10 +48,13 @@ bool isPreferredCpuSensorType(const QString &sensorType) {
          lowered.contains(QStringLiteral("x86_pkg_temp"));
 }
 
+static QString s_cachedCpuTempPath;
+
 int readFirstValidTemperature(const QStringList &paths) {
   for (const QString &path : paths) {
     const int temperatureC = parseMilliCelsius(readFileText(path));
     if (temperatureC > 0) {
+      s_cachedCpuTempPath = path;
       return temperatureC;
     }
   }
@@ -214,6 +219,14 @@ int readCpuTemperatureFromVcgencmd() {
 }
 
 int readCpuTemperatureC() {
+  if (!s_cachedCpuTempPath.isEmpty()) {
+    const int cachedTemp = parseMilliCelsius(readFileText(s_cachedCpuTempPath));
+    if (cachedTemp > 0) {
+      return cachedTemp;
+    }
+    s_cachedCpuTempPath.clear();
+  }
+
   const int thermalZoneTemperature = readCpuTemperatureFromThermalZones();
   if (thermalZoneTemperature > 0) {
     return thermalZoneTemperature;
@@ -224,17 +237,25 @@ int readCpuTemperatureC() {
     return hwmonTemperature;
   }
 
+  static int s_cachedSpawnedTemp = 0;
+  static QElapsedTimer s_spawnedCacheTimer;
+  static bool s_spawnedCacheValid = false;
+  if (s_spawnedCacheValid && s_spawnedCacheTimer.isValid() &&
+      s_spawnedCacheTimer.elapsed() < kSensorsCacheWindowMs) {
+    return s_cachedSpawnedTemp;
+  }
+
   const int sensorsTemperature = readCpuTemperatureFromSensors();
-  if (sensorsTemperature > 0) {
-    return sensorsTemperature;
-  }
+  const int acpiTemperature = sensorsTemperature > 0
+                                  ? sensorsTemperature
+                                  : readCpuTemperatureFromAcpi();
+  const int finalTemp =
+      acpiTemperature > 0 ? acpiTemperature : readCpuTemperatureFromVcgencmd();
 
-  const int acpiTemperature = readCpuTemperatureFromAcpi();
-  if (acpiTemperature > 0) {
-    return acpiTemperature;
-  }
-
-  return readCpuTemperatureFromVcgencmd();
+  s_cachedSpawnedTemp = finalTemp;
+  s_spawnedCacheTimer.start();
+  s_spawnedCacheValid = true;
+  return finalTemp;
 }
 
 } // namespace

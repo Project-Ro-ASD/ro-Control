@@ -14,9 +14,41 @@ ToolButton {
     implicitHeight: Math.round((darkMode ? 40 : 42) * uiScale)
     display: AbstractButton.IconOnly
     opacity: enabled ? 1.0 : 0.55
+    ToolTip {
+        id: refreshTip
+        visible: control.tooltip.length > 0 && control.hovered
+        text: control.tooltip
+        delay: 300
+        timeout: 5000
+        topPadding: Math.round(6 * control.uiScale)
+        bottomPadding: Math.round(6 * control.uiScale)
+        leftPadding: Math.round(12 * control.uiScale)
+        rightPadding: Math.round(12 * control.uiScale)
 
-    ToolTip.visible: hovered
-    ToolTip.text: tooltip
+        contentItem: Label {
+            text: refreshTip.text
+            color: control.theme && control.theme.text ? control.theme.text : (control.darkMode ? "#F3F4F6" : "#1F2937")
+            font.pixelSize: Math.round(11 * control.uiScale)
+            font.weight: Font.Medium
+        }
+
+        background: Rectangle {
+            radius: 8
+            color: control.darkMode ? "#241E34" : "#FFFFFF"
+            border.width: 1
+            border.color: control.darkMode ? "#4D436B" : "#CBD5E1"
+
+            Rectangle {
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.margins: 3
+                width: 3
+                radius: 1.5
+                color: control.theme && control.theme.accentA ? control.theme.accentA : "#6366F1"
+            }
+        }
+    }
 
     contentItem: Item {
         implicitWidth: Math.round(22 * control.uiScale)
@@ -39,7 +71,10 @@ ToolButton {
                 NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
             }
 
-            RotationAnimator on rotation {
+            RotationAnimation {
+                id: busySpin
+                target: refreshIcon
+                property: "rotation"
                 running: control.busy
                 from: 0
                 to: 360
@@ -47,8 +82,10 @@ ToolButton {
                 loops: Animation.Infinite
             }
 
-            NumberAnimation on rotation {
+            NumberAnimation {
                 id: clickSpin
+                target: refreshIcon
+                property: "rotation"
                 from: refreshIcon.rotation
                 to: refreshIcon.rotation + 180
                 duration: 260
@@ -81,14 +118,6 @@ ToolButton {
             border.width: 1
             border.color: control.hovered && control.enabled ? control.theme.accentA
                                                              : control.theme.accentB
-
-            Behavior on color {
-                ColorAnimation { duration: 140 }
-            }
-
-            Behavior on border.color {
-                ColorAnimation { duration: 140 }
-            }
         }
     }
 
