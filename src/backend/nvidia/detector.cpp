@@ -154,10 +154,10 @@ QString NvidiaDetector::installedDriverSource() const {
 QString NvidiaDetector::installedDriverSourceLabel() const {
   const QString source = installedDriverSource();
   if (source == QStringLiteral("closed-source")) {
-    return tr("Closed-source driver detected");
+    return tr("NVIDIA Proprietary Kernel Module detected");
   }
   if (source == QStringLiteral("open-source")) {
-    return tr("Open-source driver detected");
+    return tr("NVIDIA Open Kernel Modules detected");
   }
   if (source == QStringLiteral("mixed")) {
     return tr("Mixed driver state detected");
