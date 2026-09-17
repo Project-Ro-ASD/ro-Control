@@ -21,6 +21,9 @@ Item {
     property int reportViewMode: 0
     property string reportFilterText: ""
     property string lastCopiedKey: ""
+    property bool refreshBusy: false
+    property string actionFeedback: ""
+    property bool actionFailed: false
 
     Timer {
         id: itemCopiedTimer
@@ -189,6 +192,13 @@ Item {
         if (!page.systemInfo)
             return;
 
+        // A diagnostic report is a snapshot, never a cache of the last page
+        // visit. Refresh every source before serialising it.
+        page.systemInfo.rescanHardware();
+        if (page.cpuMonitor) page.cpuMonitor.refresh();
+        if (page.gpuMonitor) page.gpuMonitor.refresh();
+        if (page.ramMonitor) page.ramMonitor.refresh();
+
         const gpu = page.diagnosticGpuName();
         const drv = page.nvidiaDriverSummary();
         const vram = (page.gpuMonitor && page.gpuMonitor.memoryTotalMiB > 0)
@@ -203,10 +213,30 @@ Item {
         page.generatedReport = page.systemInfo.generateSystemReport(gpu, drv, vram, ram, pcie, sec, page.systemInfo.diagnosticReportFormat);
         if (page.systemInfo.diagnosticReportDestination === "clipboard") {
             page.reportCopied = page.systemInfo.copyToClipboard(page.generatedReport);
-            if (page.reportCopied)
+            if (page.reportCopied) {
+                page.actionFailed = false;
+                page.actionFeedback = qsTr("Diagnostic report copied to clipboard.");
                 copiedFeedbackTimer.restart();
+                return;
+            }
+            page.actionFailed = true;
+            page.actionFeedback = qsTr("The report could not be copied. You can copy it manually from this preview.");
         }
         diagnosticReportDialog.open();
+    }
+
+    function refreshSystemData() {
+        if (page.refreshBusy || !page.systemInfo)
+            return;
+        page.refreshBusy = true;
+        page.systemInfo.rescanHardware();
+        if (page.cpuMonitor) page.cpuMonitor.refresh();
+        if (page.gpuMonitor) page.gpuMonitor.refresh();
+        if (page.ramMonitor) page.ramMonitor.refresh();
+        page.actionFailed = false;
+        page.actionFeedback = qsTr("System information refreshed.");
+        refreshFeedbackTimer.restart();
+        page.refreshBusy = false;
     }
 
     Timer {
@@ -214,6 +244,13 @@ Item {
         interval: 3000
         repeat: false
         onTriggered: page.reportCopied = false
+    }
+
+    Timer {
+        id: refreshFeedbackTimer
+        interval: 3000
+        repeat: false
+        onTriggered: page.actionFeedback = ""
     }
 
     ScrollView {
@@ -227,9 +264,33 @@ Item {
             spacing: Math.round(14 * page.uiScale)
 
             Rectangle { Layout.fillWidth: true; implicitHeight: 52; radius: 12; color: page.cardColor; border.width: 1; border.color: page.borderColor
-                RowLayout { anchors.fill: parent; anchors.margins: 12; spacing: 18
+                RowLayout { anchors.fill: parent; anchors.margins: 12; spacing: 12
                     Label { text: qsTr("System health"); color: page.textColor; font.weight: Font.DemiBold }
                     Label { Layout.fillWidth: true; text: page.systemHealthSummary(); color: page.softTextColor; elide: Text.ElideRight }
+                    Button {
+                        text: page.refreshBusy ? qsTr("Refreshing…") : qsTr("Refresh")
+                        enabled: !page.refreshBusy
+                        onClicked: page.refreshSystemData()
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                visible: page.actionFeedback.length > 0
+                implicitHeight: actionFeedbackLabel.implicitHeight + Math.round(18 * page.uiScale)
+                radius: 9
+                color: page.actionFailed ? (page.darkMode ? "#3A2E12" : "#FFFBEB") : page.infoBg
+                border.width: 1
+                border.color: page.actionFailed ? page.warningColor : page.accentColor
+                Label {
+                    id: actionFeedbackLabel
+                    anchors.fill: parent
+                    anchors.margins: Math.round(9 * page.uiScale)
+                    text: page.actionFeedback
+                    color: page.actionFailed ? page.warningColor : page.textColor
+                    font.pixelSize: Math.round(12 * page.uiScale)
+                    wrapMode: Text.WordWrap
                 }
             }
 
@@ -300,6 +361,13 @@ Item {
                             }
                         }
                     }
+                    Label {
+                        Layout.fillWidth: true
+                        visible: page.hardwareCards().length === 0
+                        text: qsTr("No readable hardware details are currently exposed by this system.")
+                        color: page.softTextColor
+                        wrapMode: Text.WordWrap
+                    }
                 }
             }
 
@@ -368,6 +436,13 @@ Item {
                                 }
                             }
                         }
+                    }
+                    Label {
+                        Layout.fillWidth: true
+                        visible: page.softwareCards().length === 0
+                        text: qsTr("Software and platform details are temporarily unavailable.")
+                        color: page.softTextColor
+                        wrapMode: Text.WordWrap
                     }
                 }
             }
@@ -717,7 +792,7 @@ Item {
                     // View Mode Segmented Switcher
                     Rectangle {
                         implicitHeight: Math.round(34 * page.uiScale)
-                        implicitWidth: Math.round(260 * page.uiScale)
+                        implicitWidth: Math.min(Math.round(260 * page.uiScale), Math.max(Math.round(170 * page.uiScale), controlsRow.width))
                         radius: 8
                         color: page.darkMode ? "#241E34" : "#E2E8F0"
                         border.width: 1
@@ -739,7 +814,10 @@ Item {
                                 MouseArea {
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor
+                                    activeFocusOnTab: true
                                     onClicked: page.reportViewMode = 0
+                                    Keys.onReturnPressed: page.reportViewMode = 0
+                                    Keys.onSpacePressed: page.reportViewMode = 0
                                 }
                                 Label {
                                     anchors.centerIn: parent
@@ -761,7 +839,10 @@ Item {
                                 MouseArea {
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor
+                                    activeFocusOnTab: true
                                     onClicked: page.reportViewMode = 1
+                                    Keys.onReturnPressed: page.reportViewMode = 1
+                                    Keys.onSpacePressed: page.reportViewMode = 1
                                 }
                                 Label {
                                     anchors.centerIn: parent
@@ -778,7 +859,7 @@ Item {
 
                     // Overview Cards View Toolbar: Live Search Filter
                     Rectangle {
-                        visible: page.reportViewMode === 0
+                        visible: page.reportViewMode === 0 && controlsRow.width >= Math.round(430 * page.uiScale)
                         implicitHeight: Math.round(34 * page.uiScale)
                         implicitWidth: Math.min(controlsRow.width * 0.45, Math.round(240 * page.uiScale))
                         radius: 8
@@ -840,6 +921,7 @@ Item {
                     // Code / Export View Toolbar: Format & Action Dropdowns
                     RowLayout {
                         visible: page.reportViewMode === 1
+                        Layout.maximumWidth: Math.max(0, controlsRow.width - Math.round(180 * page.uiScale))
                         spacing: Math.round(14 * page.uiScale)
 
                         // Format Dropdown Selector
@@ -866,7 +948,10 @@ Item {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
+                                    activeFocusOnTab: true
                                     onClicked: formatPopup.open()
+                                    Keys.onReturnPressed: formatPopup.open()
+                                    Keys.onSpacePressed: formatPopup.open()
                                 }
 
                                 RowLayout {
@@ -993,7 +1078,10 @@ Item {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
+                                    activeFocusOnTab: true
                                     onClicked: actionPopup.open()
+                                    Keys.onReturnPressed: actionPopup.open()
+                                    Keys.onSpacePressed: actionPopup.open()
                                 }
 
                                 RowLayout {
@@ -1425,8 +1513,14 @@ Item {
 
                         onClicked: {
                             page.reportCopied = page.systemInfo && page.systemInfo.copyToClipboard(page.generatedReport);
-                            if (page.reportCopied)
+                            if (page.reportCopied) {
+                                page.actionFailed = false;
+                                page.actionFeedback = qsTr("Diagnostic report copied to clipboard.");
                                 copiedFeedbackTimer.restart();
+                            } else {
+                                page.actionFailed = true;
+                                page.actionFeedback = qsTr("The report could not be copied. Select and copy the text manually.");
+                            }
                         }
                     }
                 }
@@ -1600,8 +1694,14 @@ Item {
 
                         onClicked: {
                             rebootConfirmDialog.close();
-                            if (page.systemInfo)
-                                page.systemInfo.requestRebootToFirmware();
+                            if (page.systemInfo) {
+                                const started = page.systemInfo.requestRebootToFirmware();
+                                if (!started) {
+                                    page.actionFailed = true;
+                                    page.actionFeedback = qsTr("Could not start a firmware reboot. Your system may not support this action or authorization was denied.");
+                                    refreshFeedbackTimer.restart();
+                                }
+                            }
                         }
                     }
                 }
