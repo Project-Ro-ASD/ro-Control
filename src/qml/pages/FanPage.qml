@@ -19,9 +19,10 @@ Item {
     property var fanRpmHistory: []
     property var perFanHistories: ({})
     property var orderedFans: []
+    // Kept false while the fixed thermal-priority ordering is intentionally
+    // not user-configurable.
+    readonly property bool reorderMode: false
     property int draggingFanIndex: -1
-    // Priority is fixed to CPU → GPU → other detected channels.
-    property bool reorderMode: false
     readonly property bool hasDetectedFans: orderedFans.length > 0
     readonly property bool hasControllableFan: {
         for (var i = 0; i < orderedFans.length; ++i) {
@@ -153,9 +154,6 @@ Item {
                 var fId = fans[i].id;
                 var fSpd = fans[i].speedPercent !== undefined ? fans[i].speedPercent : spd;
                 var fArr = map[fId] ? map[fId].slice() : [];
-                if (fArr.length === 0) {
-                    for (var z = 0; z < 29; ++z) fArr.push(fSpd);
-                }
                 fArr.push(fSpd);
                 if (fArr.length > 30) fArr.shift();
                 map[fId] = fArr;
@@ -264,17 +262,15 @@ Item {
 
                         Label {
                             Layout.fillWidth: true
-                            text: page.reorderMode
-                                  ? qsTr("Rearrange Fans (Drag or use ◀ ▶ to reorder)")
-                                  : qsTr("Cooling Channels (%1)").arg(page.fanController ? page.fanController.systemFanCount : 0)
-                            color: page.reorderMode ? page.accentColor : page.textColor
+                            text: qsTr("Cooling Channels (%1)").arg(page.fanController ? page.fanController.systemFanCount : 0)
+                            color: page.textColor
                             font.pixelSize: Math.round(15 * page.uiScale)
                             font.weight: Font.DemiBold
                         }
 
                         Button {
                             id: reorderDoneBtn
-                            visible: page.reorderMode
+                            visible: false
                             text: qsTr("Done ✓")
                             implicitHeight: Math.round(34 * page.uiScale)
                             hoverEnabled: true
@@ -301,7 +297,7 @@ Item {
 
                         Button {
                             id: rescanBtn
-                            visible: !page.reorderMode
+                            visible: true
                             text: qsTr("Fan Setup Wizard")
                             implicitHeight: Math.round(34 * page.uiScale)
                             leftPadding: Math.round(14 * page.uiScale)
@@ -332,7 +328,7 @@ Item {
                         }
 
                         Components.RefreshToolButton {
-                            visible: !page.reorderMode
+                            visible: true
                             busy: page.refreshAnimating
                             theme: page.theme
                             darkMode: page.darkMode
@@ -359,7 +355,7 @@ Item {
                                 required property var modelData
                                 required property int index
                                 Layout.fillWidth: true
-                                implicitHeight: Math.round((page.reorderMode ? 196 : 152) * page.uiScale)
+                                implicitHeight: Math.round(152 * page.uiScale)
                                 radius: 12
                                 scale: (page.reorderMode && page.draggingFanIndex === fanCard.index) ? 1.03 : 1.0
                                 z: (page.reorderMode && page.draggingFanIndex === fanCard.index) ? 10 : 1
@@ -762,6 +758,7 @@ Item {
                                 hoverEnabled: true
 
                                 readonly property bool isCurrent: page.fanController && page.fanController.fanMode === modeBtn.modelData.mode
+                                enabled: page.fanController && page.fanController.controlSupported
 
                                 background: Rectangle {
                                     radius: 10
@@ -1205,12 +1202,9 @@ Item {
     }
 
     Component.onCompleted: {
-        var initArr = [];
-        for (var i = 0; i < 30; ++i) {
-            initArr.push(0);
-        }
-        page.fanSpeedHistory = initArr.slice();
-        page.fanRpmHistory = initArr.slice();
+        // Keep history empty until genuine telemetry arrives.
+        page.fanSpeedHistory = [];
+        page.fanRpmHistory = [];
 
         if (page.fanController) {
             page.fanController.start();

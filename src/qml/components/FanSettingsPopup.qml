@@ -20,6 +20,8 @@ Popup {
     property bool editingFanName: false
     property string pendingFanName: ""
     property real fanAngle: 0
+    property string operationError: ""
+    readonly property bool hasHardwareControl: currentFan && currentFan.controllable === true
     readonly property bool compactLayout: width < Math.round(520 * popup.uiScale)
 
     readonly property color bgColor: theme && theme.card ? theme.card : (popup.darkMode ? "#241E34" : "#FFFFFF")
@@ -30,6 +32,7 @@ Popup {
     readonly property color accentColor: theme && theme.accentA ? theme.accentA : (popup.darkMode ? "#818CF8" : "#4F46E5")
     readonly property color accentButtonText: "#FFFFFF"
     readonly property color infoBg: theme && theme.infoBg ? theme.infoBg : (popup.darkMode ? "#1E2548" : "#EFF6FF")
+    readonly property color infoText: popup.darkMode ? "#93C5FD" : "#2563EB"
     readonly property color warningBg: theme && theme.warningBg ? theme.warningBg : (popup.darkMode ? "#3A2E12" : "#FFFBEB")
     readonly property color warningText: theme && theme.warning ? theme.warning : (popup.darkMode ? "#FBBF24" : "#D97706")
     readonly property color successBg: theme && theme.successBg ? theme.successBg : (popup.darkMode ? "#143828" : "#ECFDF5")
@@ -67,6 +70,7 @@ Popup {
         activeThermalThreshold = fanData.thermalThresholdC || 85;
         testingFanActive = false;
         fanTestFailed = false;
+        operationError = "";
         editingFanName = false;
         pendingFanName = fanData.name || "";
         
@@ -136,29 +140,39 @@ Popup {
     }
 
     function applyAllSettings() {
-        if (!currentFan || !popup.fanController)
+        if (!currentFan || !popup.fanController || !hasHardwareControl)
             return;
         var fanId = currentFan.id;
-        popup.fanController.setFanModeForFan(fanId, activeMode);
-        popup.fanController.setManualSpeedForFan(fanId, activeManualSpeed);
-        popup.fanController.setThermalThresholdForFan(fanId, activeThermalThreshold);
+        var success = popup.fanController.setFanModeForFan(fanId, activeMode);
+        success = popup.fanController.setManualSpeedForFan(fanId, activeManualSpeed) && success;
+        success = popup.fanController.setThermalThresholdForFan(fanId, activeThermalThreshold) && success;
         
         for (var i = 0; i < activeCurvePoints.length; ++i) {
-            popup.fanController.setCustomCurvePointForFan(fanId, i, activeCurvePoints[i].temp, activeCurvePoints[i].speed);
+            success = popup.fanController.setCustomCurvePointForFan(fanId, i, activeCurvePoints[i].temp, activeCurvePoints[i].speed) && success;
         }
 
-        popup.fanController.applyFanConfiguration(fanId);
-        saveFeedbackVisible = true;
-        feedbackTimer.restart();
+        success = popup.fanController.applyFanConfiguration(fanId) && success;
+        if (success) {
+            operationError = "";
+            saveFeedbackVisible = true;
+            feedbackTimer.restart();
+        } else {
+            saveFeedbackVisible = false;
+            operationError = popup.fanController.statusMessage || qsTr("The fan controller rejected this change.");
+        }
     }
 
     function resetToAutoMode() {
-        if (!currentFan || !popup.fanController)
+        if (!currentFan || !popup.fanController || !hasHardwareControl)
             return;
         activeMode = "auto";
-        popup.fanController.resetFanToAuto(currentFan.id);
-        saveFeedbackVisible = true;
-        feedbackTimer.restart();
+        if (popup.fanController.resetFanToAuto(currentFan.id)) {
+            operationError = "";
+            saveFeedbackVisible = true;
+            feedbackTimer.restart();
+        } else {
+            operationError = popup.fanController.statusMessage || qsTr("The automatic fan mode could not be restored.");
+        }
     }
 
     function triggerQuickTest100() {
@@ -189,6 +203,15 @@ Popup {
             if (popup.currentFan && popup.fanController) {
                 popup.fanController.restoreFanControlForFan(popup.currentFan.id);
             }
+        }
+    }
+
+    onClosed: {
+        if (testingFanActive) {
+            testDurationTimer.stop();
+            testingFanActive = false;
+            if (currentFan && fanController)
+                fanController.restoreFanControlForFan(currentFan.id);
         }
     }
 
@@ -385,6 +408,26 @@ Popup {
                 id: popupScrollLayout
                 width: popupScroll.availableWidth
                 spacing: Math.round(12 * popup.uiScale)
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    visible: popup.currentFan && !popup.hasHardwareControl
+                    radius: 8
+                    color: popup.infoBg
+                    border.width: 1
+                    border.color: popup.accentColor
+                    implicitHeight: readOnlyNotice.implicitHeight + Math.round(16 * popup.uiScale)
+
+                    Label {
+                        id: readOnlyNotice
+                        anchors.fill: parent
+                        anchors.margins: Math.round(8 * popup.uiScale)
+                        text: qsTr("This channel provides telemetry only. Its BIOS, firmware, or driver owns fan control, so ro-Control will not present simulated settings.")
+                        color: popup.infoText
+                        font.pixelSize: Math.round(11 * popup.uiScale)
+                        wrapMode: Text.WordWrap
+                    }
+                }
 
                 // Live Dynamic Telemetry Cards (Speed %, RPM, Temperature)
                 Rectangle {
@@ -601,6 +644,7 @@ Popup {
                                     verticalAlignment: Text.AlignVCenter
                                 }
 
+                                enabled: popup.hasHardwareControl
                                 onClicked: popup.activeMode = modeBtn.modelData.mode
                             }
                         }
@@ -618,6 +662,7 @@ Popup {
 
                     ColumnLayout {
                         id: configAreaLayout
+                        enabled: popup.hasHardwareControl
                         anchors.fill: parent
                         anchors.margins: 14
                         spacing: 12
@@ -1312,12 +1357,23 @@ Popup {
                 wrapMode: Text.WordWrap
             }
 
+            Label {
+                visible: popup.operationError.length > 0
+                Layout.fillWidth: true
+                Layout.columnSpan: popup.compactLayout ? 1 : 4
+                text: popup.operationError
+                color: popup.warningText
+                font.pixelSize: Math.round(11 * popup.uiScale)
+                wrapMode: Text.WordWrap
+            }
+
             Button {
                 id: resetToAutoBtn
                 text: qsTr("Reset to Auto")
                 implicitHeight: Math.round(36 * popup.uiScale)
                 Layout.fillWidth: popup.compactLayout
                 hoverEnabled: true
+                enabled: popup.hasHardwareControl
 
                 background: Rectangle {
                     radius: 8
@@ -1346,6 +1402,7 @@ Popup {
                 implicitHeight: Math.round(36 * popup.uiScale)
                 Layout.fillWidth: popup.compactLayout
                 hoverEnabled: true
+                enabled: popup.hasHardwareControl
 
                 background: Rectangle {
                     radius: 8
