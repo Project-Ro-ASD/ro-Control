@@ -99,8 +99,8 @@ QString buildHelpText(const QString &applicationName,
   stream << "Driver install options:\n";
   stream << "  --proprietary              Install the proprietary akmod-nvidia "
             "stack.\n";
-  stream << "  --open-source              Switch to the community open-source "
-            "graphics stack.\n";
+  stream << "  --open-source              Install NVIDIA Open Kernel Modules "
+            "(akmod-nvidia-open).\n";
   stream << "  --accept-license           Confirm NVIDIA license review for "
             "the proprietary install path.\n\n";
   stream << "Global options:\n";
@@ -153,7 +153,7 @@ void configureParser(QCommandLineParser &parser, const QString &applicationName,
       QStringLiteral("Use the proprietary NVIDIA driver install path.")));
   parser.addOption(QCommandLineOption(
       {QStringLiteral("open-source")},
-      QStringLiteral("Use the community open-source graphics path.")));
+      QStringLiteral("Install NVIDIA Open Kernel Modules (akmod-nvidia-open).")));
   parser.addOption(QCommandLineOption(
       {QStringLiteral("accept-license")},
       QStringLiteral("Confirm that the NVIDIA license was reviewed.")));
