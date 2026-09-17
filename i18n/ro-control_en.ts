@@ -944,374 +944,383 @@ Third-party akmod modules require MOK signing.</source>
 <context>
     <name>FanController</name>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="234"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="233"/>
         <source>Hardware fan scan complete: %1 channel(s) detected.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="313"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="312"/>
         <source>Polkit (pkexec) is not available to configure Coolbits.</source>
         <translation>Polkit (pkexec) is not available to configure Coolbits.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="336"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="335"/>
         <source>Coolbits enabled successfully! A session restart or reboot is required to activate manual fan control.</source>
         <translation>Coolbits enabled successfully! A session restart or reboot is required to activate manual fan control.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="344"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="343"/>
         <source>Failed to enable Coolbits: %1</source>
         <translation>Failed to enable Coolbits: %1</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="920"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="919"/>
         <source>Automatic Mode: NVIDIA telemetry active.</source>
         <translation>Automatic Mode: NVIDIA telemetry active.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1041"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1040"/>
         <source>Controllable</source>
         <translation>Controllable</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1042"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1041"/>
         <source>0 RPM (Silent)</source>
         <translation>0 RPM (Silent)</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1043"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1042"/>
         <source>Active (Auto)</source>
         <translation>Active (Auto)</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1047"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1046"/>
         <source>Direct hardware fan control active via NV-CONTROL.</source>
         <translation>Direct hardware fan control active via NV-CONTROL.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1049"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1048"/>
         <source>GPU is in 0 RPM silent mode (temperature &lt; 50°C). Fans automatically spin up under load.</source>
         <translation>GPU is in 0 RPM silent mode (temperature &lt; 50°C). Fans automatically spin up under load.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1051"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1050"/>
         <source>Automatic VBIOS cooling curve active.</source>
         <translation>Automatic VBIOS cooling curve active.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1227"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1226"/>
         <source>Hardware BIOS thermal curve active with dynamic acoustic regulation.</source>
         <translation>Hardware BIOS thermal curve active with dynamic acoustic regulation.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1308"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1307"/>
         <source>Motherboard chassis airflow management curve active.</source>
         <translation>Motherboard chassis airflow management curve active.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1354"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1353"/>
         <source>Hardware-managed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1358"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1357"/>
         <source>Live RPM telemetry is available; this channel is managed by system firmware.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1552"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1551"/>
         <source>Safety Override Active: GPU is hot (%1°C &gt;= %2°C). Fan forced to 100%.</source>
         <translation>Safety Override Active: GPU is hot (%1°C &gt;= %2°C). Fan forced to 100%.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1561"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1560"/>
         <source>Automatic Mode: Managed by VBIOS and driver.</source>
         <translation>Automatic Mode: Managed by VBIOS and driver.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1566"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1565"/>
         <source>Silent Profile Active (%1% @ %2°C).</source>
         <translation>Silent Profile Active (%1% @ %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1573"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1572"/>
         <source>Balanced Optimization Active (%1% @ %2°C).</source>
         <translation>Balanced Optimization Active (%1% @ %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1580"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1579"/>
         <source>Performance Profile Active (%1% @ %2°C).</source>
         <translation>Performance Profile Active (%1% @ %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1587"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1586"/>
         <source>Manual Fan Speed Locked at %1%.</source>
         <translation>Manual Fan Speed Locked at %1%.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1592"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1591"/>
         <source>Custom Curve Active (%1% @ %2°C).</source>
         <translation>Custom Curve Active (%1% @ %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1691"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1695"/>
         <source>NVIDIA fan control rejected by driver: Coolbits option is required in Xorg configuration.</source>
         <translation>NVIDIA fan control rejected by driver: Coolbits option is required in Xorg configuration.</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1774"/>
+        <source>Direct GPU fan control is not available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1780"/>
+        <source>This fan is monitored by firmware and cannot be controlled by ro-Control.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>FanPage</name>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="186"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="184"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="746"/>
         <source>Silent</source>
         <translation>Silent</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="187"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="751"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="996"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="185"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="747"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="993"/>
         <source>Balanced</source>
         <translation>Balanced</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="188"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="752"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="186"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="748"/>
         <source>Performance</source>
         <translation>Performance</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="189"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="753"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="187"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="749"/>
         <source>Manual</source>
         <translation>Manual</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="190"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="754"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="188"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
         <source>Custom</source>
         <translation>Custom</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="192"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="749"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="190"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="745"/>
         <source>Auto</source>
         <translation>Auto</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="199"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="197"/>
         <source>Acoustic priority profile. Keeps fans quiet and delays ramp-up for quiet operation.</source>
         <translation>Acoustic priority profile. Keeps fans quiet and delays ramp-up for quiet operation.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="207"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="205"/>
         <source>Custom temperature-to-speed curve with hysteresis and response smoothing.</source>
         <translation>Custom temperature-to-speed curve with hysteresis and response smoothing.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="268"/>
         <source>Rearrange Fans (Drag or use ◀ ▶ to reorder)</source>
-        <translation>Rearrange Fans (Drag or use ◀ ▶ to reorder)</translation>
+        <translation type="vanished">Rearrange Fans (Drag or use ◀ ▶ to reorder)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="269"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="265"/>
         <source>Cooling Channels (%1)</source>
         <translation>Cooling Channels (%1)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="460"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="456"/>
         <source>Open fan settings</source>
         <translation>Open fan settings</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="479"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="475"/>
         <source>SPEED</source>
         <translation>SPEED</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="544"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="540"/>
         <source>TEMPERATURE</source>
         <translation>TEMPERATURE</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="626"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="622"/>
         <source>Slot %1</source>
         <translation>Slot %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="681"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="677"/>
         <source>Only one RPM channel is exposed by Linux. CPU and chassis fans will appear automatically when the motherboard firmware or kernel sensor driver publishes their RPM telemetry.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="749"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="745"/>
         <source>Hardware dynamic</source>
         <translation>Hardware dynamic</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="746"/>
         <source>Zero-dB quiet</source>
         <translation>Zero-dB quiet</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="751"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="747"/>
         <source>Optimized blend</source>
         <translation>Optimized blend</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="752"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="748"/>
         <source>Maximum airflow</source>
         <translation>Maximum airflow</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="753"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="749"/>
         <source>Locked speed</source>
         <translation>Locked speed</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="754"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
         <source>User curve</source>
         <translation>User curve</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="844"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="841"/>
         <source>Custom Fan Curve Dynamics &amp; Control Points</source>
         <translation>Custom Fan Curve Dynamics &amp; Control Points</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="851"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="848"/>
         <source>Multi-point linear temperature ramp curve mapped to cooling PWM controllers.</source>
         <translation>Multi-point linear temperature ramp curve mapped to cooling PWM controllers.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="859"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="856"/>
         <source>Open Curve Studio &amp; Live Tuner ↗</source>
         <translation>Open Curve Studio &amp; Live Tuner ↗</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="987"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="984"/>
         <source>Curve Presets:</source>
         <translation>Curve Presets:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="995"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="992"/>
         <source>Zero-dB Stealth</source>
         <translation>Zero-dB Stealth</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="997"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="994"/>
         <source>Aggressive</source>
         <translation>Aggressive</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="998"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="995"/>
         <source>Stepped</source>
         <translation>Stepped</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1062"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1059"/>
         <source>Response Smoothing</source>
         <translation>Response Smoothing</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1071"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1068"/>
         <source>Active — GPU changes are rate-limited (%1°C hysteresis).</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1072"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1069"/>
         <source>Disabled — GPU changes apply immediately.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1142"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1139"/>
         <source>Disabled — does not alter fan profiles on battery.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1144"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1141"/>
         <source>Active — controllable GPU fan uses Silent on battery.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1145"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1142"/>
         <source>Armed — uses Silent when battery power begins.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="201"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="199"/>
         <source>Optimized profile dynamically balancing thermal dissipation and acoustic comfort.</source>
         <translation>Optimized profile dynamically balancing thermal dissipation and acoustic comfort.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="203"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="201"/>
         <source>Aggressive cooling profile providing maximum sustained airflow for heavy workloads.</source>
         <translation>Aggressive cooling profile providing maximum sustained airflow for heavy workloads.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="205"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="203"/>
         <source>Fixed fan speed percentage defined directly by the user slider.</source>
         <translation>Fixed fan speed percentage defined directly by the user slider.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="210"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="208"/>
         <source>Default automatic profile managed natively by hardware VBIOS and kernel drivers.</source>
         <translation>Default automatic profile managed natively by hardware VBIOS and kernel drivers.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="340"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="336"/>
         <source>Refresh fan telemetry</source>
         <translation>Refresh fan telemetry</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="278"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="274"/>
         <source>Done ✓</source>
         <translation>Done ✓</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="305"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="301"/>
         <source>Fan Setup Wizard</source>
         <translation>Fan Setup Wizard</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="433"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="429"/>
         <source>Fan Device</source>
         <translation>Fan Device</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="509"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="505"/>
         <source>RPM</source>
         <translation>RPM</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="488"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="518"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="551"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="484"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="514"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="547"/>
         <source>--</source>
         <translation>--</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="521"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="517"/>
         <source>0 RPM</source>
         <translation>0 RPM</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="710"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="706"/>
         <source>Optimization Profiles &amp; Control</source>
         <translation>Optimization Profiles &amp; Control</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="730"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="726"/>
         <source>ACTIVE: %1</source>
         <translation>ACTIVE: %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="731"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="727"/>
         <source>MANAGED: %1</source>
         <translation>MANAGED: %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1133"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1130"/>
         <source>Battery Profile Sync</source>
         <translation>Battery Profile Sync</translation>
     </message>
@@ -1538,264 +1547,279 @@ Third-party akmod modules require MOK signing.</source>
 <context>
     <name>FanSettingsPopup</name>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="572"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="615"/>
         <source>Silent</source>
         <translation>Silent</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="573"/>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="841"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="616"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="886"/>
         <source>Balanced</source>
         <translation>Balanced</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="574"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="617"/>
         <source>Performance</source>
         <translation>Performance</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="575"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="618"/>
         <source>Manual</source>
         <translation>Manual</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="576"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="619"/>
         <source>Custom</source>
         <translation>Custom</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="571"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="614"/>
         <source>Auto</source>
         <translation>Auto</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="123"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="127"/>
         <source>Acoustic priority profile. Minimizes fan noise and delays speed ramp-up for quiet operation.</source>
         <translation>Acoustic priority profile. Minimizes fan noise and delays speed ramp-up for quiet operation.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="125"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="129"/>
         <source>Dynamically balances thermal dissipation and acoustic comfort based on workload.</source>
         <translation>Dynamically balances thermal dissipation and acoustic comfort based on workload.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="127"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="131"/>
         <source>Aggressive cooling profile providing maximum sustained airflow for heavy loads.</source>
         <translation>Aggressive cooling profile providing maximum sustained airflow for heavy loads.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="129"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="133"/>
         <source>Locked fixed fan speed percentage set directly by the manual slider.</source>
         <translation>Locked fixed fan speed percentage set directly by the manual slider.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="131"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="135"/>
         <source>Multi-point custom temperature-to-speed fan curve with smooth interpolation.</source>
         <translation>Multi-point custom temperature-to-speed fan curve with smooth interpolation.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="134"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="138"/>
         <source>Automatic cooling curve managed natively by hardware VBIOS / BIOS thermal controllers.</source>
         <translation>Automatic cooling curve managed natively by hardware VBIOS / BIOS thermal controllers.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="480"/>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="526"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="523"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="569"/>
         <source>--</source>
         <translation>--</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="482"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="525"/>
         <source>0 RPM</source>
         <translation>0 RPM</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1155"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1200"/>
         <source>Native automatic curve dynamically controlled by hardware thermals and firmware.</source>
         <translation>Native automatic curve dynamically controlled by hardware thermals and firmware.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1317"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1372"/>
         <source>Reset to Auto</source>
         <translation>Reset to Auto</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="369"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="392"/>
         <source>Close</source>
         <translation>Close</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="249"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="161"/>
+        <source>The fan controller rejected this change.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="174"/>
+        <source>The automatic fan mode could not be restored.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="272"/>
         <source>Fan Settings &amp; Dynamics</source>
         <translation>Fan Settings &amp; Dynamics</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="310"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="333"/>
         <source>Save name</source>
         <translation>Save name</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="310"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="333"/>
         <source>Rename fan</source>
         <translation>Rename fan</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="333"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="356"/>
         <source>Hardware Channel: %1 • Interface: %2</source>
         <translation>Hardware Channel: %1 • Interface: %2</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="414"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="425"/>
+        <source>This channel provides telemetry only. Its BIOS, firmware, or driver owns fan control, so ro-Control will not present simulated settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="457"/>
         <source>LIVE SPEED</source>
         <translation>LIVE SPEED</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="472"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="515"/>
         <source>TACHOMETER</source>
         <translation>TACHOMETER</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="492"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="535"/>
         <source>Silent Zero-RPM Active</source>
         <translation>Silent Zero-RPM Active</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="493"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="536"/>
         <source>Active Airflow Cooling</source>
         <translation>Active Airflow Cooling</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="517"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="560"/>
         <source>TEMPERATURE</source>
         <translation>TEMPERATURE</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="540"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="583"/>
         <source>Thermal Load Elevated</source>
         <translation>Thermal Load Elevated</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="541"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="584"/>
         <source>Moderate Thermals</source>
         <translation>Moderate Thermals</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="542"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="585"/>
         <source>Optimal Thermal State</source>
         <translation>Optimal Thermal State</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="557"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="600"/>
         <source>Select Optimization Profile</source>
         <translation>Select Optimization Profile</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="635"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="680"/>
         <source>Manual Fixed Fan Speed Target</source>
         <translation>Manual Fixed Fan Speed Target</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="706"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="751"/>
         <source>Quick Speed Presets:</source>
         <translation>Quick Speed Presets:</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="717"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="762"/>
         <source>0% (Stop)</source>
         <translation>0% (Stop)</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="757"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="802"/>
         <source>Interactive Custom Fan Curve &amp; Presets</source>
         <translation>Interactive Custom Fan Curve &amp; Presets</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="766"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="811"/>
         <source>Reset curve</source>
         <translation>Reset curve</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="803"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="848"/>
         <source>Restore the default balanced fan curve</source>
         <translation>Restore the default balanced fan curve</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="821"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="866"/>
         <source>Presets:</source>
         <translation>Presets:</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="831"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="876"/>
         <source>Zero-dB Stealth</source>
         <translation>Zero-dB Stealth</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="851"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="896"/>
         <source>Aggressive</source>
         <translation>Aggressive</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="861"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="906"/>
         <source>Stepped</source>
         <translation>Stepped</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1072"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1117"/>
         <source>Point %1 (%2°C)</source>
         <translation>Point %1 (%2°C)</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1141"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1186"/>
         <source>Profile Cooling Dynamics</source>
         <translation>Profile Cooling Dynamics</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1150"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1195"/>
         <source>Acoustic priority: Fans remain in Zero-dB silent state under 45°C, ramping gently to 50% at 68°C and 100% at 85°C.</source>
         <translation>Acoustic priority: Fans remain in Zero-dB silent state under 45°C, ramping gently to 50% at 68°C and 100% at 85°C.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1152"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1197"/>
         <source>Aggressive cooling: 45% minimum speed floor, ramping rapidly to 80% at 65°C and 100% at 82°C for heavy compute/gaming.</source>
         <translation>Aggressive cooling: 45% minimum speed floor, ramping rapidly to 80% at 65°C and 100% at 82°C for heavy compute/gaming.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1154"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1199"/>
         <source>Optimized baseline: 30% speed floor, dynamically balancing acoustic comfort and thermal dissipation.</source>
         <translation>Optimized baseline: 30% speed floor, dynamically balancing acoustic comfort and thermal dissipation.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1173"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1218"/>
         <source>Emergency 100% Thermal Guard Threshold</source>
         <translation>Emergency 100% Thermal Guard Threshold</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1250"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1295"/>
         <source>Fan configuration applied and saved successfully!</source>
         <translation>Fan configuration applied and saved successfully!</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1271"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1316"/>
         <source>Testing (100%)...</source>
         <translation>Testing (100%)...</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1271"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1316"/>
         <source>Quick Test 100%</source>
         <translation>Quick Test 100%</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1300"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1345"/>
         <source>Direct fan control unavailable</source>
         <translation>Direct fan control unavailable</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1309"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1354"/>
         <source>GPU fan test could not start. Enable NVIDIA Coolbits / fan control first.</source>
         <translation>GPU fan test could not start. Enable NVIDIA Coolbits / fan control first.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1345"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1401"/>
         <source>Apply &amp; Save Settings</source>
         <translation>Apply &amp; Save Settings</translation>
     </message>
@@ -1966,7 +1990,7 @@ Third-party akmod modules require MOK signing.</source>
     </message>
     <message>
         <location filename="../src/qml/Main.qml" line="48"/>
-        <location filename="../src/qml/Main.qml" line="461"/>
+        <location filename="../src/qml/Main.qml" line="462"/>
         <source>Language</source>
         <translation>Language</translation>
     </message>
@@ -2016,14 +2040,29 @@ Third-party akmod modules require MOK signing.</source>
     </message>
     <message>
         <location filename="../src/qml/Main.qml" line="379"/>
-        <location filename="../src/qml/Main.qml" line="448"/>
+        <location filename="../src/qml/Main.qml" line="449"/>
         <source>Settings</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../src/qml/Main.qml" line="527"/>
+        <location filename="../src/qml/Main.qml" line="518"/>
+        <source>Follow system language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/Main.qml" line="536"/>
         <source>Theme</source>
         <translation>Theme</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/Main.qml" line="590"/>
+        <source>Show advanced information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/Main.qml" line="598"/>
+        <source>Reset appearance settings</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/qml/Main.qml" line="258"/>
@@ -2111,14 +2150,14 @@ Third-party akmod modules require MOK signing.</source>
         <location filename="../src/qml/pages/MonitorPage.qml" line="111"/>
         <location filename="../src/qml/pages/MonitorPage.qml" line="116"/>
         <location filename="../src/qml/pages/MonitorPage.qml" line="119"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="297"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="315"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="470"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="490"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="543"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="561"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="740"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="748"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="298"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="316"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="471"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="491"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="544"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="562"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="741"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="749"/>
         <source>Unavailable</source>
         <translation>Unavailable</translation>
     </message>
@@ -2178,248 +2217,248 @@ Third-party akmod modules require MOK signing.</source>
         <translation>HARDWARE MANAGED</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="257"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="258"/>
         <source>Refreshing telemetry…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="257"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="258"/>
         <source>Refresh telemetry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="278"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="279"/>
         <source>CPU</source>
         <translation>CPU</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="291"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="537"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="608"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="292"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="538"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="609"/>
         <source>USAGE</source>
         <translation>USAGE</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="309"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="482"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="310"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="483"/>
         <source>TEMPERATURE</source>
         <translation>TEMPERATURE</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="385"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="386"/>
         <source>Active: %1
 Click to switch GPU (%2 available)</source>
         <translation>Active: %1
 Click to switch GPU (%2 available)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="387"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="388"/>
         <source>Active Graphics Processor</source>
         <translation>Active Graphics Processor</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="464"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="465"/>
         <source>LOAD</source>
         <translation>LOAD</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="555"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="631"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="556"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="632"/>
         <source>ALLOCATED</source>
         <translation>ALLOCATED</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="595"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="596"/>
         <source>ZRAM</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="649"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="650"/>
         <source>Compression: %1×</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="652"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="653"/>
         <source>RAM: %1 MiB</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="655"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="656"/>
         <source>zswap enabled</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="725"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="726"/>
         <source>Core / Memory Clocks</source>
         <translation>Core / Memory Clocks</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="731"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="732"/>
         <source>Power Draw / TDP Limit</source>
         <translation>Power Draw / TDP Limit</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="743"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="744"/>
         <source>Thermals &amp; Hotspot</source>
         <translation>Thermals &amp; Hotspot</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="745"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="746"/>
         <source>Core: %1°C</source>
         <translation>Core: %1°C</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="746"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="747"/>
         <source> • Hotspot: %1°C</source>
         <translation> • Hotspot: %1°C</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="747"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="748"/>
         <source> • VRAM: %1°C</source>
         <translation> • VRAM: %1°C</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="815"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="816"/>
         <source>Power &amp; Performance Management</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="842"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="843"/>
         <source>Draw:</source>
         <translation>Draw:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="873"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="874"/>
         <source>Limit:</source>
         <translation>Limit:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="991"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="992"/>
         <source>Show less</source>
         <translation>Show less</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="991"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="992"/>
         <source>All processes</source>
         <translation>All processes</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1111"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1112"/>
         <source>VRAM ALLOCATION</source>
         <translation>VRAM ALLOCATION</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1246"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1247"/>
         <source>End Task</source>
         <translation>End Task</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1308"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1309"/>
         <source>End GPU process?</source>
         <translation>End GPU process?</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1315"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1316"/>
         <source>%1 (PID %2) will be terminated. Unsaved work may be lost.</source>
         <translation>%1 (PID %2) will be terminated. Unsaved work may be lost.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1333"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1334"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1337"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1338"/>
         <source>End process</source>
         <translation>End process</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="353"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="354"/>
         <source>GPU</source>
         <translation>GPU</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="524"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="525"/>
         <source>Memory</source>
         <translation>Memory</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="709"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="710"/>
         <source>GPU Performance &amp; Power</source>
         <translation>GPU Performance &amp; Power</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="734"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="735"/>
         <source>Dynamic Power</source>
         <translation>Dynamic Power</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="728"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="729"/>
         <source>Dynamic Clock</source>
         <translation>Dynamic Clock</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="737"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="738"/>
         <source>VRAM Allocation</source>
         <translation>VRAM Allocation</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="965"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="966"/>
         <source>GPU Task Manager &amp; Active Processes</source>
         <translation>GPU Task Manager &amp; Active Processes</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1054"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1055"/>
         <source>No Active GPU Processes</source>
         <translation>No Active GPU Processes</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1061"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1062"/>
         <source>No applications are currently allocating VRAM or compute resources on this GPU.</source>
         <translation>No applications are currently allocating VRAM or compute resources on this GPU.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1085"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1086"/>
         <source>PID</source>
         <translation>PID</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1093"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1094"/>
         <source>PROCESS NAME</source>
         <translation>PROCESS NAME</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1102"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1103"/>
         <source>TYPE</source>
         <translation>TYPE</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1120"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1121"/>
         <source>ACTION</source>
         <translation>ACTION</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1196"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1197"/>
         <source>Compute</source>
         <translation>Compute</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="814"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="815"/>
         <source>GPU Power &amp; Performance Management</source>
         <translation>GPU Power &amp; Performance Management</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="897"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="898"/>
         <source>Eco</source>
         <translation>Eco</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="898"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="899"/>
         <source>Balanced</source>
         <translation>Balanced</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="899"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="900"/>
         <source>Performance</source>
         <translation>Performance</translation>
     </message>
@@ -2915,325 +2954,371 @@ Choose Accept to continue with the closed-source installation, or Reject to canc
 <context>
     <name>SystemPage</name>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="68"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="71"/>
         <source>Bare Metal</source>
         <translation>Bare Metal</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="63"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="70"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="66"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="73"/>
         <source>Secure Boot: On</source>
         <translation>Secure Boot: On</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="63"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="70"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="66"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="73"/>
         <source>Secure Boot: Off</source>
         <translation>Secure Boot: Off</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="231"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="268"/>
         <source>System health</source>
         <translation>System health</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="252"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="313"/>
         <source>Hardware Specifications</source>
         <translation>Hardware Specifications</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="94"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="97"/>
         <source>Graphics Card (GPU)</source>
         <translation>Graphics Card (GPU)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="59"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="62"/>
         <source>Driver: %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="61"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="64"/>
         <source>GPU telemetry: Available</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="64"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="67"/>
         <source>Live system information</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="95"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="145"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="98"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="148"/>
         <source>Processor (CPU)</source>
         <translation>Processor (CPU)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="96"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="146"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="99"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="149"/>
         <source>Motherboard</source>
         <translation>Motherboard</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="97"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="147"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="100"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="150"/>
         <source>UEFI / BIOS</source>
         <translation>UEFI / BIOS</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="99"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="148"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="102"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="151"/>
         <source>System Memory (RAM)</source>
         <translation>System Memory (RAM)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="101"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="158"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="104"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="161"/>
         <source>Video Memory (VRAM)</source>
         <translation>Video Memory (VRAM)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="103"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="106"/>
         <source>Integrated Graphics Memory</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="104"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="159"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="107"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="162"/>
         <source>PCIe Link Interface</source>
         <translation>PCIe Link Interface</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="399"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="218"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1518"/>
+        <source>Diagnostic report copied to clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="223"/>
+        <source>The report could not be copied. You can copy it manually from this preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="237"/>
+        <source>System information refreshed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="271"/>
+        <source>Refreshing…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="271"/>
+        <source>Refresh</source>
+        <translation type="unfinished">Refresh</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="367"/>
+        <source>No readable hardware details are currently exposed by this system.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="443"/>
+        <source>Software and platform details are temporarily unavailable.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="474"/>
         <source>Generate a shareable system report or restart directly into firmware setup.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="452"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="527"/>
         <source>Diagnostic Report</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="459"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="534"/>
         <source>Preview, format, and share live system details</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="482"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="557"/>
         <source>Open</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="541"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="616"/>
         <source>UEFI / BIOS Firmware</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="548"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="623"/>
         <source>Restart directly into firmware setup</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="571"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="646"/>
         <source>Restart</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="670"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="745"/>
         <source>System Diagnostic Report</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="676"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="751"/>
         <source>System hardware, kernel, driver and security telemetry snapshot</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="746"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="824"/>
         <source>Overview Cards</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="768"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="849"/>
         <source>Code / Export</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="811"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="892"/>
         <source>Filter properties...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="849"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="931"/>
         <source>Format:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="881"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="916"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="966"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1001"/>
         <source>Plain Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="976"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1061"/>
         <source>Action:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1007"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1042"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1095"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1130"/>
         <source>Copy on Open</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1008"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1041"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1096"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1129"/>
         <source>Preview</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1161"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1249"/>
         <source>items</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1261"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1349"/>
         <source>No matching properties found</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1269"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1357"/>
         <source>Try a different search term or clear the filter.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1276"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1364"/>
         <source>Clear Filter</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1361"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1449"/>
         <source>Copied to clipboard!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1374"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1462"/>
         <source>Close</source>
         <translation>Close</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1403"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1491"/>
         <source>Copy Full Report</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1490"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1522"/>
+        <source>The report could not be copied. Select and copy the text manually.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1584"/>
         <source>Reboot to UEFI / BIOS</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1514"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1608"/>
         <source>Make sure any unsaved work in other applications is saved before continuing.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1548"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1642"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1578"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1672"/>
         <source>Restart Now ↻</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="105"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="149"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1701"/>
+        <source>Could not start a firmware reboot. Your system may not support this action or authorization was denied.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="108"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="152"/>
         <source>Device &amp; Power</source>
         <translation>Device &amp; Power</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="322"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="390"/>
         <source>Operating System &amp; Software Stack</source>
         <translation>Operating System &amp; Software Stack</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="115"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="134"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="118"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="137"/>
         <source>Operating System</source>
         <translation>Operating System</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="116"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="136"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="119"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="139"/>
         <source>Desktop Environment</source>
         <translation>Desktop Environment</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="117"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="135"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="120"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="138"/>
         <source>Linux Kernel</source>
         <translation>Linux Kernel</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="119"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="137"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="122"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="140"/>
         <source>Display Server / Session</source>
         <translation>Display Server / Session</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="121"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="157"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="124"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="160"/>
         <source>NVIDIA Driver</source>
         <translation>NVIDIA Driver</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="122"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="161"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="125"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="164"/>
         <source>Graphics &amp; Compute APIs</source>
         <translation>Graphics &amp; Compute APIs</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="123"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="126"/>
         <source>Platform &amp; Security</source>
         <translation>Platform &amp; Security</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="131"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="134"/>
         <source>Operating System &amp; Platform</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="138"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="141"/>
         <source>Platform Security</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="142"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="145"/>
         <source>Processor &amp; Hardware</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="153"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="156"/>
         <source>Graphics &amp; Accelerators</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="156"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="159"/>
         <source>Dedicated GPU</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="160"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="163"/>
         <source>Integrated GPU</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="391"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="466"/>
         <source>Diagnostics &amp; System Controls</source>
         <translation>Diagnostics &amp; System Controls</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1506"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1600"/>
         <source>Your system will restart immediately and boot directly into the UEFI / BIOS firmware setup utility.</source>
         <translation>Your system will restart immediately and boot directly into the UEFI / BIOS firmware setup utility.</translation>
     </message>
@@ -3259,12 +3344,17 @@ Choose Accept to continue with the closed-source installation, or Reject to canc
 <context>
     <name>UiPreferencesManager</name>
     <message>
-        <location filename="../src/backend/system/uipreferencesmanager.cpp" line="23"/>
+        <location filename="../src/backend/system/uipreferencesmanager.cpp" line="24"/>
         <source>Light</source>
         <translation>Light</translation>
     </message>
     <message>
-        <location filename="../src/backend/system/uipreferencesmanager.cpp" line="26"/>
+        <location filename="../src/backend/system/uipreferencesmanager.cpp" line="27"/>
+        <source>System</source>
+        <translation type="unfinished">System</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/system/uipreferencesmanager.cpp" line="30"/>
         <source>Dark</source>
         <translation>Dark</translation>
     </message>

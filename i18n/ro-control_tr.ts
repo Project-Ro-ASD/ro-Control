@@ -945,374 +945,383 @@ Third-party akmod modules require MOK signing.</source>
 <context>
     <name>FanController</name>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="234"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="233"/>
         <source>Hardware fan scan complete: %1 channel(s) detected.</source>
         <translation>Donanım fan taraması tamamlandı: %1 kanal algılandı.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="313"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="312"/>
         <source>Polkit (pkexec) is not available to configure Coolbits.</source>
         <translation>Coolbits yapılandırması için Polkit (pkexec) bulunamadı.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="336"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="335"/>
         <source>Coolbits enabled successfully! A session restart or reboot is required to activate manual fan control.</source>
         <translation>Coolbits başarıyla etkinleştirildi! Manuel fan kontrolünü etkinleştirmek için oturumu veya sistemi yeniden başlatmanız gerekir.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="344"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="343"/>
         <source>Failed to enable Coolbits: %1</source>
         <translation>Coolbits etkinleştirilemedi: %1</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="920"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="919"/>
         <source>Automatic Mode: NVIDIA telemetry active.</source>
         <translation>Otomatik Mod: NVIDIA telemetrisi etkin.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1041"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1040"/>
         <source>Controllable</source>
         <translation>Kontrol Edilebilir</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1042"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1041"/>
         <source>0 RPM (Silent)</source>
         <translation>0 RPM (Sessiz)</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1043"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1042"/>
         <source>Active (Auto)</source>
         <translation>Etkin (Otomatik)</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1047"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1046"/>
         <source>Direct hardware fan control active via NV-CONTROL.</source>
         <translation>NV-CONTROL üzerinden doğrudan donanım fan kontrolü etkin.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1049"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1048"/>
         <source>GPU is in 0 RPM silent mode (temperature &lt; 50°C). Fans automatically spin up under load.</source>
         <translation>GPU 0 RPM sessiz modunda (sıcaklık &lt; 50°C). Fanlar yük altında otomatik olarak dönmeye başlar.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1051"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1050"/>
         <source>Automatic VBIOS cooling curve active.</source>
         <translation>Otomatik VBIOS soğutma eğrisi etkin.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1227"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1226"/>
         <source>Hardware BIOS thermal curve active with dynamic acoustic regulation.</source>
         <translation>Dinamik akustik düzenlemeli donanım BIOS termal eğrisi etkin.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1308"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1307"/>
         <source>Motherboard chassis airflow management curve active.</source>
         <translation>Anakart kasa hava akışı yönetim eğrisi etkin.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1354"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1353"/>
         <source>Hardware-managed</source>
         <translation>Donanım yönetimli</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1358"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1357"/>
         <source>Live RPM telemetry is available; this channel is managed by system firmware.</source>
         <translation>Canlı RPM telemetrisi mevcut; bu kanal sistem donanım yazılımı tarafından yönetiliyor.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1552"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1551"/>
         <source>Safety Override Active: GPU is hot (%1°C &gt;= %2°C). Fan forced to 100%.</source>
         <translation>Güvenlik Koruması Devrede: GPU çok sıcak (%1°C &gt;= %2°C). Fan zorunlu olarak %100 hızına ayarlandı.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1561"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1560"/>
         <source>Automatic Mode: Managed by VBIOS and driver.</source>
         <translation>Otomatik Mod: VBIOS ve sürücü tarafından yönetiliyor.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1566"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1565"/>
         <source>Silent Profile Active (%1% @ %2°C).</source>
         <translation>Sessiz Profil Etkin (%1% @ %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1573"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1572"/>
         <source>Balanced Optimization Active (%1% @ %2°C).</source>
         <translation>Dengeli Optimizasyon Etkin (%1% @ %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1580"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1579"/>
         <source>Performance Profile Active (%1% @ %2°C).</source>
         <translation>Performans Profili Etkin (%1% @ %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1587"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1586"/>
         <source>Manual Fan Speed Locked at %1%.</source>
         <translation>Manuel Fan Hızı %%1 Seviyesinde Kilitlendi.</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1592"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1591"/>
         <source>Custom Curve Active (%1% @ %2°C).</source>
         <translation>Özel Eğri Etkin (%1% @ %2°C).</translation>
     </message>
     <message>
-        <location filename="../src/backend/fan/fancontroller.cpp" line="1691"/>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1695"/>
         <source>NVIDIA fan control rejected by driver: Coolbits option is required in Xorg configuration.</source>
         <translation>NVIDIA fan kontrolü sürücü tarafından reddedildi: Xorg yapılandırmasında Coolbits seçeneği gereklidir.</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1774"/>
+        <source>Direct GPU fan control is not available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/backend/fan/fancontroller.cpp" line="1780"/>
+        <source>This fan is monitored by firmware and cannot be controlled by ro-Control.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>FanPage</name>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="186"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="184"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="746"/>
         <source>Silent</source>
         <translation>Sessiz</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="187"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="751"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="996"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="185"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="747"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="993"/>
         <source>Balanced</source>
         <translation>Dengeli</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="188"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="752"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="186"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="748"/>
         <source>Performance</source>
         <translation>Performans</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="189"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="753"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="187"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="749"/>
         <source>Manual</source>
         <translation>Manuel</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="190"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="754"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="188"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
         <source>Custom</source>
         <translation>Özel Eğri</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="192"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="749"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="190"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="745"/>
         <source>Auto</source>
         <translation>Otomatik</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="199"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="197"/>
         <source>Acoustic priority profile. Keeps fans quiet and delays ramp-up for quiet operation.</source>
         <translation>Akustik öncelikli profil. Sessiz çalışma için fanları sessiz tutar ve hızlanmayı geciktirir.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="207"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="205"/>
         <source>Custom temperature-to-speed curve with hysteresis and response smoothing.</source>
         <translation>Gecikme ve tepki yumuşatma özellikli özel sıcaklık-hız eğrisi.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="268"/>
         <source>Rearrange Fans (Drag or use ◀ ▶ to reorder)</source>
-        <translation>Fanları Yeniden Sırala (Sürükleyin veya ◀ ▶ ile sıralayın)</translation>
+        <translation type="vanished">Fanları Yeniden Sırala (Sürükleyin veya ◀ ▶ ile sıralayın)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="269"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="265"/>
         <source>Cooling Channels (%1)</source>
         <translation>Soğutma Kanalları (%1)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="460"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="456"/>
         <source>Open fan settings</source>
         <translation>Fan ayarlarını aç</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="479"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="475"/>
         <source>SPEED</source>
         <translation>HIZ</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="544"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="540"/>
         <source>TEMPERATURE</source>
         <translation>SICAKLIK</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="626"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="622"/>
         <source>Slot %1</source>
         <translation>Yuva %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="681"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="677"/>
         <source>Only one RPM channel is exposed by Linux. CPU and chassis fans will appear automatically when the motherboard firmware or kernel sensor driver publishes their RPM telemetry.</source>
         <translation>Linux tarafından yalnızca bir RPM kanalı sunuluyor. Anakart bellenimi veya çekirdek sensör sürücüsü RPM telemetrisini yayınladığında CPU ve kasa fanları otomatik olarak görünecektir.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="749"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="745"/>
         <source>Hardware dynamic</source>
         <translation>Donanımsal dinamik</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="746"/>
         <source>Zero-dB quiet</source>
         <translation>Sıfır-dB sessiz</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="751"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="747"/>
         <source>Optimized blend</source>
         <translation>Optimize dengeli</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="752"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="748"/>
         <source>Maximum airflow</source>
         <translation>Maksimum hava akışı</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="753"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="749"/>
         <source>Locked speed</source>
         <translation>Sabit hız</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="754"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="750"/>
         <source>User curve</source>
         <translation>Özel eğri</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="844"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="841"/>
         <source>Custom Fan Curve Dynamics &amp; Control Points</source>
         <translation>Özel Fan Eğrisi Dinamikleri &amp; Kontrol Noktaları</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="851"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="848"/>
         <source>Multi-point linear temperature ramp curve mapped to cooling PWM controllers.</source>
         <translation>Soğutma PWM kontrolcülerine eşlenen çok noktalı doğrusal sıcaklık eğrisi.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="859"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="856"/>
         <source>Open Curve Studio &amp; Live Tuner ↗</source>
         <translation>Eğri Stüdyosu &amp; Canlı Ayarlayıcıyı Aç ↗</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="987"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="984"/>
         <source>Curve Presets:</source>
         <translation>Eğri Ön Ayarları:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="995"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="992"/>
         <source>Zero-dB Stealth</source>
         <translation>Sıfır-dB Sessiz</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="997"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="994"/>
         <source>Aggressive</source>
         <translation>Agresif</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="998"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="995"/>
         <source>Stepped</source>
         <translation>Kademeli</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1062"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1059"/>
         <source>Response Smoothing</source>
         <translation>Tepki Yumuşatma</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1071"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1068"/>
         <source>Active — GPU changes are rate-limited (%1°C hysteresis).</source>
         <translation>Etkin — GPU değişiklikleri sınırlandırılmıştır (%1°C gecikme payı).</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1072"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1069"/>
         <source>Disabled — GPU changes apply immediately.</source>
         <translation>Devre Dışı — GPU değişiklikleri anında uygulanır.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1142"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1139"/>
         <source>Disabled — does not alter fan profiles on battery.</source>
         <translation>Devre Dışı — Pildeyken fan profillerini değiştirmez.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1144"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1141"/>
         <source>Active — controllable GPU fan uses Silent on battery.</source>
         <translation>Etkin — Kontrol edilebilir GPU fanı pildeyken Sessiz modunu kullanır.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1145"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1142"/>
         <source>Armed — uses Silent when battery power begins.</source>
         <translation>Hazırda — Pil gücüne geçildiğinde Sessiz modunu kullanır.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="201"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="199"/>
         <source>Optimized profile dynamically balancing thermal dissipation and acoustic comfort.</source>
         <translation>Isı dağılımı ile akustik konforu dinamik olarak dengeleyen optimize edilmiş profil.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="203"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="201"/>
         <source>Aggressive cooling profile providing maximum sustained airflow for heavy workloads.</source>
         <translation>Ağır iş yükleri için maksimum sürekli hava akışı sağlayan agresif soğutma profili.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="205"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="203"/>
         <source>Fixed fan speed percentage defined directly by the user slider.</source>
         <translation>Kullanıcı kaydırıcısı ile doğrudan belirlenen sabit fan hızı yüzdesi.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="210"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="208"/>
         <source>Default automatic profile managed natively by hardware VBIOS and kernel drivers.</source>
         <translation>Donanım VBIOS&apos;u ve çekirdek sürücüleri tarafından yerel olarak yönetilen varsayılan otomatik profil.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="340"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="336"/>
         <source>Refresh fan telemetry</source>
         <translation>Fan telemetrisini yenile</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="278"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="274"/>
         <source>Done ✓</source>
         <translation>Tamamlandı ✓</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="305"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="301"/>
         <source>Fan Setup Wizard</source>
         <translation>Fan Kurulum Sihirbazı</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="433"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="429"/>
         <source>Fan Device</source>
         <translation>Fan Aygıtı</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="509"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="505"/>
         <source>RPM</source>
         <translation>RPM</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="488"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="518"/>
-        <location filename="../src/qml/pages/FanPage.qml" line="551"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="484"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="514"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="547"/>
         <source>--</source>
         <translation>--</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="521"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="517"/>
         <source>0 RPM</source>
         <translation>0 RPM</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="710"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="706"/>
         <source>Optimization Profiles &amp; Control</source>
         <translation>Optimizasyon Profilleri ve Kontrol</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="730"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="726"/>
         <source>ACTIVE: %1</source>
         <translation>ETKİN: %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="731"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="727"/>
         <source>MANAGED: %1</source>
         <translation>YÖNETİLEN: %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/FanPage.qml" line="1133"/>
+        <location filename="../src/qml/pages/FanPage.qml" line="1130"/>
         <source>Battery Profile Sync</source>
         <translation>Pil Profili Senkronizasyonu</translation>
     </message>
@@ -1539,264 +1548,279 @@ Third-party akmod modules require MOK signing.</source>
 <context>
     <name>FanSettingsPopup</name>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="572"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="615"/>
         <source>Silent</source>
         <translation>Sessiz</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="573"/>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="841"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="616"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="886"/>
         <source>Balanced</source>
         <translation>Dengeli</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="574"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="617"/>
         <source>Performance</source>
         <translation>Performans</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="575"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="618"/>
         <source>Manual</source>
         <translation>Manuel</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="576"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="619"/>
         <source>Custom</source>
         <translation>Özel Eğri</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="571"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="614"/>
         <source>Auto</source>
         <translation>Otomatik</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="123"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="127"/>
         <source>Acoustic priority profile. Minimizes fan noise and delays speed ramp-up for quiet operation.</source>
         <translation>Akustik öncelikli profil. Sessiz çalışma için fan gürültüsünü en aza indirir ve hız artışını geciktirir.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="125"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="129"/>
         <source>Dynamically balances thermal dissipation and acoustic comfort based on workload.</source>
         <translation>İş yüküne bağlı olarak ısı dağılımı ile akustik konforu dinamik olarak dengeler.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="127"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="131"/>
         <source>Aggressive cooling profile providing maximum sustained airflow for heavy loads.</source>
         <translation>Ağır yükler için maksimum sürekli hava akışı sağlayan agresif soğutma profili.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="129"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="133"/>
         <source>Locked fixed fan speed percentage set directly by the manual slider.</source>
         <translation>Manuel kaydırıcı ile doğrudan ayarlanan kilitli sabit fan hızı yüzdesi.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="131"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="135"/>
         <source>Multi-point custom temperature-to-speed fan curve with smooth interpolation.</source>
         <translation>Düzgün enterpolasyonlu çok noktalı özel sıcaklık-hız fan eğrisi.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="134"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="138"/>
         <source>Automatic cooling curve managed natively by hardware VBIOS / BIOS thermal controllers.</source>
         <translation>Donanım VBIOS / BIOS termal denetleyicileri tarafından yerel olarak yönetilen otomatik soğutma eğrisi.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="480"/>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="526"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="523"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="569"/>
         <source>--</source>
         <translation>--</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="482"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="525"/>
         <source>0 RPM</source>
         <translation>0 RPM</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1155"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1200"/>
         <source>Native automatic curve dynamically controlled by hardware thermals and firmware.</source>
         <translation>Donanım sıcaklıkları ve bellenim tarafından dinamik olarak kontrol edilen yerel otomatik eğri.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1317"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1372"/>
         <source>Reset to Auto</source>
         <translation>Otomatik Moda Sıfırla</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="369"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="392"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="249"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="161"/>
+        <source>The fan controller rejected this change.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="174"/>
+        <source>The automatic fan mode could not be restored.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="272"/>
         <source>Fan Settings &amp; Dynamics</source>
         <translation>Fan Ayarları &amp; Dinamikleri</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="310"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="333"/>
         <source>Save name</source>
         <translation>Adı kaydet</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="310"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="333"/>
         <source>Rename fan</source>
         <translation>Fanı yeniden adlandır</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="333"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="356"/>
         <source>Hardware Channel: %1 • Interface: %2</source>
         <translation>Donanım Kanalı: %1 • Arayüz: %2</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="414"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="425"/>
+        <source>This channel provides telemetry only. Its BIOS, firmware, or driver owns fan control, so ro-Control will not present simulated settings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="457"/>
         <source>LIVE SPEED</source>
         <translation>CANLI HIZ</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="472"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="515"/>
         <source>TACHOMETER</source>
         <translation>TAKOMETRE</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="492"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="535"/>
         <source>Silent Zero-RPM Active</source>
         <translation>Sessiz Sıfır-RPM Aktif</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="493"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="536"/>
         <source>Active Airflow Cooling</source>
         <translation>Aktif Hava Akışı Soğutması</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="517"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="560"/>
         <source>TEMPERATURE</source>
         <translation>SICAKLIK</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="540"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="583"/>
         <source>Thermal Load Elevated</source>
         <translation>Termal Yük Yükseldi</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="541"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="584"/>
         <source>Moderate Thermals</source>
         <translation>Orta Sıcaklık</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="542"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="585"/>
         <source>Optimal Thermal State</source>
         <translation>Optimal Termal Durum</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="557"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="600"/>
         <source>Select Optimization Profile</source>
         <translation>Optimizasyon Profilini Seçin</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="635"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="680"/>
         <source>Manual Fixed Fan Speed Target</source>
         <translation>Manuel Sabit Fan Hızı Hedefi</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="706"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="751"/>
         <source>Quick Speed Presets:</source>
         <translation>Hızlı Hız Ön Ayarları:</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="717"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="762"/>
         <source>0% (Stop)</source>
         <translation>%0 (Durdur)</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="757"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="802"/>
         <source>Interactive Custom Fan Curve &amp; Presets</source>
         <translation>Etkileşimli Özel Fan Eğrisi &amp; Ön Ayarlar</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="766"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="811"/>
         <source>Reset curve</source>
         <translation>Eğriyi sıfırla</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="803"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="848"/>
         <source>Restore the default balanced fan curve</source>
         <translation>Varsayılan dengeli fan eğrisini geri yükle</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="821"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="866"/>
         <source>Presets:</source>
         <translation>Ön Ayarlar:</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="831"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="876"/>
         <source>Zero-dB Stealth</source>
         <translation>Sıfır-dB Sessiz</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="851"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="896"/>
         <source>Aggressive</source>
         <translation>Agresif</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="861"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="906"/>
         <source>Stepped</source>
         <translation>Kademeli</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1072"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1117"/>
         <source>Point %1 (%2°C)</source>
         <translation>Nokta %1 (%2°C)</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1141"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1186"/>
         <source>Profile Cooling Dynamics</source>
         <translation>Profil Soğutma Dinamikleri</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1150"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1195"/>
         <source>Acoustic priority: Fans remain in Zero-dB silent state under 45°C, ramping gently to 50% at 68°C and 100% at 85°C.</source>
         <translation>Akustik öncelik: Fanlar 45°C altında Sıfır-dB sessiz kalır, 68°C&apos;de %50&apos;ye ve 85°C&apos;de %100&apos;e yumuşakça yükselir.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1152"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1197"/>
         <source>Aggressive cooling: 45% minimum speed floor, ramping rapidly to 80% at 65°C and 100% at 82°C for heavy compute/gaming.</source>
         <translation>Agresif soğutma: %45 minimum taban hızı, yoğun iş yükü/oyun için 65°C&apos;de hızla %80&apos;e ve 82°C&apos;de %100&apos;e yükselir.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1154"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1199"/>
         <source>Optimized baseline: 30% speed floor, dynamically balancing acoustic comfort and thermal dissipation.</source>
         <translation>Optimize temel: %30 taban hızı, akustik konfor ile ısı dağılımını dinamik olarak dengeler.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1173"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1218"/>
         <source>Emergency 100% Thermal Guard Threshold</source>
         <translation>Acil Durum %100 Termal Koruma Eşiği</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1250"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1295"/>
         <source>Fan configuration applied and saved successfully!</source>
         <translation>Fan yapılandırması uygulandı ve başarıyla kaydedildi!</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1271"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1316"/>
         <source>Testing (100%)...</source>
         <translation>Test Ediliyor (%100)...</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1271"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1316"/>
         <source>Quick Test 100%</source>
         <translation>Hızlı Test %100</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1300"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1345"/>
         <source>Direct fan control unavailable</source>
         <translation>Doğrudan fan kontrolü kullanılamıyor</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1309"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1354"/>
         <source>GPU fan test could not start. Enable NVIDIA Coolbits / fan control first.</source>
         <translation>GPU fan testi başlatılamadı. Önce NVIDIA Coolbits veya fan kontrolünü etkinleştirin.</translation>
     </message>
     <message>
-        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1345"/>
+        <location filename="../src/qml/components/FanSettingsPopup.qml" line="1401"/>
         <source>Apply &amp; Save Settings</source>
         <translation>Ayarları Uygula ve Kaydet</translation>
     </message>
@@ -1967,7 +1991,7 @@ Third-party akmod modules require MOK signing.</source>
     </message>
     <message>
         <location filename="../src/qml/Main.qml" line="48"/>
-        <location filename="../src/qml/Main.qml" line="461"/>
+        <location filename="../src/qml/Main.qml" line="462"/>
         <source>Language</source>
         <translation>Dil</translation>
     </message>
@@ -2017,14 +2041,29 @@ Third-party akmod modules require MOK signing.</source>
     </message>
     <message>
         <location filename="../src/qml/Main.qml" line="379"/>
-        <location filename="../src/qml/Main.qml" line="448"/>
+        <location filename="../src/qml/Main.qml" line="449"/>
         <source>Settings</source>
         <translation>Ayarlar</translation>
     </message>
     <message>
-        <location filename="../src/qml/Main.qml" line="527"/>
+        <location filename="../src/qml/Main.qml" line="518"/>
+        <source>Follow system language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/Main.qml" line="536"/>
         <source>Theme</source>
         <translation>Tema</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/Main.qml" line="590"/>
+        <source>Show advanced information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/Main.qml" line="598"/>
+        <source>Reset appearance settings</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/qml/Main.qml" line="258"/>
@@ -2107,14 +2146,14 @@ Third-party akmod modules require MOK signing.</source>
         <location filename="../src/qml/pages/MonitorPage.qml" line="111"/>
         <location filename="../src/qml/pages/MonitorPage.qml" line="116"/>
         <location filename="../src/qml/pages/MonitorPage.qml" line="119"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="297"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="315"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="470"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="490"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="543"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="561"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="740"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="748"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="298"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="316"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="471"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="491"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="544"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="562"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="741"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="749"/>
         <source>Unavailable</source>
         <translation>Kullanılamıyor</translation>
     </message>
@@ -2179,248 +2218,248 @@ Third-party akmod modules require MOK signing.</source>
         <translation>DONANIM YÖNETİMLİ</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="257"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="258"/>
         <source>Refreshing telemetry…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="257"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="258"/>
         <source>Refresh telemetry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="278"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="279"/>
         <source>CPU</source>
         <translation>CPU</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="291"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="537"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="608"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="292"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="538"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="609"/>
         <source>USAGE</source>
         <translation>KULLANIM</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="309"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="482"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="310"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="483"/>
         <source>TEMPERATURE</source>
         <translation>SICAKLIK</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="385"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="386"/>
         <source>Active: %1
 Click to switch GPU (%2 available)</source>
         <translation>Aktif: %1
 GPU değiştirmek için tıklayın (%2 mevcut)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="387"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="388"/>
         <source>Active Graphics Processor</source>
         <translation>Aktif Grafik İşlemci</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="464"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="465"/>
         <source>LOAD</source>
         <translation>YÜK</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="555"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="631"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="556"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="632"/>
         <source>ALLOCATED</source>
         <translation>AYRILAN</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="595"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="596"/>
         <source>ZRAM</source>
         <translation>ZRAM</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="652"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="653"/>
         <source>RAM: %1 MiB</source>
         <translation>RAM: %1 MiB</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="725"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="726"/>
         <source>Core / Memory Clocks</source>
         <translation>Çekirdek / Bellek Saat Hızları</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="731"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="732"/>
         <source>Power Draw / TDP Limit</source>
         <translation>Güç Tüketimi / TDP Limiti</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="743"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="744"/>
         <source>Thermals &amp; Hotspot</source>
         <translation>Sıcaklıklar &amp; Hotspot</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="745"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="746"/>
         <source>Core: %1°C</source>
         <translation>Çekirdek: %1°C</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="746"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="747"/>
         <source> • Hotspot: %1°C</source>
         <translation> • Hotspot: %1°C</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="747"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="748"/>
         <source> • VRAM: %1°C</source>
         <translation> • VRAM: %1°C</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="842"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="843"/>
         <source>Draw:</source>
         <translation>Tüketim:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="873"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="874"/>
         <source>Limit:</source>
         <translation>Limit:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="991"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="992"/>
         <source>Show less</source>
         <translation>Daha az göster</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="991"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="992"/>
         <source>All processes</source>
         <translation>Tüm işlemler</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1111"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1112"/>
         <source>VRAM ALLOCATION</source>
         <translation>VRAM TAHSİSİ</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1246"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1247"/>
         <source>End Task</source>
         <translation>Görevi Sonlandır</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1308"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1309"/>
         <source>End GPU process?</source>
         <translation>GPU işlemi sonlandırılsın mı?</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1315"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1316"/>
         <source>%1 (PID %2) will be terminated. Unsaved work may be lost.</source>
         <translation>%1 (PID %2) sonlandırılacak. Kaydedilmemiş çalışmalar kaybolabilir.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1333"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1334"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1337"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1338"/>
         <source>End process</source>
         <translation>İşlemi sonlandır</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="353"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="354"/>
         <source>GPU</source>
         <translation>GPU</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="524"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="525"/>
         <source>Memory</source>
         <translation>Bellek</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="709"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="710"/>
         <source>GPU Performance &amp; Power</source>
         <translation>GPU Performansı ve Güç</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="734"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="735"/>
         <source>Dynamic Power</source>
         <translation>Dinamik Güç</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="728"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="729"/>
         <source>Dynamic Clock</source>
         <translation>Dinamik Saat</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="737"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="738"/>
         <source>VRAM Allocation</source>
         <translation>VRAM Tahsisi</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="965"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="966"/>
         <source>GPU Task Manager &amp; Active Processes</source>
         <translation>GPU Görev Yöneticisi &amp; Etkin Süreçler</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1054"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1055"/>
         <source>No Active GPU Processes</source>
         <translation>Etkin GPU Süreci Yok</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1061"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1062"/>
         <source>No applications are currently allocating VRAM or compute resources on this GPU.</source>
         <translation>Şu anda bu GPU üzerinde VRAM veya hesaplama kaynağı kullanan bir uygulama yok.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1085"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1086"/>
         <source>PID</source>
         <translation>PID</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1093"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1094"/>
         <source>PROCESS NAME</source>
         <translation>İŞLEM ADI</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1102"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1103"/>
         <source>TYPE</source>
         <translation>TÜR</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1120"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1121"/>
         <source>ACTION</source>
         <translation>EYLEM</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1196"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1197"/>
         <source>Compute</source>
         <translation>Hesaplama</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="814"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="815"/>
         <source>GPU Power &amp; Performance Management</source>
         <translation>GPU Güç &amp; Performans Yönetimi</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="897"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="898"/>
         <source>Eco</source>
         <translation>Eko</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="898"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="899"/>
         <source>Balanced</source>
         <translation>Dengeli</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="899"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="900"/>
         <source>Performance</source>
         <translation>Performans</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="815"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="816"/>
         <source>Power &amp; Performance Management</source>
         <translation>Güç ve Performans Yönetimi</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="649"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="650"/>
         <source>Compression: %1×</source>
         <translation>Sıkıştırma: %1×</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="655"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="656"/>
         <source>zswap enabled</source>
         <translation>zswap etkin</translation>
     </message>
@@ -2916,325 +2955,371 @@ Kapalı kaynak kuruluma devam etmek için Kabul Et&apos;i, iptal etmek için Red
 <context>
     <name>SystemPage</name>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="68"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="71"/>
         <source>Bare Metal</source>
         <translation>Fiziksel Donanım</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="63"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="70"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="66"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="73"/>
         <source>Secure Boot: On</source>
         <translation>Secure Boot: Açık</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="63"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="70"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="66"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="73"/>
         <source>Secure Boot: Off</source>
         <translation>Secure Boot: Kapalı</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="231"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="268"/>
         <source>System health</source>
         <translation>Sistem sağlığı</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="252"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="313"/>
         <source>Hardware Specifications</source>
         <translation>Donanım Özellikleri</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="94"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="97"/>
         <source>Graphics Card (GPU)</source>
         <translation>Ekran Kartı (GPU)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="59"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="62"/>
         <source>Driver: %1</source>
         <translation>Sürücü: %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="61"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="64"/>
         <source>GPU telemetry: Available</source>
         <translation>GPU telemetrisi: Kullanılabilir</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="64"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="67"/>
         <source>Live system information</source>
         <translation>Canlı sistem bilgileri</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="95"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="145"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="98"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="148"/>
         <source>Processor (CPU)</source>
         <translation>İşlemci (CPU)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="96"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="146"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="99"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="149"/>
         <source>Motherboard</source>
         <translation>Anakart</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="97"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="147"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="100"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="150"/>
         <source>UEFI / BIOS</source>
         <translation>UEFI / BIOS</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="99"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="148"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="102"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="151"/>
         <source>System Memory (RAM)</source>
         <translation>Sistem Belleği (RAM)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="101"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="158"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="104"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="161"/>
         <source>Video Memory (VRAM)</source>
         <translation>Video Belleği (VRAM)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="103"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="106"/>
         <source>Integrated Graphics Memory</source>
         <translation>Dahili Grafik Belleği</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="104"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="159"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="107"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="162"/>
         <source>PCIe Link Interface</source>
         <translation>PCIe Veriyolu Arayüzü</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="399"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="218"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1518"/>
+        <source>Diagnostic report copied to clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="223"/>
+        <source>The report could not be copied. You can copy it manually from this preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="237"/>
+        <source>System information refreshed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="271"/>
+        <source>Refreshing…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="271"/>
+        <source>Refresh</source>
+        <translation type="unfinished">Yenile</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="367"/>
+        <source>No readable hardware details are currently exposed by this system.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="443"/>
+        <source>Software and platform details are temporarily unavailable.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="474"/>
         <source>Generate a shareable system report or restart directly into firmware setup.</source>
         <translation>Paylaşılabilir bir sistem raporu oluşturun veya doğrudan donanım yazılımı (firmware) ayarına yeniden başlatın.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="452"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="527"/>
         <source>Diagnostic Report</source>
         <translation>Tanılama Raporu</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="459"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="534"/>
         <source>Preview, format, and share live system details</source>
         <translation>Canlı sistem ayrıntılarını önizleyin, biçimlendirin ve paylaşın</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="482"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="557"/>
         <source>Open</source>
         <translation>Aç</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="541"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="616"/>
         <source>UEFI / BIOS Firmware</source>
         <translation>UEFI / BIOS Bellenimi</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="548"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="623"/>
         <source>Restart directly into firmware setup</source>
         <translation>Doğrudan bellenim ayarlarına yeniden başlat</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="571"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="646"/>
         <source>Restart</source>
         <translation>Yeniden Başlat</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="670"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="745"/>
         <source>System Diagnostic Report</source>
         <translation>Sistem Tanılama Raporu</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="676"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="751"/>
         <source>System hardware, kernel, driver and security telemetry snapshot</source>
         <translation>Sistem donanımı, çekirdek, sürücü ve güvenlik telemetri anlık görüntüsü</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="746"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="824"/>
         <source>Overview Cards</source>
         <translation>Genel Bakış Kartları</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="768"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="849"/>
         <source>Code / Export</source>
         <translation>Kod / Dışa Aktar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="811"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="892"/>
         <source>Filter properties...</source>
         <translation>Özellikleri filtrele...</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="849"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="931"/>
         <source>Format:</source>
         <translation>Biçim:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="881"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="916"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="966"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1001"/>
         <source>Plain Text</source>
         <translation>Düz Metin</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="976"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1061"/>
         <source>Action:</source>
         <translation>İşlem:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1007"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1042"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1095"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1130"/>
         <source>Copy on Open</source>
         <translation>Açılışta Kopyala</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1008"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1041"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1096"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1129"/>
         <source>Preview</source>
         <translation>Önizleme</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1161"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1249"/>
         <source>items</source>
         <translation>öğe</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1261"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1349"/>
         <source>No matching properties found</source>
         <translation>Eşleşen özellik bulunamadı</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1269"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1357"/>
         <source>Try a different search term or clear the filter.</source>
         <translation>Farklı bir arama terimi deneyin veya filtreyi temizleyin.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1276"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1364"/>
         <source>Clear Filter</source>
         <translation>Filtreyi Temizle</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1361"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1449"/>
         <source>Copied to clipboard!</source>
         <translation>Panoya kopyalandı!</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1374"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1462"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1403"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1491"/>
         <source>Copy Full Report</source>
         <translation>Tüm Raporu Kopyala</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1490"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1522"/>
+        <source>The report could not be copied. Select and copy the text manually.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1584"/>
         <source>Reboot to UEFI / BIOS</source>
         <translation>UEFI / BIOS&apos;a Yeniden Başlat</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1514"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1608"/>
         <source>Make sure any unsaved work in other applications is saved before continuing.</source>
         <translation>Devam etmeden önce diğer uygulamalardaki kaydedilmemiş çalışmalarınızın kaydedildiğinden emin olun.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1548"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1642"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1578"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1672"/>
         <source>Restart Now ↻</source>
         <translation>Şimdi Yeniden Başlat ↻</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="105"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="149"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1701"/>
+        <source>Could not start a firmware reboot. Your system may not support this action or authorization was denied.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/SystemPage.qml" line="108"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="152"/>
         <source>Device &amp; Power</source>
         <translation>Cihaz &amp; Güç</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="322"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="390"/>
         <source>Operating System &amp; Software Stack</source>
         <translation>İşletim Sistemi &amp; Yazılım Yığını</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="115"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="134"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="118"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="137"/>
         <source>Operating System</source>
         <translation>İşletim Sistemi</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="116"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="136"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="119"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="139"/>
         <source>Desktop Environment</source>
         <translation>Masaüstü Ortamı</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="117"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="135"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="120"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="138"/>
         <source>Linux Kernel</source>
         <translation>Linux Çekirdeği</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="119"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="137"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="122"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="140"/>
         <source>Display Server / Session</source>
         <translation>Görüntü Sunucusu / Oturum</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="121"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="157"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="124"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="160"/>
         <source>NVIDIA Driver</source>
         <translation>NVIDIA Sürücüsü</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="122"/>
-        <location filename="../src/qml/pages/SystemPage.qml" line="161"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="125"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="164"/>
         <source>Graphics &amp; Compute APIs</source>
         <translation>Grafik &amp; Hesaplama API&apos;leri</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="123"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="126"/>
         <source>Platform &amp; Security</source>
         <translation>Platform &amp; Güvenlik</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="131"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="134"/>
         <source>Operating System &amp; Platform</source>
         <translation>İşletim Sistemi &amp; Platform</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="138"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="141"/>
         <source>Platform Security</source>
         <translation>Platform Güvenliği</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="142"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="145"/>
         <source>Processor &amp; Hardware</source>
         <translation>İşlemci &amp; Donanım</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="153"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="156"/>
         <source>Graphics &amp; Accelerators</source>
         <translation>Grafik &amp; Hızlandırıcılar</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="156"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="159"/>
         <source>Dedicated GPU</source>
         <translation>Harici GPU</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="160"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="163"/>
         <source>Integrated GPU</source>
         <translation>Dahili GPU</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="391"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="466"/>
         <source>Diagnostics &amp; System Controls</source>
         <translation>Tanılama &amp; Sistem Kontrolleri</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/SystemPage.qml" line="1506"/>
+        <location filename="../src/qml/pages/SystemPage.qml" line="1600"/>
         <source>Your system will restart immediately and boot directly into the UEFI / BIOS firmware setup utility.</source>
         <translation>Sisteminiz hemen yeniden başlatılacak ve doğrudan UEFI / BIOS ayar menüsüne açılacaktır.</translation>
     </message>
@@ -3260,12 +3345,17 @@ Kapalı kaynak kuruluma devam etmek için Kabul Et&apos;i, iptal etmek için Red
 <context>
     <name>UiPreferencesManager</name>
     <message>
-        <location filename="../src/backend/system/uipreferencesmanager.cpp" line="23"/>
+        <location filename="../src/backend/system/uipreferencesmanager.cpp" line="24"/>
         <source>Light</source>
         <translation>Açık</translation>
     </message>
     <message>
-        <location filename="../src/backend/system/uipreferencesmanager.cpp" line="26"/>
+        <location filename="../src/backend/system/uipreferencesmanager.cpp" line="27"/>
+        <source>System</source>
+        <translation type="unfinished">Sistem</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/system/uipreferencesmanager.cpp" line="30"/>
         <source>Dark</source>
         <translation>Koyu</translation>
     </message>
