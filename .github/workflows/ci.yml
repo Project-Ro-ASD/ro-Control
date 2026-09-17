@@ -158,13 +158,21 @@ jobs:
 
       - name: Install and smoke-test RPMs
         run: |
+          set -euo pipefail
+
           MAIN_RPM=/tmp/ro-control-x86_64.rpm
 
           dnf clean all
-          dnf -y --refresh --setopt=install_weak_deps=False install "${MAIN_RPM}"
+          dnf -y --refresh \
+            --allowerasing \
+            --setopt=install_weak_deps=False \
+            install "${MAIN_RPM}"
 
           rpm -q ro-control
+          rpm -q polkit
+          rpm -q systemd
           command -v ro-control
+          command -v pkexec
           rpm -q --whatprovides /usr/bin/ro-control | grep -E '^ro-control(-|$)'
           ldd -r /usr/bin/ro-control
 
