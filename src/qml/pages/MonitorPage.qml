@@ -239,6 +239,7 @@ Item {
             }
 
             GridLayout {
+                id: telemetryGrid
                 Layout.fillWidth: true
                 columns: {
                     var count = (page.gpuTelemetryAvailable ? 1 : 0) + 1 + (page.ramMonitor && page.ramMonitor.zramAvailable ? 1 : 0) + 1;
@@ -252,7 +253,7 @@ Item {
                 rowSpacing: Math.round(10 * page.uiScale)
 
                 Button {
-                    Layout.columnSpan: columns
+                    Layout.columnSpan: telemetryGrid.columns
                     Layout.alignment: Qt.AlignRight
                     text: page.telemetryRefreshAnimating ? qsTr("Refreshing telemetry…") : qsTr("Refresh telemetry")
                     enabled: !page.telemetryRefreshAnimating
