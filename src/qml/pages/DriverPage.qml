@@ -358,8 +358,8 @@ Item {
         if (requestedDriverAction === "closed-install" || requestedDriverAction === "closed-update") {
             const version = page.nvidiaUpdater.latestVersion.length > 0 ? page.nvidiaUpdater.latestVersion : page.installedVersionLabel;
             pendingDriverStateText = version.length > 0
-                                     ? qsTr("Closed-source driver prepared: %1. Restart required.").arg(version)
-                                     : qsTr("Closed-source driver prepared. Restart required.");
+                                     ? qsTr("NVIDIA proprietary kernel module prepared: %1. Restart required.").arg(version)
+                                     : qsTr("NVIDIA proprietary kernel module prepared. Restart required.");
             pendingDriverStateTone = "success";
         } else if (requestedDriverAction === "open-install") {
             pendingDriverStateText = qsTr("Open-source graphics stack prepared. Restart required.");
@@ -395,7 +395,7 @@ Item {
                 return;
             }
             driverActionModalPopup.actionKey = "closed";
-            driverActionModalPopup.actionTitle = qsTr("Closed-Source NVIDIA Driver (Proprietary)");
+            driverActionModalPopup.actionTitle = qsTr("NVIDIA Proprietary Kernel Module (akmod-nvidia)");
             driverActionModalPopup.actionSubtitle = qsTr("Official Package • akmod-nvidia & CUDA libraries");
             driverActionModalPopup.actionAccentColor = "#10B981";
             driverActionModalPopup.actionDescription = qsTr("Installs NVIDIA's official proprietary binary driver stack. This stack delivers full hardware feature support including DLSS, CUDA acceleration, NVENC hardware encoding, OptiX, and Ray Tracing.");
@@ -405,7 +405,7 @@ Item {
                 qsTr("Configures kernel parameters (nvidia-drm.modeset=1) and updates initramfs.")
             ];
             driverActionModalPopup.actionWarning = qsTr("A system reboot is required after installation to activate the kernel driver.");
-            driverActionModalPopup.actionConfirmText = qsTr("Install Closed-Source");
+            driverActionModalPopup.actionConfirmText = qsTr("Install Proprietary Module");
             driverActionModalPopup.actionConfirmTone = "primary";
             driverActionModalPopup.open();
         } else if (action === "open") {
@@ -415,17 +415,17 @@ Item {
                 return;
             }
             driverActionModalPopup.actionKey = "open";
-            driverActionModalPopup.actionTitle = qsTr("Open-Source NVIDIA Driver (akmod-nvidia-open)");
-            driverActionModalPopup.actionSubtitle = qsTr("Community & NVIDIA Open Kernel Modules");
+            driverActionModalPopup.actionTitle = qsTr("NVIDIA Open Kernel Modules (akmod-nvidia-open)");
+            driverActionModalPopup.actionSubtitle = qsTr("NVIDIA driver with open kernel modules");
             driverActionModalPopup.actionAccentColor = "#0EA5E9";
-            driverActionModalPopup.actionDescription = qsTr("Installs NVIDIA's open-source kernel modules (GPL-compliant). Ideal for native Linux kernel integration, Wayland compositors, and modern containerized workloads.");
+            driverActionModalPopup.actionDescription = qsTr("Installs NVIDIA Open Kernel Modules. This is not a full community graphics stack: NVIDIA userspace components remain part of the installation.");
             driverActionModalPopup.actionPoints = [
                 qsTr("Hardware Requirement: Turing (RTX 2000 / GTX 1600) or newer GPU architecture."),
                 qsTr("Compiles akmod-nvidia-open module directly with standard Linux kernel interfaces."),
-                qsTr("Updates bootloader image (dracut initramfs) with open-source driver modules.")
+                qsTr("Updates bootloader image (dracut initramfs) with NVIDIA Open Kernel Modules.")
             ];
             driverActionModalPopup.actionWarning = qsTr("Older architectures (Pascal/Maxwell/GTX 1000 and earlier) are not supported by the open kernel module.");
-            driverActionModalPopup.actionConfirmText = qsTr("Install Open-Source");
+            driverActionModalPopup.actionConfirmText = qsTr("Install Open Kernel Modules");
             driverActionModalPopup.actionConfirmTone = "primary";
             driverActionModalPopup.open();
         } else if (action === "clean") {
@@ -466,7 +466,7 @@ Item {
             page.continueClosedSourceInstall();
         } else if (action === "open") {
             page.markDriverActionStarted("open-install");
-            page.setOperationState(qsTr("Installer"), qsTr("Switching to the open-source NVIDIA driver stack..."), "info", true);
+            page.setOperationState(qsTr("Installer"), qsTr("Installing NVIDIA Open Kernel Modules..."), "info", true);
             page.nvidiaInstaller.installOpenSource();
         } else if (action === "clean") {
             page.markDriverActionStarted("deep-clean");
@@ -574,9 +574,9 @@ Item {
 
     function driverSourceLabel() {
         if (page.installedDriverSource === "closed-source")
-            return qsTr("Closed-source");
+            return qsTr("NVIDIA Proprietary Kernel Module");
         if (page.installedDriverSource === "open-source")
-            return qsTr("Open-source");
+            return qsTr("NVIDIA Open Kernel Modules");
         if (page.installedDriverSource === "mixed")
             return qsTr("Mixed driver state");
         return qsTr("Not detected");
@@ -844,7 +844,7 @@ Item {
                     Label {
                         Layout.fillWidth: true
                         text: page.nvidiaHardwareAvailable
-                              ? qsTr("Manage closed-source and open-source NVIDIA stacks. Switching stacks requires Deep Clean first.")
+                              ? qsTr("Manage proprietary NVIDIA modules and NVIDIA Open Kernel Modules. Switching modules requires Deep Clean first.")
                               : qsTr("NVIDIA driver controls are disabled because no NVIDIA GPU is detected. CPU, memory, and non-NVIDIA hardware monitoring remain available.")
                         color: page.softTextColor
                         wrapMode: Text.Wrap
@@ -857,26 +857,26 @@ Item {
                         rowSpacing: 10
 
                         DriverActionTile {
-                            title: qsTr("Closed Source")
+                            title: qsTr("NVIDIA Proprietary Module")
                             subtitle: qsTr("NVIDIA Official Release • Proprietary")
                             accentColor: "#10B981"
                             activeBadge: page.closedSourceDriverDetected
                             badgeText: qsTr("INSTALLED")
                             busy: page.requestedDriverAction === "closed-install" && page.operationRunning
                             enabled: page.nvidiaHardwareAvailable && !page.openSourceDriverDetected && !page.nvidiaInstaller.busy && !page.operationRunning
-                            tooltipText: !page.nvidiaHardwareAvailable ? qsTr("An NVIDIA GPU or NVIDIA passthrough device is required.") : (page.openSourceDriverDetected ? qsTr("Deep Clean is required before switching from open-source to closed-source.") : qsTr("Install official proprietary NVIDIA driver release (akmod-nvidia)."))
+                            tooltipText: !page.nvidiaHardwareAvailable ? qsTr("An NVIDIA GPU or NVIDIA passthrough device is required.") : (page.openSourceDriverDetected ? qsTr("Deep Clean is required before switching from NVIDIA Open Kernel Modules to the proprietary module.") : qsTr("Install the proprietary NVIDIA kernel module (akmod-nvidia)."))
                             onClicked: page.beginClosedSourceInstall()
                         }
 
                         DriverActionTile {
-                            title: qsTr("Open Source")
-                            subtitle: qsTr("Community Release • akmod-open")
+                            title: qsTr("NVIDIA Open Kernel Modules")
+                            subtitle: qsTr("akmod-nvidia-open")
                             accentColor: "#0EA5E9"
                             activeBadge: page.openSourceDriverDetected
                             badgeText: qsTr("INSTALLED")
                             busy: page.requestedDriverAction === "open-install" && page.operationRunning
                             enabled: page.nvidiaHardwareAvailable && !page.closedSourceDriverDetected && !page.nvidiaInstaller.busy && !page.operationRunning
-                            tooltipText: !page.nvidiaHardwareAvailable ? qsTr("An NVIDIA GPU or NVIDIA passthrough device is required.") : (page.closedSourceDriverDetected ? qsTr("Deep Clean is required before switching from closed-source to open-source.") : qsTr("Install community open-source kernel driver package (akmod-nvidia-open)."))
+                            tooltipText: !page.nvidiaHardwareAvailable ? qsTr("An NVIDIA GPU or NVIDIA passthrough device is required.") : (page.closedSourceDriverDetected ? qsTr("Deep Clean is required before switching from the proprietary module to NVIDIA Open Kernel Modules.") : qsTr("Install NVIDIA Open Kernel Modules (akmod-nvidia-open)."))
                             onClicked: page.beginOpenSourceInstall()
                         }
 
@@ -1200,8 +1200,9 @@ Item {
         modal: true
         focus: true
         width: Math.min(page.width - 40, Math.round(520 * page.uiScale))
+        height: Math.min(page.height - 40, restartContent.implicitHeight + topPadding + bottomPadding)
         x: Math.round((page.width - width) / 2)
-        y: Math.round((page.height - implicitHeight) / 2)
+        y: Math.round((page.height - height) / 2)
         padding: 14
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
@@ -1212,8 +1213,15 @@ Item {
             border.color: page.borderColor
         }
 
-        contentItem: ColumnLayout {
-            spacing: 10
+        contentItem: ScrollView {
+            id: restartScroll
+            clip: true
+            contentWidth: availableWidth
+
+            ColumnLayout {
+                id: restartContent
+                width: restartScroll.availableWidth
+                spacing: 10
 
             Label {
                 Layout.fillWidth: true
@@ -1290,6 +1298,7 @@ Item {
                     }
                 }
             }
+            }
         }
     }
 
@@ -1298,8 +1307,9 @@ Item {
         modal: true
         focus: true
         width: Math.min(page.width - 40, Math.round(520 * page.uiScale))
+        height: Math.min(page.height - 40, currentDriverContent.implicitHeight + topPadding + bottomPadding)
         x: Math.round((page.width - width) / 2)
-        y: Math.round((page.height - implicitHeight) / 2)
+        y: Math.round((page.height - height) / 2)
         padding: 14
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
@@ -1310,8 +1320,15 @@ Item {
             border.color: page.borderColor
         }
 
-        contentItem: ColumnLayout {
-            spacing: 10
+        contentItem: ScrollView {
+            id: currentDriverScroll
+            clip: true
+            contentWidth: availableWidth
+
+            ColumnLayout {
+                id: currentDriverContent
+                width: currentDriverScroll.availableWidth
+                spacing: 10
 
             Label {
                 Layout.fillWidth: true
@@ -1347,6 +1364,7 @@ Item {
                     }
                 }
             }
+            }
         }
     }
 
@@ -1356,8 +1374,9 @@ Item {
         modal: true
         focus: true
         width: Math.min(page.width - 40, Math.round(540 * page.uiScale))
+        height: Math.min(page.height - 40, sourceSwitchContent.implicitHeight + topPadding + bottomPadding)
         x: Math.round((page.width - width) / 2)
-        y: Math.round((page.height - implicitHeight) / 2)
+        y: Math.round((page.height - height) / 2)
         padding: 14
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
@@ -1368,8 +1387,15 @@ Item {
             border.color: page.borderColor
         }
 
-        contentItem: ColumnLayout {
-            spacing: 10
+        contentItem: ScrollView {
+            id: sourceSwitchScroll
+            clip: true
+            contentWidth: availableWidth
+
+            ColumnLayout {
+                id: sourceSwitchContent
+                width: sourceSwitchScroll.availableWidth
+                spacing: 10
 
             Label {
                 Layout.fillWidth: true
@@ -1382,8 +1408,8 @@ Item {
             Label {
                 Layout.fillWidth: true
                 text: sourceSwitchBlockedPopup.requestedTarget === "closed"
-                      ? qsTr("An open-source driver stack is currently detected. Run Deep Clean before installing the closed-source driver.")
-                      : qsTr("A closed-source driver stack is currently detected. Run Deep Clean before installing the open-source driver.")
+                      ? qsTr("NVIDIA Open Kernel Modules are currently detected. Run Deep Clean before installing the proprietary NVIDIA module.")
+                      : qsTr("The proprietary NVIDIA module is currently detected. Run Deep Clean before installing NVIDIA Open Kernel Modules.")
                 color: page.softTextColor
                 wrapMode: Text.Wrap
             }
@@ -1409,6 +1435,7 @@ Item {
                         page.nvidiaInstaller.deepClean();
                     }
                 }
+            }
             }
         }
     }
@@ -1557,8 +1584,9 @@ Item {
         modal: true
         focus: true
         width: Math.min(page.width - 40, Math.round(580 * page.uiScale))
+        height: Math.min(page.height - 40, driverActionContent.implicitHeight + topPadding + bottomPadding)
         x: Math.round((page.width - width) / 2)
-        y: Math.round((page.height - implicitHeight) / 2)
+        y: Math.round((page.height - height) / 2)
         padding: Math.round(18 * page.uiScale)
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
@@ -1569,8 +1597,15 @@ Item {
             border.color: page.borderColor
         }
 
-        contentItem: ColumnLayout {
-            spacing: Math.round(12 * page.uiScale)
+        contentItem: ScrollView {
+            id: driverActionScroll
+            clip: true
+            contentWidth: availableWidth
+
+            ColumnLayout {
+                id: driverActionContent
+                width: driverActionScroll.availableWidth
+                spacing: Math.round(12 * page.uiScale)
 
             RowLayout {
                 Layout.fillWidth: true
@@ -1705,6 +1740,7 @@ Item {
                     }
                 }
             }
+            }
         }
     }
 
@@ -1713,8 +1749,9 @@ Item {
         modal: true
         focus: true
         width: Math.min(page.width - 40, Math.round(560 * page.uiScale))
+        height: Math.min(page.height - 40, mokGuideContent.implicitHeight + topPadding + bottomPadding)
         x: Math.round((page.width - width) / 2)
-        y: Math.round((page.height - implicitHeight) / 2)
+        y: Math.round((page.height - height) / 2)
         padding: Math.round(20 * page.uiScale)
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
@@ -1738,8 +1775,15 @@ Item {
             border.color: page.borderColor
         }
 
-        contentItem: ColumnLayout {
-            spacing: Math.round(14 * page.uiScale)
+        contentItem: ScrollView {
+            id: mokGuideScroll
+            clip: true
+            contentWidth: availableWidth
+
+            ColumnLayout {
+                id: mokGuideContent
+                width: mokGuideScroll.availableWidth
+                spacing: Math.round(14 * page.uiScale)
 
             // Header
             RowLayout {
@@ -1896,6 +1940,7 @@ Item {
                     tone: "primary"
                     onClicked: mokGuidePopup.close()
                 }
+            }
             }
         }
     }
