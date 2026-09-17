@@ -164,9 +164,10 @@ jobs:
 
           dnf clean all
           dnf -y --refresh \
-            --allowerasing \
             --setopt=install_weak_deps=False \
-            install "${MAIN_RPM}"
+            install \
+            --allowerasing \
+            "${MAIN_RPM}"
 
           rpm -q ro-control
           rpm -q polkit
