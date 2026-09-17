@@ -87,6 +87,7 @@ jobs:
             git \
             rpm-build \
             rpmlint \
+            systemd-rpm-macros \
             cmake \
             extra-cmake-modules \
             gcc-c++ \
