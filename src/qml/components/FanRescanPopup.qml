@@ -171,10 +171,15 @@ Popup {
         border.color: popup.borderColor
     }
 
-    contentItem: ColumnLayout {
-        id: contentColumn
-        spacing: Math.round(14 * popup.uiScale)
-        width: parent.width
+    contentItem: ScrollView {
+        id: contentScroll
+        clip: true
+        contentWidth: availableWidth
+
+        ColumnLayout {
+            id: contentColumn
+            width: contentScroll.availableWidth
+            spacing: Math.round(14 * popup.uiScale)
 
         // ---------------- HEADER ----------------
         RowLayout {
@@ -902,4 +907,7 @@ Popup {
             }
         }
     }
+
+}
+
 }
