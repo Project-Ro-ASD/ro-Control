@@ -9,6 +9,8 @@ class UiPreferencesManager : public QObject {
 
   Q_PROPERTY(QString themeMode READ themeMode WRITE setThemeMode NOTIFY
                  themeModeChanged)
+  Q_PROPERTY(QString selectedThemeMode READ selectedThemeMode NOTIFY
+                 themeModeChanged)
   Q_PROPERTY(QVariantList availableThemeModes READ availableThemeModes CONSTANT)
   Q_PROPERTY(bool showAdvancedInfo READ showAdvancedInfo WRITE
                  setShowAdvancedInfo NOTIFY showAdvancedInfoChanged)
@@ -17,6 +19,7 @@ public:
   explicit UiPreferencesManager(QObject *parent = nullptr);
 
   QString themeMode() const;
+  QString selectedThemeMode() const;
   QVariantList availableThemeModes() const;
 
   bool showAdvancedInfo() const;
