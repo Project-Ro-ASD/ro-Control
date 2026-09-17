@@ -7,6 +7,7 @@
 #include <QFileInfo>
 #include <QFutureWatcher>
 #include <QRegularExpression>
+#include <QSettings>
 #include <QtConcurrent>
 #include <algorithm>
 
@@ -534,6 +535,13 @@ CommandRunner::Result fetchNvidiaSmiTelemetryCsv(int gpuIndex) {
 } // namespace
 
 GpuMonitor::GpuMonitor(QObject *parent) : QObject(parent) {
+  QSettings settings;
+  m_selectedGpuIndex =
+      settings.value(QStringLiteral("gpu/selectedIndex"), 0).toInt();
+  if (m_selectedGpuIndex < 0) {
+    m_selectedGpuIndex = 0;
+  }
+
   m_timer.setInterval(1000);
   m_timer.setTimerType(Qt::CoarseTimer);
   connect(&m_timer, &QTimer::timeout, this, &GpuMonitor::refreshAsync);
@@ -597,6 +605,8 @@ void GpuMonitor::setSelectedGpuIndex(int index) {
     return;
   }
   m_selectedGpuIndex = index;
+  QSettings settings;
+  settings.setValue(QStringLiteral("gpu/selectedIndex"), index);
   emit selectedGpuIndexChanged();
   // GPU selection is initiated from QML. Keep the potentially slow driver
   // query off the UI thread.
