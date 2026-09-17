@@ -368,6 +368,117 @@ private slots:
     QCOMPARE(smoothCmd.action, RoControlCli::CommandAction::FanSetSmoothing);
     QCOMPARE(smoothCmd.payload, QStringLiteral("1:25:10:3"));
   }
+
+  void testCliStrictPositionalArguments() {
+    const auto procExtra = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("processes"),
+         QStringLiteral("unexpected")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(procExtra.action, RoControlCli::CommandAction::Invalid);
+
+    const auto gpusExtra = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("gpus"),
+         QStringLiteral("unexpected")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(gpusExtra.action, RoControlCli::CommandAction::Invalid);
+
+    const auto installExtra = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("install-driver"),
+         QStringLiteral("unexpected")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(installExtra.action, RoControlCli::CommandAction::Invalid);
+
+    const auto installConflicting = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("install-driver"),
+         QStringLiteral("--open-source"), QStringLiteral("--accept-license")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(installConflicting.action, RoControlCli::CommandAction::Invalid);
+
+    const auto killJson = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("kill-process"),
+         QStringLiteral("1234"), QStringLiteral("--json")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(killJson.action, RoControlCli::CommandAction::Invalid);
+
+    const auto selectJson = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("select-gpu"),
+         QStringLiteral("0"), QStringLiteral("--json")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(selectJson.action, RoControlCli::CommandAction::Invalid);
+  }
+
+  void testFanSetSmoothingValidation() {
+    const auto invalidState = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("fan"),
+         QStringLiteral("set-smoothing"), QStringLiteral("maybe")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(invalidState.action, RoControlCli::CommandAction::Invalid);
+
+    const auto rampUpLow = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("fan"),
+         QStringLiteral("set-smoothing"), QStringLiteral("on"),
+         QStringLiteral("0")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(rampUpLow.action, RoControlCli::CommandAction::Invalid);
+
+    const auto rampUpHigh = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("fan"),
+         QStringLiteral("set-smoothing"), QStringLiteral("on"),
+         QStringLiteral("101")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(rampUpHigh.action, RoControlCli::CommandAction::Invalid);
+
+    const auto rampDownLow = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("fan"),
+         QStringLiteral("set-smoothing"), QStringLiteral("on"),
+         QStringLiteral("50"), QStringLiteral("0")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(rampDownLow.action, RoControlCli::CommandAction::Invalid);
+
+    const auto rampDownHigh = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("fan"),
+         QStringLiteral("set-smoothing"), QStringLiteral("on"),
+         QStringLiteral("50"), QStringLiteral("101")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(rampDownHigh.action, RoControlCli::CommandAction::Invalid);
+
+    const auto hystLow = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("fan"),
+         QStringLiteral("set-smoothing"), QStringLiteral("on"),
+         QStringLiteral("50"), QStringLiteral("50"), QStringLiteral("-1")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(hystLow.action, RoControlCli::CommandAction::Invalid);
+
+    const auto hystHigh = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("fan"),
+         QStringLiteral("set-smoothing"), QStringLiteral("on"),
+         QStringLiteral("50"), QStringLiteral("50"), QStringLiteral("16")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(hystHigh.action, RoControlCli::CommandAction::Invalid);
+
+    const auto extraPos = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("fan"),
+         QStringLiteral("set-smoothing"), QStringLiteral("on"),
+         QStringLiteral("50"), QStringLiteral("50"), QStringLiteral("5"),
+         QStringLiteral("overflow")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(extraPos.action, RoControlCli::CommandAction::Invalid);
+
+    const auto minimalValid = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("fan"),
+         QStringLiteral("set-smoothing"), QStringLiteral("off")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(minimalValid.action, RoControlCli::CommandAction::FanSetSmoothing);
+    QCOMPARE(minimalValid.payload, QStringLiteral("0"));
+
+    const auto partialValid = RoControlCli::parseArguments(
+        {QStringLiteral("ro-control"), QStringLiteral("fan"),
+         QStringLiteral("set-smoothing"), QStringLiteral("1"),
+         QStringLiteral("30")},
+        QStringLiteral("ro-control"), kAppVersion, QStringLiteral("CLI test"));
+    QCOMPARE(partialValid.action, RoControlCli::CommandAction::FanSetSmoothing);
+    QCOMPARE(partialValid.payload, QStringLiteral("1:30"));
+  }
 };
 
 QTEST_MAIN(TestCli)

@@ -393,8 +393,16 @@ CliExecutionResult executeCliCommand(const RoControlCli::ParsedCommand &command,
           QStringLiteral("Process %1 terminated successfully.\n").arg(pid);
       result.exitCode = 0;
     } else {
-      result.stderrText =
-          QStringLiteral("Failed to terminate process %1.\n").arg(pid);
+      const QString reason = gpuMonitor.statusMessage();
+      if (!reason.isEmpty()) {
+        result.stderrText =
+            QStringLiteral("Failed to terminate process %1: %2\n")
+                .arg(pid)
+                .arg(reason);
+      } else {
+        result.stderrText =
+            QStringLiteral("Failed to terminate process %1.\n").arg(pid);
+      }
       result.exitCode = 1;
     }
     return result;
@@ -446,7 +454,17 @@ CliExecutionResult executeCliCommand(const RoControlCli::ParsedCommand &command,
   if (command.action == RoControlCli::CommandAction::SelectGpu) {
     GpuMonitor gpuMonitor;
     gpuMonitor.stop();
+    gpuMonitor.refresh();
     const int idx = command.payload.toInt();
+    const auto gpus = gpuMonitor.gpuDevices();
+    if (!gpus.isEmpty() && (idx < 0 || idx >= gpus.size())) {
+      result.stderrText =
+          QStringLiteral("Error: GPU index %1 is out of range (0..%2).\n")
+              .arg(idx)
+              .arg(gpus.size() - 1);
+      result.exitCode = 1;
+      return result;
+    }
     gpuMonitor.setSelectedGpuIndex(idx);
     result.stdoutText =
         QStringLiteral("Active GPU set to index %1.\n").arg(idx);

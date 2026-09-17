@@ -107,8 +107,8 @@ QString buildHelpText(const QString &applicationName,
   stream << "  -h, --help                 Show help and exit.\n";
   stream << "  -v, --version              Show version and exit.\n";
   stream << "  -d, --diagnostics          Legacy alias for `diagnostics`.\n";
-  stream << "  --json                     Render `status` or `diagnostics` as "
-            "JSON.\n";
+  stream << "  --json                     Render output as JSON (status, "
+            "diagnostics, fan status, power status, processes, gpus).\n";
   stream << "  --daemon                   Run headless in background with "
             "D-Bus service.\n\n";
   stream << "Examples:\n";
@@ -142,9 +142,9 @@ void configureParser(QCommandLineParser &parser, const QString &applicationName,
       {QStringLiteral("d"), QStringLiteral("diagnostics")},
       QStringLiteral(
           "Print a one-shot system and driver diagnostics snapshot.")));
-  parser.addOption(QCommandLineOption(
-      {QStringLiteral("json")},
-      QStringLiteral("Render status or diagnostics output as JSON.")));
+  parser.addOption(
+      QCommandLineOption({QStringLiteral("json")},
+                         QStringLiteral("Render command output as JSON.")));
   parser.addOption(QCommandLineOption(
       {QStringLiteral("daemon")},
       QStringLiteral("Run ro-Control in background daemon mode.")));
@@ -171,6 +171,12 @@ ParsedCommand invalidCommand(const QString &message) {
   command.action = CommandAction::Invalid;
   command.payload = message;
   return command;
+}
+
+ParsedCommand invalidJsonOption() {
+  return invalidCommand(QStringLiteral(
+      "--json can only be used with `status`, `diagnostics`, `fan status`, "
+      "`power status`, `processes`, or `gpus`."));
 }
 
 bool hasConflictingInstallModeOptions(const QCommandLineParser &parser) {
@@ -206,6 +212,9 @@ ParsedCommand parseArguments(const QStringList &arguments,
   const QStringList positional = parser.positionalArguments();
 
   if (daemonFlag) {
+    if (json) {
+      return invalidJsonOption();
+    }
     ParsedCommand command;
     command.action = CommandAction::RunDaemon;
     return command;
@@ -217,6 +226,9 @@ ParsedCommand parseArguments(const QStringList &arguments,
   }
 
   if (help) {
+    if (json) {
+      return invalidJsonOption();
+    }
     ParsedCommand command;
     command.action = CommandAction::PrintHelp;
     command.payload = helpText;
@@ -224,6 +236,9 @@ ParsedCommand parseArguments(const QStringList &arguments,
   }
 
   if (version && positional.isEmpty() && !diagnosticsFlag) {
+    if (json) {
+      return invalidJsonOption();
+    }
     ParsedCommand command;
     command.action = CommandAction::PrintVersion;
     command.payload = applicationVersion;
@@ -243,8 +258,7 @@ ParsedCommand parseArguments(const QStringList &arguments,
   }
 
   if (json && positional.isEmpty()) {
-    return invalidCommand(QStringLiteral(
-        "--json can only be used with `status` or `diagnostics`."));
+    return invalidJsonOption();
   }
 
   if (proprietary || openSource || acceptLicense) {
@@ -264,6 +278,19 @@ ParsedCommand parseArguments(const QStringList &arguments,
   }
 
   const QString commandName = positional.at(0).toLower();
+  const QString subcommand = positional.value(1).toLower();
+
+  if (json && commandName != QStringLiteral("status") &&
+      commandName != QStringLiteral("diagnostics") &&
+      commandName != QStringLiteral("processes") &&
+      commandName != QStringLiteral("gpus") &&
+      commandName != QStringLiteral("fan-status") &&
+      !(commandName == QStringLiteral("fan") &&
+        subcommand == QStringLiteral("status")) &&
+      !(commandName == QStringLiteral("power") &&
+        subcommand == QStringLiteral("status"))) {
+    return invalidJsonOption();
+  }
 
   if (commandName == QStringLiteral("help")) {
     ParsedCommand command;
@@ -332,6 +359,14 @@ ParsedCommand parseArguments(const QStringList &arguments,
   }
 
   if (commandName == QStringLiteral("install-driver")) {
+    if (positional.size() != 1) {
+      return invalidCommand(QStringLiteral(
+          "`install-driver` does not take positional arguments."));
+    }
+    if (openSource && acceptLicense) {
+      return invalidCommand(QStringLiteral(
+          "--accept-license is only valid with the proprietary install path."));
+    }
     ParsedCommand command;
     command.action = openSource ? CommandAction::InstallOpenSourceDriver
                                 : CommandAction::InstallProprietaryDriver;
@@ -359,9 +394,7 @@ ParsedCommand parseArguments(const QStringList &arguments,
     }
 
     if (json) {
-      return invalidCommand(QStringLiteral(
-          "--json is only supported by `status`, `diagnostics`, and `fan "
-          "status`."));
+      return invalidJsonOption();
     }
 
     if (fanAction == QStringLiteral("set-speed")) {
@@ -404,19 +437,49 @@ ParsedCommand parseArguments(const QStringList &arguments,
     }
 
     if (fanAction == QStringLiteral("set-smoothing")) {
-      if (positional.size() < 3) {
+      if (positional.size() < 3 || positional.size() > 6) {
         return invalidCommand(QStringLiteral(
             "`fan set-smoothing` requires a state argument (on|off) and "
             "optional [ramp_up] [ramp_down] [hysteresis]."));
       }
       const QString state = positional.at(2).toLower();
+      if (state != QStringLiteral("on") && state != QStringLiteral("off") &&
+          state != QStringLiteral("1") && state != QStringLiteral("0") &&
+          state != QStringLiteral("true") && state != QStringLiteral("false")) {
+        return invalidCommand(QStringLiteral(
+            "Invalid smoothing state. Choose from: on, off, 1, 0."));
+      }
       const bool on =
           (state == QStringLiteral("on") || state == QStringLiteral("1") ||
            state == QStringLiteral("true"));
       QStringList params;
       params << (on ? QStringLiteral("1") : QStringLiteral("0"));
-      for (int i = 3; i < positional.size(); ++i) {
-        params << positional.at(i);
+      if (positional.size() >= 4) {
+        bool ok = false;
+        const int rampUp = positional.at(3).toInt(&ok);
+        if (!ok || rampUp < 1 || rampUp > 100) {
+          return invalidCommand(QStringLiteral(
+              "Ramp up rate must be an integer between 1 and 100."));
+        }
+        params << QString::number(rampUp);
+      }
+      if (positional.size() >= 5) {
+        bool ok = false;
+        const int rampDown = positional.at(4).toInt(&ok);
+        if (!ok || rampDown < 1 || rampDown > 100) {
+          return invalidCommand(QStringLiteral(
+              "Ramp down rate must be an integer between 1 and 100."));
+        }
+        params << QString::number(rampDown);
+      }
+      if (positional.size() >= 6) {
+        bool ok = false;
+        const int hyst = positional.at(5).toInt(&ok);
+        if (!ok || hyst < 0 || hyst > 15) {
+          return invalidCommand(QStringLiteral(
+              "Hysteresis must be an integer between 0 and 15 degrees."));
+        }
+        params << QString::number(hyst);
       }
       ParsedCommand command;
       command.action = CommandAction::FanSetSmoothing;
@@ -458,9 +521,7 @@ ParsedCommand parseArguments(const QStringList &arguments,
     }
 
     if (json) {
-      return invalidCommand(QStringLiteral(
-          "--json is only supported by `status`, `diagnostics`, `fan status` "
-          "and `power status`."));
+      return invalidJsonOption();
     }
 
     if (powerAction == QStringLiteral("set-limit")) {
@@ -548,6 +609,10 @@ ParsedCommand parseArguments(const QStringList &arguments,
   }
 
   if (commandName == QStringLiteral("processes")) {
+    if (positional.size() != 1) {
+      return invalidCommand(
+          QStringLiteral("`processes` does not take arguments."));
+    }
     ParsedCommand command;
     command.action = json ? CommandAction::PrintProcessesJson
                           : CommandAction::PrintProcessesText;
@@ -572,6 +637,9 @@ ParsedCommand parseArguments(const QStringList &arguments,
   }
 
   if (commandName == QStringLiteral("gpus")) {
+    if (positional.size() != 1) {
+      return invalidCommand(QStringLiteral("`gpus` does not take arguments."));
+    }
     ParsedCommand command;
     command.action =
         json ? CommandAction::PrintGpusJson : CommandAction::PrintGpusText;
@@ -606,8 +674,7 @@ ParsedCommand parseArguments(const QStringList &arguments,
   }
 
   if (json) {
-    return invalidCommand(QStringLiteral(
-        "--json is only supported by `status` and `diagnostics`."));
+    return invalidJsonOption();
   }
 
   const QString driverAction = positional.at(1).toLower();
