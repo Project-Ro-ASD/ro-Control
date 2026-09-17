@@ -21,7 +21,6 @@ private slots:
     QVERIFY(info.driverVersion.isEmpty());
     QCOMPARE(info.driverPackageInstalled, false);
     QCOMPARE(info.driverLoaded, false);
-    QCOMPARE(info.nouveauActive, false);
     QCOMPARE(info.openKernelModulesInstalled, false);
     QCOMPARE(info.secureBootEnabled, false);
   }
@@ -126,6 +125,28 @@ private slots:
     qunsetenv("RO_CONTROL_PROC_MODULES_PATH");
     qunsetenv("RO_CONTROL_NVIDIA_PROC_VERSION_PATH");
     qunsetenv("RO_CONTROL_NVIDIA_OPENRM_PATH");
+  }
+
+  void testDriverSourceClassification() {
+    NvidiaDetector detector;
+    NvidiaDetector::GpuInfo info;
+
+    info.closedSourceDriverInstalled = true;
+    detector.setDetectionResult(info);
+    QCOMPARE(detector.installedDriverSource(), QStringLiteral("closed-source"));
+    QCOMPARE(detector.installedDriverSourceLabel(),
+             QStringLiteral("NVIDIA Proprietary Kernel Module detected"));
+
+    info.closedSourceDriverInstalled = false;
+    info.openSourceDriverInstalled = true;
+    detector.setDetectionResult(info);
+    QCOMPARE(detector.installedDriverSource(), QStringLiteral("open-source"));
+    QCOMPARE(detector.installedDriverSourceLabel(),
+             QStringLiteral("NVIDIA Open Kernel Modules detected"));
+
+    info.closedSourceDriverInstalled = true;
+    detector.setDetectionResult(info);
+    QCOMPARE(detector.installedDriverSource(), QStringLiteral("mixed"));
   }
 
   void testSecureBootEfivarOverride() {

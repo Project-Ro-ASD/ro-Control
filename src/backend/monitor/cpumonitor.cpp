@@ -70,7 +70,6 @@ int readCpuTemperatureFromThermalZones() {
                                QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
 
   QStringList preferredPaths;
-  QStringList fallbackPaths;
 
   for (const QFileInfo &entry : entries) {
     const QString basePath = entry.absoluteFilePath();
@@ -79,17 +78,16 @@ int readCpuTemperatureFromThermalZones() {
 
     if (isPreferredCpuSensorType(type)) {
       preferredPaths << tempPath;
-    } else {
-      fallbackPaths << tempPath;
     }
   }
-
   const int preferredTemperature = readFirstValidTemperature(preferredPaths);
   if (preferredTemperature > 0) {
     return preferredTemperature;
   }
 
-  return readFirstValidTemperature(fallbackPaths);
+  // A generic thermal zone may represent a GPU, SSD, or chassis sensor.
+  // Prefer an explicit "unavailable" result over presenting that value as CPU.
+  return 0;
 }
 
 int readCpuTemperatureFromHwmon() {
@@ -100,7 +98,6 @@ int readCpuTemperatureFromHwmon() {
                              QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
 
   QStringList preferredPaths;
-  QStringList fallbackPaths;
 
   for (const QFileInfo &entry : entries) {
     const QString basePath = entry.absoluteFilePath();
@@ -118,18 +115,16 @@ int readCpuTemperatureFromHwmon() {
       const QString label = readFileText(labelPath);
       if (preferredSensor || isPreferredCpuSensorType(label)) {
         preferredPaths << inputPath;
-      } else {
-        fallbackPaths << inputPath;
       }
     }
   }
-
   const int preferredTemperature = readFirstValidTemperature(preferredPaths);
   if (preferredTemperature > 0) {
     return preferredTemperature;
   }
 
-  return readFirstValidTemperature(fallbackPaths);
+  // Do not relabel an unclassified HWMON sensor as a CPU temperature.
+  return 0;
 }
 
 int parseTemperatureFromPlainText(const QString &text) {
@@ -175,8 +170,6 @@ int readCpuTemperatureFromSensors() {
       QStringLiteral(
           R"((package|tctl|tdie|cpu|core)[^:\n]*:\s*[+-]?([0-9]+(?:\.[0-9]+)?))"),
       QRegularExpression::CaseInsensitiveOption);
-  static const QRegularExpression genericLinePattern(
-      QStringLiteral(R"(:\s*[+-]?([0-9]+(?:\.[0-9]+)?))"));
 
   const QStringList lines = result.stdout.split(QLatin1Char('\n'));
   for (const QString &line : lines) {
@@ -184,17 +177,6 @@ int readCpuTemperatureFromSensors() {
     if (preferredMatch.hasMatch()) {
       bool ok = false;
       const double value = preferredMatch.captured(2).toDouble(&ok);
-      if (ok && value > 0.0) {
-        return static_cast<int>(value);
-      }
-    }
-  }
-
-  for (const QString &line : lines) {
-    const auto genericMatch = genericLinePattern.match(line);
-    if (genericMatch.hasMatch()) {
-      bool ok = false;
-      const double value = genericMatch.captured(1).toDouble(&ok);
       if (ok && value > 0.0) {
         return static_cast<int>(value);
       }

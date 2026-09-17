@@ -14,6 +14,7 @@ struct ThemeModeEntry {
 };
 
 constexpr ThemeModeEntry kThemeModes[] = {
+    {"system"},
     {"light"},
     {"dark"},
 };
@@ -21,6 +22,9 @@ constexpr ThemeModeEntry kThemeModes[] = {
 QString themeModeLabel(const QString &code) {
   if (code == QStringLiteral("light")) {
     return QCoreApplication::translate("UiPreferencesManager", "Light");
+  }
+  if (code == QStringLiteral("system")) {
+    return QCoreApplication::translate("UiPreferencesManager", "System");
   }
   if (code == QStringLiteral("dark")) {
     return QCoreApplication::translate("UiPreferencesManager", "Dark");
@@ -44,21 +48,27 @@ UiPreferencesManager::UiPreferencesManager(QObject *parent) : QObject(parent) {
               }
 
               m_systemDarkMode = systemDarkMode;
-              m_themeMode = systemThemeMode();
-              persistValue(QStringLiteral("ui/themeMode"), m_themeMode);
-              emit themeModeChanged();
+              if (m_themeMode == QStringLiteral("system"))
+                emit themeModeChanged();
             });
   }
 #endif
 
   QSettings settings;
-  m_themeMode = systemThemeMode();
+  m_themeMode = normalizeThemeMode(
+      settings.value(QStringLiteral("ui/themeMode"), QStringLiteral("system"))
+          .toString());
   m_showAdvancedInfo =
       settings.value(QStringLiteral("ui/showAdvancedInfo"), m_showAdvancedInfo)
           .toBool();
 }
 
-QString UiPreferencesManager::themeMode() const { return m_themeMode; }
+QString UiPreferencesManager::themeMode() const {
+  return m_themeMode == QStringLiteral("system") ? systemThemeMode()
+                                                 : m_themeMode;
+}
+
+QString UiPreferencesManager::selectedThemeMode() const { return m_themeMode; }
 
 QVariantList UiPreferencesManager::availableThemeModes() const {
   QVariantList modes;
@@ -98,7 +108,7 @@ void UiPreferencesManager::setShowAdvancedInfo(bool showAdvancedInfo) {
 }
 
 void UiPreferencesManager::resetToDefaults() {
-  setThemeMode(systemThemeMode());
+  setThemeMode(QStringLiteral("system"));
   setShowAdvancedInfo(true);
 }
 
@@ -111,7 +121,7 @@ UiPreferencesManager::normalizeThemeMode(const QString &themeMode) const {
     }
   }
 
-  return systemThemeMode();
+  return QStringLiteral("system");
 }
 
 bool UiPreferencesManager::detectSystemDarkMode() const {

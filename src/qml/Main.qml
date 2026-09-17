@@ -84,12 +84,12 @@ ApplicationWindow {
     function openSettingsMenu(sourceButton) {
         if (!sourceButton)
             return;
-        settingsPopup.width = Math.round(260 * root.uiScale);
+        settingsPopup.width = Math.max(Math.round(220 * root.uiScale), Math.min(root.width - Math.round(24 * root.uiScale), Math.round(320 * root.uiScale)));
         var mapped = sourceButton.mapToItem(root.contentItem, 0, sourceButton.height);
         settingsPopup.x = Math.max(Math.round(16 * root.uiScale),
                                    Math.min(mapped.x + sourceButton.width - settingsPopup.width,
                                             root.width - settingsPopup.width - Math.round(16 * root.uiScale)));
-        settingsPopup.y = mapped.y + Math.round(8 * root.uiScale);
+        settingsPopup.y = Math.max(Math.round(12 * root.uiScale), Math.min(mapped.y + Math.round(8 * root.uiScale), root.height - settingsPopup.height - Math.round(12 * root.uiScale)));
         settingsPopup.open();
     }
 
@@ -429,6 +429,7 @@ ApplicationWindow {
             focus: true
             padding: Math.round(14 * root.uiScale)
             closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+            height: Math.min(root.height - Math.round(24 * root.uiScale), implicitHeight)
 
             background: Rectangle {
                 radius: Math.round(14 * root.uiScale)
@@ -483,24 +484,24 @@ ApplicationWindow {
 
                                 background: Rectangle {
                                     radius: Math.round(8 * root.uiScale)
-                                    color: (root.hasLanguageManager && langBtn.modelData.code === root.languageManager.currentLanguage)
+                                    color: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
                                            ? colors.accentA
                                            : (langBtn.hovered ? colors.cardStrong : colors.card)
                                     border.width: 1
-                                    border.color: (root.hasLanguageManager && langBtn.modelData.code === root.languageManager.currentLanguage)
+                                    border.color: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
                                                   ? colors.accentA
                                                   : colors.border
                                 }
 
                                 contentItem: Text {
                                     text: langBtn.text
-                                    color: (root.hasLanguageManager && langBtn.modelData.code === root.languageManager.currentLanguage)
+                                    color: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
                                            ? "#FFFFFF"
                                            : colors.text
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
                                     font.pixelSize: Math.round(12 * root.uiScale)
-                                    font.weight: (root.hasLanguageManager && langBtn.modelData.code === root.languageManager.currentLanguage)
+                                    font.weight: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
                                                  ? Font.DemiBold : Font.Medium
                                 }
 
@@ -510,6 +511,14 @@ ApplicationWindow {
                                 }
                             }
                         }
+                    }
+
+                    Switch {
+                        Layout.fillWidth: true
+                        text: qsTr("Follow system language")
+                        checked: root.hasLanguageManager && root.languageManager.followsSystem
+                        enabled: root.hasLanguageManager
+                        onToggled: if (root.hasLanguageManager) root.languageManager.setFollowsSystem(checked)
                     }
                 }
 
@@ -547,24 +556,24 @@ ApplicationWindow {
 
                                 background: Rectangle {
                                     radius: Math.round(8 * root.uiScale)
-                                    color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.themeMode)
+                                    color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
                                            ? colors.accentA
                                            : (themeBtn.hovered ? colors.cardStrong : colors.card)
                                     border.width: 1
-                                    border.color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.themeMode)
+                                    border.color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
                                                   ? colors.accentA
                                                   : colors.border
                                 }
 
                                 contentItem: Text {
                                     text: themeBtn.text
-                                    color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.themeMode)
+                                    color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
                                            ? "#FFFFFF"
                                            : colors.text
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
                                     font.pixelSize: Math.round(12 * root.uiScale)
-                                    font.weight: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.themeMode)
+                                    font.weight: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
                                                  ? Font.DemiBold : Font.Medium
                                 }
 
@@ -574,6 +583,21 @@ ApplicationWindow {
                                 }
                             }
                         }
+                    }
+
+                    Switch {
+                        Layout.fillWidth: true
+                        text: qsTr("Show advanced information")
+                        checked: root.hasUiPreferences && root.uiPreferences.showAdvancedInfo
+                        enabled: root.hasUiPreferences
+                        onToggled: if (root.hasUiPreferences) root.uiPreferences.setShowAdvancedInfo(checked)
+                    }
+
+                    Button {
+                        Layout.fillWidth: true
+                        text: qsTr("Reset appearance settings")
+                        enabled: root.hasUiPreferences
+                        onClicked: if (root.hasUiPreferences) root.uiPreferences.resetToDefaults()
                     }
                 }
             }

@@ -139,7 +139,6 @@ bool readFirstTemperatureFromHwmon(const QString &basePath, int *value) {
 bool isGpuHwmonName(const QString &name) {
   const QString lower = name.trimmed().toLower();
   return lower.contains(QStringLiteral("nvidia")) ||
-         lower.contains(QStringLiteral("nouveau")) ||
          lower.contains(QStringLiteral("gpu"));
 }
 
@@ -599,7 +598,9 @@ void GpuMonitor::setSelectedGpuIndex(int index) {
   }
   m_selectedGpuIndex = index;
   emit selectedGpuIndexChanged();
-  refresh();
+  // GPU selection is initiated from QML. Keep the potentially slow driver
+  // query off the UI thread.
+  refreshAsync();
 }
 
 QString GpuMonitor::statusMessage() const { return m_statusMessage; }
@@ -1033,14 +1034,29 @@ bool GpuMonitor::killProcess(int pid) {
   if (pid <= 1) {
     return false;
   }
+  const bool isListedGpuProcess = std::any_of(
+      m_gpuProcesses.cbegin(), m_gpuProcesses.cend(), [pid](const QVariant &v) {
+        return v.toMap().value(QStringLiteral("pid")).toInt() == pid;
+      });
+  if (!isListedGpuProcess) {
+    setStatusMessage(
+        tr("The selected process is no longer using the active GPU."));
+    return false;
+  }
   CommandRunner runner;
   CommandRunner::RunOptions options;
   options.timeoutMs = 1500;
   const auto res =
       runner.run(QStringLiteral("kill"),
                  {QStringLiteral("-15"), QString::number(pid)}, options);
+  if (!res.success()) {
+    setStatusMessage(tr("The process could not be terminated. Check ownership "
+                        "and permissions."));
+    return false;
+  }
   queryGpuProcesses(true);
-  return res.success();
+  setStatusMessage(tr("Termination signal sent to the selected GPU process."));
+  return true;
 }
 
 void GpuMonitor::queryGpuProcesses(bool force) {
@@ -1057,7 +1073,9 @@ void GpuMonitor::queryGpuProcesses(bool force) {
 
   // 1. Query full nvidia-smi table which lists both Compute and Graphics
   // processes
-  const auto smiResult = runner.run(QStringLiteral("nvidia-smi"), {}, options);
+  const auto smiResult =
+      runner.run(QStringLiteral("nvidia-smi"),
+                 {QStringLiteral("--id=%1").arg(m_selectedGpuIndex)}, options);
   if (smiResult.success()) {
     // Matches: |   0   N/A  N/A   204705   G   /usr/lib64/firefox/firefox
     // 168MiB |
@@ -1109,7 +1127,8 @@ void GpuMonitor::queryGpuProcesses(bool force) {
   if (processes.isEmpty()) {
     const auto computeResult = runner.run(
         QStringLiteral("nvidia-smi"),
-        {QStringLiteral("--query-compute-apps=pid,process_name,used_memory"),
+        {QStringLiteral("--id=%1").arg(m_selectedGpuIndex),
+         QStringLiteral("--query-compute-apps=pid,process_name,used_memory"),
          QStringLiteral("--format=csv,noheader,nounits")},
         options);
 

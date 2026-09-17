@@ -37,7 +37,8 @@ void TestPreferences::testUiPreferencesDefaults() {
   QVERIFY(preferences.themeMode() == QStringLiteral("light") ||
           preferences.themeMode() == QStringLiteral("dark"));
   QCOMPARE(preferences.showAdvancedInfo(), true);
-  QCOMPARE(preferences.availableThemeModes().size(), 2);
+  QCOMPARE(preferences.availableThemeModes().size(), 3);
+  QCOMPARE(preferences.selectedThemeMode(), QStringLiteral("system"));
 }
 
 void TestPreferences::testUiPreferencesPersistChanges() {
@@ -53,8 +54,7 @@ void TestPreferences::testUiPreferencesPersistChanges() {
   QCOMPARE(advancedSpy.count(), 1);
 
   UiPreferencesManager reloadedPreferences;
-  QVERIFY(reloadedPreferences.themeMode() == QStringLiteral("light") ||
-          reloadedPreferences.themeMode() == QStringLiteral("dark"));
+  QCOMPARE(reloadedPreferences.selectedThemeMode(), QStringLiteral("dark"));
   QCOMPARE(reloadedPreferences.showAdvancedInfo(), false);
 }
 
@@ -62,8 +62,7 @@ void TestPreferences::testUiPreferencesNormalizesInvalidThemeMode() {
   UiPreferencesManager preferences;
 
   preferences.setThemeMode(QStringLiteral("midnight"));
-  QVERIFY(preferences.themeMode() == QStringLiteral("light") ||
-          preferences.themeMode() == QStringLiteral("dark"));
+  QCOMPARE(preferences.selectedThemeMode(), QStringLiteral("system"));
 }
 
 void TestPreferences::testLanguageManagerExposesEffectiveLanguageMetadata() {

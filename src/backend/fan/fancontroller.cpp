@@ -43,7 +43,6 @@ QString readTextFile(const QString &path) {
 bool isGpuHwmon(const QString &name) {
   const QString lower = name.trimmed().toLower();
   return lower.contains(QStringLiteral("nvidia")) ||
-         lower.contains(QStringLiteral("nouveau")) ||
          lower.contains(QStringLiteral("amdgpu")) ||
          lower.contains(QStringLiteral("radeon")) ||
          lower.contains(QStringLiteral("gpu"));
@@ -217,7 +216,7 @@ bool FanController::hardwareSetupComplete() const {
   return m_hardwareSetupComplete;
 }
 
-void FanController::runHardwareSetup() {
+QVariantMap FanController::runHardwareSetup() {
   // A topology can change after docking, so a setup is always a fresh probe.
   s_cachedCoretempInput.clear();
   s_cachedAcpitzInput.clear();
@@ -236,6 +235,15 @@ void FanController::runHardwareSetup() {
   if (!wasComplete) {
     emit hardwareSetupCompleteChanged();
   }
+
+  QVariantMap result;
+  result.insert(QStringLiteral("completed"), true);
+  result.insert(QStringLiteral("channelCount"), m_systemFans.size());
+  result.insert(QStringLiteral("telemetryAvailable"), m_supported);
+  result.insert(QStringLiteral("controlSupported"), m_controlSupported);
+  result.insert(QStringLiteral("capability"), capabilityString());
+  result.insert(QStringLiteral("statusMessage"), m_statusMessage);
+  return result;
 }
 
 int FanController::rampUpRatePercent() const { return m_rampUpRatePercent; }
@@ -876,18 +884,21 @@ void FanController::detectHardwareCapabilities(bool force) {
       !qEnvironmentVariable("RO_CONTROL_FAN_SYSFS_ROOT").trimmed().isEmpty();
 
   if (!hasSysfsOverride) {
-    // 1. Check NVIDIA settings tool and verify write permissions
+    // 1. Query NVIDIA's control endpoint. Hardware discovery must never
+    // change the current fan-control mode, so do not use a mutating `-a`
+    // command here. Writes are attempted only when the user explicitly
+    // changes a fan profile or starts the acoustic test.
     const QString nvidiaSettingsProg =
         CommandRunner::resolveProgramPath(QStringLiteral("nvidia-settings"));
     if (!nvidiaSettingsProg.isEmpty()) {
       CommandRunner runner;
       CommandRunner::RunOptions testOpts;
       testOpts.timeoutMs = 1500;
-      const auto testRes =
-          runner.run(QStringLiteral("nvidia-settings"),
-                     {QStringLiteral("-a"),
-                      QStringLiteral("[gpu:0]/GPUFanControlState=0")},
-                     testOpts);
+      const auto testRes = runner.run(
+          QStringLiteral("nvidia-settings"),
+          {QStringLiteral("-q"), QStringLiteral("[gpu:0]/GPUFanControlState"),
+           QStringLiteral("-t")},
+          testOpts);
 
       const bool hasPermissionError =
           testRes.stdout.contains(QStringLiteral("permission"),
@@ -1653,9 +1664,14 @@ bool FanController::executeSetFanSpeed(int percent, bool isAutoMode) {
            << QStringLiteral("[gpu:0]/GPUFanControlState=1")
            << QStringLiteral("-a")
            << QStringLiteral("[fan:0]/GPUTargetFanSpeed=%1").arg(percent);
-      if (m_fanCount > 1) {
+      // Address every fan exposed by NV-CONTROL. Multi-fan cards are common,
+      // and leaving channels after fan:1 in automatic mode defeats a manual
+      // cooling profile.
+      for (int fanIndex = 1; fanIndex < m_fanCount; ++fanIndex) {
         args << QStringLiteral("-a")
-             << QStringLiteral("[fan:1]/GPUTargetFanSpeed=%1").arg(percent);
+             << QStringLiteral("[fan:%1]/GPUTargetFanSpeed=%2")
+                    .arg(fanIndex)
+                    .arg(percent);
       }
     }
 
@@ -1753,41 +1769,24 @@ QVariantMap FanController::getFanConfig(const QString &fanId) {
 bool FanController::setFanModeForFan(const QString &fanId,
                                      const QString &mode) {
   if (fanId == QStringLiteral("gpu_0") || fanId.isEmpty()) {
+    if (!m_controlSupported) {
+      setStatusMessage(tr("Direct GPU fan control is not available."));
+      return false;
+    }
     setFanMode(mode);
     return true;
   }
-  const FanMode newMode = stringToMode(mode);
-  if (fanId == QStringLiteral("cpu_fan_0")) {
-    m_cpuProfile.mode = newMode;
-    saveSettings();
-    updateSystemFansTelemetry();
-    return true;
-  }
-  if (fanId == QStringLiteral("sys_fan_0")) {
-    m_sysProfile.mode = newMode;
-    saveSettings();
-    updateSystemFansTelemetry();
-    return true;
-  }
+  setStatusMessage(tr("This fan is monitored by firmware and cannot be "
+                      "controlled by ro-Control."));
   return false;
 }
 
 bool FanController::setManualSpeedForFan(const QString &fanId, int percent) {
   const int clamped = std::clamp(percent, 0, 100);
   if (fanId == QStringLiteral("gpu_0") || fanId.isEmpty()) {
+    if (!m_controlSupported)
+      return false;
     setManualFanSpeedPercent(clamped);
-    return true;
-  }
-  if (fanId == QStringLiteral("cpu_fan_0")) {
-    m_cpuProfile.manualSpeedPercent = clamped;
-    saveSettings();
-    updateSystemFansTelemetry();
-    return true;
-  }
-  if (fanId == QStringLiteral("sys_fan_0")) {
-    m_sysProfile.manualSpeedPercent = clamped;
-    saveSettings();
-    updateSystemFansTelemetry();
     return true;
   }
   return false;
@@ -1796,66 +1795,28 @@ bool FanController::setManualSpeedForFan(const QString &fanId, int percent) {
 bool FanController::setCustomCurvePointForFan(const QString &fanId, int index,
                                               int tempC, int speedPercent) {
   if (fanId == QStringLiteral("gpu_0") || fanId.isEmpty()) {
+    if (!m_controlSupported)
+      return false;
     return setCustomCurvePoint(index, tempC, speedPercent);
   }
-  QVector<FanCurvePoint> *curve = nullptr;
-  if (fanId == QStringLiteral("cpu_fan_0")) {
-    curve = &m_cpuProfile.customCurve;
-  } else if (fanId == QStringLiteral("sys_fan_0")) {
-    curve = &m_sysProfile.customCurve;
-  }
-  if (!curve || index < 0 || index >= curve->size()) {
-    return false;
-  }
-  (*curve)[index].temperatureC = std::clamp(tempC, 20, 100);
-  (*curve)[index].fanSpeedPercent = std::clamp(speedPercent, 0, 100);
-  std::sort(curve->begin(), curve->end(),
-            [](const FanCurvePoint &a, const FanCurvePoint &b) {
-              if (a.temperatureC == b.temperatureC)
-                return a.fanSpeedPercent < b.fanSpeedPercent;
-              return a.temperatureC < b.temperatureC;
-            });
-  saveSettings();
-  updateSystemFansTelemetry();
-  return true;
+  return false;
 }
 
 bool FanController::applyCurvePresetForFan(const QString &fanId,
                                            const QString &presetName) {
-  const auto curve = presetToCurve(presetName);
   if (fanId == QStringLiteral("gpu_0") || fanId.isEmpty()) {
+    if (!m_controlSupported)
+      return false;
     return applyCurvePreset(presetName);
-  }
-  if (fanId == QStringLiteral("cpu_fan_0")) {
-    m_cpuProfile.customCurve = curve;
-    saveSettings();
-    updateSystemFansTelemetry();
-    return true;
-  }
-  if (fanId == QStringLiteral("sys_fan_0")) {
-    m_sysProfile.customCurve = curve;
-    saveSettings();
-    updateSystemFansTelemetry();
-    return true;
   }
   return false;
 }
 
 bool FanController::resetCustomCurveForFan(const QString &fanId) {
   if (fanId == QStringLiteral("gpu_0") || fanId.isEmpty()) {
+    if (!m_controlSupported)
+      return false;
     resetCustomCurve();
-    return true;
-  }
-  if (fanId == QStringLiteral("cpu_fan_0")) {
-    m_cpuProfile.customCurve = defaultBalancedCurve();
-    saveSettings();
-    updateSystemFansTelemetry();
-    return true;
-  }
-  if (fanId == QStringLiteral("sys_fan_0")) {
-    m_sysProfile.customCurve = defaultSilentCurve();
-    saveSettings();
-    updateSystemFansTelemetry();
     return true;
   }
   return false;
@@ -1864,24 +1825,14 @@ bool FanController::resetCustomCurveForFan(const QString &fanId) {
 bool FanController::setThermalThresholdForFan(const QString &fanId, int tempC) {
   const int clamped = std::clamp(tempC, 50, 105);
   if (fanId == QStringLiteral("gpu_0") || fanId.isEmpty()) {
+    if (!m_controlSupported)
+      return false;
     if (m_thermalThresholdC != clamped) {
       m_thermalThresholdC = clamped;
       emit thermalThresholdCChanged();
       saveSettings();
       updateSystemFansTelemetry();
     }
-    return true;
-  }
-  if (fanId == QStringLiteral("cpu_fan_0")) {
-    m_cpuProfile.thermalThresholdC = clamped;
-    saveSettings();
-    updateSystemFansTelemetry();
-    return true;
-  }
-  if (fanId == QStringLiteral("sys_fan_0")) {
-    m_sysProfile.thermalThresholdC = clamped;
-    saveSettings();
-    updateSystemFansTelemetry();
     return true;
   }
   return false;
@@ -1893,12 +1844,12 @@ bool FanController::resetFanToAuto(const QString &fanId) {
 
 bool FanController::applyFanConfiguration(const QString &fanId) {
   if (fanId == QStringLiteral("gpu_0") || fanId.isEmpty()) {
+    if (!m_controlSupported)
+      return false;
     evaluateAndApplyFanSpeed(true);
-    return true;
+    return m_controlSupported;
   }
-  saveSettings();
-  updateSystemFansTelemetry();
-  return true;
+  return false;
 }
 
 bool FanController::setFanDisplayName(const QString &fanId,

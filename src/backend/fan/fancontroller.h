@@ -7,6 +7,7 @@
 #include <QStringList>
 #include <QTimer>
 #include <QVariantList>
+#include <QVariantMap>
 #include <QVector>
 
 struct FanCurvePoint {
@@ -144,8 +145,10 @@ public:
   static QVector<FanCurvePoint> defaultCustomCurve();
 
   Q_INVOKABLE void refresh();
-  // Re-probes the real hardware topology. Used on first launch and by rescan.
-  Q_INVOKABLE void runHardwareSetup();
+  // Re-probes the real hardware topology without changing fan control state.
+  // The result lets callers distinguish a completed scan from detected
+  // channels.
+  Q_INVOKABLE QVariantMap runHardwareSetup();
   Q_INVOKABLE void start();
   Q_INVOKABLE void stop();
   Q_INVOKABLE void setFanMode(const QString &mode);

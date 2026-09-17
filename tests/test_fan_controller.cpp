@@ -289,7 +289,7 @@ private slots:
 
     QFile nameFile(hwmonDir + QStringLiteral("/name"));
     QVERIFY(nameFile.open(QIODevice::WriteOnly | QIODevice::Text));
-    nameFile.write("nouveau\n");
+    nameFile.write("amdgpu\n");
     nameFile.close();
 
     QFile fanInput(hwmonDir + QStringLiteral("/fan1_input"));
@@ -349,9 +349,12 @@ private slots:
     qputenv("RO_CONTROL_FAN_SYSFS_ROOT", tempDir.path().toUtf8());
     FanController fan;
     fan.stop();
-    fan.runHardwareSetup();
+    const QVariantMap scanResult = fan.runHardwareSetup();
 
     QCOMPARE(fan.systemFanCount(), 1);
+    QVERIFY(scanResult.value(QStringLiteral("completed")).toBool());
+    QCOMPARE(scanResult.value(QStringLiteral("channelCount")).toInt(), 1);
+    QVERIFY(!scanResult.value(QStringLiteral("controlSupported")).toBool());
     const QVariantMap detected = fan.systemFans().first().toMap();
     QCOMPARE(detected.value(QStringLiteral("type")).toString(),
              QStringLiteral("CPU"));
@@ -388,7 +391,43 @@ private slots:
     qunsetenv("RO_CONTROL_COMMAND_NVIDIA_SETTINGS");
   }
 
+  void testHardwareScanDoesNotWriteNvidiaFanControlState() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString scriptPath =
+        tempDir.filePath(QStringLiteral("fake-nvidia-settings.sh"));
+    const QString argsLogPath = tempDir.filePath(QStringLiteral("args.log"));
+    QFile script(scriptPath);
+    QVERIFY(script.open(QIODevice::WriteOnly | QIODevice::Text));
+    script.write("#!/bin/sh\nprintf '%s\\n' \"$@\" > "
+                 "\"$RO_CONTROL_NVIDIA_SETTINGS_ARGS_LOG\"\necho 0\nexit 0\n");
+    script.close();
+    QVERIFY(QFile::setPermissions(scriptPath, QFileDevice::ReadOwner |
+                                                  QFileDevice::WriteOwner |
+                                                  QFileDevice::ExeOwner));
+
+    qputenv("RO_CONTROL_COMMAND_NVIDIA_SETTINGS", scriptPath.toUtf8());
+    qputenv("RO_CONTROL_NVIDIA_SETTINGS_ARGS_LOG", argsLogPath.toUtf8());
+    FanController fan;
+    fan.stop();
+    const QVariantMap result = fan.runHardwareSetup();
+
+    QVERIFY(result.value(QStringLiteral("completed")).toBool());
+    QFile argsLog(argsLogPath);
+    QVERIFY(argsLog.open(QIODevice::ReadOnly | QIODevice::Text));
+    const QString arguments = QString::fromUtf8(argsLog.readAll());
+    QVERIFY(arguments.contains(QStringLiteral("-q")));
+    QVERIFY(arguments.contains(QStringLiteral("[gpu:0]/GPUFanControlState")));
+    QVERIFY(!arguments.contains(QStringLiteral("-a")));
+    QVERIFY(!arguments.contains(QStringLiteral("GPUFanControlState=0")));
+
+    qunsetenv("RO_CONTROL_COMMAND_NVIDIA_SETTINGS");
+    qunsetenv("RO_CONTROL_NVIDIA_SETTINGS_ARGS_LOG");
+  }
+
   void testPerFanConfigurationAndCustomization() {
+    qputenv("RO_CONTROL_MOCK_FAN_CAPABILITY", "controllable");
     FanController fan;
     fan.stop();
 
@@ -405,40 +444,19 @@ private slots:
     QVERIFY(fan.setThermalThresholdForFan(QStringLiteral("gpu_0"), 80));
     QCOMPARE(fan.thermalThresholdC(), 80);
 
-    // 2. CPU Fan adjustments
-    QVERIFY(fan.setFanModeForFan(QStringLiteral("cpu_fan_0"),
-                                 QStringLiteral("performance")));
-    QVERIFY(fan.setManualSpeedForFan(QStringLiteral("cpu_fan_0"), 75));
-    QVERIFY(fan.setThermalThresholdForFan(QStringLiteral("cpu_fan_0"), 92));
+    // Firmware-managed channels must never accept simulated control settings.
+    QVERIFY(!fan.setFanModeForFan(QStringLiteral("cpu_fan_0"),
+                                  QStringLiteral("performance")));
+    QVERIFY(!fan.setManualSpeedForFan(QStringLiteral("cpu_fan_0"), 75));
+    QVERIFY(!fan.setThermalThresholdForFan(QStringLiteral("cpu_fan_0"), 92));
     QVERIFY(
-        fan.setCustomCurvePointForFan(QStringLiteral("cpu_fan_0"), 0, 30, 25));
+        !fan.setCustomCurvePointForFan(QStringLiteral("cpu_fan_0"), 0, 30, 25));
 
-    QVariantMap cpuCfg = fan.getFanConfig(QStringLiteral("cpu_fan_0"));
-    if (!cpuCfg.isEmpty()) {
-      QCOMPARE(cpuCfg.value(QStringLiteral("mode")).toString(),
-               QStringLiteral("performance"));
-      QCOMPARE(cpuCfg.value(QStringLiteral("manualSpeedPercent")).toInt(), 75);
-    }
-    if (!cpuCfg.isEmpty())
-      QCOMPARE(cpuCfg.value(QStringLiteral("thermalThresholdC")).toInt(), 92);
-
-    // 3. Chassis Fan adjustments
-    QVERIFY(fan.setFanModeForFan(QStringLiteral("sys_fan_0"),
-                                 QStringLiteral("manual")));
-    QVERIFY(fan.setManualSpeedForFan(QStringLiteral("sys_fan_0"), 40));
-    QVariantMap sysCfg = fan.getFanConfig(QStringLiteral("sys_fan_0"));
-    if (!sysCfg.isEmpty()) {
-      QCOMPARE(sysCfg.value(QStringLiteral("mode")).toString(),
-               QStringLiteral("manual"));
-      QCOMPARE(sysCfg.value(QStringLiteral("manualSpeedPercent")).toInt(), 40);
-    }
-
-    // 4. Reset fan to auto
-    QVERIFY(fan.resetFanToAuto(QStringLiteral("cpu_fan_0")));
-    cpuCfg = fan.getFanConfig(QStringLiteral("cpu_fan_0"));
-    if (!cpuCfg.isEmpty())
-      QCOMPARE(cpuCfg.value(QStringLiteral("mode")).toString(),
-               QStringLiteral("auto"));
+    QVERIFY(!fan.setFanModeForFan(QStringLiteral("sys_fan_0"),
+                                  QStringLiteral("manual")));
+    QVERIFY(!fan.setManualSpeedForFan(QStringLiteral("sys_fan_0"), 40));
+    QVERIFY(!fan.resetFanToAuto(QStringLiteral("cpu_fan_0")));
+    qunsetenv("RO_CONTROL_MOCK_FAN_CAPABILITY");
   }
 
   void testFanDisplayNamesPersistAndGpuTestDoesNotChangeProfile() {
@@ -612,11 +630,11 @@ private slots:
     QVERIFY(fan.applyCurvePreset(QStringLiteral("stepped")));
     QVERIFY(fan.customCurvePoints().size() >= 4);
 
-    // Per fan preset
-    QVERIFY(fan.applyCurvePresetForFan(QStringLiteral("cpu_fan_0"),
-                                       QStringLiteral("aggressive")));
-    QVERIFY(fan.applyCurvePresetForFan(QStringLiteral("sys_fan_0"),
-                                       QStringLiteral("stealth")));
+    // Firmware-owned channels deliberately reject simulated per-fan presets.
+    QVERIFY(!fan.applyCurvePresetForFan(QStringLiteral("cpu_fan_0"),
+                                        QStringLiteral("aggressive")));
+    QVERIFY(!fan.applyCurvePresetForFan(QStringLiteral("sys_fan_0"),
+                                        QStringLiteral("stealth")));
   }
 };
 

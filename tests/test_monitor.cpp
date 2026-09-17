@@ -183,7 +183,7 @@ private slots:
     QTextStream stream(&script);
     stream << "#!/bin/sh\n";
     stream << "cat <<'EOF'\n";
-    stream << "nouveau-pci-0100\n";
+    stream << "nvidia-pci-0100\n";
     stream << "Adapter: PCI adapter\n";
     stream << "temp1:\n";
     stream << "  temp1_input: 52.000\n";

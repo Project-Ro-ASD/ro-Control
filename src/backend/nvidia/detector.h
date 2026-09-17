@@ -15,7 +15,6 @@ class NvidiaDetector : public QObject {
   Q_PROPERTY(bool driverPackageInstalled READ driverPackageInstalled NOTIFY
                  infoChanged)
   Q_PROPERTY(bool driverLoaded READ driverLoaded NOTIFY infoChanged)
-  Q_PROPERTY(bool nouveauActive READ nouveauActive NOTIFY infoChanged)
   Q_PROPERTY(QString installedDriverSource READ installedDriverSource NOTIFY
                  infoChanged)
   Q_PROPERTY(QString installedDriverSourceLabel READ installedDriverSourceLabel
@@ -37,7 +36,6 @@ public:
     QString vbiosVersion;
     bool driverPackageInstalled = false;
     bool driverLoaded = false;
-    bool nouveauActive = false;
     bool openKernelModulesInstalled = false;
     bool closedSourceDriverInstalled = false;
     bool openSourceDriverInstalled = false;
@@ -54,7 +52,6 @@ public:
   QString driverVersion() const { return m_info.driverVersion; }
   bool driverPackageInstalled() const { return m_info.driverPackageInstalled; }
   bool driverLoaded() const { return m_info.driverLoaded; }
-  bool nouveauActive() const { return m_info.nouveauActive; }
   QString installedDriverSource() const;
   QString installedDriverSourceLabel() const;
   bool secureBootEnabled() const { return m_info.secureBootEnabled; }
