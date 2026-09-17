@@ -104,7 +104,6 @@ public:
     emit infoChanged();
   }
 
-
   void setInstalledDriverSource(const QString &value) {
     if (m_installedDriverSource == value) {
       return;

@@ -1039,7 +1039,8 @@ bool GpuMonitor::killProcess(int pid) {
         return v.toMap().value(QStringLiteral("pid")).toInt() == pid;
       });
   if (!isListedGpuProcess) {
-    setStatusMessage(tr("The selected process is no longer using the active GPU."));
+    setStatusMessage(
+        tr("The selected process is no longer using the active GPU."));
     return false;
   }
   CommandRunner runner;
@@ -1049,7 +1050,8 @@ bool GpuMonitor::killProcess(int pid) {
       runner.run(QStringLiteral("kill"),
                  {QStringLiteral("-15"), QString::number(pid)}, options);
   if (!res.success()) {
-    setStatusMessage(tr("The process could not be terminated. Check ownership and permissions."));
+    setStatusMessage(tr("The process could not be terminated. Check ownership "
+                        "and permissions."));
     return false;
   }
   queryGpuProcesses(true);
@@ -1071,9 +1073,9 @@ void GpuMonitor::queryGpuProcesses(bool force) {
 
   // 1. Query full nvidia-smi table which lists both Compute and Graphics
   // processes
-  const auto smiResult = runner.run(
-      QStringLiteral("nvidia-smi"),
-      {QStringLiteral("--id=%1").arg(m_selectedGpuIndex)}, options);
+  const auto smiResult =
+      runner.run(QStringLiteral("nvidia-smi"),
+                 {QStringLiteral("--id=%1").arg(m_selectedGpuIndex)}, options);
   if (smiResult.success()) {
     // Matches: |   0   N/A  N/A   204705   G   /usr/lib64/firefox/firefox
     // 168MiB |

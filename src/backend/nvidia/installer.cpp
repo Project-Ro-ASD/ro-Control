@@ -412,8 +412,7 @@ void NvidiaInstaller::installOpenSource() {
     runOptions.cancelRequested = guard->m_cancelRequested;
 
     emitProgressAsync(
-        guard, NvidiaInstaller::tr(
-                   "Installing NVIDIA Open Kernel Modules..."));
+        guard, NvidiaInstaller::tr("Installing NVIDIA Open Kernel Modules..."));
 
     CommandRunner rpmRunner;
     const auto platformVersionResult =
@@ -426,7 +425,8 @@ void NvidiaInstaller::installOpenSource() {
           [guard]() {
             if (guard)
               emit guard->installFinished(
-                  false, NvidiaInstaller::tr("Platform version could not be detected."));
+                  false, NvidiaInstaller::tr(
+                             "Platform version could not be detected."));
           },
           Qt::QueuedConnection);
       return;

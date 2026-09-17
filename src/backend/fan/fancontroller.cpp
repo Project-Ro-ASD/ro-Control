@@ -894,12 +894,11 @@ void FanController::detectHardwareCapabilities(bool force) {
       CommandRunner runner;
       CommandRunner::RunOptions testOpts;
       testOpts.timeoutMs = 1500;
-      const auto testRes =
-          runner.run(QStringLiteral("nvidia-settings"),
-                     {QStringLiteral("-q"),
-                      QStringLiteral("[gpu:0]/GPUFanControlState"),
-                      QStringLiteral("-t")},
-                     testOpts);
+      const auto testRes = runner.run(
+          QStringLiteral("nvidia-settings"),
+          {QStringLiteral("-q"), QStringLiteral("[gpu:0]/GPUFanControlState"),
+           QStringLiteral("-t")},
+          testOpts);
 
       const bool hasPermissionError =
           testRes.stdout.contains(QStringLiteral("permission"),
@@ -1777,7 +1776,8 @@ bool FanController::setFanModeForFan(const QString &fanId,
     setFanMode(mode);
     return true;
   }
-  setStatusMessage(tr("This fan is monitored by firmware and cannot be controlled by ro-Control."));
+  setStatusMessage(tr("This fan is monitored by firmware and cannot be "
+                      "controlled by ro-Control."));
   return false;
 }
 

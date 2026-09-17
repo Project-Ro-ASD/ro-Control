@@ -400,7 +400,8 @@ private slots:
     const QString argsLogPath = tempDir.filePath(QStringLiteral("args.log"));
     QFile script(scriptPath);
     QVERIFY(script.open(QIODevice::WriteOnly | QIODevice::Text));
-    script.write("#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$RO_CONTROL_NVIDIA_SETTINGS_ARGS_LOG\"\necho 0\nexit 0\n");
+    script.write("#!/bin/sh\nprintf '%s\\n' \"$@\" > "
+                 "\"$RO_CONTROL_NVIDIA_SETTINGS_ARGS_LOG\"\necho 0\nexit 0\n");
     script.close();
     QVERIFY(QFile::setPermissions(scriptPath, QFileDevice::ReadOwner |
                                                   QFileDevice::WriteOwner |
@@ -448,8 +449,8 @@ private slots:
                                   QStringLiteral("performance")));
     QVERIFY(!fan.setManualSpeedForFan(QStringLiteral("cpu_fan_0"), 75));
     QVERIFY(!fan.setThermalThresholdForFan(QStringLiteral("cpu_fan_0"), 92));
-    QVERIFY(!fan.setCustomCurvePointForFan(QStringLiteral("cpu_fan_0"), 0,
-                                            30, 25));
+    QVERIFY(
+        !fan.setCustomCurvePointForFan(QStringLiteral("cpu_fan_0"), 0, 30, 25));
 
     QVERIFY(!fan.setFanModeForFan(QStringLiteral("sys_fan_0"),
                                   QStringLiteral("manual")));

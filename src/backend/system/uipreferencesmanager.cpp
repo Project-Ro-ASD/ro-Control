@@ -65,7 +65,7 @@ UiPreferencesManager::UiPreferencesManager(QObject *parent) : QObject(parent) {
 
 QString UiPreferencesManager::themeMode() const {
   return m_themeMode == QStringLiteral("system") ? systemThemeMode()
-                                                   : m_themeMode;
+                                                 : m_themeMode;
 }
 
 QString UiPreferencesManager::selectedThemeMode() const { return m_themeMode; }

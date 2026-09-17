@@ -153,7 +153,8 @@ void configureParser(QCommandLineParser &parser, const QString &applicationName,
       QStringLiteral("Use the proprietary NVIDIA driver install path.")));
   parser.addOption(QCommandLineOption(
       {QStringLiteral("open-source")},
-      QStringLiteral("Install NVIDIA Open Kernel Modules (akmod-nvidia-open).")));
+      QStringLiteral(
+          "Install NVIDIA Open Kernel Modules (akmod-nvidia-open).")));
   parser.addOption(QCommandLineOption(
       {QStringLiteral("accept-license")},
       QStringLiteral("Confirm that the NVIDIA license was reviewed.")));
