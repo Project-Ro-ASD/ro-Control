@@ -4,12 +4,12 @@
 <context>
     <name>CpuMonitor</name>
     <message>
-        <location filename="../src/backend/monitor/cpumonitor.cpp" line="357"/>
+        <location filename="../src/backend/monitor/cpumonitor.cpp" line="339"/>
         <source>CPU temperature is being read from system sensors.</source>
         <translation>CPU temperature is being read from system sensors.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/cpumonitor.cpp" line="358"/>
+        <location filename="../src/backend/monitor/cpumonitor.cpp" line="340"/>
         <source>CPU temperature sensor is not exposed by the kernel.</source>
         <translation>CPU temperature sensor is not exposed by the kernel.</translation>
     </message>
@@ -204,12 +204,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1897"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1911"/>
         <source>Required before restarting after an NVIDIA driver installation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1932"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1946"/>
         <source>Before installation, generate and import the akmods key using your Fedora Secure Boot procedure. Then restart and enter Shim UEFI Key Management when prompted.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -757,37 +757,42 @@ Third-party akmod modules require MOK signing.</source>
         <translation>Proceed</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1889"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1731"/>
+        <source>I have completed the required akmods MOK key enrollment and understand that the NVIDIA module will not load without it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1903"/>
         <source>Secure Boot MOK Enrollment</source>
         <translation>Secure Boot MOK Enrollment</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1931"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1945"/>
         <source>Reboot &amp; Intercept</source>
         <translation>Reboot &amp; Intercept</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1936"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1950"/>
         <source>Select &apos;Enroll MOK&apos;</source>
         <translation>Select &apos;Enroll MOK&apos;</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1937"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1951"/>
         <source>Choose &apos;Enroll MOK&apos; from the menu, select &apos;Continue&apos;, and confirm with &apos;Yes&apos;.</source>
         <translation>Choose &apos;Enroll MOK&apos; from the menu, select &apos;Continue&apos;, and confirm with &apos;Yes&apos;.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1941"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1955"/>
         <source>Confirm &amp; Reboot</source>
         <translation>Confirm &amp; Reboot</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1942"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1956"/>
         <source>Enter your enrollment password if prompted, then select &apos;Reboot&apos;. Your modules are now permanently trusted.</source>
         <translation>Enter your enrollment password if prompted, then select &apos;Reboot&apos;. Your modules are now permanently trusted.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/DriverPage.qml" line="2012"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="2026"/>
         <source>Got It</source>
         <translation>Got It</translation>
     </message>
@@ -850,7 +855,7 @@ Third-party akmod modules require MOK signing.</source>
         <location filename="../src/qml/pages/DriverPage.qml" line="1362"/>
         <location filename="../src/qml/pages/DriverPage.qml" line="1428"/>
         <location filename="../src/qml/pages/DriverPage.qml" line="1497"/>
-        <location filename="../src/qml/pages/DriverPage.qml" line="1801"/>
+        <location filename="../src/qml/pages/DriverPage.qml" line="1814"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
@@ -1798,39 +1803,54 @@ Third-party akmod modules require MOK signing.</source>
 <context>
     <name>GpuMonitor</name>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="658"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="659"/>
         <source>No NVIDIA GPU detected in this session.</source>
         <translation>No NVIDIA GPU detected in this session.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="661"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="662"/>
         <source>NVIDIA driver is not exposing telemetry on this system.</source>
         <translation>NVIDIA driver is not exposing telemetry on this system.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="725"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="726"/>
         <source>GPU telemetry is being read from Linux metrics.</source>
         <translation>GPU telemetry is being read from Linux metrics.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="726"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="727"/>
         <source>GPU temperature is being read from system sensors.</source>
         <translation>GPU temperature is being read from system sensors.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="736"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="737"/>
         <source>GPU telemetry output could not be parsed.</source>
         <translation>GPU telemetry output could not be parsed.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="826"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="827"/>
         <source>GPU telemetry output did not contain usable metrics.</source>
         <translation>GPU telemetry output did not contain usable metrics.</translation>
     </message>
     <message>
-        <location filename="../src/backend/monitor/gpumonitor.cpp" line="920"/>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="921"/>
         <source>GPU telemetry is being read from nvidia-smi.</source>
         <translation>GPU telemetry is being read from nvidia-smi.</translation>
+    </message>
+    <message>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="1042"/>
+        <source>The selected process is no longer using the active GPU.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="1052"/>
+        <source>The process could not be terminated. Check ownership and permissions.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/backend/monitor/gpumonitor.cpp" line="1056"/>
+        <source>Termination signal sent to the selected GPU process.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2081,311 +2101,325 @@ Third-party akmod modules require MOK signing.</source>
 <context>
     <name>MonitorPage</name>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="99"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="102"/>
         <source>VM sensor unavailable</source>
         <translation>VM sensor unavailable</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="100"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="104"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="108"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="113"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="103"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="107"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="111"/>
         <location filename="../src/qml/pages/MonitorPage.qml" line="116"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="449"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="469"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="719"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="727"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="119"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="297"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="315"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="470"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="490"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="543"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="561"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="740"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="748"/>
         <source>Unavailable</source>
         <translation>Unavailable</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="127"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="130"/>
         <source>No NVIDIA GPU detected. CPU and memory monitoring remain available; NVIDIA telemetry, power controls, and process monitoring are disabled.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="130"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="133"/>
         <source>NVIDIA GPU telemetry is unavailable. Check the driver and session permissions, then refresh.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="135"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="138"/>
         <source>Silent (Acoustic)</source>
         <translation>Silent (Acoustic)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="136"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="139"/>
         <source>Balanced (Optimized)</source>
         <translation>Balanced (Optimized)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="137"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="140"/>
         <source>Performance (High Cooling)</source>
         <translation>Performance (High Cooling)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="138"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="141"/>
         <source>Manual (Fixed Speed)</source>
         <translation>Manual (Fixed Speed)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="139"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="142"/>
         <source>Custom Curve</source>
         <translation>Custom Curve</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="141"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="144"/>
         <source>Auto (VBIOS / Driver)</source>
         <translation>Auto (VBIOS / Driver)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="147"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="150"/>
         <source>SAFETY OVERRIDE 100%</source>
         <translation>SAFETY OVERRIDE 100%</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="149"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="152"/>
         <source>HARDWARE AUTO</source>
         <translation>HARDWARE AUTO</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="151"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="154"/>
         <source>HARDWARE MANAGED</source>
         <translation>HARDWARE MANAGED</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="267"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="257"/>
+        <source>Refreshing telemetry…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="257"/>
+        <source>Refresh telemetry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="278"/>
         <source>CPU</source>
         <translation>CPU</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="280"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="516"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="587"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="291"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="537"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="608"/>
         <source>USAGE</source>
         <translation>USAGE</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="298"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="461"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="309"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="482"/>
         <source>TEMPERATURE</source>
         <translation>TEMPERATURE</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="374"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="385"/>
         <source>Active: %1
 Click to switch GPU (%2 available)</source>
         <translation>Active: %1
 Click to switch GPU (%2 available)</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="376"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="387"/>
         <source>Active Graphics Processor</source>
         <translation>Active Graphics Processor</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="443"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="464"/>
         <source>LOAD</source>
         <translation>LOAD</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="534"/>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="610"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="555"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="631"/>
         <source>ALLOCATED</source>
         <translation>ALLOCATED</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="574"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="595"/>
         <source>ZRAM</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="628"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="649"/>
         <source>Compression: %1×</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="631"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="652"/>
         <source>RAM: %1 MiB</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="634"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="655"/>
         <source>zswap enabled</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="704"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="725"/>
         <source>Core / Memory Clocks</source>
         <translation>Core / Memory Clocks</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="710"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="731"/>
         <source>Power Draw / TDP Limit</source>
         <translation>Power Draw / TDP Limit</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="722"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="743"/>
         <source>Thermals &amp; Hotspot</source>
         <translation>Thermals &amp; Hotspot</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="724"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="745"/>
         <source>Core: %1°C</source>
         <translation>Core: %1°C</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="725"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="746"/>
         <source> • Hotspot: %1°C</source>
         <translation> • Hotspot: %1°C</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="726"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="747"/>
         <source> • VRAM: %1°C</source>
         <translation> • VRAM: %1°C</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="794"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="815"/>
         <source>Power &amp; Performance Management</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="820"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="842"/>
         <source>Draw:</source>
         <translation>Draw:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="850"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="873"/>
         <source>Limit:</source>
         <translation>Limit:</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="968"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="991"/>
         <source>Show less</source>
         <translation>Show less</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="968"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="991"/>
         <source>All processes</source>
         <translation>All processes</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1086"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1111"/>
         <source>VRAM ALLOCATION</source>
         <translation>VRAM ALLOCATION</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1219"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1246"/>
         <source>End Task</source>
         <translation>End Task</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1281"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1308"/>
         <source>End GPU process?</source>
         <translation>End GPU process?</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1288"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1315"/>
         <source>%1 (PID %2) will be terminated. Unsaved work may be lost.</source>
         <translation>%1 (PID %2) will be terminated. Unsaved work may be lost.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1298"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1333"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1302"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1337"/>
         <source>End process</source>
         <translation>End process</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="342"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="353"/>
         <source>GPU</source>
         <translation>GPU</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="503"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="524"/>
         <source>Memory</source>
         <translation>Memory</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="688"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="709"/>
         <source>GPU Performance &amp; Power</source>
         <translation>GPU Performance &amp; Power</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="713"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="734"/>
         <source>Dynamic Power</source>
         <translation>Dynamic Power</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="707"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="728"/>
         <source>Dynamic Clock</source>
         <translation>Dynamic Clock</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="716"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="737"/>
         <source>VRAM Allocation</source>
         <translation>VRAM Allocation</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="942"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="965"/>
         <source>GPU Task Manager &amp; Active Processes</source>
         <translation>GPU Task Manager &amp; Active Processes</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1031"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1054"/>
         <source>No Active GPU Processes</source>
         <translation>No Active GPU Processes</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1038"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1061"/>
         <source>No applications are currently allocating VRAM or compute resources on this GPU.</source>
         <translation>No applications are currently allocating VRAM or compute resources on this GPU.</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1062"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1085"/>
         <source>PID</source>
         <translation>PID</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1070"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1093"/>
         <source>PROCESS NAME</source>
         <translation>PROCESS NAME</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1078"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1102"/>
         <source>TYPE</source>
         <translation>TYPE</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1095"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1120"/>
         <source>ACTION</source>
         <translation>ACTION</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="1170"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="1196"/>
         <source>Compute</source>
         <translation>Compute</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="793"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="814"/>
         <source>GPU Power &amp; Performance Management</source>
         <translation>GPU Power &amp; Performance Management</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="874"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="897"/>
         <source>Eco</source>
         <translation>Eco</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="875"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="898"/>
         <source>Balanced</source>
         <translation>Balanced</translation>
     </message>
     <message>
-        <location filename="../src/qml/pages/MonitorPage.qml" line="876"/>
+        <location filename="../src/qml/pages/MonitorPage.qml" line="899"/>
         <source>Performance</source>
         <translation>Performance</translation>
     </message>

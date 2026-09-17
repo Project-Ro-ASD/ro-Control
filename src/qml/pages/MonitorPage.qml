@@ -26,6 +26,7 @@ Item {
     property int pendingTerminationPid: -1
     property string pendingTerminationName: ""
     property bool showAllGpuProcesses: false
+    property string terminationError: ""
 
     readonly property color bgColor: theme && theme.card ? theme.card : (page.darkMode ? "#29233B" : "#FFFFFF")
     readonly property color cardColor: theme && theme.cardStrong ? theme.cardStrong : (page.darkMode ? "#342D4A" : "#F1F5F9")
@@ -39,6 +40,8 @@ Item {
     readonly property int summaryCardHeight: Math.round(152 * page.uiScale)
     readonly property bool nvidiaGpuDetected: page.nvidiaDetector && page.nvidiaDetector.gpuFound
     readonly property bool gpuTelemetryAvailable: page.nvidiaGpuDetected && page.gpuMonitor && page.gpuMonitor.available
+    readonly property bool cpuTelemetryAvailable: page.cpuMonitor && page.cpuMonitor.available
+    readonly property bool ramTelemetryAvailable: page.ramMonitor && page.ramMonitor.available
 
     component TelemetrySparkline: Canvas {
         id: sparkline
@@ -155,22 +158,22 @@ Item {
     function pushTelemetryHistory() {
         if (!page.visible)
             return;
-        var cpuVal = page.cpuMonitor ? page.cpuMonitor.usagePercent : 0;
-        var gpuVal = page.gpuMonitor ? page.gpuMonitor.utilizationPercent : 0;
-        var ramVal = page.ramMonitor ? page.ramMonitor.usagePercent : 0;
+        var cpuVal = page.cpuTelemetryAvailable ? page.cpuMonitor.usagePercent : null;
+        var gpuVal = page.gpuTelemetryAvailable ? page.gpuMonitor.utilizationPercent : null;
+        var ramVal = page.ramTelemetryAvailable ? page.ramMonitor.usagePercent : null;
 
         var cpuArr = page.cpuUsageHistory.slice();
-        cpuArr.push(cpuVal);
+        if (cpuVal !== null) cpuArr.push(cpuVal);
         if (cpuArr.length > 30) cpuArr.shift();
         page.cpuUsageHistory = cpuArr;
 
         var gpuArr = page.gpuLoadHistory.slice();
-        gpuArr.push(gpuVal);
+        if (gpuVal !== null) gpuArr.push(gpuVal);
         if (gpuArr.length > 30) gpuArr.shift();
         page.gpuLoadHistory = gpuArr;
 
         var ramArr = page.ramUsageHistory.slice();
-        ramArr.push(ramVal);
+        if (ramVal !== null) ramArr.push(ramVal);
         if (ramArr.length > 30) ramArr.shift();
         page.ramUsageHistory = ramArr;
     }
@@ -248,6 +251,14 @@ Item {
                 columnSpacing: Math.round(10 * page.uiScale)
                 rowSpacing: Math.round(10 * page.uiScale)
 
+                Button {
+                    Layout.columnSpan: columns
+                    Layout.alignment: Qt.AlignRight
+                    text: page.telemetryRefreshAnimating ? qsTr("Refreshing telemetry…") : qsTr("Refresh telemetry")
+                    enabled: !page.telemetryRefreshAnimating
+                    onClicked: page.refreshTelemetry()
+                }
+
                 // CPU Card
                 Rectangle {
                     Layout.fillWidth: true
@@ -283,7 +294,7 @@ Item {
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
-                                    text: page.cpuMonitor ? page.cpuMonitor.usagePercent.toFixed(1) + "%" : "--"
+                                    text: page.cpuTelemetryAvailable ? page.cpuMonitor.usagePercent.toFixed(1) + "%" : qsTr("Unavailable")
                                     color: page.textColor
                                     font.pixelSize: Math.round(22 * page.uiScale)
                                     font.weight: Font.Bold
@@ -301,7 +312,7 @@ Item {
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
-                                    text: page.formatTemp(page.cpuMonitor ? page.cpuMonitor.temperatureC : -1)
+                                    text: page.cpuTelemetryAvailable ? page.formatTemp(page.cpuMonitor.temperatureC) : qsTr("Unavailable")
                                     color: (page.cpuMonitor && page.cpuMonitor.temperatureC > 80) ? (page.theme && page.theme.warning ? page.theme.warning : "#EF4444") : page.textColor
                                     font.pixelSize: Math.round(22 * page.uiScale)
                                     font.weight: Font.Bold
@@ -381,11 +392,21 @@ Item {
                                     id: gpuSelectorMouse
                                     anchors.fill: parent
                                     hoverEnabled: true
+                                    focus: true
+                                    activeFocusOnTab: true
                                     cursorShape: (page.gpuMonitor && page.gpuMonitor.gpuCount > 1) ? Qt.PointingHandCursor : Qt.ArrowCursor
                                     onClicked: {
                                         if (page.gpuMonitor && page.gpuMonitor.gpuCount > 1) {
                                             gpuMenu.open();
                                         }
+                                    }
+                                    Keys.onReturnPressed: {
+                                        if (page.gpuMonitor && page.gpuMonitor.gpuCount > 1)
+                                            gpuMenu.open();
+                                    }
+                                    Keys.onSpacePressed: {
+                                        if (page.gpuMonitor && page.gpuMonitor.gpuCount > 1)
+                                            gpuMenu.open();
                                     }
                                 }
 
@@ -519,7 +540,7 @@ Item {
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
-                                    text: page.ramMonitor ? page.ramMonitor.usagePercent + "%" : "--"
+                                    text: page.ramTelemetryAvailable ? page.ramMonitor.usagePercent + "%" : qsTr("Unavailable")
                                     color: page.textColor
                                     font.pixelSize: Math.round(22 * page.uiScale)
                                     font.weight: Font.Bold
@@ -537,7 +558,7 @@ Item {
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
-                                    text: page.formatRam(page.ramMonitor ? page.ramMonitor.usedMiB : 0, page.ramMonitor ? page.ramMonitor.totalMiB : 0)
+                                    text: page.ramTelemetryAvailable ? page.formatRam(page.ramMonitor.usedMiB, page.ramMonitor.totalMiB) : qsTr("Unavailable")
                                     color: page.textColor
                                     font.pixelSize: Math.round(18 * page.uiScale)
                                     font.weight: Font.Bold
@@ -804,6 +825,7 @@ Item {
 
                         Rectangle {
                             visible: page.powerController && page.powerController.supported
+                            Layout.maximumWidth: page.width <= 560 ? 0 : implicitWidth
                             implicitHeight: Math.round(30 * page.uiScale)
                             implicitWidth: currentDrawRow.implicitWidth + Math.round(16 * page.uiScale)
                             radius: 6
@@ -834,6 +856,7 @@ Item {
 
                         Rectangle {
                             visible: page.powerController && page.powerController.controlSupported
+                            Layout.maximumWidth: page.width <= 560 ? 0 : implicitWidth
                             implicitHeight: Math.round(30 * page.uiScale)
                             implicitWidth: powerLimitRow.implicitWidth + Math.round(16 * page.uiScale)
                             radius: 6
@@ -880,7 +903,7 @@ Item {
                                     id: powerPresetBtn
                                     required property var modelData
                                     implicitHeight: Math.round(34 * page.uiScale)
-                                    implicitWidth: Math.round(96 * page.uiScale)
+                                    implicitWidth: page.width <= 560 ? Math.round(84 * page.uiScale) : Math.round(96 * page.uiScale)
 
                                     background: Rectangle {
                                         radius: 8
@@ -1074,6 +1097,7 @@ Item {
                             }
 
                             Label {
+                                visible: page.width > 560
                                 Layout.preferredWidth: Math.round(110 * page.uiScale)
                                 text: qsTr("TYPE")
                                 color: page.softTextColor
@@ -1082,6 +1106,7 @@ Item {
                             }
 
                             Label {
+                                visible: page.width > 560
                                 Layout.preferredWidth: Math.round(140 * page.uiScale)
                                 text: qsTr("VRAM ALLOCATION")
                                 color: page.softTextColor
@@ -1158,6 +1183,7 @@ Item {
                                             }
 
                                             Rectangle {
+                                                visible: page.width > 560
                                                 Layout.preferredWidth: Math.round(110 * page.uiScale)
                                                 Layout.preferredHeight: Math.round(22 * page.uiScale)
                                                 radius: 4
@@ -1177,6 +1203,7 @@ Item {
                                             }
 
                                             Rectangle {
+                                                visible: page.width > 560
                                                 Layout.preferredWidth: Math.round(140 * page.uiScale)
                                                 Layout.preferredHeight: Math.round(26 * page.uiScale)
                                                 radius: 6
@@ -1291,6 +1318,14 @@ Item {
                 wrapMode: Text.WordWrap
                 font.pixelSize: Math.round(12 * page.uiScale)
             }
+            Label {
+                visible: page.terminationError.length > 0
+                Layout.fillWidth: true
+                text: page.terminationError
+                color: page.theme && page.theme.danger ? page.theme.danger : "#DC2626"
+                wrapMode: Text.WordWrap
+                font.pixelSize: Math.round(11 * page.uiScale)
+            }
             RowLayout {
                 Layout.fillWidth: true
                 Item { Layout.fillWidth: true }
@@ -1302,9 +1337,12 @@ Item {
                     text: qsTr("End process")
                     enabled: page.pendingTerminationPid > 0
                     onClicked: {
+                        page.terminationError = "";
                         if (page.gpuMonitor)
-                            page.gpuMonitor.killProcess(page.pendingTerminationPid);
-                        terminateProcessPopup.close();
+                            page.terminationError = page.gpuMonitor.killProcess(page.pendingTerminationPid)
+                                    ? "" : page.gpuMonitor.statusMessage;
+                        if (page.terminationError.length === 0)
+                            terminateProcessPopup.close();
                     }
                 }
             }
@@ -1312,13 +1350,9 @@ Item {
     }
 
     Component.onCompleted: {
-        var initArr = [];
-        for (var i = 0; i < 30; ++i) {
-            initArr.push(0);
-        }
-        page.cpuUsageHistory = initArr.slice();
-        page.gpuLoadHistory = initArr.slice();
-        page.ramUsageHistory = initArr.slice();
+        page.cpuUsageHistory = [];
+        page.gpuLoadHistory = [];
+        page.ramUsageHistory = [];
         page.pushTelemetryHistory();
 
         if (page.systemInfo)
