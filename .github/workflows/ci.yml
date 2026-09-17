@@ -87,6 +87,7 @@ jobs:
             git \
             rpm-build \
             rpmlint \
+            systemd-rpm-macros \
             cmake \
             extra-cmake-modules \
             gcc-c++ \
@@ -157,16 +158,40 @@ jobs:
 
       - name: Install and smoke-test RPMs
         run: |
+          set -euo pipefail
+
           MAIN_RPM=/tmp/ro-control-x86_64.rpm
 
           dnf clean all
-          dnf -y --refresh --setopt=install_weak_deps=False install "${MAIN_RPM}"
+          dnf -y --refresh \
+            --setopt=install_weak_deps=False \
+            install \
+            --allowerasing \
+            "${MAIN_RPM}"
 
           rpm -q ro-control
+          rpm -q polkit
+          rpm -q systemd
           command -v ro-control
+          command -v pkexec
           rpm -q --whatprovides /usr/bin/ro-control | grep -E '^ro-control(-|$)'
           ldd -r /usr/bin/ro-control
 
       - name: Lint built RPMs
         run: |
           rpmlint ~/rpmbuild/RPMS/*/*.rpm || true
+
+  ro-app-gate:
+    name: ro-app-gate
+    if: ${{ always() }}
+    needs: [build, package-rpm]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Enforce final application gate
+        env:
+          BUILD_RESULT: ${{ needs.build.result }}
+          RPM_RESULT: ${{ needs.package-rpm.result }}
+        run: |
+          set -euo pipefail
+          [[ "${BUILD_RESULT}" == "success" ]]
+          [[ "${RPM_RESULT}" == "success" ]]
