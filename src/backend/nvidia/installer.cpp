@@ -72,14 +72,14 @@ QString blockedDriverSwitchMessage(const QString &targetSource) {
   if (targetSource == QStringLiteral("closed-source") &&
       info.openSourceDriverInstalled) {
     return NvidiaInstaller::tr(
-        "Open-source driver stack detected. Run Deep Clean before installing "
-        "the closed-source driver.");
+        "NVIDIA Open Kernel Modules detected. Run Deep Clean before installing "
+        "the proprietary NVIDIA kernel module.");
   }
   if (targetSource == QStringLiteral("open-source") &&
       info.closedSourceDriverInstalled) {
     return NvidiaInstaller::tr(
-        "Closed-source driver stack detected. Run Deep Clean before installing "
-        "the open-source driver.");
+        "Proprietary NVIDIA kernel module detected. Run Deep Clean before "
+        "installing NVIDIA Open Kernel Modules.");
   }
 
   return {};
@@ -413,7 +413,7 @@ void NvidiaInstaller::installOpenSource() {
 
     emitProgressAsync(
         guard, NvidiaInstaller::tr(
-                   "Switching to the open-source NVIDIA driver stack..."));
+                   "Installing NVIDIA Open Kernel Modules..."));
 
     const SessionUtil::SessionInfo sessionInfo =
         SessionUtil::detectSessionInfo();
@@ -436,7 +436,7 @@ void NvidiaInstaller::installOpenSource() {
 
     emitProgressAsync(
         guard,
-        NvidiaInstaller::tr("Open-source NVIDIA install packages: %1")
+        NvidiaInstaller::tr("NVIDIA Open Kernel Modules packages: %1")
             .arg(quotedList(buildOpenSourceDriverInstallTargets(sessionType))));
 
     QStringList installArgs{QStringLiteral("install"), QStringLiteral("-y"),
@@ -472,7 +472,7 @@ void NvidiaInstaller::installOpenSource() {
           commandCanceled(result)
               ? NvidiaInstaller::tr("Operation canceled by user.")
               : NvidiaInstaller::tr(
-                    "Open-source NVIDIA driver installation failed: ") +
+                    "NVIDIA Open Kernel Modules installation failed: ") +
                     commandError(result, NvidiaInstaller::tr("unknown error"));
       QMetaObject::invokeMethod(
           guard,
@@ -491,8 +491,8 @@ void NvidiaInstaller::installOpenSource() {
           if (guard) {
             emit guard->installFinished(
                 true, NvidiaInstaller::tr(
-                          "The open-source NVIDIA driver stack was "
-                          "prepared successfully. Please restart the system."));
+                          "NVIDIA Open Kernel Modules were prepared "
+                          "successfully. Please restart the system."));
           }
         },
         Qt::QueuedConnection);

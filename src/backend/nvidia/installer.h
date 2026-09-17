@@ -36,7 +36,7 @@ public:
   // Install the proprietary driver path after an explicit user confirmation.
   Q_INVOKABLE void installProprietary(bool agreementAccepted);
 
-  // Switch to the community open-source graphics stack.
+  // Install NVIDIA Open Kernel Modules (akmod-nvidia-open).
   Q_INVOKABLE void installOpenSource();
 
   // Convenience wrapper for the default install path.
