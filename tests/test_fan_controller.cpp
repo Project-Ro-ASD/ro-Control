@@ -349,9 +349,12 @@ private slots:
     qputenv("RO_CONTROL_FAN_SYSFS_ROOT", tempDir.path().toUtf8());
     FanController fan;
     fan.stop();
-    fan.runHardwareSetup();
+    const QVariantMap scanResult = fan.runHardwareSetup();
 
     QCOMPARE(fan.systemFanCount(), 1);
+    QVERIFY(scanResult.value(QStringLiteral("completed")).toBool());
+    QCOMPARE(scanResult.value(QStringLiteral("channelCount")).toInt(), 1);
+    QVERIFY(!scanResult.value(QStringLiteral("controlSupported")).toBool());
     const QVariantMap detected = fan.systemFans().first().toMap();
     QCOMPARE(detected.value(QStringLiteral("type")).toString(),
              QStringLiteral("CPU"));
@@ -386,6 +389,40 @@ private slots:
     QVERIFY(fan.controlSupported());
 
     qunsetenv("RO_CONTROL_COMMAND_NVIDIA_SETTINGS");
+  }
+
+  void testHardwareScanDoesNotWriteNvidiaFanControlState() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString scriptPath =
+        tempDir.filePath(QStringLiteral("fake-nvidia-settings.sh"));
+    const QString argsLogPath = tempDir.filePath(QStringLiteral("args.log"));
+    QFile script(scriptPath);
+    QVERIFY(script.open(QIODevice::WriteOnly | QIODevice::Text));
+    script.write("#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$RO_CONTROL_NVIDIA_SETTINGS_ARGS_LOG\"\necho 0\nexit 0\n");
+    script.close();
+    QVERIFY(QFile::setPermissions(scriptPath, QFileDevice::ReadOwner |
+                                                  QFileDevice::WriteOwner |
+                                                  QFileDevice::ExeOwner));
+
+    qputenv("RO_CONTROL_COMMAND_NVIDIA_SETTINGS", scriptPath.toUtf8());
+    qputenv("RO_CONTROL_NVIDIA_SETTINGS_ARGS_LOG", argsLogPath.toUtf8());
+    FanController fan;
+    fan.stop();
+    const QVariantMap result = fan.runHardwareSetup();
+
+    QVERIFY(result.value(QStringLiteral("completed")).toBool());
+    QFile argsLog(argsLogPath);
+    QVERIFY(argsLog.open(QIODevice::ReadOnly | QIODevice::Text));
+    const QString arguments = QString::fromUtf8(argsLog.readAll());
+    QVERIFY(arguments.contains(QStringLiteral("-q")));
+    QVERIFY(arguments.contains(QStringLiteral("[gpu:0]/GPUFanControlState")));
+    QVERIFY(!arguments.contains(QStringLiteral("-a")));
+    QVERIFY(!arguments.contains(QStringLiteral("GPUFanControlState=0")));
+
+    qunsetenv("RO_CONTROL_COMMAND_NVIDIA_SETTINGS");
+    qunsetenv("RO_CONTROL_NVIDIA_SETTINGS_ARGS_LOG");
   }
 
   void testPerFanConfigurationAndCustomization() {

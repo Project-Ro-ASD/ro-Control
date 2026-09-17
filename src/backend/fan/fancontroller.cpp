@@ -217,7 +217,7 @@ bool FanController::hardwareSetupComplete() const {
   return m_hardwareSetupComplete;
 }
 
-void FanController::runHardwareSetup() {
+QVariantMap FanController::runHardwareSetup() {
   // A topology can change after docking, so a setup is always a fresh probe.
   s_cachedCoretempInput.clear();
   s_cachedAcpitzInput.clear();
@@ -236,6 +236,15 @@ void FanController::runHardwareSetup() {
   if (!wasComplete) {
     emit hardwareSetupCompleteChanged();
   }
+
+  QVariantMap result;
+  result.insert(QStringLiteral("completed"), true);
+  result.insert(QStringLiteral("channelCount"), m_systemFans.size());
+  result.insert(QStringLiteral("telemetryAvailable"), m_supported);
+  result.insert(QStringLiteral("controlSupported"), m_controlSupported);
+  result.insert(QStringLiteral("capability"), capabilityString());
+  result.insert(QStringLiteral("statusMessage"), m_statusMessage);
+  return result;
 }
 
 int FanController::rampUpRatePercent() const { return m_rampUpRatePercent; }
@@ -876,7 +885,10 @@ void FanController::detectHardwareCapabilities(bool force) {
       !qEnvironmentVariable("RO_CONTROL_FAN_SYSFS_ROOT").trimmed().isEmpty();
 
   if (!hasSysfsOverride) {
-    // 1. Check NVIDIA settings tool and verify write permissions
+    // 1. Query NVIDIA's control endpoint. Hardware discovery must never
+    // change the current fan-control mode, so do not use a mutating `-a`
+    // command here. Writes are attempted only when the user explicitly
+    // changes a fan profile or starts the acoustic test.
     const QString nvidiaSettingsProg =
         CommandRunner::resolveProgramPath(QStringLiteral("nvidia-settings"));
     if (!nvidiaSettingsProg.isEmpty()) {
@@ -885,8 +897,9 @@ void FanController::detectHardwareCapabilities(bool force) {
       testOpts.timeoutMs = 1500;
       const auto testRes =
           runner.run(QStringLiteral("nvidia-settings"),
-                     {QStringLiteral("-a"),
-                      QStringLiteral("[gpu:0]/GPUFanControlState=0")},
+                     {QStringLiteral("-q"),
+                      QStringLiteral("[gpu:0]/GPUFanControlState"),
+                      QStringLiteral("-t")},
                      testOpts);
 
       const bool hasPermissionError =
