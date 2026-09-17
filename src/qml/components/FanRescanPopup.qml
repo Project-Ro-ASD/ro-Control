@@ -16,8 +16,19 @@ Popup {
     property bool phase1Done: false
     property bool phase2Done: false
     property bool phase3Done: false
+    property int scannedChannelCount: 0
+    property string scannedCapability: ""
     property bool testRunning: false
     property int testRemainingSeconds: 4
+    readonly property int controllableFanCount: {
+        var fans = popup.fanController ? popup.fanController.systemFans : [];
+        var count = 0;
+        for (var i = 0; i < fans.length; ++i) {
+            if (fans[i].controllable)
+                ++count;
+        }
+        return count;
+    }
 
     readonly property color bgColor: theme && theme.card ? theme.card : (popup.darkMode ? "#241E34" : "#FFFFFF")
     readonly property color cardColor: theme && theme.cardStrong ? theme.cardStrong : (popup.darkMode ? "#2E2742" : "#F8FAFC")
@@ -69,6 +80,8 @@ Popup {
         phase1Done = false;
         phase2Done = false;
         phase3Done = false;
+        scannedChannelCount = 0;
+        scannedCapability = "";
         testRunning = false;
         testRemainingSeconds = 4;
         testCountdownTimer.stop();
@@ -78,15 +91,33 @@ Popup {
 
     function startScanProcess() {
         step = "scanning";
-        scanProgress = 15;
-        currentPhaseText = qsTr("Probing Linux HWMON & ACPI kernel thermal controllers...");
-        if (popup.fanController)
-            popup.fanController.runHardwareSetup();
-        phase1Timer.start();
+        scanProgress = 5;
+        currentPhaseText = qsTr("Preparing a read-only hardware probe...");
+        Qt.callLater(function() {
+            if (popup.step !== "scanning")
+                return;
+
+            popup.scanProgress = 35;
+            popup.currentPhaseText = qsTr("Probing Linux HWMON, ACPI, and NVIDIA fan interfaces...");
+            var result = popup.fanController ? popup.fanController.runHardwareSetup() : null;
+            popup.scannedChannelCount = result && result.channelCount !== undefined
+                    ? Number(result.channelCount)
+                    : (popup.fanController ? popup.fanController.systemFanCount : 0);
+            popup.scannedCapability = result && result.capability !== undefined
+                    ? String(result.capability) : "";
+            popup.phase1Done = true;
+            popup.phase2Done = true;
+            popup.phase3Done = true;
+            popup.scanProgress = 100;
+            popup.currentPhaseText = popup.scannedChannelCount > 0
+                    ? qsTr("Scan complete: %1 readable fan channel(s) found.").arg(popup.scannedChannelCount)
+                    : qsTr("Scan complete: no readable fan channels were exposed.");
+            popup.step = "done";
+        });
     }
 
     function triggerAcousticValidation() {
-        if (testRunning || !popup.fanController)
+        if (testRunning || !popup.fanController || popup.controllableFanCount === 0)
             return;
         testRunning = true;
         testRemainingSeconds = 4;
@@ -123,44 +154,6 @@ Popup {
             if (popup.testRemainingSeconds <= 0) {
                 popup.stopAcousticValidation();
             }
-        }
-    }
-
-    Timer {
-        id: phase1Timer
-        interval: 600
-        repeat: false
-        onTriggered: {
-            popup.phase1Done = true;
-            popup.scanProgress = 55;
-            popup.currentPhaseText = qsTr("Querying NVIDIA NV-CONTROL & GPU fan tachometers...");
-            phase2Timer.start();
-        }
-    }
-
-    Timer {
-        id: phase2Timer
-        interval: 700
-        repeat: false
-        onTriggered: {
-            popup.phase2Done = true;
-            popup.scanProgress = 85;
-            popup.currentPhaseText = qsTr("Calibrating zero-RPM thresholds & refreshing telemetry...");
-            if (popup.fanController) {
-                popup.fanController.refresh();
-            }
-            phase3Timer.start();
-        }
-    }
-
-    Timer {
-        id: phase3Timer
-        interval: 500
-        repeat: false
-        onTriggered: {
-            popup.phase3Done = true;
-            popup.scanProgress = 100;
-            popup.step = "done";
         }
     }
 
@@ -220,10 +213,12 @@ Popup {
 
                 Label {
                     text: popup.step === "confirm"
-                          ? qsTr("Enumerate cooling fans, calibrate PWM headers, and sync sensor registers")
+                          ? qsTr("Enumerate cooling fans and refresh exposed sensor telemetry")
                           : (popup.step === "scanning"
                              ? qsTr("Please wait while hardware sensors are probed...")
-                             : qsTr("All system cooling devices have been synchronized"))
+                             : (popup.scannedChannelCount > 0
+                                ? qsTr("Detected cooling telemetry is ready to review")
+                                : qsTr("No readable fan telemetry was exposed by this system")))
                     color: popup.softTextColor
                     font.pixelSize: Math.round(11 * popup.uiScale)
                     elide: Text.ElideRight
@@ -627,7 +622,7 @@ Popup {
                                 }
                             }
                             Label {
-                                text: qsTr("Telemetry Calibration & Sensor Sync")
+                                text: qsTr("Telemetry Refresh & Sensor Sync")
                                 color: popup.phase3Done ? popup.textColor : popup.softTextColor
                                 font.pixelSize: Math.round(11 * popup.uiScale)
                                 font.weight: popup.phase3Done ? Font.DemiBold : Font.Normal
@@ -648,9 +643,9 @@ Popup {
             Rectangle {
                 Layout.fillWidth: true
                 radius: 10
-                color: popup.successBg
+                color: popup.scannedChannelCount > 0 ? popup.successBg : popup.warningBg
                 border.width: 1
-                border.color: popup.successText
+                border.color: popup.scannedChannelCount > 0 ? popup.successText : popup.warningText
                 implicitHeight: doneLayout.implicitHeight + Math.round(16 * popup.uiScale)
 
                 ColumnLayout {
@@ -662,22 +657,27 @@ Popup {
                     RowLayout {
                         spacing: 8
                         Label {
-                            text: "✓"
-                            color: popup.successText
+                            text: popup.scannedChannelCount > 0 ? "✓" : "!"
+                            color: popup.scannedChannelCount > 0 ? popup.successText : popup.warningText
                             font.pixelSize: Math.round(14 * popup.uiScale)
                             font.weight: Font.Bold
                         }
                         Label {
-                            text: qsTr("Hardware Scan Successfully Completed!")
-                            color: popup.successText
+                            text: popup.scannedChannelCount > 0
+                                  ? qsTr("Hardware Scan Completed")
+                                  : qsTr("Scan Completed Without Readable Fan Channels")
+                            color: popup.scannedChannelCount > 0 ? popup.successText : popup.warningText
                             font.pixelSize: Math.round(12 * popup.uiScale)
                             font.weight: Font.Bold
                         }
                     }
 
                     Label {
-                        text: qsTr("%1 Active cooling fan device(s) synchronized and calibrated.")
-                              .arg(popup.fanController ? popup.fanController.systemFanCount : 0)
+                        text: popup.scannedChannelCount > 0
+                              ? qsTr("%1 cooling channel(s) reported live telemetry. %2")
+                                    .arg(popup.scannedChannelCount)
+                                    .arg(popup.scannedCapability)
+                              : qsTr("The scan is complete, but firmware or the driver did not expose readable fan telemetry.")
                         color: popup.textColor
                         font.pixelSize: Math.round(10 * popup.uiScale)
                     }
@@ -832,8 +832,10 @@ Popup {
                 Button {
                     id: testPulseBtn
                     text: popup.testRunning ? qsTr("Testing Airflow... (%1s)").arg(popup.testRemainingSeconds) : qsTr("Quick Acoustic Test (4s)")
+                    enabled: popup.testRunning || popup.controllableFanCount > 0
                     implicitHeight: Math.round(34 * popup.uiScale)
                     hoverEnabled: true
+                    opacity: enabled ? 1.0 : 0.55
 
                     scale: down ? 0.98 : (hovered ? 1.01 : 1.0)
                     Behavior on scale { NumberAnimation { duration: 100 } }
@@ -867,6 +869,12 @@ Popup {
                             popup.stopAcousticValidation();
                         else
                             popup.triggerAcousticValidation();
+                    }
+
+                    ToolTip {
+                        visible: testPulseBtn.hovered && !testPulseBtn.enabled
+                        text: qsTr("A readable fan channel was found, but this hardware does not expose manual fan control.")
+                        delay: 400
                     }
                 }
 
