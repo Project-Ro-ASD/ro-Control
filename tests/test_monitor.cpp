@@ -77,6 +77,40 @@ private slots:
     QVERIFY(gpu.running());
   }
 
+  void testGpuAsyncRefreshCoalescesRequestsAndReportsBusyState() {
+    QTemporaryDir tempDir;
+    QVERIFY(tempDir.isValid());
+
+    const QString scriptPath = tempDir.filePath(QStringLiteral("slow-smi.sh"));
+    QFile script(scriptPath);
+    QVERIFY(script.open(QIODevice::WriteOnly | QIODevice::Text));
+    QTextStream stream(&script);
+    stream << "#!/bin/sh\n";
+    stream << "sleep 0.1\n";
+    stream << "printf 'NVIDIA Test GPU, 50, 25, 1024, 8192\\n'\n";
+    script.close();
+    QVERIFY(QFile::setPermissions(scriptPath, QFileDevice::ReadOwner |
+                                                  QFileDevice::WriteOwner |
+                                                  QFileDevice::ExeOwner));
+
+    qputenv("RO_CONTROL_COMMAND_NVIDIA_SMI", scriptPath.toUtf8());
+    GpuMonitor gpu;
+    gpu.stop();
+    QSignalSpy busySpy(&gpu, &GpuMonitor::refreshInProgressChanged);
+    QSignalSpy finishedSpy(&gpu, &GpuMonitor::telemetryRefreshFinished);
+
+    QTRY_VERIFY(gpu.refreshInProgress());
+    gpu.requestRefresh();
+    gpu.requestRefresh();
+
+    QTRY_COMPARE(finishedSpy.count(), 2);
+    QVERIFY(!gpu.refreshInProgress());
+    QVERIFY(busySpy.count() >= 4);
+    QCOMPARE(gpu.temperatureC(), 50);
+
+    qunsetenv("RO_CONTROL_COMMAND_NVIDIA_SMI");
+  }
+
   void testGpuPartialTelemetryKeepsMonitorAvailable() {
     QTemporaryDir tempDir;
     QVERIFY(tempDir.isValid());

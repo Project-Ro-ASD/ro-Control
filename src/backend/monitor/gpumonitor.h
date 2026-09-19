@@ -10,6 +10,8 @@ class GpuMonitor : public QObject {
   Q_OBJECT
   Q_PROPERTY(bool available READ available NOTIFY availableChanged)
   Q_PROPERTY(bool running READ running NOTIFY runningChanged)
+  Q_PROPERTY(bool refreshInProgress READ refreshInProgress NOTIFY
+                 refreshInProgressChanged)
   Q_PROPERTY(QString gpuName READ gpuName NOTIFY gpuNameChanged)
   Q_PROPERTY(int temperatureC READ temperatureC NOTIFY temperatureCChanged)
   Q_PROPERTY(int hotspotTemperatureC READ hotspotTemperatureC NOTIFY
@@ -53,6 +55,7 @@ public:
 
   bool available() const;
   bool running() const;
+  bool refreshInProgress() const;
   QString gpuName() const;
   int temperatureC() const;
   int hotspotTemperatureC() const;
@@ -89,6 +92,8 @@ public:
 signals:
   void availableChanged();
   void runningChanged();
+  void refreshInProgressChanged();
+  void telemetryRefreshFinished();
   void gpuNameChanged();
   void temperatureCChanged();
   void hotspotTemperatureCChanged();
@@ -141,4 +146,5 @@ private:
   int m_selectedGpuIndex = 0;
   quint64 m_refreshTickCount = 0;
   bool m_asyncRefreshInFlight = false;
+  bool m_refreshQueued = false;
 };

@@ -103,11 +103,40 @@ ApplicationWindow {
             root.ramMonitor.start();
         if (root.fanController)
             root.fanController.start();
+        root.updateTelemetryPolling();
+    }
+
+    // Fast polling is only useful on the telemetry and cooling pages, while a
+    // thermal condition always retains the fast safety cadence. Background
+    // pages use a lower-cost cadence without stopping the monitor that feeds
+    // HealthGuard and the tray.
+    function updateTelemetryPolling() {
+        if (!root.gpuMonitor)
+            return;
+        if (!root.gpuMonitor.available) {
+            root.gpuMonitor.updateInterval(15000);
+            return;
+        }
+        const hot = root.gpuMonitor.temperatureC >= 80;
+        const telemetryPage = tabBar.currentIndex === 1 || tabBar.currentIndex === 2;
+        const activeOperation = root.gpuMonitor.refreshInProgress;
+        root.gpuMonitor.updateInterval((root.active && (hot || telemetryPage || activeOperation)) ? 1000 : 5000);
     }
 
     onActiveChanged: {
         if (active)
             resumeRefreshTimer.restart();
+        updateTelemetryPolling();
+    }
+
+    Component.onCompleted: updateTelemetryPolling()
+
+    Connections {
+        target: root.gpuMonitor
+        function onTemperatureCChanged() { root.updateTelemetryPolling(); }
+        function onAvailableChanged() { root.updateTelemetryPolling(); }
+        function onRefreshInProgressChanged() { root.updateTelemetryPolling(); }
+        function onTelemetryRefreshFinished() { root.updateTelemetryPolling(); }
     }
 
     Timer {
@@ -192,6 +221,7 @@ ApplicationWindow {
 
                 TabBar {
                     id: tabBar
+                    onCurrentIndexChanged: root.updateTelemetryPolling()
                     Layout.alignment: Qt.AlignVCenter
                     spacing: Math.round(6 * root.uiScale)
 

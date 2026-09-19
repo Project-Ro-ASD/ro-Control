@@ -218,7 +218,7 @@ Item {
             page.fanController.refresh();
         }
         if (page.gpuMonitor)
-            page.gpuMonitor.refresh();
+            page.gpuMonitor.requestRefresh();
         if (page.cpuMonitor)
             page.cpuMonitor.refresh();
         refreshPulse.restart();

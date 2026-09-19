@@ -22,6 +22,7 @@ Item {
     property string reportFilterText: ""
     property string lastCopiedKey: ""
     property bool refreshBusy: false
+    property bool reportRefreshPending: false
     property string actionFeedback: ""
     property bool actionFailed: false
 
@@ -193,11 +194,21 @@ Item {
             return;
 
         // A diagnostic report is a snapshot, never a cache of the last page
-        // visit. Refresh every source before serialising it.
+        // visit. GPU telemetry finishes asynchronously, so report formatting
+        // is deferred until its completion signal.
         page.systemInfo.rescanHardware();
         if (page.cpuMonitor) page.cpuMonitor.refresh();
-        if (page.gpuMonitor) page.gpuMonitor.refresh();
         if (page.ramMonitor) page.ramMonitor.refresh();
+        if (page.gpuMonitor) {
+            page.reportRefreshPending = true;
+            page.gpuMonitor.requestRefresh();
+            return;
+        }
+        page.finalizeDiagnosticReport();
+    }
+
+    function finalizeDiagnosticReport() {
+        page.reportRefreshPending = false;
 
         const gpu = page.diagnosticGpuName();
         const drv = page.nvidiaDriverSummary();
@@ -231,12 +242,24 @@ Item {
         page.refreshBusy = true;
         page.systemInfo.rescanHardware();
         if (page.cpuMonitor) page.cpuMonitor.refresh();
-        if (page.gpuMonitor) page.gpuMonitor.refresh();
+        if (page.gpuMonitor) {
+            page.gpuMonitor.requestRefresh();
+        } else {
+            page.refreshBusy = false;
+        }
         if (page.ramMonitor) page.ramMonitor.refresh();
         page.actionFailed = false;
         page.actionFeedback = qsTr("System information refreshed.");
         refreshFeedbackTimer.restart();
-        page.refreshBusy = false;
+    }
+
+    Connections {
+        target: page.gpuMonitor
+        function onTelemetryRefreshFinished() {
+            if (page.reportRefreshPending)
+                page.finalizeDiagnosticReport();
+            page.refreshBusy = false;
+        }
     }
 
     Timer {

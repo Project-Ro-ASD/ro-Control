@@ -547,12 +547,16 @@ GpuMonitor::GpuMonitor(QObject *parent) : QObject(parent) {
   connect(&m_timer, &QTimer::timeout, this, &GpuMonitor::refreshAsync);
 
   start();
-  refresh();
+  // Defer the first driver query until the event loop is running. Constructing
+  // a QML-facing monitor must never synchronously start nvidia-smi.
+  QTimer::singleShot(0, this, &GpuMonitor::refreshAsync);
 }
 
 bool GpuMonitor::available() const { return m_available; }
 
 bool GpuMonitor::running() const { return m_timer.isActive(); }
+
+bool GpuMonitor::refreshInProgress() const { return m_asyncRefreshInFlight; }
 
 QString GpuMonitor::gpuName() const {
   return NvidiaDetector::localizeGpuName(m_gpuName);
@@ -628,9 +632,13 @@ void GpuMonitor::requestRefresh() { refreshAsync(); }
 
 void GpuMonitor::refreshAsync() {
   if (m_asyncRefreshInFlight) {
+    // Retain a single follow-up update without starting concurrent driver
+    // processes for repeated UI clicks or timer ticks.
+    m_refreshQueued = true;
     return;
   }
   m_asyncRefreshInFlight = true;
+  emit refreshInProgressChanged();
 
   const int gpuIndex = m_selectedGpuIndex;
   auto *watcher = new QFutureWatcher<CommandRunner::Result>(this);
@@ -641,11 +649,18 @@ void GpuMonitor::refreshAsync() {
           [this, watcher]() {
             const CommandRunner::Result result = watcher->result();
             m_asyncRefreshInFlight = false;
+            emit refreshInProgressChanged();
             ++m_refreshTickCount;
             queryGpuDevices(false);
             queryGpuProcesses(false);
             processRefreshResult(result);
+            emit telemetryRefreshFinished();
             watcher->deleteLater();
+
+            if (m_refreshQueued) {
+              m_refreshQueued = false;
+              QTimer::singleShot(0, this, &GpuMonitor::refreshAsync);
+            }
           });
 }
 
