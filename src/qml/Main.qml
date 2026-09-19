@@ -5,6 +5,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
 import "pages" as Pages
+import "components" as Components
 
 ApplicationWindow {
     id: root
@@ -593,10 +594,13 @@ ApplicationWindow {
                         onToggled: if (root.hasUiPreferences) root.uiPreferences.setShowAdvancedInfo(checked)
                     }
 
-                    Button {
+                    Components.ActionButton {
                         Layout.fillWidth: true
                         text: qsTr("Reset appearance settings")
                         enabled: root.hasUiPreferences
+                        theme: colors
+                        compact: true
+                        uiScale: root.uiScale
                         onClicked: if (root.hasUiPreferences) root.uiPreferences.resetToDefaults()
                     }
                 }

@@ -267,9 +267,12 @@ Item {
                 RowLayout { anchors.fill: parent; anchors.margins: 12; spacing: 12
                     Label { text: qsTr("System health"); color: page.textColor; font.weight: Font.DemiBold }
                     Label { Layout.fillWidth: true; text: page.systemHealthSummary(); color: page.softTextColor; elide: Text.ElideRight }
-                    Button {
+                    Components.ActionButton {
                         text: page.refreshBusy ? qsTr("Refreshing…") : qsTr("Refresh")
                         enabled: !page.refreshBusy
+                        theme: page.theme
+                        compact: true
+                        uiScale: page.uiScale
                         onClicked: page.refreshSystemData()
                     }
                 }

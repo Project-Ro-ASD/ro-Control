@@ -252,11 +252,15 @@ Item {
                 columnSpacing: Math.round(10 * page.uiScale)
                 rowSpacing: Math.round(10 * page.uiScale)
 
-                Button {
+                Components.ActionButton {
                     Layout.columnSpan: telemetryGrid.columns
                     Layout.alignment: Qt.AlignRight
                     text: page.telemetryRefreshAnimating ? qsTr("Refreshing telemetry…") : qsTr("Refresh telemetry")
                     enabled: !page.telemetryRefreshAnimating
+                    theme: page.theme
+                    tone: "primary"
+                    compact: true
+                    uiScale: page.uiScale
                     onClicked: page.refreshTelemetry()
                 }
 
@@ -1330,13 +1334,20 @@ Item {
             RowLayout {
                 Layout.fillWidth: true
                 Item { Layout.fillWidth: true }
-                Button {
+                Components.ActionButton {
                     text: qsTr("Cancel")
+                    theme: page.theme
+                    compact: true
+                    uiScale: page.uiScale
                     onClicked: terminateProcessPopup.close()
                 }
-                Button {
+                Components.ActionButton {
                     text: qsTr("End process")
                     enabled: page.pendingTerminationPid > 0
+                    theme: page.theme
+                    tone: "danger"
+                    compact: true
+                    uiScale: page.uiScale
                     onClicked: {
                         page.terminationError = "";
                         if (page.gpuMonitor)
