@@ -1,6 +1,9 @@
 #include "systeminfoprovider.h"
 
 #include "commandrunner.h"
+#include "diagnosticreportformatter.h"
+#include "diagnosticreportpreferences.h"
+#include "systemplatformprobes.h"
 
 #include <QClipboard>
 #include <QDir>
@@ -309,43 +312,20 @@ bool SystemInfoProvider::copyToClipboard(const QString &text) {
 }
 
 void SystemInfoProvider::loadDiagnosticReportPreferences() {
-  QSettings settings;
-  settings.beginGroup(QStringLiteral("DiagnosticReport"));
-  const QString format =
-      settings.value(QStringLiteral("format"), QStringLiteral("markdown"))
-          .toString()
-          .trimmed()
-          .toLower();
-  const QString destination =
-      settings.value(QStringLiteral("destination"), QStringLiteral("preview"))
-          .toString()
-          .trimmed()
-          .toLower();
-  settings.endGroup();
-  m_diagnosticReportFormat =
-      (format == QStringLiteral("plain") || format == QStringLiteral("json"))
-          ? format
-          : QStringLiteral("markdown");
-  m_diagnosticReportDestination = destination == QStringLiteral("clipboard")
-                                      ? QStringLiteral("clipboard")
-                                      : QStringLiteral("preview");
+  const auto preferences = DiagnosticReportPreferenceStore::load();
+  m_diagnosticReportFormat = preferences.format;
+  m_diagnosticReportDestination = preferences.destination;
 }
 
 void SystemInfoProvider::saveDiagnosticReportPreferences() const {
-  QSettings settings;
-  settings.beginGroup(QStringLiteral("DiagnosticReport"));
-  settings.setValue(QStringLiteral("format"), m_diagnosticReportFormat);
-  settings.setValue(QStringLiteral("destination"),
-                    m_diagnosticReportDestination);
-  settings.endGroup();
+  DiagnosticReportPreferenceStore::save(
+      {.format = m_diagnosticReportFormat,
+       .destination = m_diagnosticReportDestination});
 }
 
 void SystemInfoProvider::setDiagnosticReportFormat(const QString &format) {
-  const QString normalized = format.trimmed().toLower();
-  const QString next = (normalized == QStringLiteral("plain") ||
-                        normalized == QStringLiteral("json"))
-                           ? normalized
-                           : QStringLiteral("markdown");
+  const QString next =
+      DiagnosticReportPreferenceStore::normalizedFormat(format);
   if (m_diagnosticReportFormat == next)
     return;
   m_diagnosticReportFormat = next;
@@ -356,9 +336,7 @@ void SystemInfoProvider::setDiagnosticReportFormat(const QString &format) {
 void SystemInfoProvider::setDiagnosticReportDestination(
     const QString &destination) {
   const QString next =
-      destination.trimmed().toLower() == QStringLiteral("clipboard")
-          ? QStringLiteral("clipboard")
-          : QStringLiteral("preview");
+      DiagnosticReportPreferenceStore::normalizedDestination(destination);
   if (m_diagnosticReportDestination == next)
     return;
   m_diagnosticReportDestination = next;
@@ -370,88 +348,23 @@ QString SystemInfoProvider::generateSystemReport(
     const QString &gpuName, const QString &driverVer, const QString &vramStr,
     const QString &ramStr, const QString &pcieStr, const QString &secureBoot,
     const QString &format) {
-  const QString outputFormat = format.trimmed().toLower();
-  if (outputFormat == QStringLiteral("json")) {
-    QJsonObject report;
-    report.insert(QStringLiteral("report"),
-                  QStringLiteral("ro-Control System Diagnostic Report"));
-    report.insert(QStringLiteral("operatingSystem"), m_osName);
-    report.insert(QStringLiteral("linuxKernel"), m_kernelVersion);
-    report.insert(QStringLiteral("desktopEnvironment"), m_desktopEnvironment);
-    report.insert(QStringLiteral("processor"), m_cpuModel);
-    if (!m_motherboardModel.isEmpty())
-      report.insert(QStringLiteral("motherboard"), m_motherboardModel);
-    if (!m_biosVersion.isEmpty())
-      report.insert(QStringLiteral("uefiBios"), m_biosVersion);
-    if (!gpuName.isEmpty())
-      report.insert(QStringLiteral("graphicsCard"), gpuName);
-    if (!driverVer.isEmpty())
-      report.insert(QStringLiteral("nvidiaDriver"), driverVer);
-    if (!vramStr.isEmpty())
-      report.insert(QStringLiteral("videoMemory"), vramStr);
-    if (!m_integratedGpuName.isEmpty() && !m_integratedGpuMemory.isEmpty()) {
-      report.insert(QStringLiteral("integratedGraphics"), m_integratedGpuName);
-      report.insert(QStringLiteral("integratedGraphicsMemory"),
-                    m_integratedGpuMemory);
-    }
-    if (!ramStr.isEmpty())
-      report.insert(QStringLiteral("systemMemory"), ramStr);
-    if (!pcieStr.isEmpty())
-      report.insert(QStringLiteral("pcieLink"), pcieStr);
-    if (!secureBoot.isEmpty())
-      report.insert(QStringLiteral("platformSecurity"), secureBoot);
-    if (!m_graphicsApiSummary.isEmpty())
-      report.insert(QStringLiteral("computeGraphics"), m_graphicsApiSummary);
-    return QString::fromUtf8(
-        QJsonDocument(report).toJson(QJsonDocument::Indented));
-  }
-
-  QString report;
-  QTextStream out(&report);
-  const bool markdown = outputFormat != QStringLiteral("plain");
-  const auto field = [markdown](const QString &label, const QString &value) {
-    return markdown ? QStringLiteral("- **%1:** %2\n").arg(label, value)
-                    : QStringLiteral("%1: %2\n").arg(label, value);
-  };
-  out << (markdown ? QStringLiteral("# ro-Control System Diagnostic Report\n\n")
-                   : QStringLiteral("ro-Control System Diagnostic Report\n\n"));
-  out << field(QStringLiteral("Operating System"), m_osName);
-  out << field(QStringLiteral("Linux Kernel"), m_kernelVersion);
-  out << field(QStringLiteral("Desktop Environment"), m_desktopEnvironment);
-  out << field(QStringLiteral("Processor (CPU)"), m_cpuModel);
-  if (!m_motherboardModel.isEmpty()) {
-    out << field(QStringLiteral("Motherboard"), m_motherboardModel);
-  }
-  if (!m_biosVersion.isEmpty()) {
-    out << field(QStringLiteral("UEFI / BIOS"), m_biosVersion);
-  }
-  if (!gpuName.isEmpty()) {
-    out << field(QStringLiteral("Graphics Card (GPU)"), gpuName);
-  }
-  if (!driverVer.isEmpty()) {
-    out << field(QStringLiteral("NVIDIA Driver"), driverVer);
-  }
-  if (!vramStr.isEmpty()) {
-    out << field(QStringLiteral("Video Memory (VRAM)"), vramStr);
-  }
-  if (!m_integratedGpuName.isEmpty() && !m_integratedGpuMemory.isEmpty()) {
-    out << field(QStringLiteral("Integrated Graphics"), m_integratedGpuName);
-    out << field(QStringLiteral("Integrated Graphics Memory"),
-                 m_integratedGpuMemory);
-  }
-  if (!ramStr.isEmpty()) {
-    out << field(QStringLiteral("System Memory (RAM)"), ramStr);
-  }
-  if (!pcieStr.isEmpty()) {
-    out << field(QStringLiteral("PCIe Link"), pcieStr);
-  }
-  if (!secureBoot.isEmpty()) {
-    out << field(QStringLiteral("Platform Security"), secureBoot);
-  }
-  if (!m_graphicsApiSummary.isEmpty()) {
-    out << field(QStringLiteral("Compute & Graphics"), m_graphicsApiSummary);
-  }
-  return report;
+  return DiagnosticReportFormatter::format(
+      {.osName = m_osName,
+       .kernelVersion = m_kernelVersion,
+       .desktopEnvironment = m_desktopEnvironment,
+       .cpuModel = m_cpuModel,
+       .motherboardModel = m_motherboardModel,
+       .biosVersion = m_biosVersion,
+       .graphicsApiSummary = m_graphicsApiSummary,
+       .integratedGpuName = m_integratedGpuName,
+       .integratedGpuMemory = m_integratedGpuMemory,
+       .gpuName = gpuName,
+       .driverVersion = driverVer,
+       .vram = vramStr,
+       .ram = ramStr,
+       .pcie = pcieStr,
+       .secureBoot = secureBoot},
+      format);
 }
 
 QString SystemInfoProvider::detectOsName() const {
@@ -792,73 +705,5 @@ QString SystemInfoProvider::detectIntegratedGpuMemory() const {
 }
 
 bool SystemInfoProvider::detectOnBattery(QString *sourceLabel) const {
-  const QString overrideOnline =
-      qEnvironmentVariable("RO_CONTROL_POWER_SUPPLY_ONLINE").trimmed();
-  if (!overrideOnline.isEmpty()) {
-    const bool onBat = (overrideOnline == QStringLiteral("0"));
-    if (sourceLabel) {
-      *sourceLabel =
-          onBat ? QStringLiteral("Battery") : QStringLiteral("AC Power");
-    }
-    return onBat;
-  }
-
-#if defined(Q_OS_LINUX)
-  QDir powerDir(QStringLiteral("/sys/class/power_supply"));
-  if (!powerDir.exists()) {
-    if (sourceLabel) {
-      *sourceLabel = QStringLiteral("AC / Desktop");
-    }
-    return false;
-  }
-
-  const QFileInfoList entries =
-      powerDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-  bool hasBattery = false;
-  bool isDischarging = false;
-  bool isAcOnline = false;
-
-  for (const QFileInfo &entry : entries) {
-    const QString type =
-        valueFromFile(entry.absoluteFilePath() + QStringLiteral("/type"))
-            .trimmed();
-    if (type.compare(QStringLiteral("Battery"), Qt::CaseInsensitive) == 0) {
-      hasBattery = true;
-      const QString status =
-          valueFromFile(entry.absoluteFilePath() + QStringLiteral("/status"))
-              .trimmed();
-      if (status.compare(QStringLiteral("Discharging"), Qt::CaseInsensitive) ==
-          0) {
-        isDischarging = true;
-      }
-    } else if (type.compare(QStringLiteral("Mains"), Qt::CaseInsensitive) ==
-               0) {
-      const QString online =
-          valueFromFile(entry.absoluteFilePath() + QStringLiteral("/online"))
-              .trimmed();
-      if (online == QStringLiteral("1")) {
-        isAcOnline = true;
-      }
-    }
-  }
-
-  if (!hasBattery) {
-    if (sourceLabel) {
-      *sourceLabel = QStringLiteral("AC / Desktop");
-    }
-    return false;
-  }
-
-  const bool onBat = isDischarging || (!isAcOnline && hasBattery);
-  if (sourceLabel) {
-    *sourceLabel =
-        onBat ? QStringLiteral("Battery") : QStringLiteral("AC Power");
-  }
-  return onBat;
-#else
-  if (sourceLabel) {
-    *sourceLabel = QStringLiteral("AC Power");
-  }
-  return false;
-#endif
+  return SystemPlatformProbes::onBattery(sourceLabel);
 }

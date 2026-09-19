@@ -108,6 +108,9 @@ set(BACKEND_SOURCES
     src/backend/system/languagemanager.cpp
     src/backend/system/uipreferencesmanager.cpp
     src/backend/system/systeminfoprovider.cpp
+    src/backend/system/diagnosticreportformatter.cpp
+    src/backend/system/diagnosticreportpreferences.cpp
+    src/backend/system/systemplatformprobes.cpp
     src/backend/fan/fancontroller.cpp
     src/backend/power/powercontroller.cpp
     src/backend/system/healthguard.cpp
@@ -367,13 +370,36 @@ configure_file(
 )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ro-control.service
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/systemd/system
+    DESTINATION lib/systemd/system
 )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ro-control-user.service
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/systemd/user
+    DESTINATION lib/systemd/user
     RENAME ro-control.service
 )
+
+# Stages the full install tree under the build directory and checks the public
+# files that the RPM manifest and desktop integration depend on.
+add_custom_target(verify-install-tree
+    COMMAND ${CMAKE_COMMAND} --install ${CMAKE_CURRENT_BINARY_DIR}
+            --prefix ${CMAKE_CURRENT_BINARY_DIR}/install-check
+    COMMAND ${CMAKE_COMMAND}
+            -DRO_CONTROL_INSTALL_ROOT=${CMAKE_CURRENT_BINARY_DIR}/install-check
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/VerifyInstallTree.cmake
+    DEPENDS ro-control
+    COMMENT "Staging and verifying ro-control install tree"
+)
+
+find_program(RPMSPEC_EXE rpmspec)
+if(RPMSPEC_EXE)
+    add_custom_target(verify-rpm-metadata
+        COMMAND ${RPMSPEC_EXE} -P
+                ${CMAKE_CURRENT_SOURCE_DIR}/packaging/rpm/ro-control.spec
+        COMMAND ${RPMSPEC_EXE} -q --qf "%{NAME} %{VERSION} %{ARCH}"
+                ${CMAKE_CURRENT_SOURCE_DIR}/packaging/rpm/ro-control.spec
+        COMMENT "Validating ro-control RPM metadata"
+    )
+endif()
 
 # ─── Formatting ──────────────────────────────────────────────────────────────
 find_program(CLANG_FORMAT_EXE clang-format)

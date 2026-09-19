@@ -41,6 +41,8 @@ The test suite is built on **QtTest** and managed by **CTest** (13 targets cover
 
 ```bash
 ctest --test-dir build --output-on-failure --verbose
+cmake --build build --target verify-install-tree
+cmake --build build --target verify-rpm-metadata
 ```
 
 ---

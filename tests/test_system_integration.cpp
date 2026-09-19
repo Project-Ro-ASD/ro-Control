@@ -16,6 +16,7 @@
 #include "nvidia/installer.h"
 #include "system/capabilityprobe.h"
 #include "system/commandrunner.h"
+#include "system/diagnosticreportformatter.h"
 #include "system/dnfmanager.h"
 #include "system/polkit.h"
 #include "system/sessionutil.h"
@@ -67,6 +68,29 @@ private slots:
     QCOMPARE(result.stdout.trimmed(), QStringLiteral("override-ok"));
 
     qunsetenv("RO_CONTROL_COMMAND_DNF");
+  }
+
+  void testDiagnosticReportFormatterIsPlatformIndependent() {
+    const DiagnosticReportData data{
+        .osName = QStringLiteral("Fedora Linux"),
+        .kernelVersion = QStringLiteral("6.17.0"),
+        .desktopEnvironment = QStringLiteral("KDE Plasma"),
+        .cpuModel = QStringLiteral("Test CPU"),
+        .gpuName = QStringLiteral("NVIDIA Test GPU"),
+        .ram = QStringLiteral("32 GB")};
+
+    const QString markdown =
+        DiagnosticReportFormatter::format(data, "markdown");
+    QVERIFY(markdown.contains(QStringLiteral("Fedora Linux")));
+    QVERIFY(markdown.contains(QStringLiteral("NVIDIA Test GPU")));
+
+    const auto json = QJsonDocument::fromJson(
+        DiagnosticReportFormatter::format(data, "json").toUtf8());
+    QVERIFY(json.isObject());
+    QCOMPARE(json.object().value(QStringLiteral("operatingSystem")).toString(),
+             QStringLiteral("Fedora Linux"));
+    QCOMPARE(json.object().value(QStringLiteral("graphicsCard")).toString(),
+             QStringLiteral("NVIDIA Test GPU"));
   }
 
   void testSessionTypeUsesXdgSessionType() {
