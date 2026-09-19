@@ -2934,24 +2934,6 @@ Kapalı kaynak kuruluma devam etmek için Kabul Et'i, iptal etmek için Reddet'i
     </message>
 </context>
 <context>
-    <name>SidebarMenu</name>
-    <message>
-        <location filename="../src/qml/components/SidebarMenu.qml" line="18" />
-        <source>Install</source>
-        <translation>Kurulum</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/SidebarMenu.qml" line="19" />
-        <source>Expert</source>
-        <translation>Uzman</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/SidebarMenu.qml" line="20" />
-        <source>Monitor</source>
-        <translation>Monitör</translation>
-    </message>
-</context>
-<context>
     <name>SystemPage</name>
     <message>
         <location filename="../src/qml/pages/SystemPage.qml" line="71" />

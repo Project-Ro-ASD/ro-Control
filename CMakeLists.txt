@@ -200,14 +200,9 @@ qt_add_qml_module(ro-control
         src/qml/pages/MonitorPage.qml
         src/qml/pages/FanPage.qml
         src/qml/pages/SystemPage.qml
-        src/qml/components/InfoBadge.qml
         src/qml/components/RefreshToolButton.qml
         src/qml/components/ActionButton.qml
-        src/qml/components/DetailRow.qml
-        src/qml/components/SectionPanel.qml
         src/qml/components/StatusBanner.qml
-        src/qml/components/StatCard.qml
-        src/qml/components/SidebarMenu.qml
         src/qml/components/FanSettingsPopup.qml
         src/qml/components/FanRescanPopup.qml
     RESOURCES

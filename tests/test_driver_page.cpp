@@ -400,12 +400,10 @@ QObject *TestDriverPage::createPage(DetectorMock *detector,
   tempPageFile.write(pageSource.toUtf8());
   tempPageFile.close();
 
-  const QStringList componentFiles = {QStringLiteral("ActionButton.qml"),
-                                      QStringLiteral("InfoBadge.qml"),
-                                      QStringLiteral("RefreshToolButton.qml"),
-                                      QStringLiteral("SectionPanel.qml"),
-                                      QStringLiteral("StatusBanner.qml"),
-                                      QStringLiteral("StatCard.qml")};
+  const QStringList componentFiles = {
+      QStringLiteral("RefreshToolButton.qml"),
+      QStringLiteral("StatusBanner.qml"),
+  };
   for (const QString &fileName : componentFiles) {
     const QString sourceComponentPath =
         QDir(sourceRoot)

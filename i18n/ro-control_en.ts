@@ -2934,24 +2934,6 @@ Choose Accept to continue with the closed-source installation, or Reject to canc
     </message>
 </context>
 <context>
-    <name>SidebarMenu</name>
-    <message>
-        <location filename="../src/qml/components/SidebarMenu.qml" line="18" />
-        <source>Install</source>
-        <translation>Install</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/SidebarMenu.qml" line="19" />
-        <source>Expert</source>
-        <translation>Expert</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/components/SidebarMenu.qml" line="20" />
-        <source>Monitor</source>
-        <translation>Monitor</translation>
-    </message>
-</context>
-<context>
     <name>SystemPage</name>
     <message>
         <location filename="../src/qml/pages/SystemPage.qml" line="71" />
