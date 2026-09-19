@@ -639,6 +639,9 @@ int main(int argc, char *argv[]) {
     QCoreApplication daemonApp(argc, argv);
     daemonApp.setApplicationName(QString::fromLatin1(kApplicationName));
     daemonApp.setApplicationVersion(QString::fromLatin1(kApplicationVersion));
+    daemonApp.setOrganizationName(QStringLiteral("Project-Ro-ASD"));
+    daemonApp.setOrganizationDomain(
+        QStringLiteral("github.com/Project-Ro-ASD"));
 
     CpuMonitor cpuMonitor;
     GpuMonitor gpuMonitor;
@@ -678,6 +681,8 @@ int main(int argc, char *argv[]) {
     QCoreApplication cliApp(argc, argv);
     cliApp.setApplicationName(QString::fromLatin1(kApplicationName));
     cliApp.setApplicationVersion(QString::fromLatin1(kApplicationVersion));
+    cliApp.setOrganizationName(QStringLiteral("Project-Ro-ASD"));
+    cliApp.setOrganizationDomain(QStringLiteral("github.com/Project-Ro-ASD"));
 
     const auto result = executeCliCommand(command, cliApp.applicationName(),
                                           cliApp.applicationVersion());

@@ -25,7 +25,7 @@ sudo dnf install -y ./ro-control-<version>-1.<arch>.rpm
 ```
 
 Replace `<version>` and `<arch>` with the release you are installing (for
-example `ro-control-1.3.0-1.x86_64.rpm`).
+example `ro-control-1.3.1-1.x86_64.rpm`).
 
 ### Installation via KDE Discover
 1. Open the `.rpm` file with **Discover** (`plasma-discover ro-control-<version>-1.<arch>.rpm`) or double-click in Dolphin.
@@ -44,7 +44,7 @@ example `ro-control-1.3.0-1.x86_64.rpm`).
 | **System Service** | `/usr/lib/systemd/system/ro-control.service` | System-wide thermal guard and hardware monitoring daemon |
 | **User Service** | `/usr/lib/systemd/user/ro-control.service` | User-session background D-Bus telemetry service |
 | **Desktop Entry** | `/usr/share/applications/io.github.projectroasd.rocontrol.desktop` | Application menu and desktop launcher |
-| **AppStream Metadata** | `/usr/share/metainfo/io.github.projectroasd.rocontrol.metainfo.xml` | Discover store catalog metadata and screenshots |
+| **AppStream Metadata** | `/usr/share/metainfo/io.github.projectroasd.rocontrol.metainfo.xml` | Discover store catalog metadata |
 | **Man Page** | `/usr/share/man/man1/ro-control.1.gz` | Manual page (`man ro-control`) |
 | **Shell Completions** | `/usr/share/bash-completion/`, `/usr/share/zsh/`, `/usr/share/fish/` | Tab completions for Bash, Zsh, and Fish |
 
@@ -56,16 +56,19 @@ The RPM package automatically runs icon cache and desktop database triggers upon
 
 ### Enabling the Background Service
 ```bash
-# Enable and start the system-level thermal monitor service
+# Enable the system-level thermal monitor. This service does not have access
+# to a graphical user's session bus, so it is not the D-Bus telemetry provider.
 sudo systemctl enable --now ro-control.service
 
-# Or enable the user-session D-Bus telemetry service
+# Enable the user-session D-Bus telemetry provider. Use this in a graphical
+# session; do not enable both units unless you deliberately need both processes.
 systemctl --user enable --now ro-control.service
 ```
 
 ### Verifying Service Status
 ```bash
 systemctl status ro-control.service
+systemctl --user status ro-control.service
 ```
 
 ---

@@ -71,6 +71,10 @@
 | `SetClockOffsets` | `(i: coreMhz, i: memMhz) -> (b: success)` | Sets GPU core and memory clock offsets in MHz |
 | `SetPersistenceMode`| `(b: enabled) -> (b: success)` | Toggles NVIDIA driver persistence daemon |
 
+The service is registered on the **session** D-Bus. The user service is the
+supported systemd route for IPC consumers; the system service is intended for
+hardware monitoring and thermal protection without a graphical session bus.
+
 ### Signals
 
 | Signal | Signature | Description |

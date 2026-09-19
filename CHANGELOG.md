@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Redundant factory-success check in the `nvidia-settings` RPM query cleanup.
 
 ### Tests
-- Expanded unit/integration coverage; 12/12 test targets passing (PowerController, HealthGuard, GpuMonitor multi-GPU/process, D-Bus service, GPU-name localization, CLI, metadata).
+- Expanded unit/integration coverage; 13/13 test targets passing (PowerController, HealthGuard, GpuMonitor multi-GPU/process, D-Bus service, GPU-name localization, CLI, QML integration, and metadata).
 
 ---
 

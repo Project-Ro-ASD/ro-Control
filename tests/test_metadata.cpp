@@ -114,6 +114,10 @@ private slots:
 
     QVERIFY(!manPage.isEmpty());
     QVERIFY(manPage.contains(QStringLiteral(".TH RO-CONTROL 1")));
+#ifdef RO_CONTROL_PROJECT_VERSION
+    QVERIFY(manPage.contains(QStringLiteral("ro-control ") +
+                             QStringLiteral(RO_CONTROL_PROJECT_VERSION)));
+#endif
     QVERIFY(manPage.contains(QStringLiteral("driver install")));
     QVERIFY(manPage.contains(QStringLiteral("status")));
     QVERIFY(manPage.contains(QStringLiteral("fan status")));
@@ -133,6 +137,27 @@ private slots:
     QVERIFY(fishCompletion.contains(QStringLiteral("complete -c ro-control")));
     QVERIFY(fishCompletion.contains(QStringLiteral("accept-license")));
     QVERIFY(fishCompletion.contains(QStringLiteral("-a fan -d")));
+  }
+
+  void testDocumentationMatchesCurrentConfigurationSurface() {
+    const QString buildGuide = readFile(QStringLiteral("docs/BUILD.md"));
+    const QString configGuide =
+        readFile(QStringLiteral("docs/CONFIGURATION.md"));
+    const QString installGuide = readFile(QStringLiteral("docs/INSTALL.md"));
+    const QString architectureGuide =
+        readFile(QStringLiteral("docs/ARCHITECTURE.md"));
+
+    QVERIFY(buildGuide.contains(QStringLiteral("13 targets")));
+    QVERIFY(configGuide.contains(QStringLiteral("`HealthGuard` group")));
+    QVERIFY(configGuide.contains(QStringLiteral("`Power` group")));
+    QVERIFY(configGuide.contains(QStringLiteral("`DiagnosticReport` group")));
+    QVERIFY(configGuide.contains(QStringLiteral("`ui/themeMode`")));
+    QVERIFY(
+        configGuide.contains(QStringLiteral("`ui/follow_system_language`")));
+    QVERIFY(installGuide.contains(QStringLiteral("1.3.1-1.x86_64.rpm")));
+    QVERIFY(!installGuide.contains(QStringLiteral("metadata and screenshots")));
+    QVERIFY(
+        architectureGuide.contains(QStringLiteral("`ApplyFanCurvePreset`")));
   }
 };
 

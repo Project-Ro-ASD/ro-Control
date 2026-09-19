@@ -20,7 +20,7 @@ keys) resets the affected subsystem to its factory defaults.
 
 ## 1. Thermal Safety (HealthGuard)
 
-Stored at the top level of the settings file.
+Stored under the `HealthGuard` group.
 
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -37,7 +37,7 @@ critical threshold triggers an emergency 100% cooling override.
 
 ## 2. GPU Power (PowerController)
 
-Stored at the top level of the settings file.
+Stored under the `Power` group.
 
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
@@ -51,12 +51,12 @@ Stored at the top level of the settings file.
 
 ## 3. Diagnostic Report
 
-Stored at the top level of the settings file.
+Stored under the `DiagnosticReport` group.
 
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `format` | string | `markdown` | Report output format (`markdown`) |
-| `destination` | string | `preview` | Report destination (`preview`) |
+| `format` | string | `markdown` | Report output format (`markdown`, `plain`, `json`) |
+| `destination` | string | `preview` | Report destination (`preview`, `clipboard`) |
 
 ---
 
@@ -67,7 +67,9 @@ Stored under the `ui` group.
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `ui/showAdvancedInfo` | bool | `true` | Shows advanced diagnostics information |
-| `ui/language` | string | `en` | Interface language code (e.g. `en`, `tr`, `de`, `es`); empty means system locale |
+| `ui/themeMode` | string | `system` | Appearance mode (`system`, `light`, `dark`) |
+| `ui/follow_system_language` | bool | `true` | Uses the current system locale when enabled |
+| `ui/language` | string | — | Interface language code (`en`, `tr`, `de`, `es`) when system-language following is disabled |
 
 ---
 
@@ -81,8 +83,9 @@ Fan settings are stored per hardware domain under dedicated groups.
 | :--- | :--- | :--- | :--- |
 | `mode` | string | `auto` | Cooling mode (`auto`, `silent`, `balanced`, `performance`, `manual`, `custom`) |
 | `manualSpeed` | int | `50` | Fixed manual speed (%) in `manual` mode. Constraint: 0–100 |
-| `thermalThreshold` | int | `85` | Fan thermal threshold (°C) |
+| `thermalThreshold` | int | `85` | Fan thermal threshold (°C). Constraint: 60–105 |
 | `smoothingEnabled` | bool | `false` | Fan ramp smoothing enabled |
+| `hardwareSetupComplete` | bool | `false` | Fan discovery/setup wizard has completed |
 | `batteryProfileSyncEnabled` | bool | `false` | Syncs fan profile with battery power source |
 | `rampUpRate` | int | `20` | Ramp-up rate (%/s). Constraint: 1–100 |
 | `rampDownRate` | int | `5` | Ramp-down rate (%/s). Constraint: 1–100 |
@@ -117,6 +120,9 @@ Fan settings are stored per hardware domain under dedicated groups.
 | `curveSpeed_<N>` | int | — | Fan speed (%) of curve point N |
 
 ---
+
+Each custom curve accepts 2–8 points. Temperatures are clamped to 20–100 °C
+and fan speeds to 0–100% when loaded.
 
 ## 6. Manual Override Examples
 

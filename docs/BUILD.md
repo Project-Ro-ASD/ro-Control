@@ -37,7 +37,7 @@ cmake --build build --parallel $(nproc)
 
 ## 3. Running Tests
 
-The test suite is built on **QtTest** and managed by **CTest** (12 suites covering hardware detection, fan curves, telemetry parsing, Polkit helper, D-Bus service, CLI, and AppStream metadata):
+The test suite is built on **QtTest** and managed by **CTest** (13 targets covering hardware detection, fan curves, telemetry parsing, preferences and localization, Polkit helper, D-Bus service, CLI, QML integration, and desktop metadata):
 
 ```bash
 ctest --test-dir build --output-on-failure --verbose
