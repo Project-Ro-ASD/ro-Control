@@ -42,6 +42,8 @@ public:
     bool secureBootEnabled = false;
     bool secureBootKnown = false;
     QString sessionType;
+
+    bool operator==(const GpuInfo &) const = default;
   };
 
   explicit NvidiaDetector(QObject *parent = nullptr);

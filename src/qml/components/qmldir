@@ -2,3 +2,5 @@ ActionButton 1.0 ActionButton.qml
 FanSettingsPopup 1.0 FanSettingsPopup.qml
 RefreshToolButton 1.0 RefreshToolButton.qml
 StatusBanner 1.0 StatusBanner.qml
+SystemDiagnosticDialog 1.0 SystemDiagnosticDialog.qml
+SystemRebootDialog 1.0 SystemRebootDialog.qml

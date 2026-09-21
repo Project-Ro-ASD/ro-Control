@@ -208,6 +208,8 @@ qt_add_qml_module(ro-control
         src/qml/components/StatusBanner.qml
         src/qml/components/FanSettingsPopup.qml
         src/qml/components/FanRescanPopup.qml
+        src/qml/components/SystemDiagnosticDialog.qml
+        src/qml/components/SystemRebootDialog.qml
     RESOURCES
         src/qml/assets/ro-control-logo.svg
         src/qml/assets/icon-language.svg

@@ -72,6 +72,72 @@ std::optional<bool> runningNvidiaModuleIsOpen() {
   return std::nullopt;
 }
 
+struct InstalledPackagesSnapshot {
+  QSet<QString> installedPackages;
+  QString detectedVersion;
+};
+
+InstalledPackagesSnapshot queryInstalledDriverPackages() {
+  static InstalledPackagesSnapshot cached;
+  static QElapsedTimer cacheTimer;
+  static bool cacheValid = false;
+  static QMutex cacheMutex;
+  static QString cachedRpmPath;
+
+  QMutexLocker locker(&cacheMutex);
+  const QString rpmPath =
+      CommandRunner::resolveProgramPath(QStringLiteral("rpm"));
+  if (cacheValid && cachedRpmPath == rpmPath && cacheTimer.isValid() &&
+      cacheTimer.elapsed() < 5000) {
+    return cached;
+  }
+
+  cached.installedPackages.clear();
+  cached.detectedVersion.clear();
+
+  if (rpmPath.isEmpty()) {
+    cacheValid = false;
+    cachedRpmPath.clear();
+    return cached;
+  }
+
+  CommandRunner runner;
+  CommandRunner::RunOptions opts;
+  opts.timeoutMs = 1200;
+  const auto result = runner.run(
+      QStringLiteral("rpm"),
+      {QStringLiteral("-q"), QStringLiteral("--qf"),
+       QStringLiteral("%{NAME}|%{EPOCH}:%{VERSION}-%{RELEASE}\n"),
+       QStringLiteral("akmod-nvidia"), QStringLiteral("akmod-nvidia-open"),
+       QStringLiteral("xorg-x11-drv-nvidia"),
+       QStringLiteral("xorg-x11-drv-nvidia-open")},
+      opts);
+
+  if (result.success() || !result.stdout.isEmpty()) {
+    const QStringList lines =
+        result.stdout.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
+    for (const QString &line : lines) {
+      if (line.contains(QStringLiteral("is not installed"))) {
+        continue;
+      }
+      const QStringList parts = line.split(QLatin1Char('|'));
+      if (parts.size() >= 2) {
+        const QString pkgName = parts.at(0).trimmed();
+        const QString rawVer = parts.at(1).trimmed();
+        cached.installedPackages.insert(pkgName);
+        if (cached.detectedVersion.isEmpty()) {
+          cached.detectedVersion = normalizedRpmDriverVersion(rawVer);
+        }
+      }
+    }
+  }
+
+  cacheTimer.start();
+  cachedRpmPath = rpmPath;
+  cacheValid = true;
+  return cached;
+}
+
 } // namespace
 
 NvidiaDetector::NvidiaDetector(QObject *parent) : QObject(parent) {}
@@ -83,13 +149,36 @@ NvidiaDetector::GpuInfo NvidiaDetector::detect() const {
   info.name = detectGpuName();
   info.found = !info.name.isEmpty();
   info.driverVersion = detectDriverVersion();
-  if (info.driverVersion.isEmpty()) {
-    info.driverVersion = detectDriverPackageVersion();
-  }
-  info.driverPackageInstalled = detectDriverPackageInstalled();
   info.driverLoaded = isModuleLoaded(QStringLiteral("nvidia"));
-  info.openSourceDriverInstalled = detectOpenSourceDriverInstalled();
-  info.closedSourceDriverInstalled = detectClosedSourceDriverInstalled();
+
+  const auto pkgSnapshot = queryInstalledDriverPackages();
+  if (info.driverVersion.isEmpty()) {
+    info.driverVersion = pkgSnapshot.detectedVersion;
+  }
+  info.driverPackageInstalled = !pkgSnapshot.installedPackages.isEmpty();
+  info.openSourceDriverInstalled =
+      pkgSnapshot.installedPackages.contains(
+          QStringLiteral("akmod-nvidia-open")) ||
+      pkgSnapshot.installedPackages.contains(
+          QStringLiteral("xorg-x11-drv-nvidia-open"));
+  if (!info.openSourceDriverInstalled && info.driverLoaded) {
+    const std::optional<bool> runningOpen = runningNvidiaModuleIsOpen();
+    if (runningOpen.has_value()) {
+      info.openSourceDriverInstalled = runningOpen.value();
+    }
+  }
+
+  if (pkgSnapshot.installedPackages.contains(QStringLiteral("akmod-nvidia"))) {
+    info.closedSourceDriverInstalled = true;
+  } else if (info.driverLoaded) {
+    const std::optional<bool> runningOpen = runningNvidiaModuleIsOpen();
+    if (runningOpen.has_value()) {
+      info.closedSourceDriverInstalled = !runningOpen.value();
+    } else {
+      info.closedSourceDriverInstalled = !info.openSourceDriverInstalled;
+    }
+  }
+
   info.openKernelModulesInstalled = info.openSourceDriverInstalled;
   info.secureBootEnabled = detectSecureBoot(&info.secureBootKnown);
   info.sessionType = SessionUtil::detectSessionType();
@@ -181,11 +270,18 @@ QString NvidiaDetector::verificationReport() const {
 }
 
 void NvidiaDetector::refresh() {
-  m_info = detect();
+  const GpuInfo newInfo = detect();
+  if (m_info == newInfo) {
+    return;
+  }
+  m_info = newInfo;
   emit infoChanged();
 }
 
 void NvidiaDetector::setDetectionResult(const GpuInfo &info) {
+  if (m_info == info) {
+    return;
+  }
   m_info = info;
   emit infoChanged();
 }
@@ -430,72 +526,6 @@ QString NvidiaDetector::detectDriverVersion() const {
   }
 
   return {};
-}
-
-struct InstalledPackagesSnapshot {
-  QSet<QString> installedPackages;
-  QString detectedVersion;
-};
-
-InstalledPackagesSnapshot queryInstalledDriverPackages() {
-  static InstalledPackagesSnapshot cached;
-  static QElapsedTimer cacheTimer;
-  static bool cacheValid = false;
-  static QMutex cacheMutex;
-  static QString cachedRpmPath;
-
-  QMutexLocker locker(&cacheMutex);
-  const QString rpmPath =
-      CommandRunner::resolveProgramPath(QStringLiteral("rpm"));
-  if (cacheValid && cachedRpmPath == rpmPath && cacheTimer.isValid() &&
-      cacheTimer.elapsed() < 5000) {
-    return cached;
-  }
-
-  cached.installedPackages.clear();
-  cached.detectedVersion.clear();
-
-  if (rpmPath.isEmpty()) {
-    cacheValid = false;
-    cachedRpmPath.clear();
-    return cached;
-  }
-
-  CommandRunner runner;
-  CommandRunner::RunOptions opts;
-  opts.timeoutMs = 1200;
-  const auto result = runner.run(
-      QStringLiteral("rpm"),
-      {QStringLiteral("-q"), QStringLiteral("--qf"),
-       QStringLiteral("%{NAME}|%{EPOCH}:%{VERSION}-%{RELEASE}\n"),
-       QStringLiteral("akmod-nvidia"), QStringLiteral("akmod-nvidia-open"),
-       QStringLiteral("xorg-x11-drv-nvidia"),
-       QStringLiteral("xorg-x11-drv-nvidia-open")},
-      opts);
-
-  if (result.success() || !result.stdout.isEmpty()) {
-    const QStringList lines =
-        result.stdout.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
-    for (const QString &line : lines) {
-      if (line.contains(QStringLiteral("is not installed"))) {
-        continue;
-      }
-      const QStringList parts = line.split(QLatin1Char('|'));
-      if (parts.size() >= 2) {
-        const QString pkgName = parts.at(0).trimmed();
-        const QString rawVer = parts.at(1).trimmed();
-        cached.installedPackages.insert(pkgName);
-        if (cached.detectedVersion.isEmpty()) {
-          cached.detectedVersion = normalizedRpmDriverVersion(rawVer);
-        }
-      }
-    }
-  }
-
-  cacheTimer.start();
-  cachedRpmPath = rpmPath;
-  cacheValid = true;
-  return cached;
 }
 
 QString NvidiaDetector::detectDriverPackageVersion() const {
