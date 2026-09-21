@@ -29,7 +29,7 @@ public:
   Q_INVOKABLE void refresh();
   Q_INVOKABLE void start();
   Q_INVOKABLE void stop();
-  void setUpdateInterval(int intervalMs);
+  Q_INVOKABLE void setUpdateInterval(int intervalMs);
 
 signals:
   void usagePercentChanged();

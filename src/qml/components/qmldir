@@ -4,3 +4,9 @@ RefreshToolButton 1.0 RefreshToolButton.qml
 StatusBanner 1.0 StatusBanner.qml
 SystemDiagnosticDialog 1.0 SystemDiagnosticDialog.qml
 SystemRebootDialog 1.0 SystemRebootDialog.qml
+TelemetrySparkline 1.0 TelemetrySparkline.qml
+MonitorTelemetrySummary 1.0 MonitorTelemetrySummary.qml
+MonitorGpuPerfCard 1.0 MonitorGpuPerfCard.qml
+MonitorPowerControls 1.0 MonitorPowerControls.qml
+MonitorProcessList 1.0 MonitorProcessList.qml
+MonitorTerminateProcessDialog 1.0 MonitorTerminateProcessDialog.qml

@@ -98,6 +98,8 @@ set(BACKEND_SOURCES
     src/backend/nvidia/updater.cpp
     src/backend/nvidia/versionparser.cpp
     src/backend/monitor/gpumonitor.cpp
+    src/backend/monitor/gpufallbackreader.cpp
+    src/backend/monitor/gpuprocessinventory.cpp
     src/backend/monitor/cpumonitor.cpp
     src/backend/monitor/rammonitor.cpp
     src/backend/system/polkit.cpp
@@ -210,6 +212,12 @@ qt_add_qml_module(ro-control
         src/qml/components/FanRescanPopup.qml
         src/qml/components/SystemDiagnosticDialog.qml
         src/qml/components/SystemRebootDialog.qml
+        src/qml/components/TelemetrySparkline.qml
+        src/qml/components/MonitorTelemetrySummary.qml
+        src/qml/components/MonitorGpuPerfCard.qml
+        src/qml/components/MonitorPowerControls.qml
+        src/qml/components/MonitorProcessList.qml
+        src/qml/components/MonitorTerminateProcessDialog.qml
     RESOURCES
         src/qml/assets/ro-control-logo.svg
         src/qml/assets/icon-language.svg

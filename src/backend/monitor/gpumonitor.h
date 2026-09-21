@@ -87,7 +87,7 @@ public:
   Q_INVOKABLE void stop();
   Q_INVOKABLE bool killProcess(int pid);
   Q_INVOKABLE void setSelectedGpuIndex(int index);
-  void setUpdateInterval(int intervalMs);
+  Q_INVOKABLE void setUpdateInterval(int intervalMs);
 
 signals:
   void availableChanged();
