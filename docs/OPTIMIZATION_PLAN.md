@@ -33,12 +33,12 @@ and a timed-out driver command remain responsive and have automated coverage.
 
 ## Phase 2 — Split Backend Responsibilities
 
-- [ ] Split `FanController` into capability discovery, telemetry, profile
+- [x] Split `FanController` into capability discovery, telemetry, profile
   persistence/import-export, and hardware-write collaborators without changing
   its public QML/D-Bus contract.
-- [ ] Split `GpuMonitor` into an NVIDIA query/parser adapter, generic Linux
+- [x] Split `GpuMonitor` into an NVIDIA query/parser adapter, generic Linux
   fallback reader, and process/device inventory service.
-- [ ] Split `SystemInfoProvider` into platform probes and diagnostic-report
+- [x] Split `SystemInfoProvider` into platform probes and diagnostic-report
   formatting/preferences.
 - [ ] Extract CLI command execution, daemon bootstrap, and GUI/tray bootstrap
   from `main.cpp`.
@@ -48,11 +48,11 @@ extracted unit has a narrow dependency surface and isolated tests.
 
 ## Phase 3 — Split QML by User Task
 
-- [ ] Extract Driver page action tiles, operation log, and confirmation dialogs.
-- [ ] Extract System page diagnostic report preview and firmware-restart flow.
-- [ ] Extract Monitor telemetry summary, power controls, and process list.
-- [ ] Extract Fan page channel cards, curve summary, and settings subpanels.
-- [ ] Keep theme tokens and shared controls in `components/`; do not duplicate
+- [x] Extract Driver page action tiles, operation log, and confirmation dialogs.
+- [x] Extract System page diagnostic report preview and firmware-restart flow.
+- [x] Extract Monitor telemetry summary, power controls, and process list.
+- [x] Extract Fan page channel cards, curve summary, and settings subpanels.
+- [x] Keep theme tokens and shared controls in `components/`; do not duplicate
   button, focus, loading, or error styling in pages.
 
 **Exit criteria:** pages retain responsive, empty/error, keyboard-focus, and
@@ -62,9 +62,9 @@ loading states, with no user-visible regression.
 
 - [x] Use adaptive polling based on page visibility, hardware availability,
   thermal state, and active operations.
-- [ ] Cache device topology and process inventory independently from fast
+- [x] Cache device topology and process inventory independently from fast
   temperature/power metrics.
-- [ ] Avoid emitting identical QVariant/QML model data and unnecessary Canvas
+- [x] Avoid emitting identical QVariant/QML model data and unnecessary Canvas
   repaints.
 - [ ] Evaluate a persistent NVML-backed telemetry adapter only after profiling
   shows `nvidia-smi` process startup is a material bottleneck.

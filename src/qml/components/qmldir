@@ -22,3 +22,7 @@ DriverSourceSwitchDialog 1.0 DriverSourceSwitchDialog.qml
 DriverProprietaryLicenseDialog 1.0 DriverProprietaryLicenseDialog.qml
 DriverActionModalDialog 1.0 DriverActionModalDialog.qml
 DriverMokGuideDialog 1.0 DriverMokGuideDialog.qml
+FanChannelsGrid 1.0 FanChannelsGrid.qml
+FanProfileControls 1.0 FanProfileControls.qml
+FanCustomCurveStudio 1.0 FanCustomCurveStudio.qml
+FanDynamicsControls 1.0 FanDynamicsControls.qml

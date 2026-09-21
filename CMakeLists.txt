@@ -114,6 +114,10 @@ set(BACKEND_SOURCES
     src/backend/system/diagnosticreportpreferences.cpp
     src/backend/system/systemplatformprobes.cpp
     src/backend/fan/fancontroller.cpp
+    src/backend/fan/fanprofilemanager.cpp
+    src/backend/fan/fanhardwareprobe.cpp
+    src/backend/fan/fanhardwarewriter.cpp
+    src/backend/fan/fantelemetryreader.cpp
     src/backend/power/powercontroller.cpp
     src/backend/system/healthguard.cpp
     src/backend/system/dbusservice.cpp
@@ -230,6 +234,10 @@ qt_add_qml_module(ro-control
         src/qml/components/DriverProprietaryLicenseDialog.qml
         src/qml/components/DriverActionModalDialog.qml
         src/qml/components/DriverMokGuideDialog.qml
+        src/qml/components/FanChannelsGrid.qml
+        src/qml/components/FanProfileControls.qml
+        src/qml/components/FanCustomCurveStudio.qml
+        src/qml/components/FanDynamicsControls.qml
     RESOURCES
         src/qml/assets/ro-control-logo.svg
         src/qml/assets/icon-language.svg

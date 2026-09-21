@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fanhardwareprobe.h"
+#include "fanprofilemanager.h"
 #include <QElapsedTimer>
 #include <QObject>
 #include <QSettings>
@@ -8,17 +10,6 @@
 #include <QTimer>
 #include <QVariantList>
 #include <QVariantMap>
-#include <QVector>
-
-struct FanCurvePoint {
-  int temperatureC = 0;
-  int fanSpeedPercent = 0;
-
-  bool operator==(const FanCurvePoint &other) const {
-    return temperatureC == other.temperatureC &&
-           fanSpeedPercent == other.fanSpeedPercent;
-  }
-};
 
 class FanController : public QObject {
   Q_OBJECT
@@ -272,18 +263,10 @@ private:
   bool m_nvidiaTelemetryAvailable = true;
   QString m_verifiedHwmonPwmPath;
   QString m_verifiedHwmonPwmEnablePath;
-  struct SystemFanProfile {
-    QString id;
-    QString name;
-    QString type;
-    FanMode mode = FanMode::Auto;
-    int manualSpeedPercent = 50;
-    int thermalThresholdC = 85;
-    QVector<FanCurvePoint> customCurve;
-  };
-
-  SystemFanProfile m_cpuProfile;
-  SystemFanProfile m_sysProfile;
+  FanHardwareProbe::HwmonTopology m_topology;
+  FanProfileManager m_profileManager;
+  FanProfileManager::SystemFanProfile m_cpuProfile;
+  FanProfileManager::SystemFanProfile m_sysProfile;
   QString m_gpuDisplayName;
   QVariantList m_systemFans;
   int m_selectedFanIndex = 0;
