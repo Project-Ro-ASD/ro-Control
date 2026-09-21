@@ -10,3 +10,15 @@ MonitorGpuPerfCard 1.0 MonitorGpuPerfCard.qml
 MonitorPowerControls 1.0 MonitorPowerControls.qml
 MonitorProcessList 1.0 MonitorProcessList.qml
 MonitorTerminateProcessDialog 1.0 MonitorTerminateProcessDialog.qml
+ModernMiniButton 1.0 ModernMiniButton.qml
+ModernDialogButton 1.0 ModernDialogButton.qml
+DriverActionTile 1.0 DriverActionTile.qml
+DriverOverviewCards 1.0 DriverOverviewCards.qml
+DriverActionTiles 1.0 DriverActionTiles.qml
+DriverOperationLog 1.0 DriverOperationLog.qml
+DriverRestartDialog 1.0 DriverRestartDialog.qml
+DriverCurrentWarningDialog 1.0 DriverCurrentWarningDialog.qml
+DriverSourceSwitchDialog 1.0 DriverSourceSwitchDialog.qml
+DriverProprietaryLicenseDialog 1.0 DriverProprietaryLicenseDialog.qml
+DriverActionModalDialog 1.0 DriverActionModalDialog.qml
+DriverMokGuideDialog 1.0 DriverMokGuideDialog.qml
