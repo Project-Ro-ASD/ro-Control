@@ -35,18 +35,20 @@ QStringList nvidiaKernelModules() {
 
 QString commandError(const CommandRunner::Result &result,
                      const QString &fallback) {
-  const QString stderrText = result.stderr.trimmed();
+  QStringList messages;
+  const QStringList stderrLines = result.stderr.split(QLatin1Char('\n'));
+  for (const QString &line : stderrLines) {
+    const QString trimmed = line.trimmed();
+    if (!trimmed.isEmpty() &&
+        !trimmed.startsWith(QStringLiteral("ro-control-helper: running:"))) {
+      messages.append(trimmed);
+    }
+  }
   const QString stdoutText = result.stdout.trimmed();
-
-  if (!stderrText.isEmpty()) {
-    return stderrText;
-  }
-
   if (!stdoutText.isEmpty()) {
-    return stdoutText;
+    messages.append(stdoutText);
   }
-
-  return fallback;
+  return messages.isEmpty() ? fallback : messages.join(QLatin1Char('\n'));
 }
 
 bool commandCanceled(const CommandRunner::Result &result) {

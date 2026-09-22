@@ -62,7 +62,6 @@ run_allowed_command() {
 
   trap terminate_child INT TERM
 
-  echo "ro-control-helper: running: ${command_name} $*" >&2
   "${resolved_path}" "$@" &
   child_pid="$!"
   if wait "${child_pid}"; then
@@ -82,13 +81,29 @@ if [ "$#" -ge 1 ] && [ "$1" = "--batch" ]; then
   while IFS= read -r command_line || [ -n "${command_line}" ]; do
     [ -z "${command_line}" ] && continue
 
-    old_ifs="${IFS}"
-    IFS="${tab}"
-    # shellcheck disable=SC2086
-    set -- ${command_line}
-    IFS="${old_ifs}"
+    command_name="${command_line%%"${tab}"*}"
+    if [ "${command_name}" = "${command_line}" ]; then
+      run_allowed_command "${command_name}"
+      continue
+    fi
 
-    run_allowed_command "$@"
+    remaining="${command_line#*"${tab}"}"
+    set --
+    while :; do
+      case "${remaining}" in
+        *"${tab}"*)
+          argument="${remaining%%"${tab}"*}"
+          remaining="${remaining#*"${tab}"}"
+          set -- "$@" "${argument}"
+          ;;
+        *)
+          set -- "$@" "${remaining}"
+          break
+          ;;
+      esac
+    done
+
+    run_allowed_command "${command_name}" "$@"
   done
 
   exit 0
