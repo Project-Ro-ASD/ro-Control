@@ -97,7 +97,8 @@ QString valueFromOsRelease(const QString &key) {
   return {};
 }
 
-[[maybe_unused]] QString valueFromFile(const QString &path) {
+#if defined(Q_OS_LINUX)
+QString valueFromFile(const QString &path) {
   QFile file(path);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     return {};
@@ -147,6 +148,7 @@ QString normalizedGpuDisplayName(const QString &vendor, const QString &model) {
   }
   return name;
 }
+#endif
 
 } // namespace
 

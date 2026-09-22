@@ -5,6 +5,7 @@
 #include <QFileInfo>
 
 namespace {
+#if defined(Q_OS_LINUX)
 QString readTextFile(const QString &path) {
   QFile file(path);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -12,6 +13,7 @@ QString readTextFile(const QString &path) {
   }
   return QString::fromUtf8(file.readAll()).trimmed();
 }
+#endif
 } // namespace
 
 bool SystemPlatformProbes::onBattery(QString *sourceLabel) {
