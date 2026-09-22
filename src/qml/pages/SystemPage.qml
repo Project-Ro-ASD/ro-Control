@@ -46,6 +46,12 @@ Item {
     readonly property color primaryButtonTextColor: page.darkMode ? "#E0E7FF" : "#3730A3"
     readonly property color warningButtonTextColor: page.darkMode ? "#FEF3C7" : "#92400E"
     readonly property color neutralButtonTextColor: page.darkMode ? "#E2E8F0" : "#334155"
+    readonly property color dialogSurfaceColor: page.darkMode ? "#211B30" : "#FFFFFF"
+    readonly property color dialogMutedSurfaceColor: page.darkMode ? "#2B2540" : "#F8FAFC"
+    readonly property color dialogBorderColor: page.darkMode ? "#71628E" : "#CBD5E1"
+    readonly property color dialogTextColor: page.darkMode ? "#FFFFFF" : "#111827"
+    readonly property color dialogSoftTextColor: page.darkMode ? "#D1D5DB" : "#475569"
+    readonly property color warningFilledButtonColor: "#9A3412"
 
     function deviceAndPowerSummary() {
         const dev = page.systemInfo && page.systemInfo.deviceType ? page.systemInfo.deviceType : "";
@@ -557,7 +563,7 @@ Item {
                                     radius: 6
                                     color: diagnosticActionBtn.down
                                            ? Qt.darker(page.accentColor, 1.1)
-                                           : (diagnosticActionBtn.hovered ? page.accentColor : (page.darkMode ? "#312E81" : "#EEF2FF"))
+                                           : (diagnosticActionBtn.hovered ? "#4338CA" : (page.darkMode ? "#312E81" : "#EEF2FF"))
                                     border.width: 1
                                     border.color: page.accentColor
 
@@ -568,14 +574,14 @@ Item {
 
                                         Label {
                                             text: qsTr("Open")
-                                            color: diagnosticActionBtn.hovered ? "#FFFFFF" : page.primaryButtonTextColor
+                                            color: diagnosticActionBtn.hovered ? "#EEF2FF" : page.primaryButtonTextColor
                                             font.pixelSize: Math.round(12 * page.uiScale)
                                             font.weight: Font.DemiBold
                                         }
 
                                         Label {
                                             text: "↗"
-                                            color: diagnosticActionBtn.hovered ? "#FFFFFF" : page.primaryButtonTextColor
+                                            color: diagnosticActionBtn.hovered ? "#EEF2FF" : page.primaryButtonTextColor
                                             font.pixelSize: Math.round(11 * page.uiScale)
                                             font.weight: Font.Bold
                                         }
@@ -647,8 +653,8 @@ Item {
                                     implicitWidth: restartBtnRow.implicitWidth + Math.round(20 * page.uiScale)
                                     radius: 6
                                     color: rebootFirmwareBtn.down
-                                           ? Qt.darker(page.warningColor, 1.1)
-                                           : (rebootFirmwareBtn.hovered ? page.warningColor : (page.darkMode ? "#3A2E12" : "#FFFBEB"))
+                                           ? Qt.darker(page.warningFilledButtonColor, 1.1)
+                                           : (rebootFirmwareBtn.hovered ? page.warningFilledButtonColor : (page.darkMode ? "#3A2E12" : "#FFFBEB"))
                                     border.width: 1
                                     border.color: page.warningColor
 
@@ -659,14 +665,14 @@ Item {
 
                                         Label {
                                             text: qsTr("Restart")
-                                            color: rebootFirmwareBtn.hovered ? "#FFFFFF" : page.warningButtonTextColor
+                                            color: rebootFirmwareBtn.hovered ? "#FFF7ED" : page.warningButtonTextColor
                                             font.pixelSize: Math.round(12 * page.uiScale)
                                             font.weight: Font.DemiBold
                                         }
 
                                         Label {
                                             text: "↻"
-                                            color: rebootFirmwareBtn.hovered ? "#FFFFFF" : page.warningButtonTextColor
+                                            color: rebootFirmwareBtn.hovered ? "#FFF7ED" : page.warningButtonTextColor
                                             font.pixelSize: Math.round(13 * page.uiScale)
                                             font.weight: Font.Bold
                                         }
@@ -703,9 +709,9 @@ Item {
 
         background: Rectangle {
             radius: 16
-            color: page.cardColor
+            color: page.dialogSurfaceColor
             border.width: 1
-            border.color: page.borderColor
+            border.color: page.dialogBorderColor
         }
 
         contentItem: ColumnLayout {
@@ -715,7 +721,7 @@ Item {
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: Math.round(64 * page.uiScale)
-                color: page.darkMode ? "#2E2640" : "#F8FAFC"
+                color: page.dialogMutedSurfaceColor
                 radius: 16
 
                 Rectangle {
@@ -730,7 +736,7 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: 1
-                    color: page.borderColor
+                    color: page.dialogBorderColor
                 }
 
                 RowLayout {
@@ -758,13 +764,13 @@ Item {
                         spacing: 2
                         Label {
                             text: qsTr("System Diagnostic Report")
-                            color: page.actionTextColor
+                            color: page.dialogTextColor
                             font.pixelSize: Math.round(16 * page.uiScale)
                             font.weight: Font.DemiBold
                         }
                         Label {
                             text: qsTr("System hardware, kernel, driver and security telemetry snapshot")
-                            color: page.actionSoftTextColor
+                            color: page.dialogSoftTextColor
                             font.pixelSize: Math.round(11 * page.uiScale)
                         }
                     }
@@ -781,7 +787,7 @@ Item {
                         }
                         contentItem: Text {
                             text: "✕"
-                            color: closeDiagnosticReportButton.hovered ? page.actionTextColor : page.neutralButtonTextColor
+                            color: closeDiagnosticReportButton.hovered ? page.dialogTextColor : page.dialogSoftTextColor
                             font.pixelSize: Math.round(14 * page.uiScale)
                             font.weight: Font.Bold
                             horizontalAlignment: Text.AlignHCenter
@@ -809,9 +815,9 @@ Item {
                         implicitHeight: Math.round(34 * page.uiScale)
                         implicitWidth: Math.min(Math.round(260 * page.uiScale), Math.max(Math.round(170 * page.uiScale), controlsRow.width))
                         radius: 8
-                        color: page.darkMode ? "#241E34" : "#E2E8F0"
+                        color: page.dialogMutedSurfaceColor
                         border.width: 1
-                        border.color: page.borderColor
+                        border.color: page.dialogBorderColor
 
                         RowLayout {
                             anchors.fill: parent
@@ -837,7 +843,7 @@ Item {
                                 Label {
                                     anchors.centerIn: parent
                                     text: qsTr("Overview Cards")
-                                    color: page.reportViewMode === 0 ? page.textColor : page.softTextColor
+                                    color: page.reportViewMode === 0 ? page.dialogTextColor : page.dialogSoftTextColor
                                     font.pixelSize: Math.round(12 * page.uiScale)
                                     font.weight: page.reportViewMode === 0 ? Font.DemiBold : Font.Normal
                                 }
@@ -862,7 +868,7 @@ Item {
                                 Label {
                                     anchors.centerIn: parent
                                     text: qsTr("Code / Export")
-                                    color: page.reportViewMode === 1 ? page.textColor : page.softTextColor
+                                    color: page.reportViewMode === 1 ? page.dialogTextColor : page.dialogSoftTextColor
                                     font.pixelSize: Math.round(12 * page.uiScale)
                                     font.weight: page.reportViewMode === 1 ? Font.DemiBold : Font.Normal
                                 }
@@ -878,9 +884,9 @@ Item {
                         implicitHeight: Math.round(34 * page.uiScale)
                         implicitWidth: Math.min(controlsRow.width * 0.45, Math.round(240 * page.uiScale))
                         radius: 8
-                        color: page.bgColor
+                        color: page.dialogSurfaceColor
                         border.width: 1
-                        border.color: filterInput.activeFocus ? page.accentColor : page.borderColor
+                        border.color: filterInput.activeFocus ? page.accentColor : page.dialogBorderColor
 
                         RowLayout {
                             anchors.fill: parent
@@ -891,21 +897,21 @@ Item {
                             Label {
                                 text: "🔍"
                                 font.pixelSize: Math.round(12 * page.uiScale)
-                                color: page.softTextColor
+                                color: page.dialogSoftTextColor
                             }
 
                             TextInput {
                                 id: filterInput
                                 Layout.fillWidth: true
                                 text: page.reportFilterText
-                                color: page.textColor
+                                color: page.dialogTextColor
                                 font.pixelSize: Math.round(12 * page.uiScale)
                                 verticalAlignment: TextInput.AlignVCenter
                                 onTextChanged: page.reportFilterText = text
 
                                 Text {
                                     text: qsTr("Filter properties...")
-                                    color: page.softTextColor
+                                    color: page.dialogSoftTextColor
                                     font.pixelSize: Math.round(12 * page.uiScale)
                                     visible: !filterInput.text && !filterInput.activeFocus
                                     anchors.verticalCenter: parent.verticalCenter
@@ -920,7 +926,7 @@ Item {
                                 background: null
                                 contentItem: Text {
                                     text: "✕"
-                                    color: page.softTextColor
+                                    color: page.dialogSoftTextColor
                                     font.pixelSize: Math.round(11 * page.uiScale)
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
@@ -944,7 +950,7 @@ Item {
                             spacing: Math.round(8 * page.uiScale)
                             Label {
                                 text: qsTr("Format:")
-                                color: page.softTextColor
+                                color: page.dialogSoftTextColor
                                 font.pixelSize: Math.round(12 * page.uiScale)
                                 font.weight: Font.DemiBold
                             }
@@ -954,9 +960,9 @@ Item {
                                 implicitHeight: Math.round(32 * page.uiScale)
                                 implicitWidth: formatBtnRow.implicitWidth + Math.round(20 * page.uiScale)
                                 radius: 8
-                                color: formatMouse.containsMouse ? (page.darkMode ? "#342D4A" : "#E2E8F0") : page.bgColor
+                                color: formatMouse.containsMouse ? page.dialogMutedSurfaceColor : page.dialogSurfaceColor
                                 border.width: 1
-                                border.color: (formatMouse.containsMouse || formatPopup.visible) ? page.accentColor : page.borderColor
+                                border.color: (formatMouse.containsMouse || formatPopup.visible) ? page.accentColor : page.dialogBorderColor
 
                                 MouseArea {
                                     id: formatMouse
@@ -981,7 +987,7 @@ Item {
                                             if (fmt === "plain") return qsTr("Plain Text");
                                             return "Markdown";
                                         }
-                                        color: page.textColor
+                                        color: page.dialogTextColor
                                         font.pixelSize: Math.round(12 * page.uiScale)
                                         font.weight: Font.DemiBold
                                     }
@@ -1003,9 +1009,9 @@ Item {
 
                                     background: Rectangle {
                                         radius: 10
-                                        color: page.bgColor
+                                        color: page.dialogSurfaceColor
                                         border.width: 1
-                                        border.color: page.borderColor
+                                        border.color: page.dialogBorderColor
                                     }
 
                                     contentItem: ColumnLayout {
@@ -1074,7 +1080,7 @@ Item {
                             spacing: Math.round(8 * page.uiScale)
                             Label {
                                 text: qsTr("Action:")
-                                color: page.softTextColor
+                                color: page.dialogSoftTextColor
                                 font.pixelSize: Math.round(12 * page.uiScale)
                                 font.weight: Font.DemiBold
                             }
@@ -1084,9 +1090,9 @@ Item {
                                 implicitHeight: Math.round(32 * page.uiScale)
                                 implicitWidth: actionBtnRow.implicitWidth + Math.round(20 * page.uiScale)
                                 radius: 8
-                                color: actionMouse.containsMouse ? (page.darkMode ? "#342D4A" : "#E2E8F0") : page.bgColor
+                                color: actionMouse.containsMouse ? page.dialogMutedSurfaceColor : page.dialogSurfaceColor
                                 border.width: 1
-                                border.color: (actionMouse.containsMouse || actionPopup.visible) ? page.accentColor : page.borderColor
+                                border.color: (actionMouse.containsMouse || actionPopup.visible) ? page.accentColor : page.dialogBorderColor
 
                                 MouseArea {
                                     id: actionMouse
@@ -1110,7 +1116,7 @@ Item {
                                             if (dest === "clipboard") return qsTr("Copy on Open");
                                             return qsTr("Preview");
                                         }
-                                        color: page.textColor
+                                        color: page.dialogTextColor
                                         font.pixelSize: Math.round(12 * page.uiScale)
                                         font.weight: Font.DemiBold
                                     }
@@ -1132,9 +1138,9 @@ Item {
 
                                     background: Rectangle {
                                         radius: 10
-                                        color: page.bgColor
+                                        color: page.dialogSurfaceColor
                                         border.width: 1
-                                        border.color: page.borderColor
+                                        border.color: page.dialogBorderColor
                                     }
 
                                     contentItem: ColumnLayout {
@@ -1224,9 +1230,9 @@ Item {
                                 required property var modelData
                                 Layout.fillWidth: true
                                 radius: 12
-                                color: page.bgColor
+                                color: page.dialogSurfaceColor
                                 border.width: 1
-                                border.color: page.borderColor
+                                border.color: page.dialogBorderColor
                                 implicitHeight: secColumn.implicitHeight + Math.round(24 * page.uiScale)
 
                                 ColumnLayout {
@@ -1248,7 +1254,7 @@ Item {
 
                                         Label {
                                             text: sectionCard.modelData.title
-                                            color: page.textColor
+                                            color: page.dialogTextColor
                                             font.pixelSize: Math.round(14 * page.uiScale)
                                             font.weight: Font.DemiBold
                                             Layout.fillWidth: true
@@ -1265,7 +1271,7 @@ Item {
                                                 id: secCountLabel
                                                 anchors.centerIn: parent
                                                 text: sectionCard.modelData.items.length + " " + qsTr("items")
-                                                color: page.softTextColor
+                                                color: page.dialogSoftTextColor
                                                 font.pixelSize: Math.round(10 * page.uiScale)
                                                 font.weight: Font.DemiBold
                                             }
@@ -1325,7 +1331,7 @@ Item {
                                                         Label {
                                                             Layout.fillWidth: true
                                                             text: itemTile.modelData.label
-                                                            color: page.softTextColor
+                                                            color: page.dialogSoftTextColor
                                                             font.pixelSize: Math.round(11 * page.uiScale)
                                                             font.weight: Font.DemiBold
                                                             wrapMode: Text.WordWrap
@@ -1336,7 +1342,7 @@ Item {
                                                         Label {
                                                             Layout.fillWidth: true
                                                             text: itemTile.modelData.value
-                                                            color: page.textColor
+                                                            color: page.dialogTextColor
                                                             font.pixelSize: Math.round(13 * page.uiScale)
                                                             font.weight: Font.DemiBold
                                                             wrapMode: Text.WordWrap
@@ -1358,9 +1364,9 @@ Item {
                             Layout.fillWidth: true
                             implicitHeight: Math.round(160 * page.uiScale)
                             radius: 12
-                            color: page.bgColor
+                            color: page.dialogSurfaceColor
                             border.width: 1
-                            border.color: page.borderColor
+                            border.color: page.dialogBorderColor
 
                             ColumnLayout {
                                 anchors.centerIn: parent
@@ -1375,7 +1381,7 @@ Item {
                                 Label {
                                     Layout.alignment: Qt.AlignHCenter
                                     text: qsTr("No matching properties found")
-                                    color: page.textColor
+                                    color: page.dialogTextColor
                                     font.pixelSize: Math.round(14 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
@@ -1383,7 +1389,7 @@ Item {
                                 Label {
                                     Layout.alignment: Qt.AlignHCenter
                                     text: qsTr("Try a different search term or clear the filter.")
-                                    color: page.softTextColor
+                                    color: page.dialogSoftTextColor
                                     font.pixelSize: Math.round(12 * page.uiScale)
                                 }
 
@@ -1405,9 +1411,9 @@ Item {
                     visible: page.reportViewMode === 1
                     anchors.fill: parent
                     radius: 10
-                    color: page.bgColor
+                    color: page.dialogSurfaceColor
                     border.width: 1
-                    border.color: page.borderColor
+                    border.color: page.dialogBorderColor
 
                     ScrollView {
                         anchors.fill: parent
@@ -1427,7 +1433,7 @@ Item {
                                 const fmt = page.systemInfo ? page.systemInfo.diagnosticReportFormat : "markdown";
                                 return fmt === "json" ? TextEdit.NoWrap : TextEdit.Wrap;
                             }
-                            color: page.textColor
+                            color: page.dialogTextColor
                             font.family: {
                                 const fmt = page.systemInfo ? page.systemInfo.diagnosticReportFormat : "markdown";
                                 return fmt === "json" ? "monospace" : ""
@@ -1496,14 +1502,14 @@ Item {
                             radius: 8
                             color: closeReportBtn.hovered
                                    ? (page.darkMode ? "#3B3156" : "#E2E8F0")
-                                   : page.bgColor
+                                   : page.dialogSurfaceColor
                             border.width: 1
-                            border.color: closeReportBtn.hovered ? page.accentColor : page.borderColor
+                            border.color: closeReportBtn.hovered ? page.accentColor : page.dialogBorderColor
                         }
 
                         contentItem: Label {
                             text: closeReportBtn.text
-                            color: closeReportBtn.hovered ? page.actionTextColor : page.neutralButtonTextColor
+                            color: closeReportBtn.hovered ? page.dialogTextColor : page.dialogSoftTextColor
                             font.pixelSize: Math.round(13 * page.uiScale)
                             font.weight: Font.DemiBold
                             horizontalAlignment: Text.AlignHCenter
@@ -1568,9 +1574,9 @@ Item {
 
         background: Rectangle {
             radius: 16
-            color: page.cardColor
+            color: page.dialogSurfaceColor
             border.width: 1
-            border.color: page.borderColor
+            border.color: page.dialogBorderColor
         }
 
         contentItem: ColumnLayout {
@@ -1677,15 +1683,15 @@ Item {
                             radius: 8
                             color: cancelRebootBtn.down
                                    ? (page.darkMode ? "#342A4E" : "#CBD5E1")
-                                   : (cancelRebootBtn.hovered ? (page.darkMode ? "#3B3156" : "#E2E8F0") : page.bgColor)
+                                   : (cancelRebootBtn.hovered ? page.dialogMutedSurfaceColor : page.dialogSurfaceColor)
                             border.width: 1
-                            border.color: cancelRebootBtn.hovered ? page.accentColor : page.borderColor
+                            border.color: cancelRebootBtn.hovered ? page.accentColor : page.dialogBorderColor
                         }
 
                         contentItem: Label {
                             id: cancelRebootLabel
                             text: cancelRebootBtn.text
-                            color: cancelRebootBtn.hovered ? page.actionTextColor : page.neutralButtonTextColor
+                            color: cancelRebootBtn.hovered ? page.dialogTextColor : page.dialogSoftTextColor
                             font.pixelSize: Math.round(13 * page.uiScale)
                             font.weight: Font.DemiBold
                             horizontalAlignment: Text.AlignHCenter
@@ -1706,14 +1712,14 @@ Item {
                         background: Rectangle {
                             radius: 8
                             color: confirmRebootBtn.down
-                                   ? Qt.darker(page.warningColor, 1.15)
-                                   : (confirmRebootBtn.hovered ? Qt.lighter(page.warningColor, 1.1) : page.warningColor)
+                                   ? Qt.darker(page.warningFilledButtonColor, 1.15)
+                                   : (confirmRebootBtn.hovered ? Qt.lighter(page.warningFilledButtonColor, 1.1) : page.warningFilledButtonColor)
                         }
 
                         contentItem: Label {
                             id: confirmRebootLabel
                             text: confirmRebootBtn.text
-                            color: "#FFFFFF"
+                            color: "#FFF7ED"
                             font.pixelSize: Math.round(13 * page.uiScale)
                             font.weight: Font.Bold
                             horizontalAlignment: Text.AlignHCenter

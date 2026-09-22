@@ -456,6 +456,38 @@ private slots:
 #endif
   }
 
+  void testSystemInfoProviderUsesBar1TelemetryForResizableBar() {
+#if defined(Q_OS_LINUX)
+    QTemporaryDir tempDir = createExecutableTempDir();
+    QVERIFY(tempDir.isValid());
+
+    const QString scriptPath =
+        tempDir.filePath(QStringLiteral("fake-nvidia-smi-bar1.sh"));
+    QFile script(scriptPath);
+    QVERIFY(script.open(QIODevice::WriteOnly | QIODevice::Text));
+    QVERIFY(script.write("#!/bin/sh\nprintf 'FB Memory Usage\\n  Total : 8192 MiB\\nBAR1 Memory Usage\\n  Total : 8192 MiB\\n'\n") >
+            0);
+    script.close();
+    QVERIFY(script.setPermissions(QFileDevice::ReadOwner |
+                                  QFileDevice::WriteOwner |
+                                  QFileDevice::ExeOwner));
+
+    const QByteArray previousOverride = qgetenv("RO_CONTROL_COMMAND_NVIDIA_SMI");
+    qputenv("RO_CONTROL_COMMAND_NVIDIA_SMI", scriptPath.toUtf8());
+
+    SystemInfoProvider provider;
+    QCOMPARE(provider.resizableBarStatus(), QStringLiteral("Enabled"));
+
+    if (previousOverride.isNull()) {
+      qunsetenv("RO_CONTROL_COMMAND_NVIDIA_SMI");
+    } else {
+      qputenv("RO_CONTROL_COMMAND_NVIDIA_SMI", previousOverride);
+    }
+#else
+    QSKIP("Resizable BAR probing is only available on Linux.");
+#endif
+  }
+
   void testNvidiaInstallerDefaultsAndCancel() {
     NvidiaInstaller installer;
     QCOMPARE(installer.busy(), false);

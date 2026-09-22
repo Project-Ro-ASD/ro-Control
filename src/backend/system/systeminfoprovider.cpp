@@ -779,7 +779,7 @@ QString SystemInfoProvider::detectResizableBarStatus() const {
     }
   }
 
-  if (resizableBarSupported && smiResult.success()) {
+  if (smiResult.success()) {
     const QRegularExpressionMatch bar1Match =
         bar1TotalPattern.match(smiResult.stdout);
     const QRegularExpressionMatch framebufferMatch =
@@ -808,7 +808,10 @@ QString SystemInfoProvider::detectResizableBarStatus() const {
     return tr("Supported — status unavailable");
   }
   if (displayAdapterDetected) {
-    return tr("Not supported");
+    // Absence of resourceN_resize is not proof that firmware or the GPU does
+    // not support Resizable BAR: proprietary drivers may omit this optional
+    // sysfs interface. Do not present a false negative to the user.
+    return tr("Status unavailable");
   }
   return tr("Not applicable");
 #endif
