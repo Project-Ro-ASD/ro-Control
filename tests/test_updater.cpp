@@ -35,6 +35,14 @@ private slots:
              QStringLiteral("3:570.153.02-1.fc42"));
   }
 
+  void testParseOfficialDriverLookupVersions() {
+    const QString response = QStringLiteral(
+        R"({"Success":"1","IDS":[{"downloadInfo":{"DisplayVersion":"595.99.02"}}]})");
+
+    QCOMPARE(NvidiaVersionParser::parseOfficialDriverLookupVersions(response),
+             QStringList{QStringLiteral("595.99.02")});
+  }
+
   void testPackageSpecForVersion() {
     QCOMPARE(NvidiaVersionParser::packageSpecForVersion(
                  QStringLiteral("akmod-nvidia"),

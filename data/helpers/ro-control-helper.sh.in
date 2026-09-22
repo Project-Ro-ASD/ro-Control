@@ -12,6 +12,18 @@ run_allowed_command() {
   command_name="$1"
   shift
 
+  # Accept only the locale wrapper emitted by ro-Control, then validate the
+  # nested executable through this same allowlist. Do not grant generic env.
+  if [ "${command_name}" = "env" ]; then
+    if [ "$#" -lt 2 ] || [ "$1" != "LANG=C" ]; then
+      echo "ro-control-helper: command not allowed: env" >&2
+      exit 64
+    fi
+    shift
+    LANG=C run_allowed_command "$@"
+    return "$?"
+  fi
+
   case "$command_name" in
     dnf|/usr/bin/dnf)
       resolved_path="$(command -v dnf 2>/dev/null || true)"

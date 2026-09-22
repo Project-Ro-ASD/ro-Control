@@ -1,5 +1,8 @@
 #include "versionparser.h"
 
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QRegularExpression>
 
 namespace NvidiaVersionParser {
@@ -65,6 +68,30 @@ QString parseCheckUpdateVersion(const QString &dnfOutput,
   const QStringList versions =
       parseAvailablePackageVersions(dnfOutput, packageName);
   return versions.isEmpty() ? QString() : versions.constFirst();
+}
+
+QStringList parseOfficialDriverLookupVersions(const QString &responseText) {
+  const QJsonDocument document =
+      QJsonDocument::fromJson(responseText.toUtf8());
+  if (!document.isObject()) {
+    return {};
+  }
+
+  QStringList versions;
+  const QJsonArray results =
+      document.object().value(QStringLiteral("IDS")).toArray();
+  for (const QJsonValue &result : results) {
+    const QString version = normalizedDriverVersion(
+        result.toObject()
+            .value(QStringLiteral("downloadInfo"))
+            .toObject()
+            .value(QStringLiteral("DisplayVersion"))
+            .toString());
+    if (!version.isEmpty() && !versions.contains(version)) {
+      versions.append(version);
+    }
+  }
+  return versions;
 }
 
 QStringList parseOfficialUnixDriverVersions(const QString &pageText,

@@ -101,6 +101,7 @@ buildSessionSpecificRootCommands(const QString &sessionType) {
 struct UpdateStatusSnapshot {
   QString currentVersion;
   QString latestVersion;
+  QString officialLatestVersion;
   QString latestPackageVersion;
   QStringList availableVersions;
   bool remoteCatalogAvailable = false;
@@ -183,10 +184,32 @@ QString fetchTextFromUrl(CommandRunner &runner, const QString &url) {
   return {};
 }
 
-// Each call re-downloads and re-parses the NVIDIA page. Consider adding a
-// short-lived cache (e.g. 5-minute TTL) if this function is called
-// frequently.
+QString officialDriverLookupUrl(const QString &architecture) {
+  const QString normalized = architecture.trimmed().toLower();
+  const QString osId = (normalized == QStringLiteral("aarch64") ||
+                        normalized == QStringLiteral("arm64"))
+                           ? QStringLiteral("124")
+                           : QStringLiteral("12");
+  return QStringLiteral(
+             "https://gfwsl.geforce.com/services_toolkit/services/com/nvidia/"
+             "services/AjaxDriverService.php?func=DriverManualLookup&psid=133&"
+             "pfid=1075&osID=%1&languageCode=1033&beta=0&isWHQL=0&dltype=-1&"
+             "dch=0&upCRD=null&qnf=0&ctk=null&sort1=&numberOfResults=1")
+      .arg(osId);
+}
+
+// The Unix archive renders its driver numbers client-side from this official
+// API. Keep the page parser below as a compatibility fallback.
 QStringList queryOfficialDriverVersions(CommandRunner &runner) {
+  const QString architecture = CapabilityProbe::normalizedCpuArchitecture();
+  const QString apiText =
+      fetchTextFromUrl(runner, officialDriverLookupUrl(architecture));
+  const QStringList apiVersions =
+      NvidiaVersionParser::parseOfficialDriverLookupVersions(apiText);
+  if (!apiVersions.isEmpty()) {
+    return apiVersions;
+  }
+
   const QString pageText = fetchTextFromUrl(
       runner, QStringLiteral("https://www.nvidia.com/en-us/drivers/unix/"));
   if (pageText.isEmpty()) {
@@ -194,7 +217,7 @@ QStringList queryOfficialDriverVersions(CommandRunner &runner) {
   }
 
   return NvidiaVersionParser::parseOfficialUnixDriverVersions(
-      pageText, CapabilityProbe::normalizedCpuArchitecture());
+      pageText, architecture);
 }
 
 bool isOfficialUpdateAvailable(const QString &currentVersion,
@@ -228,7 +251,7 @@ UpdateStatusSnapshot collectUpdateStatus() {
   CommandRunner runner;
   const QStringList officialVersions = queryOfficialDriverVersions(runner);
   if (!officialVersions.isEmpty()) {
-    snapshot.latestVersion = officialVersions.constFirst();
+    snapshot.officialLatestVersion = officialVersions.constFirst();
     snapshot.remoteCatalogAvailable = true;
   }
 
@@ -256,10 +279,11 @@ UpdateStatusSnapshot collectUpdateStatus() {
     }
   }
 
-  if (snapshot.latestVersion.isEmpty()) {
-    snapshot.latestVersion = NvidiaVersionParser::normalizedDriverVersion(
-        snapshot.latestPackageVersion);
-  }
+  const QString repositoryLatestVersion =
+      NvidiaVersionParser::normalizedDriverVersion(snapshot.latestPackageVersion);
+  snapshot.latestVersion = repositoryLatestVersion.isEmpty()
+                               ? snapshot.officialLatestVersion
+                               : repositoryLatestVersion;
 
   if (snapshot.currentVersion.isEmpty()) {
     if (snapshot.remoteCatalogAvailable) {
@@ -267,9 +291,10 @@ UpdateStatusSnapshot collectUpdateStatus() {
       snapshot.message =
           snapshot.latestVersion.isEmpty()
               ? NvidiaUpdater::tr(
-                    "Official NVIDIA driver sources are reachable. "
-                    "You can install the driver now.")
-              : NvidiaUpdater::tr("Latest official NVIDIA driver version: %1")
+                    "NVIDIA's official driver catalog is reachable, but no "
+                    "compatible package is available from configured repositories.")
+              : NvidiaUpdater::tr("Latest package available from configured "
+                                  "repositories: %1")
                     .arg(snapshot.latestVersion);
     } else {
       snapshot.message = hasDnf
@@ -280,15 +305,30 @@ UpdateStatusSnapshot collectUpdateStatus() {
     return snapshot;
   }
 
-  if (!snapshot.latestVersion.isEmpty()) {
+  if (!repositoryLatestVersion.isEmpty()) {
     snapshot.updateAvailable = isOfficialUpdateAvailable(
-        snapshot.currentVersion, snapshot.latestVersion);
+        snapshot.currentVersion, repositoryLatestVersion);
     snapshot.message =
         snapshot.updateAvailable
-            ? NvidiaUpdater::tr("Official NVIDIA update found: %1")
-                  .arg(snapshot.latestVersion)
-            : NvidiaUpdater::tr("Driver matches the latest official NVIDIA "
-                                "production branch.");
+            ? NvidiaUpdater::tr("Repository update found: %1")
+                  .arg(repositoryLatestVersion)
+            : NvidiaUpdater::tr("Driver matches the newest package available "
+                                "from configured repositories.");
+    if (!snapshot.officialLatestVersion.isEmpty() &&
+        snapshot.officialLatestVersion != repositoryLatestVersion) {
+      snapshot.message += NvidiaUpdater::tr(
+          " NVIDIA officially lists %1; the configured repository has not "
+          "published a matching package yet.")
+                              .arg(snapshot.officialLatestVersion);
+    }
+    return snapshot;
+  }
+
+  if (!snapshot.officialLatestVersion.isEmpty()) {
+    snapshot.message = NvidiaUpdater::tr(
+        "NVIDIA officially lists %1, but no compatible package is available "
+        "from configured repositories yet.")
+                           .arg(snapshot.officialLatestVersion);
     return snapshot;
   }
 
