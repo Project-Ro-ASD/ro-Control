@@ -111,25 +111,16 @@ ApplicationWindow {
     // pages use a lower-cost cadence without stopping the monitor that feeds
     // HealthGuard and the tray.
     function updateTelemetryPolling() {
+        if (!root.gpuMonitor)
+            return;
+        if (!root.gpuMonitor.available) {
+            root.gpuMonitor.updateInterval(15000);
+            return;
+        }
+        const hot = root.gpuMonitor.temperatureC >= 80;
         const telemetryPage = tabBar.currentIndex === 1 || tabBar.currentIndex === 2;
-        const monitorPageActive = tabBar.currentIndex === 1;
-
-        if (root.cpuMonitor) {
-            const cpuHot = root.cpuMonitor.temperatureC >= 80;
-            root.cpuMonitor.updateInterval = (root.active && (telemetryPage || cpuHot)) ? 1000 : 5000;
-        }
-        if (root.ramMonitor) {
-            root.ramMonitor.updateInterval = (root.active && monitorPageActive) ? 1000 : 5000;
-        }
-        if (root.gpuMonitor) {
-            if (!root.gpuMonitor.available) {
-                root.gpuMonitor.updateInterval = 15000;
-            } else {
-                const hot = root.gpuMonitor.temperatureC >= 80;
-                const activeOperation = root.gpuMonitor.refreshInProgress;
-                root.gpuMonitor.updateInterval = (root.active && (hot || telemetryPage || activeOperation)) ? 1000 : 5000;
-            }
-        }
+        const activeOperation = root.gpuMonitor.refreshInProgress;
+        root.gpuMonitor.updateInterval((root.active && (hot || telemetryPage || activeOperation)) ? 1000 : 5000);
     }
 
     onActiveChanged: {
@@ -146,11 +137,6 @@ ApplicationWindow {
         function onAvailableChanged() { root.updateTelemetryPolling(); }
         function onRefreshInProgressChanged() { root.updateTelemetryPolling(); }
         function onTelemetryRefreshFinished() { root.updateTelemetryPolling(); }
-    }
-
-    Connections {
-        target: root.cpuMonitor
-        function onTemperatureCChanged() { root.updateTelemetryPolling(); }
     }
 
     Timer {

@@ -2,12 +2,6 @@ ActionButton 1.0 ActionButton.qml
 FanSettingsPopup 1.0 FanSettingsPopup.qml
 RefreshToolButton 1.0 RefreshToolButton.qml
 StatusBanner 1.0 StatusBanner.qml
-TelemetrySparkline 1.0 TelemetrySparkline.qml
-MonitorTelemetrySummary 1.0 MonitorTelemetrySummary.qml
-MonitorGpuPerfCard 1.0 MonitorGpuPerfCard.qml
-MonitorPowerControls 1.0 MonitorPowerControls.qml
-MonitorProcessList 1.0 MonitorProcessList.qml
-MonitorTerminateProcessDialog 1.0 MonitorTerminateProcessDialog.qml
 ModernMiniButton 1.0 ModernMiniButton.qml
 ModernDialogButton 1.0 ModernDialogButton.qml
 DriverActionTile 1.0 DriverActionTile.qml

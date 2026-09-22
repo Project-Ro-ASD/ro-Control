@@ -6,9 +6,7 @@
 #include <QTextStream>
 
 #include "monitor/cpumonitor.h"
-#include "monitor/gpufallbackreader.h"
 #include "monitor/gpumonitor.h"
-#include "monitor/gpuprocessinventory.h"
 #include "monitor/rammonitor.h"
 
 class TestMonitor : public QObject {
@@ -511,51 +509,6 @@ private slots:
 
     qunsetenv("RO_CONTROL_SWAPS_PATH");
     qunsetenv("RO_CONTROL_ZRAM_SYSFS_ROOT");
-  }
-
-  void testGpuFallbackReaderDirectly() {
-    int temp = 0;
-    const QString fakeSensors = QStringLiteral("nvidia-pci-0100\n"
-                                               "Adapter: PCI adapter\n"
-                                               "temp1:\n"
-                                               "  temp1_input: 63.500\n");
-    QVERIFY(GpuFallbackReader::readTemperatureFromSensorsOutput(fakeSensors,
-                                                                &temp));
-    QCOMPARE(temp, 63);
-
-    int invalidTemp = 0;
-    QVERIFY(!GpuFallbackReader::readTemperatureFromSensorsOutput(
-        QStringLiteral("acpitz-acpi-0\ntemp1:\n  temp1_input: 45.0\n"),
-        &invalidTemp));
-    QCOMPARE(invalidTemp, 0);
-  }
-
-  void testGpuProcessInventoryDirectly() {
-    QString err;
-    QVERIFY(!GpuProcessInventory::killProcess(0, {}, &err));
-    QVERIFY(!err.isEmpty());
-
-    err.clear();
-    QVERIFY(!GpuProcessInventory::killProcess(1, {}, &err));
-    QVERIFY(!err.isEmpty());
-
-    QVariantMap fakeProc;
-    fakeProc[QStringLiteral("pid")] = 999999;
-    fakeProc[QStringLiteral("name")] = QStringLiteral("ghost");
-    QVariantList list;
-    list.append(fakeProc);
-
-    err.clear();
-    QVERIFY(!GpuProcessInventory::killProcess(12345, list, &err));
-    QVERIFY(
-        err.contains(QStringLiteral("no longer using"), Qt::CaseInsensitive));
-
-    const auto devices =
-        GpuProcessInventory::queryGpuDevices(0, QStringLiteral("Fallback GPU"));
-    QVERIFY(!devices.isEmpty());
-    const auto first = devices.first().toMap();
-    QVERIFY(first.contains(QStringLiteral("index")));
-    QVERIFY(first.contains(QStringLiteral("name")));
   }
 };
 
