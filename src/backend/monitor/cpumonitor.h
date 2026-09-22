@@ -44,6 +44,7 @@ private:
   void setTemperatureC(int value);
   void setStatusMessage(const QString &value);
   void setAvailable(bool value);
+  void startTemperatureProbe();
 
   QTimer m_timer;
   QElapsedTimer m_sampleTimer;
@@ -53,4 +54,11 @@ private:
   bool m_available = false;
   quint64 m_prevIdle = 0;
   quint64 m_prevTotal = 0;
+
+  // Spawned sensor probes (sensors/acpi/vcgencmd) run on a worker thread so
+  // the GUI thread never blocks on a process; the result is cached here.
+  bool m_tempProbeInFlight = false;
+  bool m_spawnedCacheValid = false;
+  int m_cachedSpawnedTemp = 0;
+  QElapsedTimer m_spawnedCacheTimer;
 };

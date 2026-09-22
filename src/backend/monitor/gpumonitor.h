@@ -12,6 +12,7 @@ class GpuMonitor : public QObject {
   Q_PROPERTY(bool running READ running NOTIFY runningChanged)
   Q_PROPERTY(bool refreshInProgress READ refreshInProgress NOTIFY
                  refreshInProgressChanged)
+  Q_PROPERTY(bool refreshQueued READ refreshQueued NOTIFY refreshQueuedChanged)
   Q_PROPERTY(QString gpuName READ gpuName NOTIFY gpuNameChanged)
   Q_PROPERTY(int temperatureC READ temperatureC NOTIFY temperatureCChanged)
   Q_PROPERTY(int hotspotTemperatureC READ hotspotTemperatureC NOTIFY
@@ -56,6 +57,7 @@ public:
   bool available() const;
   bool running() const;
   bool refreshInProgress() const;
+  bool refreshQueued() const;
   QString gpuName() const;
   int temperatureC() const;
   int hotspotTemperatureC() const;
@@ -93,6 +95,7 @@ signals:
   void availableChanged();
   void runningChanged();
   void refreshInProgressChanged();
+  void refreshQueuedChanged();
   void telemetryRefreshFinished();
   void gpuNameChanged();
   void temperatureCChanged();
@@ -116,12 +119,39 @@ signals:
   void updateIntervalChanged();
 
 private:
-  void processRefreshResult(const CommandRunner::Result &result);
+  // Everything an refresh needs is collected off the GUI thread and then
+  // applied in one place on the GUI thread.
+  struct RefreshData {
+    CommandRunner::Result telemetry;
+
+    // Fallback metrics read from sysfs when nvidia-smi is unavailable.
+    bool hasGenericMetrics = false;
+    int genericTemp = 0;
+    int genericUtil = 0;
+    int genericUsed = 0;
+    int genericTotal = 0;
+
+    // Temperature probed from hwmon/sensors/nvidia-settings, 0 when unknown.
+    int fallbackTemp = 0;
+    int hotspotC = 0;
+    int memoryTempC = 0;
+    QString procGpuName;
+
+    bool hasDevices = false;
+    QVariantList devices;
+    bool hasProcesses = false;
+    QVariantList processes;
+  };
+
+  static RefreshData collectRefreshData(int gpuIndex, bool needsProcName,
+                                        bool wantDevices, bool wantProcesses);
+  void applyRefreshData(const RefreshData &data);
+  void applySideData(const RefreshData &data);
+  void refreshProcessListNow();
   void clearMetrics();
+  void clearDriverTelemetry();
   void setAvailable(bool value);
   void setStatusMessage(const QString &value);
-  void queryGpuProcesses(bool force = false);
-  void queryGpuDevices(bool force = false);
 
   QTimer m_timer;
   bool m_available = false;
@@ -147,4 +177,5 @@ private:
   quint64 m_refreshTickCount = 0;
   bool m_asyncRefreshInFlight = false;
   bool m_refreshQueued = false;
+  bool m_processQueryForceOnce = false;
 };

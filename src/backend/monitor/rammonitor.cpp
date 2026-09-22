@@ -1,12 +1,15 @@
 #include "rammonitor.h"
 #include "system/commandrunner.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QRegularExpression>
 #include <QTextStream>
 
 #include <algorithm>
+#include <cstdlib>
+#include <cstring>
 
 namespace {
 
@@ -374,7 +377,12 @@ void RamMonitor::stop() {
 }
 
 void RamMonitor::setUpdateInterval(int intervalMs) {
-  if (intervalMs < 250 || m_timer.interval() == intervalMs) {
+  if (intervalMs < 250) {
+    qWarning() << "RamMonitor: ignoring update interval below 250 ms:"
+               << intervalMs;
+    return;
+  }
+  if (m_timer.interval() == intervalMs) {
     return;
   }
 

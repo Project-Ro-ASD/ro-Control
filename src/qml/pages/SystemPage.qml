@@ -1,7 +1,8 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../components" as Components
 
 Item {
     id: page
@@ -10,26 +11,38 @@ Item {
     property var gpuMonitor: null
     property var ramMonitor: null
     property var nvidiaDetector: null
-    property var powerController: null
 
     property var theme: ({})
     property bool darkMode: false
-    property bool showAdvancedInfo: true
     property real uiScale: 1.0
     property bool reportCopied: false
     property string generatedReport: ""
     property int reportViewMode: 0
     property string reportFilterText: ""
-    property string lastCopiedKey: ""
+    // Debounced copy of reportFilterText: the sections model rebuilds only
+    // after typing pauses instead of on every keystroke.
+    property string appliedReportFilter: ""
     property bool reportRefreshPending: false
+    property bool reportDialogDismissed: false
     property string actionFeedback: ""
     property bool actionFailed: false
+    // Failure notice shown inside the modal dialog, where the page-level
+    // toast would be hidden behind it.
+    property string dialogFeedback: ""
+
+    // Card models are cached so the model and empty-state bindings share a
+    // single evaluation per dependency change.
+    readonly property var hardwareCardModel: page.hardwareCards()
+    readonly property var softwareCardModel: page.softwareCards()
+    readonly property var reportSectionModel: page.diagnosticReportSections()
+
+    onReportFilterTextChanged: filterDebounceTimer.restart()
 
     Timer {
-        id: itemCopiedTimer
-        interval: 1500
+        id: filterDebounceTimer
+        interval: 150
         repeat: false
-        onTriggered: page.lastCopiedKey = ""
+        onTriggered: page.appliedReportFilter = page.reportFilterText
     }
 
     readonly property color bgColor: theme && theme.card ? theme.card : (page.darkMode ? "#29233B" : "#FFFFFF")
@@ -69,17 +82,6 @@ Item {
             return "";
         const src = page.nvidiaDetector ? page.nvidiaDetector.installedDriverSourceLabel : "";
         return (src.length > 0 && src !== "None") ? (ver + " (" + src + ")") : ver;
-    }
-
-    function systemHealthSummary() {
-        const items = [];
-        if (page.nvidiaDetector && page.nvidiaDetector.driverVersion)
-            items.push(qsTr("Driver: %1").arg(page.nvidiaDetector.driverVersion));
-        if (page.gpuMonitor && page.gpuMonitor.available)
-            items.push(qsTr("GPU telemetry: Available"));
-        if (page.nvidiaDetector && page.nvidiaDetector.secureBootKnown)
-            items.push(page.nvidiaDetector.secureBootEnabled ? qsTr("Secure Boot: On") : qsTr("Secure Boot: Off"));
-        return items.length > 0 ? items.join(" • ") : qsTr("Live system information");
     }
 
     function platformSecuritySummary() {
@@ -145,7 +147,7 @@ Item {
     }
 
     function diagnosticReportSections() {
-        const query = page.reportFilterText.trim().toLowerCase();
+        const query = page.appliedReportFilter.trim().toLowerCase();
         const rawSections = [
             {
                 title: qsTr("Operating System & Platform"),
@@ -154,7 +156,7 @@ Item {
                     { label: qsTr("Operating System"), value: page.systemInfo ? page.systemInfo.osName : "", icon: "🐧" },
                     { label: qsTr("Linux Kernel"), value: page.systemInfo ? page.systemInfo.kernelVersion : "", icon: "⚙️" },
                     { label: qsTr("Desktop Environment"), value: page.systemInfo ? page.systemInfo.desktopEnvironment : "", icon: "🖥️" },
-                    { label: qsTr("Display Server / Session"), value: (page.nvidiaDetector && page.nvidiaDetector.sessionType) ? page.nvidiaDetector.sessionType.toUpperCase() : "", icon: "🪟" },
+                    { label: qsTr("Display Server / Session"), value: (page.nvidiaDetector && page.nvidiaDetector.sessionType) ? (page.nvidiaDetector.sessionType.charAt(0).toUpperCase() + page.nvidiaDetector.sessionType.slice(1)) : "", icon: "🪟" },
                     { label: qsTr("Platform Security"), value: page.platformSecuritySummary(), icon: "🛡️" }
                 ]
             },
@@ -213,6 +215,8 @@ Item {
 
         // Open first so the modal transition is never blocked by a hardware
         // probe. The live report is refreshed on the next event-loop turn.
+        page.reportDialogDismissed = false;
+        page.dialogFeedback = "";
         diagnosticReportDialog.open();
         page.reportRefreshPending = true;
         Qt.callLater(function() {
@@ -231,6 +235,8 @@ Item {
 
     function finalizeDiagnosticReport() {
         page.reportRefreshPending = false;
+        if (!page.systemInfo)
+            return;
 
         const gpu = page.diagnosticGpuName();
         const drv = page.nvidiaDriverSummary();
@@ -247,23 +253,40 @@ Item {
         if (page.systemInfo.diagnosticReportDestination === "clipboard") {
             page.reportCopied = page.systemInfo.copyToClipboard(page.generatedReport);
             if (page.reportCopied) {
+                page.dialogFeedback = "";
                 page.actionFailed = false;
                 page.actionFeedback = qsTr("Diagnostic report copied to clipboard.");
                 copiedFeedbackTimer.restart();
                 return;
             }
+            page.dialogFeedback = qsTr("The report could not be copied. You can copy it manually from this preview.");
             page.actionFailed = true;
-            page.actionFeedback = qsTr("The report could not be copied. You can copy it manually from this preview.");
+            page.actionFeedback = page.dialogFeedback;
         }
-        if (!diagnosticReportDialog.visible)
+        // Never yank the dialog back open when the user dismissed it while
+        // the refresh was still running.
+        if (!diagnosticReportDialog.visible && !page.reportDialogDismissed)
             diagnosticReportDialog.open();
     }
 
     Connections {
         target: page.gpuMonitor
         function onTelemetryRefreshFinished() {
-            if (page.reportRefreshPending)
+            // When a follow-up refresh is queued, this result is stale by
+            // definition — finalize on the next (fresh) completion instead.
+            if (page.reportRefreshPending && !page.gpuMonitor.refreshQueued)
                 page.finalizeDiagnosticReport();
+        }
+    }
+
+    Connections {
+        target: page.systemInfo
+        function onRootActionFinished(success, action) {
+            if (success || action !== "firmware-reboot")
+                return;
+            page.actionFailed = true;
+            page.actionFeedback = qsTr("Firmware reboot failed. Authorization may have been denied or this system does not support the action.");
+            refreshFeedbackTimer.restart();
         }
     }
 
@@ -340,9 +363,10 @@ Item {
                         rowSpacing: Math.round(8 * page.uiScale)
 
                         Repeater {
-                            model: page.hardwareCards()
+                            model: page.hardwareCardModel
 
                             delegate: Rectangle {
+                                id: hwCard
                                 required property var modelData
                                 Layout.fillWidth: true
                                 implicitHeight: Math.max(Math.round(64 * page.uiScale), hardwareCardContent.implicitHeight + Math.round(16 * page.uiScale))
@@ -360,7 +384,7 @@ Item {
                                     Label {
                                         Layout.fillWidth: true
                                         Layout.minimumWidth: 0
-                                        text: modelData.title
+                                        text: hwCard.modelData.title
                                         color: page.softTextColor
                                         font.pixelSize: Math.round(11 * page.uiScale)
                                         font.weight: Font.DemiBold
@@ -371,7 +395,7 @@ Item {
                                     Label {
                                         Layout.fillWidth: true
                                         Layout.minimumWidth: 0
-                                        text: modelData.value
+                                        text: hwCard.modelData.value
                                         color: page.textColor
                                         font.pixelSize: Math.round(13 * page.uiScale)
                                         font.weight: Font.DemiBold
@@ -384,7 +408,7 @@ Item {
                     }
                     Label {
                         Layout.fillWidth: true
-                        visible: page.hardwareCards().length === 0
+                        visible: page.hardwareCardModel.length === 0
                         text: qsTr("No readable hardware details are currently exposed by this system.")
                         color: page.softTextColor
                         wrapMode: Text.WordWrap
@@ -421,9 +445,10 @@ Item {
                         rowSpacing: Math.round(8 * page.uiScale)
 
                         Repeater {
-                            model: page.softwareCards()
+                            model: page.softwareCardModel
 
                             delegate: Rectangle {
+                                id: swCard
                                 required property var modelData
                                 Layout.fillWidth: true
                                 implicitHeight: Math.round(64 * page.uiScale)
@@ -439,7 +464,7 @@ Item {
 
                                     Label {
                                         width: parent.width
-                                        text: modelData.title
+                                        text: swCard.modelData.title
                                         color: page.softTextColor
                                         font.pixelSize: Math.round(11 * page.uiScale)
                                         font.weight: Font.DemiBold
@@ -448,7 +473,7 @@ Item {
 
                                     Label {
                                         width: parent.width
-                                        text: modelData.value
+                                        text: swCard.modelData.value
                                         color: page.textColor
                                         font.pixelSize: Math.round(13 * page.uiScale)
                                         font.weight: Font.DemiBold
@@ -460,7 +485,7 @@ Item {
                     }
                     Label {
                         Layout.fillWidth: true
-                        visible: page.softwareCards().length === 0
+                        visible: page.softwareCardModel.length === 0
                         text: qsTr("Software and platform details are temporarily unavailable.")
                         color: page.softTextColor
                         wrapMode: Text.WordWrap
@@ -702,6 +727,12 @@ Item {
         header: null
         footer: null
 
+        onClosed: {
+            // A refresh finishing after dismissal must not reopen the dialog.
+            if (page.reportRefreshPending)
+                page.reportDialogDismissed = true;
+        }
+
         enter: Transition {
             NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 180; easing.type: Easing.OutQuad }
             NumberAnimation { property: "scale"; from: 0.96; to: 1.0; duration: 180; easing.type: Easing.OutQuad }
@@ -939,7 +970,7 @@ Item {
                                 }
                                 onClicked: {
                                     page.reportFilterText = "";
-                                    filterInput.text = "";
+                                    page.appliedReportFilter = "";
                                 }
                             }
                         }
@@ -1071,7 +1102,9 @@ Item {
                                                 onClicked: {
                                                     if (page.systemInfo) {
                                                         page.systemInfo.setDiagnosticReportFormat(fmtItemBtn.modelData.id);
-                                                        page.openDiagnosticReport();
+                                                        // Rebuild the report text only — the hardware was
+                                                        // already scanned when the dialog opened.
+                                                        page.finalizeDiagnosticReport();
                                                     }
                                                     formatPopup.close();
                                                 }
@@ -1231,7 +1264,7 @@ Item {
                         spacing: Math.round(16 * page.uiScale)
 
                         Repeater {
-                            model: page.diagnosticReportSections()
+                            model: page.reportSectionModel
 
                             delegate: Rectangle {
                                 id: sectionCard
@@ -1368,7 +1401,7 @@ Item {
 
                         // Empty Filter State
                         Rectangle {
-                            visible: page.diagnosticReportSections().length === 0
+                            visible: page.reportSectionModel.length === 0
                             Layout.fillWidth: true
                             implicitHeight: Math.round(160 * page.uiScale)
                             radius: 12
@@ -1406,7 +1439,7 @@ Item {
                                     text: qsTr("Clear Filter")
                                     onClicked: {
                                         page.reportFilterText = "";
-                                        filterInput.text = "";
+                                        page.appliedReportFilter = "";
                                     }
                                 }
                             }
@@ -1459,7 +1492,7 @@ Item {
             // Bottom Footer Bar
             Rectangle {
                 Layout.fillWidth: true
-                implicitHeight: Math.round(64 * page.uiScale)
+                implicitHeight: Math.max(Math.round(64 * page.uiScale), reportIssueBadge.implicitHeight + Math.round(24 * page.uiScale))
                 color: "transparent"
 
                 RowLayout {
@@ -1493,6 +1526,31 @@ Item {
                                 font.pixelSize: Math.round(12 * page.uiScale)
                                 font.weight: Font.DemiBold
                             }
+                        }
+                    }
+
+                    // Copy failure notice — lives inside the dialog because
+                    // the page-level toast sits behind the modal.
+                    Rectangle {
+                        id: reportIssueBadge
+                        visible: page.dialogFeedback.length > 0
+                        Layout.preferredWidth: Math.round(diagnosticReportDialog.width * 0.45)
+                        implicitHeight: reportIssueLabel.implicitHeight + Math.round(16 * page.uiScale)
+                        radius: 8
+                        color: page.darkMode ? "#3A2E12" : "#FFFBEB"
+                        border.width: 1
+                        border.color: page.warningColor
+
+                        Label {
+                            id: reportIssueLabel
+                            anchors.fill: parent
+                            anchors.margins: Math.round(7 * page.uiScale)
+                            text: page.dialogFeedback
+                            color: page.warningColor
+                            font.pixelSize: Math.round(11 * page.uiScale)
+                            wrapMode: Text.WordWrap
+                            maximumLineCount: 3
+                            elide: Text.ElideRight
                         }
                     }
 
@@ -1554,12 +1612,14 @@ Item {
                         onClicked: {
                             page.reportCopied = page.systemInfo && page.systemInfo.copyToClipboard(page.generatedReport);
                             if (page.reportCopied) {
+                                page.dialogFeedback = "";
                                 page.actionFailed = false;
                                 page.actionFeedback = qsTr("Diagnostic report copied to clipboard.");
                                 copiedFeedbackTimer.restart();
                             } else {
+                                page.dialogFeedback = qsTr("The report could not be copied. Select and copy the text manually.");
                                 page.actionFailed = true;
-                                page.actionFeedback = qsTr("The report could not be copied. Select and copy the text manually.");
+                                page.actionFeedback = page.dialogFeedback;
                             }
                         }
                     }

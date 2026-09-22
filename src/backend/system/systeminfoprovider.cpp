@@ -20,6 +20,7 @@
 #include <QStringList>
 #include <QSysInfo>
 #include <QTextStream>
+#include <QtConcurrent>
 
 #if defined(Q_OS_UNIX)
 #include <sys/utsname.h>
@@ -214,6 +215,23 @@ SystemInfoProvider::SystemInfoProvider(QObject *parent) : QObject(parent) {
   loadDiagnosticReportPreferences();
   initializeStaticInfo();
   refresh();
+
+  // Battery/AC state has to stay fresh while the app runs: nothing else
+  // re-probes the power supply, so the fan controller's power-source sync
+  // would otherwise keep stale data until the page is reopened.
+  connect(&m_powerTimer, &QTimer::timeout, this,
+          &SystemInfoProvider::refresh);
+  m_powerTimer.start(30000);
+}
+
+SystemInfoProvider::~SystemInfoProvider() {
+  // Worker lambdas finish with a queued invocation against `this`; waiting
+  // here guarantees the object outlives them (same for a pending pkexec).
+  m_rootActionCancel->store(true, std::memory_order_relaxed);
+  if (m_rootActionFuture.isRunning())
+    m_rootActionFuture.waitForFinished();
+  if (m_hardwareScanFuture.isRunning())
+    m_hardwareScanFuture.waitForFinished();
 }
 
 void SystemInfoProvider::initializeStaticInfo() {
@@ -221,20 +239,59 @@ void SystemInfoProvider::initializeStaticInfo() {
     return;
   }
 
+  // Cheap, file-based probes only. Everything that shells out to lspci,
+  // vulkaninfo or nvidia-smi moves to startHardwareScan() so application
+  // startup never blocks the GUI thread for seconds.
   m_osName = detectOsName();
   m_desktopEnvironment = detectDesktopEnvironment();
   m_kernelVersion = detectKernelVersion();
+  // Detect virtualization first: motherboard, CPU fallback and device type
+  // all reuse this result instead of spawning systemd-detect-virt again.
+  m_virtualizationType = detectVirtualizationType();
   m_cpuModel = detectCpuModel();
   m_motherboardModel = detectMotherboardModel();
   m_biosVersion = detectBiosVersion();
-  m_cudaVersion = detectCudaVersion();
-  m_graphicsApiSummary = detectGraphicsApiSummary();
-  m_virtualizationType = detectVirtualizationType();
   m_deviceType = detectDeviceType();
-  m_integratedGpuName = detectIntegratedGpuName();
-  m_integratedGpuMemory = detectIntegratedGpuMemory();
+  // Kept synchronous: tests assert the value directly after construction.
+  // It reads /proc/driver/nvidia first and only shells out (bounded by a
+  // timeout) when that file is unavailable.
   m_resizableBarStatus = detectResizableBarStatus();
   m_staticHardwareLoaded = true;
+
+  startHardwareScan();
+}
+
+void SystemInfoProvider::startHardwareScan() {
+  // One scan at a time: replacing the future while it runs would drop the
+  // handle the destructor relies on.
+  if (m_hardwareScanFuture.isRunning())
+    m_hardwareScanFuture.waitForFinished();
+
+  const quint64 generation = ++m_hardwareScanGeneration;
+  m_hardwareScanFuture = QtConcurrent::run([this, generation]() {
+    HardwareScanData data;
+    data.integratedGpuName = detectIntegratedGpuName();
+    data.integratedGpuMemory =
+        detectIntegratedGpuMemory(data.integratedGpuName);
+    data.cudaVersion = detectCudaVersion();
+    data.graphicsApiSummary = detectGraphicsApiSummary(data.cudaVersion);
+
+    // Instance state is only touched from this queued invocation, which the
+    // destructor waits for.
+    QMetaObject::invokeMethod(
+        this,
+        [this, generation, data]() {
+          if (generation != m_hardwareScanGeneration) {
+            return; // A newer scan superseded this result.
+          }
+          m_integratedGpuName = data.integratedGpuName;
+          m_integratedGpuMemory = data.integratedGpuMemory;
+          m_cudaVersion = data.cudaVersion;
+          m_graphicsApiSummary = data.graphicsApiSummary;
+          emit infoChanged();
+        },
+        Qt::QueuedConnection);
+  });
 }
 
 void SystemInfoProvider::refresh() {
@@ -265,45 +322,76 @@ void SystemInfoProvider::rescanHardware() {
 
 bool SystemInfoProvider::requestRestart() {
 #if defined(Q_OS_LINUX)
-  CommandRunner runner;
-  CommandRunner::RunOptions options;
-  options.timeoutMs = 30000;
-  const auto result =
-      runner.runAsRoot(QStringLiteral("systemctl"), {QStringLiteral("reboot")});
-  if (result.success()) {
-    return true;
-  }
-
-  const auto rebootResult = runner.runAsRoot(QStringLiteral("reboot"), {});
-  if (rebootResult.success()) {
-    return true;
-  }
-
-  return QProcess::startDetached(
-      QStandardPaths::findExecutable(QStringLiteral("systemctl")),
-      {QStringLiteral("--no-ask-password"), QStringLiteral("reboot")});
-#endif
+  return startRootAction(QStringLiteral("reboot"));
+#else
   return false;
+#endif
 }
 
 bool SystemInfoProvider::requestRebootToFirmware() {
 #if defined(Q_OS_LINUX)
-  CommandRunner runner;
-  CommandRunner::RunOptions options;
-  options.timeoutMs = 30000;
-  const auto result = runner.runAsRoot(
-      QStringLiteral("systemctl"),
-      {QStringLiteral("reboot"), QStringLiteral("--firmware-setup")});
-  if (result.success()) {
-    return true;
+  return startRootAction(QStringLiteral("firmware-reboot"));
+#else
+  return false;
+#endif
+}
+
+bool SystemInfoProvider::startRootAction(const QString &action) {
+  if (m_rootActionInProgress) {
+    return false; // An authorization dialog is already pending.
+  }
+  m_rootActionInProgress = true;
+
+  if (m_rootActionFuture.isRunning()) {
+    m_rootActionFuture.waitForFinished();
   }
 
-  return QProcess::startDetached(
-      QStandardPaths::findExecutable(QStringLiteral("systemctl")),
-      {QStringLiteral("--no-ask-password"), QStringLiteral("reboot"),
-       QStringLiteral("--firmware-setup")});
-#endif
-  return false;
+  m_rootActionFuture = QtConcurrent::run([this, action]() {
+    CommandRunner runner;
+    CommandRunner::RunOptions options;
+    options.timeoutMs = 30000;
+    options.cancelRequested = m_rootActionCancel;
+
+    const bool isReboot = action == QLatin1String("reboot");
+    bool success = false;
+    if (isReboot) {
+      success = runner
+                    .runAsRoot(QStringLiteral("systemctl"),
+                               {QStringLiteral("reboot")}, options)
+                    .success() ||
+                runner
+                    .runAsRoot(QStringLiteral("reboot"), {}, options)
+                    .success();
+    } else {
+      success = runner
+                    .runAsRoot(QStringLiteral("systemctl"),
+                               {QStringLiteral("reboot"),
+                                QStringLiteral("--firmware-setup")},
+                               options)
+                    .success();
+    }
+
+    if (!success) {
+      const QStringList args =
+          isReboot
+              ? QStringList{QStringLiteral("--no-ask-password"),
+                            QStringLiteral("reboot")}
+              : QStringList{QStringLiteral("--no-ask-password"),
+                            QStringLiteral("reboot"),
+                            QStringLiteral("--firmware-setup")};
+      success = QProcess::startDetached(
+          QStandardPaths::findExecutable(QStringLiteral("systemctl")), args);
+    }
+
+    QMetaObject::invokeMethod(
+        this,
+        [this, success, action]() {
+          m_rootActionInProgress = false;
+          emit rootActionFinished(success, action);
+        },
+        Qt::QueuedConnection);
+  });
+  return true;
 }
 
 bool SystemInfoProvider::copyToClipboard(const QString &text) {
@@ -397,7 +485,10 @@ QString SystemInfoProvider::detectKernelVersion() const {
 QString SystemInfoProvider::detectCpuModel() const {
 #if defined(Q_OS_LINUX)
   CommandRunner runner;
-  const auto lscpuResult = runner.run(QStringLiteral("lscpu"));
+  CommandRunner::RunOptions options;
+  options.timeoutMs = 2000;
+  const auto lscpuResult =
+      runner.run(QStringLiteral("lscpu"), {}, options);
   if (lscpuResult.success()) {
     const QStringList lines =
         lscpuResult.stdout.split(QLatin1Char('\n'), Qt::SkipEmptyParts);
@@ -453,7 +544,9 @@ QString SystemInfoProvider::detectCpuModel() const {
 #endif
 
   const QString architecture = QSysInfo::currentCpuArchitecture();
-  const QString virtualizationType = detectVirtualizationType();
+  const QString virtualizationType = !m_virtualizationType.isEmpty()
+                                         ? m_virtualizationType
+                                         : detectVirtualizationType();
   if (!virtualizationType.isEmpty()) {
     return architecture.isEmpty()
                ? QStringLiteral("%1 Virtual CPU").arg(virtualizationType)
@@ -512,10 +605,13 @@ QString SystemInfoProvider::detectBiosVersion() const {
   return {};
 }
 
-QString SystemInfoProvider::detectCudaVersion() const {
+QString SystemInfoProvider::detectCudaVersion() {
 #if defined(Q_OS_LINUX)
   CommandRunner runner;
-  const auto smiResult = runner.run(QStringLiteral("nvidia-smi"));
+  CommandRunner::RunOptions options;
+  options.timeoutMs = 2000;
+  const auto smiResult =
+      runner.run(QStringLiteral("nvidia-smi"), {}, options);
   if (smiResult.success()) {
     static const QRegularExpression cudaRegex(
         QStringLiteral(R"(CUDA Version:\s*([0-9]+\.[0-9]+))"));
@@ -539,11 +635,11 @@ QString SystemInfoProvider::detectCudaVersion() const {
   return {};
 }
 
-QString SystemInfoProvider::detectGraphicsApiSummary() const {
+QString SystemInfoProvider::detectGraphicsApiSummary(
+    const QString &cudaVersion) {
   QStringList capabilities;
-  const QString cuda = detectCudaVersion();
-  if (!cuda.isEmpty()) {
-    capabilities << cuda;
+  if (!cudaVersion.isEmpty()) {
+    capabilities << cudaVersion;
   }
 
 #if defined(Q_OS_LINUX)
@@ -562,7 +658,10 @@ QString SystemInfoProvider::detectGraphicsApiSummary() const {
 QString SystemInfoProvider::detectVirtualizationType() const {
 #if defined(Q_OS_LINUX)
   CommandRunner runner;
-  const auto virtResult = runner.run(QStringLiteral("systemd-detect-virt"));
+  CommandRunner::RunOptions options;
+  options.timeoutMs = 1000;
+  const auto virtResult = runner.run(QStringLiteral("systemd-detect-virt"), {},
+                                     options);
   if (virtResult.success()) {
     const QString output = virtResult.stdout.trimmed();
     if (!output.isEmpty() && output != QStringLiteral("none")) {
@@ -650,7 +749,7 @@ QString SystemInfoProvider::detectDesktopEnvironment() const {
   return normalizedParts.join(QStringLiteral(" / "));
 }
 
-QString SystemInfoProvider::detectIntegratedGpuName() const {
+QString SystemInfoProvider::detectIntegratedGpuName() {
 #if defined(Q_OS_LINUX)
   CommandRunner runner;
   CommandRunner::RunOptions options;
@@ -680,9 +779,10 @@ QString SystemInfoProvider::detectIntegratedGpuName() const {
   return {};
 }
 
-QString SystemInfoProvider::detectIntegratedGpuMemory() const {
+QString SystemInfoProvider::detectIntegratedGpuMemory(
+    const QString &integratedGpuName) {
 #if defined(Q_OS_LINUX)
-  if (m_integratedGpuName.isEmpty())
+  if (integratedGpuName.isEmpty())
     return {};
   const QDir drmRoot(QStringLiteral("/sys/class/drm"));
   const QFileInfoList cards =

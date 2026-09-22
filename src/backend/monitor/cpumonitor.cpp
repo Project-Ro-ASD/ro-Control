@@ -3,11 +3,14 @@
 #include "cpumonitor.h"
 #include "system/commandrunner.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFile>
+#include <QFutureWatcher>
 #include <QRegularExpression>
 #include <QTextStream>
+#include <QtConcurrent>
 
 #include <algorithm>
 
@@ -200,7 +203,8 @@ int readCpuTemperatureFromVcgencmd() {
   return result.success() ? parseTemperatureFromPlainText(result.stdout) : 0;
 }
 
-int readCpuTemperatureC() {
+// Fast sysfs-only probe: plain file reads, safe to run on the GUI thread.
+int readCpuTemperatureFromSysfs() {
   if (!s_cachedCpuTempPath.isEmpty()) {
     const int cachedTemp = parseMilliCelsius(readFileText(s_cachedCpuTempPath));
     if (cachedTemp > 0) {
@@ -214,30 +218,18 @@ int readCpuTemperatureC() {
     return thermalZoneTemperature;
   }
 
-  const int hwmonTemperature = readCpuTemperatureFromHwmon();
-  if (hwmonTemperature > 0) {
-    return hwmonTemperature;
-  }
+  return readCpuTemperatureFromHwmon();
+}
 
-  static int s_cachedSpawnedTemp = 0;
-  static QElapsedTimer s_spawnedCacheTimer;
-  static bool s_spawnedCacheValid = false;
-  if (s_spawnedCacheValid && s_spawnedCacheTimer.isValid() &&
-      s_spawnedCacheTimer.elapsed() < kSensorsCacheWindowMs) {
-    return s_cachedSpawnedTemp;
-  }
-
+// Spawns sensors/acpi/vcgencmd. Never call this from the GUI thread; it runs
+// on a worker thread via CpuMonitor::startTemperatureProbe().
+int probeCpuTemperatureWithCommands() {
   const int sensorsTemperature = readCpuTemperatureFromSensors();
   const int acpiTemperature = sensorsTemperature > 0
                                   ? sensorsTemperature
                                   : readCpuTemperatureFromAcpi();
-  const int finalTemp =
-      acpiTemperature > 0 ? acpiTemperature : readCpuTemperatureFromVcgencmd();
-
-  s_cachedSpawnedTemp = finalTemp;
-  s_spawnedCacheTimer.start();
-  s_spawnedCacheValid = true;
-  return finalTemp;
+  return acpiTemperature > 0 ? acpiTemperature
+                             : readCpuTemperatureFromVcgencmd();
 }
 
 } // namespace
@@ -332,13 +324,48 @@ void CpuMonitor::refresh() {
     m_sampleTimer.restart();
   }
 
-  const int temperatureC = readCpuTemperatureC();
+  int temperatureC = readCpuTemperatureFromSysfs();
+  if (temperatureC <= 0) {
+    // No sysfs sensor: use the last probe result while it is fresh and kick
+    // off a background probe otherwise instead of spawning on this thread.
+    if (m_spawnedCacheValid && m_spawnedCacheTimer.isValid() &&
+        m_spawnedCacheTimer.elapsed() < kSensorsCacheWindowMs) {
+      temperatureC = m_cachedSpawnedTemp;
+    } else {
+      startTemperatureProbe();
+    }
+  }
   setTemperatureC(temperatureC);
   setStatusMessage(
       temperatureC > 0
           ? tr("CPU temperature is being read from system sensors.")
           : tr("CPU temperature sensor is not exposed by the kernel."));
   setAvailable(true);
+}
+
+void CpuMonitor::startTemperatureProbe() {
+  if (m_tempProbeInFlight) {
+    return;
+  }
+
+  m_tempProbeInFlight = true;
+  auto *watcher = new QFutureWatcher<int>(this);
+  watcher->setFuture(QtConcurrent::run(
+      [] { return probeCpuTemperatureWithCommands(); }));
+
+  connect(watcher, &QFutureWatcher<int>::finished, this, [this, watcher]() {
+    m_tempProbeInFlight = false;
+    m_cachedSpawnedTemp = watcher->result();
+    m_spawnedCacheTimer.start();
+    m_spawnedCacheValid = true;
+    watcher->deleteLater();
+
+    setTemperatureC(m_cachedSpawnedTemp);
+    setStatusMessage(
+        m_cachedSpawnedTemp > 0
+            ? tr("CPU temperature is being read from system sensors.")
+            : tr("CPU temperature sensor is not exposed by the kernel."));
+  });
 }
 
 void CpuMonitor::start() {
@@ -360,7 +387,12 @@ void CpuMonitor::stop() {
 }
 
 void CpuMonitor::setUpdateInterval(int intervalMs) {
-  if (intervalMs < 250 || m_timer.interval() == intervalMs) {
+  if (intervalMs < 250) {
+    qWarning() << "CpuMonitor: ignoring update interval below 250 ms:"
+               << intervalMs;
+    return;
+  }
+  if (m_timer.interval() == intervalMs) {
     return;
   }
 

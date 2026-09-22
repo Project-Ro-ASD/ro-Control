@@ -111,16 +111,23 @@ ApplicationWindow {
     // pages use a lower-cost cadence without stopping the monitor that feeds
     // HealthGuard and the tray.
     function updateTelemetryPolling() {
+        // Every page past the driver tab shows live telemetry (Monitor, Fan
+        // and System), so CPU and RAM follow that fast cadence as well.
+        const telemetryPage = tabBar.currentIndex > 0;
+        const fastTelemetry = root.active && telemetryPage;
+        if (root.cpuMonitor)
+            root.cpuMonitor.updateInterval = fastTelemetry ? 1000 : 5000;
+        if (root.ramMonitor)
+            root.ramMonitor.updateInterval = fastTelemetry ? 1000 : 5000;
         if (!root.gpuMonitor)
             return;
         if (!root.gpuMonitor.available) {
-            root.gpuMonitor.updateInterval(15000);
+            root.gpuMonitor.updateInterval = 15000;
             return;
         }
         const hot = root.gpuMonitor.temperatureC >= 80;
-        const telemetryPage = tabBar.currentIndex === 1 || tabBar.currentIndex === 2;
         const activeOperation = root.gpuMonitor.refreshInProgress;
-        root.gpuMonitor.updateInterval((root.active && (hot || telemetryPage || activeOperation)) ? 1000 : 5000);
+        root.gpuMonitor.updateInterval = (hot || fastTelemetry || (root.active && activeOperation)) ? 1000 : 5000;
     }
 
     onActiveChanged: {
@@ -454,189 +461,6 @@ ApplicationWindow {
             }
         }
 
-        Popup {
-            id: settingsPopup
-            modal: false
-            focus: true
-            padding: Math.round(14 * root.uiScale)
-            closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-            height: Math.min(root.height - Math.round(24 * root.uiScale), implicitHeight)
-
-            background: Rectangle {
-                radius: Math.round(14 * root.uiScale)
-                color: colors.shellAlt
-                border.width: 1
-                border.color: colors.border
-            }
-
-            contentItem: ColumnLayout {
-                spacing: Math.round(12 * root.uiScale)
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: Math.round(8 * root.uiScale)
-
-                    Label {
-                        text: qsTr("Settings")
-                        color: colors.text
-                        font.pixelSize: Math.round(14 * root.uiScale)
-                        font.weight: Font.DemiBold
-                        Layout.fillWidth: true
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: Math.round(6 * root.uiScale)
-
-                    Label {
-                        text: qsTr("Language")
-                        color: colors.textSoft
-                        font.pixelSize: Math.round(11 * root.uiScale)
-                        font.weight: Font.DemiBold
-                        Layout.fillWidth: true
-                    }
-
-                    GridLayout {
-                        Layout.fillWidth: true
-                        columns: 2
-                        columnSpacing: Math.round(6 * root.uiScale)
-                        rowSpacing: Math.round(6 * root.uiScale)
-
-                        Repeater {
-                            model: root.visibleLanguages
-
-                            delegate: Button {
-                                id: langBtn
-                                required property var modelData
-                                Layout.fillWidth: true
-                                implicitHeight: Math.round(34 * root.uiScale)
-                                text: modelData.nativeLabel
-
-                                background: Rectangle {
-                                    radius: Math.round(8 * root.uiScale)
-                                    color: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
-                                           ? colors.accentA
-                                           : (langBtn.hovered ? colors.cardStrong : colors.card)
-                                    border.width: 1
-                                    border.color: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
-                                                  ? colors.accentA
-                                                  : colors.border
-                                }
-
-                                contentItem: Text {
-                                    text: langBtn.text
-                                    color: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
-                                           ? "#FFFFFF"
-                                           : colors.text
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                    font.pixelSize: Math.round(12 * root.uiScale)
-                                    font.weight: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
-                                                 ? Font.DemiBold : Font.Medium
-                                }
-
-                                onClicked: {
-                                    if (root.hasLanguageManager)
-                                        root.languageManager.setCurrentLanguage(modelData.code);
-                                }
-                            }
-                        }
-                    }
-
-                    Switch {
-                        Layout.fillWidth: true
-                        text: qsTr("Follow system language")
-                        checked: root.hasLanguageManager && root.languageManager.followsSystem
-                        enabled: root.hasLanguageManager
-                        onToggled: if (root.hasLanguageManager) root.languageManager.setFollowsSystem(checked)
-                    }
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    height: 1
-                    color: colors.border
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: Math.round(6 * root.uiScale)
-
-                    Label {
-                        text: qsTr("Theme")
-                        color: colors.textSoft
-                        font.pixelSize: Math.round(11 * root.uiScale)
-                        font.weight: Font.DemiBold
-                        Layout.fillWidth: true
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: Math.round(6 * root.uiScale)
-
-                        Repeater {
-                            model: root.visibleThemeModes
-
-                            delegate: Button {
-                                id: themeBtn
-                                required property var modelData
-                                Layout.fillWidth: true
-                                implicitHeight: Math.round(34 * root.uiScale)
-                                text: modelData.label
-
-                                background: Rectangle {
-                                    radius: Math.round(8 * root.uiScale)
-                                    color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
-                                           ? colors.accentA
-                                           : (themeBtn.hovered ? colors.cardStrong : colors.card)
-                                    border.width: 1
-                                    border.color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
-                                                  ? colors.accentA
-                                                  : colors.border
-                                }
-
-                                contentItem: Text {
-                                    text: themeBtn.text
-                                    color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
-                                           ? "#FFFFFF"
-                                           : colors.text
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                    font.pixelSize: Math.round(12 * root.uiScale)
-                                    font.weight: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
-                                                 ? Font.DemiBold : Font.Medium
-                                }
-
-                                onClicked: {
-                                    if (root.hasUiPreferences)
-                                        root.uiPreferences.setThemeMode(modelData.code);
-                                }
-                            }
-                        }
-                    }
-
-                    Switch {
-                        Layout.fillWidth: true
-                        text: qsTr("Show advanced information")
-                        checked: root.hasUiPreferences && root.uiPreferences.showAdvancedInfo
-                        enabled: root.hasUiPreferences
-                        onToggled: if (root.hasUiPreferences) root.uiPreferences.setShowAdvancedInfo(checked)
-                    }
-
-                    Components.ActionButton {
-                        Layout.fillWidth: true
-                        text: qsTr("Reset appearance settings")
-                        enabled: root.hasUiPreferences
-                        theme: colors
-                        compact: true
-                        uiScale: root.uiScale
-                        onClicked: if (root.hasUiPreferences) root.uiPreferences.resetToDefaults()
-                    }
-                }
-            }
-        }
-
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -672,7 +496,6 @@ ApplicationWindow {
                     ramMonitor: root.ramMonitor
                     fanController: root.fanController
                     powerController: root.powerController
-                    healthGuard: root.healthGuard
                     nvidiaDetector: root.nvidiaDetector
                 }
 
@@ -690,17 +513,199 @@ ApplicationWindow {
                 Pages.SystemPage {
                     theme: colors
                     darkMode: root.darkMode
-                    showAdvancedInfo: root.showAdvancedInfo
                     uiScale: root.uiScale
                     systemInfo: root.systemInfo
                     cpuMonitor: root.cpuMonitor
                     gpuMonitor: root.gpuMonitor
                     ramMonitor: root.ramMonitor
                     nvidiaDetector: root.nvidiaDetector
-                    powerController: root.powerController
                 }
 
             }
         }
     }
+
+    Popup {
+        id: settingsPopup
+        modal: false
+        focus: true
+        padding: Math.round(14 * root.uiScale)
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        height: Math.min(root.height - Math.round(24 * root.uiScale), implicitHeight)
+
+        background: Rectangle {
+            radius: Math.round(14 * root.uiScale)
+            color: colors.shellAlt
+            border.width: 1
+            border.color: colors.border
+        }
+
+        contentItem: ColumnLayout {
+            spacing: Math.round(12 * root.uiScale)
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Math.round(8 * root.uiScale)
+
+                Label {
+                    text: qsTr("Settings")
+                    color: colors.text
+                    font.pixelSize: Math.round(14 * root.uiScale)
+                    font.weight: Font.DemiBold
+                    Layout.fillWidth: true
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: Math.round(6 * root.uiScale)
+
+                Label {
+                    text: qsTr("Language")
+                    color: colors.textSoft
+                    font.pixelSize: Math.round(11 * root.uiScale)
+                    font.weight: Font.DemiBold
+                    Layout.fillWidth: true
+                }
+
+                GridLayout {
+                    Layout.fillWidth: true
+                    columns: 2
+                    columnSpacing: Math.round(6 * root.uiScale)
+                    rowSpacing: Math.round(6 * root.uiScale)
+
+                    Repeater {
+                        model: root.visibleLanguages
+
+                        delegate: Button {
+                            id: langBtn
+                            required property var modelData
+                            Layout.fillWidth: true
+                            implicitHeight: Math.round(34 * root.uiScale)
+                            text: modelData.nativeLabel
+
+                            background: Rectangle {
+                                radius: Math.round(8 * root.uiScale)
+                                color: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
+                                       ? colors.accentA
+                                       : (langBtn.hovered ? colors.cardStrong : colors.card)
+                                border.width: 1
+                                border.color: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
+                                              ? colors.accentA
+                                              : colors.border
+                            }
+
+                            contentItem: Text {
+                                text: langBtn.text
+                                color: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
+                                       ? "#FFFFFF"
+                                       : colors.text
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                font.pixelSize: Math.round(12 * root.uiScale)
+                                font.weight: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
+                                             ? Font.DemiBold : Font.Medium
+                            }
+
+                            onClicked: {
+                                if (root.hasLanguageManager)
+                                    root.languageManager.setCurrentLanguage(modelData.code);
+                            }
+                        }
+                    }
+                }
+
+                Switch {
+                    Layout.fillWidth: true
+                    text: qsTr("Follow system language")
+                    checked: root.hasLanguageManager && root.languageManager.followsSystem
+                    enabled: root.hasLanguageManager
+                    onToggled: if (root.hasLanguageManager) root.languageManager.setFollowsSystem(checked)
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+                color: colors.border
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: Math.round(6 * root.uiScale)
+
+                Label {
+                    text: qsTr("Theme")
+                    color: colors.textSoft
+                    font.pixelSize: Math.round(11 * root.uiScale)
+                    font.weight: Font.DemiBold
+                    Layout.fillWidth: true
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Math.round(6 * root.uiScale)
+
+                    Repeater {
+                        model: root.visibleThemeModes
+
+                        delegate: Button {
+                            id: themeBtn
+                            required property var modelData
+                            Layout.fillWidth: true
+                            implicitHeight: Math.round(34 * root.uiScale)
+                            text: modelData.label
+
+                            background: Rectangle {
+                                radius: Math.round(8 * root.uiScale)
+                                color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
+                                       ? colors.accentA
+                                       : (themeBtn.hovered ? colors.cardStrong : colors.card)
+                                border.width: 1
+                                border.color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
+                                              ? colors.accentA
+                                              : colors.border
+                            }
+
+                            contentItem: Text {
+                                text: themeBtn.text
+                                color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
+                                       ? "#FFFFFF"
+                                       : colors.text
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                font.pixelSize: Math.round(12 * root.uiScale)
+                                font.weight: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
+                                             ? Font.DemiBold : Font.Medium
+                            }
+
+                            onClicked: {
+                                if (root.hasUiPreferences)
+                                    root.uiPreferences.setThemeMode(modelData.code);
+                            }
+                        }
+                    }
+                }
+
+                Switch {
+                    Layout.fillWidth: true
+                    text: qsTr("Show advanced information")
+                    checked: root.hasUiPreferences && root.uiPreferences.showAdvancedInfo
+                    enabled: root.hasUiPreferences
+                    onToggled: if (root.hasUiPreferences) root.uiPreferences.setShowAdvancedInfo(checked)
+                }
+
+                Components.ActionButton {
+                    Layout.fillWidth: true
+                    text: qsTr("Reset appearance settings")
+                    enabled: root.hasUiPreferences
+                    theme: colors
+                    compact: true
+                    uiScale: root.uiScale
+                    onClicked: if (root.hasUiPreferences) root.uiPreferences.resetToDefaults()
+                }
+            }
+        }
+    }
+
 }

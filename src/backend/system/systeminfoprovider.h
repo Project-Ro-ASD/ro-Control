@@ -1,7 +1,12 @@
 #pragma once
 
+#include <QFuture>
 #include <QObject>
 #include <QString>
+#include <QTimer>
+
+#include <atomic>
+#include <memory>
 
 class SystemInfoProvider : public QObject {
   Q_OBJECT
@@ -37,6 +42,7 @@ class SystemInfoProvider : public QObject {
 
 public:
   explicit SystemInfoProvider(QObject *parent = nullptr);
+  ~SystemInfoProvider() override;
 
   QString osName() const { return m_osName; }
   QString desktopEnvironment() const { return m_desktopEnvironment; }
@@ -65,6 +71,10 @@ public:
 
   Q_INVOKABLE void refresh();
   Q_INVOKABLE void rescanHardware();
+  // Privileged actions (reboot / firmware reboot) run off the GUI thread so
+  // the pkexec authorization dialog never freezes the window. Both return
+  // true when the request was accepted; the rootActionFinished signal then
+  // reports the actual outcome.
   Q_INVOKABLE bool requestRestart();
   Q_INVOKABLE bool requestRebootToFirmware();
   Q_INVOKABLE bool copyToClipboard(const QString &text);
@@ -79,23 +89,37 @@ public:
 signals:
   void infoChanged();
   void diagnosticReportPreferencesChanged();
+  // action is "reboot" or "firmware-reboot".
+  void rootActionFinished(bool success, const QString &action);
 
 private:
+  // Probes which shell out (lspci, vulkaninfo, nvidia-smi) are collected on a
+  // worker thread and never touch instance state, so they are safe to run
+  // while the rest of the object is being torn down.
+  struct HardwareScanData {
+    QString integratedGpuName;
+    QString integratedGpuMemory;
+    QString cudaVersion;
+    QString graphicsApiSummary;
+  };
+
   QString detectOsName() const;
   QString detectKernelVersion() const;
   QString detectCpuModel() const;
   QString detectMotherboardModel() const;
   QString detectBiosVersion() const;
-  QString detectCudaVersion() const;
-  QString detectGraphicsApiSummary() const;
+  static QString detectCudaVersion();
+  static QString detectGraphicsApiSummary(const QString &cudaVersion);
   QString detectDeviceType() const;
   QString detectDesktopEnvironment() const;
   QString detectVirtualizationType() const;
-  QString detectIntegratedGpuName() const;
-  QString detectIntegratedGpuMemory() const;
+  static QString detectIntegratedGpuName();
+  static QString detectIntegratedGpuMemory(const QString &integratedGpuName);
   QString detectResizableBarStatus() const;
   bool detectOnBattery(QString *sourceLabel = nullptr) const;
   void initializeStaticInfo();
+  void startHardwareScan();
+  bool startRootAction(const QString &action);
   void loadDiagnosticReportPreferences();
   void saveDiagnosticReportPreferences() const;
 
@@ -117,4 +141,13 @@ private:
   QString m_integratedGpuMemory;
   QString m_diagnosticReportFormat = QStringLiteral("markdown");
   QString m_diagnosticReportDestination = QStringLiteral("preview");
+
+  QTimer m_powerTimer;
+  QFuture<void> m_hardwareScanFuture;
+  QFuture<void> m_rootActionFuture;
+  quint64 m_hardwareScanGeneration = 0;
+  bool m_rootActionInProgress = false;
+  // Set from the destructor to abort a pending pkexec wait.
+  std::shared_ptr<std::atomic_bool> m_rootActionCancel =
+      std::make_shared<std::atomic_bool>(false);
 };

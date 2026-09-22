@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -12,7 +14,6 @@ Item {
     required property var fanController
     required property var nvidiaDetector
     property var powerController: null
-    property var healthGuard: null
 
     property var theme: ({})
     property bool darkMode: false
@@ -33,9 +34,6 @@ Item {
     readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (page.darkMode ? "#94A3B8" : "#64748B")
     readonly property color infoBg: theme && theme.infoBg ? theme.infoBg : (page.darkMode ? "#1E2548" : "#EFF6FF")
     readonly property color accentColor: theme && theme.accentA ? theme.accentA : (page.darkMode ? "#818CF8" : "#4F46E5")
-    readonly property color successColor: theme && theme.success ? theme.success : (page.darkMode ? "#4ADE80" : "#059669")
-    readonly property color activeCardColor: theme && theme.card ? theme.card : (page.darkMode ? "#342D4A" : "#E2E8F0")
-    readonly property int summaryCardHeight: Math.round(152 * page.uiScale)
     readonly property bool nvidiaGpuDetected: page.nvidiaDetector && page.nvidiaDetector.gpuFound
     readonly property bool gpuTelemetryAvailable: page.nvidiaGpuDetected && page.gpuMonitor && page.gpuMonitor.available
     readonly property bool cpuTelemetryAvailable: page.cpuMonitor && page.cpuMonitor.available
@@ -55,6 +53,9 @@ Item {
         onValuesChanged: if (page.visible) Qt.callLater(requestPaint)
         onWidthChanged: if (page.visible) Qt.callLater(requestPaint)
         onHeightChanged: if (page.visible) Qt.callLater(requestPaint)
+        // Canvas contents are dropped while the tab is hidden; repaint the
+        // retained history as soon as the page becomes visible again.
+        onVisibleChanged: if (visible) Qt.callLater(requestPaint)
 
         onPaint: {
             var ctx = getContext("2d");
@@ -105,18 +106,6 @@ Item {
         return total > 0 ? used + " / " + total + " MiB" : qsTr("Unavailable");
     }
 
-    function safeText(value) {
-        return value && value.length > 0 ? value : qsTr("Unavailable");
-    }
-
-    function deviceTypeLabel() {
-        if (!page.systemInfo)
-            return qsTr("Unavailable");
-        return page.systemInfo.deviceType && page.systemInfo.deviceType.length > 0
-               ? page.systemInfo.deviceType
-               : qsTr("Unavailable");
-    }
-
     function localizeGpuName(name) {
         if (!name || name.toString().trim().length === 0)
             return "";
@@ -131,26 +120,34 @@ Item {
         return qsTr("NVIDIA GPU telemetry is unavailable. Check the driver and session permissions, then refresh.");
     }
 
-    function modeTitle(mode) {
-        switch (mode) {
-        case "silent": return qsTr("Silent (Acoustic)");
-        case "balanced": return qsTr("Balanced (Optimized)");
-        case "performance": return qsTr("Performance (High Cooling)");
-        case "manual": return qsTr("Manual (Fixed Speed)");
-        case "custom": return qsTr("Custom Curve");
-        case "auto":
-        default: return qsTr("Auto (VBIOS / Driver)");
+    // Values for the four GPU performance tiles. Kept as a function (not as
+    // part of the Repeater model) so a telemetry change updates only the
+    // labels instead of recreating all four delegates every tick.
+    function gpuPerfValue(index) {
+        const gpu = page.gpuMonitor;
+        switch (index) {
+        case 0:
+            return (gpu && gpu.graphicsClockMHz > 0)
+                   ? (gpu.graphicsClockMHz + " MHz • " + gpu.memoryClockMHz + " MHz")
+                   : qsTr("Dynamic Clock");
+        case 1:
+            return (gpu && gpu.powerDrawW > 0)
+                   ? (gpu.powerDrawW.toFixed(1) + " W / " + gpu.powerLimitW.toFixed(0) + " W")
+                   : qsTr("Dynamic Power");
+        case 2:
+            return (gpu && gpu.memoryTotalMiB > 0)
+                   ? (gpu.memoryUsedMiB + " / " + gpu.memoryTotalMiB + " MiB (" + gpu.memoryUsagePercent + "%)")
+                   : qsTr("Unavailable");
+        case 3:
+            if (gpu && gpu.temperatureC > 0) {
+                return qsTr("Core: %1°C").arg(gpu.temperatureC)
+                       + (gpu.hotspotTemperatureC > 0 ? qsTr(" • Hotspot: %1°C").arg(gpu.hotspotTemperatureC) : "")
+                       + (gpu.memoryTemperatureC > 0 ? qsTr(" • VRAM: %1°C").arg(gpu.memoryTemperatureC) : "");
+            }
+            return qsTr("Unavailable");
+        default:
+            return "";
         }
-    }
-
-    function modeBadgeText() {
-        if (page.fanController && page.fanController.safetyOverrideActive)
-            return qsTr("SAFETY OVERRIDE 100%");
-        if (!page.fanController || !page.fanController.supported)
-            return qsTr("HARDWARE AUTO");
-        if (!page.fanController.controlSupported)
-            return qsTr("HARDWARE MANAGED");
-        return page.fanController.fanMode.toUpperCase();
     }
 
     function pushTelemetryHistory() {
@@ -273,7 +270,7 @@ Item {
                                 }
                                 Label {
                                     text: page.cpuTelemetryAvailable ? page.formatTemp(page.cpuMonitor.temperatureC) : qsTr("Unavailable")
-                                    color: (page.cpuMonitor && page.cpuMonitor.temperatureC > 80) ? (page.theme && page.theme.warning ? page.theme.warning : "#EF4444") : page.textColor
+                                    color: (page.cpuTelemetryAvailable && page.cpuMonitor.temperatureC > 80) ? (page.theme && page.theme.warning ? page.theme.warning : "#EF4444") : page.textColor
                                     font.pixelSize: Math.round(22 * page.uiScale)
                                     font.weight: Font.Bold
                                 }
@@ -324,17 +321,17 @@ Item {
                                 implicitHeight: Math.round(24 * page.uiScale)
                                 implicitWidth: gpuSelectorRow.implicitWidth + Math.round(14 * page.uiScale)
                                 radius: 6
-                                color: gpuSelectorMouse.hovered
+                                color: gpuSelectorMouse.containsMouse
                                        ? (page.darkMode ? "#342D4A" : "#E2E8F0")
                                        : (page.darkMode ? "#1E2548" : "#EEF2FF")
                                 border.width: 1
-                                border.color: gpuSelectorMouse.hovered
+                                border.color: gpuSelectorMouse.containsMouse
                                               ? page.accentColor
                                               : (page.darkMode ? "#4338CA" : "#C7D2FE")
 
                                 ToolTip {
                                     id: gpuTooltip
-                                    visible: Boolean(gpuSelectorMouse.hovered && !gpuMenu.visible)
+                                    visible: Boolean(gpuSelectorMouse.containsMouse && !gpuMenu.visible)
                                     delay: 300
                                     text: {
                                         if (!page.gpuMonitor) return "";
@@ -586,7 +583,7 @@ Item {
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
-                                    text: page.ramMonitor.zramUsedMiB + " / " + page.ramMonitor.zramTotalMiB + " MiB"
+                                    text: page.ramMonitor ? (page.ramMonitor.zramUsedMiB + " / " + page.ramMonitor.zramTotalMiB + " MiB") : qsTr("Unavailable")
                                     color: page.textColor
                                     font.pixelSize: Math.round(18 * page.uiScale)
                                     font.weight: Font.Bold
@@ -596,16 +593,20 @@ Item {
 
                         Label {
                             Layout.fillWidth: true
-                            visible: page.ramMonitor.zramCompressionRatio > 0 || page.ramMonitor.zswapEnabled || page.ramMonitor.zramPhysicalMiB > 0
-                            text: (page.ramMonitor.zramCompressionRatio > 0
-                                   ? qsTr("Compression: %1×").arg(page.ramMonitor.zramCompressionRatio.toFixed(1))
-                                   : "")
-                                  + (page.ramMonitor.zramPhysicalMiB > 0
-                                     ? (page.ramMonitor.zramCompressionRatio > 0 ? " • " : "") + qsTr("RAM: %1 MiB").arg(page.ramMonitor.zramPhysicalMiB)
-                                     : "")
-                                  + (page.ramMonitor.zswapEnabled
-                                     ? (page.ramMonitor.zramCompressionRatio > 0 || page.ramMonitor.zramPhysicalMiB > 0 ? " • " : "") + qsTr("zswap enabled")
-                                     : "")
+                            visible: page.ramMonitor && (page.ramMonitor.zramCompressionRatio > 0 || page.ramMonitor.zswapEnabled || page.ramMonitor.zramPhysicalMiB > 0)
+                            text: {
+                                if (!page.ramMonitor)
+                                    return "";
+                                return (page.ramMonitor.zramCompressionRatio > 0
+                                        ? qsTr("Compression: %1×").arg(page.ramMonitor.zramCompressionRatio.toFixed(1))
+                                        : "")
+                                      + (page.ramMonitor.zramPhysicalMiB > 0
+                                         ? (page.ramMonitor.zramCompressionRatio > 0 ? " • " : "") + qsTr("RAM: %1 MiB").arg(page.ramMonitor.zramPhysicalMiB)
+                                         : "")
+                                      + (page.ramMonitor.zswapEnabled
+                                         ? (page.ramMonitor.zramCompressionRatio > 0 || page.ramMonitor.zramPhysicalMiB > 0 ? " • " : "") + qsTr("zswap enabled")
+                                         : "")
+                            }
                             color: page.softTextColor
                             font.pixelSize: Math.round(10 * page.uiScale)
                             font.weight: Font.DemiBold
@@ -627,7 +628,7 @@ Item {
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
                                 radius: 2
-                                width: Math.min(parent.width, Math.max(0, parent.width * (page.ramMonitor.zramTotalMiB > 0 ? (page.ramMonitor.zramUsedMiB / page.ramMonitor.zramTotalMiB) : 0)))
+                                width: Math.min(parent.width, Math.max(0, parent.width * ((page.ramMonitor && page.ramMonitor.zramTotalMiB > 0) ? (page.ramMonitor.zramUsedMiB / page.ramMonitor.zramTotalMiB) : 0)))
                                 color: page.darkMode ? "#F59E0B" : "#D97706"
                                 Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                             }
@@ -672,37 +673,20 @@ Item {
                         rowSpacing: 8
 
                         Repeater {
+                            // Static titles only: the reactive value bindings
+                            // live in the delegate so a telemetry change does
+                            // not rebuild every tile.
                             model: [
-                                {
-                                    title: qsTr("Core / Memory Clocks"),
-                                    value: (page.gpuMonitor && page.gpuMonitor.graphicsClockMHz > 0)
-                                           ? (page.gpuMonitor.graphicsClockMHz + " MHz • " + page.gpuMonitor.memoryClockMHz + " MHz")
-                                           : qsTr("Dynamic Clock")
-                                },
-                                {
-                                    title: qsTr("Power Draw / TDP Limit"),
-                                    value: (page.gpuMonitor && page.gpuMonitor.powerDrawW > 0)
-                                           ? (page.gpuMonitor.powerDrawW.toFixed(1) + " W / " + page.gpuMonitor.powerLimitW.toFixed(0) + " W")
-                                           : qsTr("Dynamic Power")
-                                },
-                                {
-                                    title: qsTr("VRAM Allocation"),
-                                    value: (page.gpuMonitor && page.gpuMonitor.memoryTotalMiB > 0)
-                                           ? (page.gpuMonitor.memoryUsedMiB + " / " + page.gpuMonitor.memoryTotalMiB + " MiB (" + page.gpuMonitor.memoryUsagePercent + "%)")
-                                           : qsTr("Unavailable")
-                                },
-                                {
-                                    title: qsTr("Thermals & Hotspot"),
-                                    value: (page.gpuMonitor && page.gpuMonitor.temperatureC > 0)
-                                           ? (qsTr("Core: %1°C").arg(page.gpuMonitor.temperatureC) +
-                                              (page.gpuMonitor.hotspotTemperatureC > 0 ? qsTr(" • Hotspot: %1°C").arg(page.gpuMonitor.hotspotTemperatureC) : "") +
-                                              (page.gpuMonitor.memoryTemperatureC > 0 ? qsTr(" • VRAM: %1°C").arg(page.gpuMonitor.memoryTemperatureC) : ""))
-                                           : (page.gpuMonitor && page.gpuMonitor.temperatureC > 0 ? page.formatTemp(page.gpuMonitor.temperatureC) : qsTr("Unavailable"))
-                                }
+                                qsTr("Core / Memory Clocks"),
+                                qsTr("Power Draw / TDP Limit"),
+                                qsTr("VRAM Allocation"),
+                                qsTr("Thermals & Hotspot")
                             ]
 
                             delegate: Rectangle {
+                                id: perfTile
                                 required property var modelData
+                                required property int index
                                 Layout.fillWidth: true
                                 implicitHeight: Math.round(64 * page.uiScale)
                                 radius: 10
@@ -717,7 +701,7 @@ Item {
 
                                     Label {
                                         width: parent.width
-                                        text: modelData.title
+                                        text: perfTile.modelData
                                         color: page.softTextColor
                                         font.pixelSize: Math.round(11 * page.uiScale)
                                         font.weight: Font.DemiBold
@@ -726,7 +710,7 @@ Item {
 
                                     Label {
                                         width: parent.width
-                                        text: modelData.value
+                                        text: page.gpuPerfValue(perfTile.index)
                                         color: page.textColor
                                         font.pixelSize: Math.round(13 * page.uiScale)
                                         font.weight: Font.DemiBold
@@ -1095,6 +1079,7 @@ Item {
                                     }
 
                                     delegate: Rectangle {
+                                        id: processRow
                                         required property var modelData
                                         Layout.fillWidth: true
                                         implicitHeight: Math.round(48 * page.uiScale)
@@ -1117,7 +1102,7 @@ Item {
 
                                                 Label {
                                                     anchors.centerIn: parent
-                                                    text: modelData.pid
+                                                    text: processRow.modelData.pid
                                                     color: page.textColor
                                                     font.pixelSize: Math.round(11 * page.uiScale)
                                                     font.weight: Font.DemiBold
@@ -1127,7 +1112,7 @@ Item {
 
                                             Label {
                                                 Layout.fillWidth: true
-                                                text: modelData.name
+                                                text: processRow.modelData.name
                                                 color: page.textColor
                                                 font.pixelSize: Math.round(13 * page.uiScale)
                                                 font.weight: Font.DemiBold
@@ -1139,14 +1124,14 @@ Item {
                                                 Layout.preferredWidth: Math.round(110 * page.uiScale)
                                                 Layout.preferredHeight: Math.round(22 * page.uiScale)
                                                 radius: 4
-                                                color: (modelData.type && modelData.type.indexOf("Compute") !== -1)
+                                                color: (processRow.modelData.type && processRow.modelData.type.indexOf("Compute") !== -1)
                                                        ? (page.darkMode ? "#312E81" : "#EEF2FF")
                                                        : (page.darkMode ? "#064E3B" : "#ECFDF5")
 
                                                 Label {
                                                     anchors.centerIn: parent
-                                                    text: modelData.type || qsTr("Compute")
-                                                    color: (modelData.type && modelData.type.indexOf("Compute") !== -1)
+                                                    text: processRow.modelData.type || qsTr("Compute")
+                                                    color: (processRow.modelData.type && processRow.modelData.type.indexOf("Compute") !== -1)
                                                            ? (page.darkMode ? "#A5B4FC" : "#4F46E5")
                                                            : (page.darkMode ? "#6EE7B7" : "#059669")
                                                     font.pixelSize: Math.round(10 * page.uiScale)
@@ -1170,7 +1155,7 @@ Item {
                                                     anchors.bottom: parent.bottom
                                                     width: {
                                                         var total = page.gpuMonitor ? page.gpuMonitor.memoryTotalMiB : 0;
-                                                        var pct = total > 0 ? Math.min(1.0, Math.max(0.04, modelData.vramMiB / total)) : 0;
+                                                        var pct = total > 0 ? Math.min(1.0, Math.max(0, processRow.modelData.vramMiB / total)) : 0;
                                                         return parent.width * pct;
                                                     }
                                                     radius: 5
@@ -1183,9 +1168,9 @@ Item {
                                                     text: {
                                                         var total = page.gpuMonitor ? page.gpuMonitor.memoryTotalMiB : 0;
                                                         if (total <= 0)
-                                                            return modelData.vramMiB + " MiB";
-                                                        var pct = ((modelData.vramMiB / total) * 100).toFixed(modelData.vramMiB > 1000 ? 0 : 1);
-                                                        return modelData.vramMiB + " MiB (" + pct + "%)";
+                                                            return processRow.modelData.vramMiB + " MiB";
+                                                        var pct = ((processRow.modelData.vramMiB / total) * 100).toFixed(processRow.modelData.vramMiB > 1000 ? 0 : 1);
+                                                        return processRow.modelData.vramMiB + " MiB (" + pct + "%)";
                                                     }
                                                     color: page.textColor
                                                     font.pixelSize: Math.round(11 * page.uiScale)
@@ -1220,8 +1205,8 @@ Item {
                                                 }
 
                                                 onClicked: {
-                                                    page.pendingTerminationPid = modelData.pid;
-                                                    page.pendingTerminationName = modelData.name;
+                                                    page.pendingTerminationPid = processRow.modelData.pid;
+                                                    page.pendingTerminationName = processRow.modelData.name;
                                                     terminateProcessPopup.open();
                                                 }
                                             }
@@ -1297,11 +1282,13 @@ Item {
                     uiScale: page.uiScale
                     onClicked: {
                         page.terminationError = "";
-                        if (page.gpuMonitor)
-                            page.terminationError = page.gpuMonitor.killProcess(page.pendingTerminationPid)
-                                    ? "" : page.gpuMonitor.statusMessage;
-                        if (page.terminationError.length === 0)
+                        if (!page.gpuMonitor) {
+                            page.terminationError = qsTr("GPU monitor is unavailable.");
+                        } else if (page.gpuMonitor.killProcess(page.pendingTerminationPid)) {
                             terminateProcessPopup.close();
+                        } else {
+                            page.terminationError = page.gpuMonitor.statusMessage;
+                        }
                     }
                 }
             }
@@ -1326,8 +1313,13 @@ Item {
         id: historySampler
         interval: 1000
         repeat: true
-        running: true
+        running: page.visible
         onTriggered: page.pushTelemetryHistory()
+    }
+
+    onVisibleChanged: {
+        if (page.visible)
+            page.pushTelemetryHistory();
     }
 
 }

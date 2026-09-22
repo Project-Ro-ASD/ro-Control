@@ -1204,6 +1204,17 @@ Item {
     }
 
     Connections {
+        target: page.systemInfo
+
+        function onRootActionFinished(success, action) {
+            if (success || action !== "reboot")
+                return;
+            page.appendLog(qsTr("System"), qsTr("Restart request failed. Please restart the computer manually."));
+            page.setOperationState(qsTr("System"), qsTr("Restart request failed. Please restart the computer manually."), "error", false);
+        }
+    }
+
+    Connections {
         target: page.nvidiaInstaller
 
         function onProgressMessage(message) {
