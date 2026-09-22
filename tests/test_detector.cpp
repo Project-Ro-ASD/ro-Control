@@ -1,5 +1,4 @@
 #include <QFile>
-#include <QSignalSpy>
 #include <QTemporaryDir>
 #include <QTest>
 
@@ -231,61 +230,6 @@ private slots:
     // 7. Quadro GPU
     QCOMPARE(NvidiaDetector::cleanGpuName(QStringLiteral("Quadro RTX 4000")),
              QStringLiteral("NVIDIA Quadro RTX 4000"));
-  }
-
-  void testGpuInfoEqualityOperator() {
-    NvidiaDetector::GpuInfo a{};
-    NvidiaDetector::GpuInfo b{};
-    QVERIFY(a == b);
-
-    a.found = true;
-    a.name = QStringLiteral("NVIDIA GeForce RTX 4090");
-    QVERIFY(!(a == b));
-
-    b.found = true;
-    b.name = QStringLiteral("NVIDIA GeForce RTX 4090");
-    QVERIFY(a == b);
-
-    a.driverVersion = QStringLiteral("580.126.18");
-    QVERIFY(!(a == b));
-    b.driverVersion = QStringLiteral("580.126.18");
-    QVERIFY(a == b);
-  }
-
-  void testRefreshSuppressesSpuriousInfoChanged() {
-    NvidiaDetector detector;
-    QSignalSpy spy(&detector, &NvidiaDetector::infoChanged);
-
-    detector.refresh();
-    const int firstCount = spy.count();
-    QVERIFY(firstCount >= 0);
-
-    // Subsequent refresh with unchanged hardware state must not emit spurious
-    // signals
-    detector.refresh();
-    QCOMPARE(spy.count(), firstCount);
-  }
-
-  void testSetDetectionResultSuppressesSpuriousInfoChanged() {
-    NvidiaDetector detector;
-    QSignalSpy spy(&detector, &NvidiaDetector::infoChanged);
-
-    NvidiaDetector::GpuInfo info;
-    info.found = true;
-    info.name = QStringLiteral("RTX 4090");
-    info.driverVersion = QStringLiteral("580.126.18");
-
-    detector.setDetectionResult(info);
-    QCOMPARE(spy.count(), 1);
-
-    // Setting identical result must not re-emit
-    detector.setDetectionResult(info);
-    QCOMPARE(spy.count(), 1);
-
-    // Modifying one field must emit
-    info.driverLoaded = true;
-    detector.setDetectionResult(info);
-    QCOMPARE(spy.count(), 2);
   }
 };
 

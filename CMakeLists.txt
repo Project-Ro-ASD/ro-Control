@@ -214,8 +214,6 @@ qt_add_qml_module(ro-control
         src/qml/components/StatusBanner.qml
         src/qml/components/FanSettingsPopup.qml
         src/qml/components/FanRescanPopup.qml
-        src/qml/components/SystemDiagnosticDialog.qml
-        src/qml/components/SystemRebootDialog.qml
         src/qml/components/TelemetrySparkline.qml
         src/qml/components/MonitorTelemetrySummary.qml
         src/qml/components/MonitorGpuPerfCard.qml

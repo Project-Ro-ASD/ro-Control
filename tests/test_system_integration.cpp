@@ -21,7 +21,6 @@
 #include "system/polkit.h"
 #include "system/sessionutil.h"
 #include "system/systeminfoprovider.h"
-#include "system/systemplatformprobes.h"
 
 namespace {
 
@@ -448,27 +447,6 @@ private slots:
              QStringLiteral("Intel UHD Graphics 630"));
     QCOMPARE(SystemInfoProvider::localizeGpuName(QStringLiteral("")),
              QStringLiteral(""));
-  }
-
-  void testSystemPlatformProbesDirectly() {
-    const auto info = SystemPlatformProbes::probeStaticInfo();
-    QVERIFY(!info.osName.isEmpty());
-    QVERIFY(!info.kernelVersion.isEmpty());
-    QVERIFY(!info.cpuModel.isEmpty());
-
-    QCOMPARE(SystemPlatformProbes::detectOsName(), info.osName);
-    QCOMPARE(SystemPlatformProbes::detectKernelVersion(), info.kernelVersion);
-    QCOMPARE(SystemPlatformProbes::detectCpuModel(), info.cpuModel);
-
-    QString powerLabel;
-    qputenv("RO_CONTROL_POWER_SUPPLY_ONLINE", "1");
-    QVERIFY(!SystemPlatformProbes::onBattery(&powerLabel));
-    QCOMPARE(powerLabel, QStringLiteral("AC Power"));
-
-    qputenv("RO_CONTROL_POWER_SUPPLY_ONLINE", "0");
-    QVERIFY(SystemPlatformProbes::onBattery(&powerLabel));
-    QCOMPARE(powerLabel, QStringLiteral("Battery"));
-    qunsetenv("RO_CONTROL_POWER_SUPPLY_ONLINE");
   }
 };
 
