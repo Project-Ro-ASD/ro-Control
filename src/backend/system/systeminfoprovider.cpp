@@ -709,18 +709,45 @@ QString SystemInfoProvider::detectIntegratedGpuMemory() const {
 
 QString SystemInfoProvider::detectResizableBarStatus() const {
 #if defined(Q_OS_LINUX)
+  static const QRegularExpression resizableBarPattern(
+      QStringLiteral(R"(Resizable BAR\s*:\s*([^\r\n]+))"),
+      QRegularExpression::CaseInsensitiveOption);
+
   const QDir gpuRoot(QStringLiteral("/proc/driver/nvidia/gpus"));
   for (const QFileInfo &gpu :
        gpuRoot.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
     const QString information =
         valueFromFile(gpu.absoluteFilePath() + QStringLiteral("/information"));
-    const QRegularExpressionMatch match = QRegularExpression(
-        QStringLiteral(R"(Resizable BAR\s*:\s*([^\r\n]+))"),
-        QRegularExpression::CaseInsensitiveOption)
-                                            .match(information);
+    const QRegularExpressionMatch match = resizableBarPattern.match(information);
     if (match.hasMatch()) {
       return match.captured(1).trimmed();
     }
+  }
+
+  // Recent NVIDIA drivers expose this status through NVML even when the
+  // legacy /proc information file omits it.
+  CommandRunner runner;
+  CommandRunner::RunOptions options;
+  options.timeoutMs = 1500;
+  const auto smiResult =
+      runner.run(QStringLiteral("nvidia-smi"), {QStringLiteral("-q")}, options);
+  if (smiResult.success()) {
+    const QRegularExpressionMatch match =
+        resizableBarPattern.match(smiResult.stdout);
+    if (match.hasMatch()) {
+      return match.captured(1).trimmed();
+    }
+  }
+
+  // lspci is the portable fallback. It cannot state the active aperture on
+  // every platform, but the Physical Resizable BAR capability still conveys
+  // a useful, non-empty status to the System page.
+  const auto pciResult = runner.run(
+      QStringLiteral("lspci"), {QStringLiteral("-vv")}, options);
+  if (pciResult.success() &&
+      pciResult.stdout.contains(QStringLiteral("Physical Resizable BAR"),
+                                Qt::CaseInsensitive)) {
+    return tr("Available");
   }
 #endif
   return {};

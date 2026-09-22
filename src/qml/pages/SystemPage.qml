@@ -21,7 +21,6 @@ Item {
     property int reportViewMode: 0
     property string reportFilterText: ""
     property string lastCopiedKey: ""
-    property bool refreshBusy: false
     property bool reportRefreshPending: false
     property string actionFeedback: ""
     property bool actionFailed: false
@@ -42,6 +41,8 @@ Item {
     readonly property color infoBg: theme && theme.infoBg ? theme.infoBg : (page.darkMode ? "#1E2548" : "#EFF6FF")
     readonly property color successColor: theme && theme.success ? theme.success : (page.darkMode ? "#4ADE80" : "#059669")
     readonly property color warningColor: theme && theme.warning ? theme.warning : (page.darkMode ? "#FBBF24" : "#D97706")
+    readonly property color actionTextColor: page.darkMode ? "#F8FAFC" : "#172554"
+    readonly property color actionSoftTextColor: page.darkMode ? "#CBD5E1" : "#475569"
 
     function deviceAndPowerSummary() {
         const dev = page.systemInfo && page.systemInfo.deviceType ? page.systemInfo.deviceType : "";
@@ -103,7 +104,8 @@ Item {
             add(qsTr("System Memory (RAM)"), (page.ramMonitor.totalMiB / 1024.0).toFixed(1) + " GB (" + page.ramMonitor.totalMiB + " MiB)");
         if (page.gpuMonitor && page.gpuMonitor.memoryTotalMiB > 0)
             add(qsTr("Video Memory (VRAM)"), (page.gpuMonitor.memoryTotalMiB / 1024.0).toFixed(1) + " GB (" + page.gpuMonitor.memoryTotalMiB + " MiB)");
-        add(qsTr("Resizable BAR"), page.systemInfo ? page.systemInfo.resizableBarStatus : "");
+        add(qsTr("Resizable BAR"), page.systemInfo
+            ? (page.systemInfo.resizableBarStatus || qsTr("Not detected")) : "");
         if (page.systemInfo && page.systemInfo.integratedGpuName && page.systemInfo.integratedGpuMemory)
             add(qsTr("Integrated Graphics Memory"), page.localizeGpuName(page.systemInfo.integratedGpuName) + " • " + page.systemInfo.integratedGpuMemory);
         add(qsTr("PCIe Link Interface"), page.gpuMonitor ? page.gpuMonitor.pcieLinkStatus : "");
@@ -162,7 +164,8 @@ Item {
                     { label: qsTr("NVIDIA Driver"), value: page.nvidiaDriverSummary(), icon: "⚙️" },
                     { label: qsTr("Video Memory (VRAM)"), value: (page.gpuMonitor && page.gpuMonitor.memoryTotalMiB > 0) ? ((page.gpuMonitor.memoryTotalMiB / 1024.0).toFixed(1) + " GB (" + page.gpuMonitor.memoryTotalMiB + " MiB)") : "", icon: "📼" },
                     { label: qsTr("PCIe Link Interface"), value: page.gpuMonitor ? page.gpuMonitor.pcieLinkStatus : "", icon: "🔗" },
-                    { label: qsTr("Resizable BAR"), value: page.systemInfo ? page.systemInfo.resizableBarStatus : "", icon: "↔" },
+                    { label: qsTr("Resizable BAR"), value: page.systemInfo
+                        ? (page.systemInfo.resizableBarStatus || qsTr("Not detected")) : "", icon: "↔" },
                     { label: qsTr("Integrated GPU"), value: (page.systemInfo && page.systemInfo.integratedGpuName && page.systemInfo.integratedGpuMemory) ? (page.localizeGpuName(page.systemInfo.integratedGpuName) + " • " + page.systemInfo.integratedGpuMemory) : "", icon: "🎨" },
                     { label: qsTr("Graphics & Compute APIs"), value: page.systemInfo ? page.systemInfo.graphicsApiSummary : "", icon: "🚀" }
                 ]
@@ -243,29 +246,11 @@ Item {
             diagnosticReportDialog.open();
     }
 
-    function refreshSystemData() {
-        if (page.refreshBusy || !page.systemInfo)
-            return;
-        page.refreshBusy = true;
-        page.systemInfo.rescanHardware();
-        if (page.cpuMonitor) page.cpuMonitor.refresh();
-        if (page.gpuMonitor) {
-            page.gpuMonitor.requestRefresh();
-        } else {
-            page.refreshBusy = false;
-        }
-        if (page.ramMonitor) page.ramMonitor.refresh();
-        page.actionFailed = false;
-        page.actionFeedback = qsTr("System information refreshed.");
-        refreshFeedbackTimer.restart();
-    }
-
     Connections {
         target: page.gpuMonitor
         function onTelemetryRefreshFinished() {
             if (page.reportRefreshPending)
                 page.finalizeDiagnosticReport();
-            page.refreshBusy = false;
         }
     }
 
@@ -292,21 +277,6 @@ Item {
         ColumnLayout {
             width: pageScroll.availableWidth
             spacing: Math.round(14 * page.uiScale)
-
-            Rectangle { Layout.fillWidth: true; implicitHeight: 52; radius: 12; color: page.cardColor; border.width: 1; border.color: page.borderColor
-                RowLayout { anchors.fill: parent; anchors.margins: 12; spacing: 12
-                    Label { text: qsTr("System health"); color: page.textColor; font.weight: Font.DemiBold }
-                    Label { Layout.fillWidth: true; text: page.systemHealthSummary(); color: page.softTextColor; elide: Text.ElideRight }
-                    Components.ActionButton {
-                        text: page.refreshBusy ? qsTr("Refreshing…") : qsTr("Refresh")
-                        enabled: !page.refreshBusy
-                        theme: page.theme
-                        compact: true
-                        uiScale: page.uiScale
-                        onClicked: page.refreshSystemData()
-                    }
-                }
-            }
 
             Rectangle {
                 Layout.fillWidth: true
@@ -362,33 +332,38 @@ Item {
                             delegate: Rectangle {
                                 required property var modelData
                                 Layout.fillWidth: true
-                                implicitHeight: Math.round(64 * page.uiScale)
+                                implicitHeight: Math.max(Math.round(64 * page.uiScale), hardwareCardContent.implicitHeight + Math.round(16 * page.uiScale))
                                 radius: 10
                                 color: page.bgColor
                                 border.width: 1
                                 border.color: page.borderColor
 
-                                Column {
+                                ColumnLayout {
+                                    id: hardwareCardContent
                                     anchors.fill: parent
                                     anchors.margins: Math.round(8 * page.uiScale)
                                     spacing: Math.round(3 * page.uiScale)
 
                                     Label {
-                                        width: parent.width
+                                        Layout.fillWidth: true
+                                        Layout.minimumWidth: 0
                                         text: modelData.title
                                         color: page.softTextColor
                                         font.pixelSize: Math.round(11 * page.uiScale)
                                         font.weight: Font.DemiBold
-                                        elide: Text.ElideRight
+                                        wrapMode: Text.WordWrap
+                                        maximumLineCount: 2
                                     }
 
                                     Label {
-                                        width: parent.width
+                                        Layout.fillWidth: true
+                                        Layout.minimumWidth: 0
                                         text: modelData.value
                                         color: page.textColor
                                         font.pixelSize: Math.round(13 * page.uiScale)
                                         font.weight: Font.DemiBold
-                                        elide: Text.ElideRight
+                                        wrapMode: Text.WordWrap
+                                        maximumLineCount: 2
                                     }
                                 }
                             }
@@ -555,17 +530,19 @@ Item {
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
+                                    Layout.minimumWidth: 0
                                     spacing: 3
                                     Label {
+                                        Layout.fillWidth: true
                                         text: qsTr("Diagnostic Report")
-                                        color: page.textColor
+                                        color: page.actionTextColor
                                         font.pixelSize: Math.round(13 * page.uiScale)
                                         font.weight: Font.DemiBold
                                     }
                                     Label {
                                         Layout.fillWidth: true
                                         text: qsTr("Preview, format, and share live system details")
-                                        color: page.softTextColor
+                                        color: page.actionSoftTextColor
                                         font.pixelSize: Math.round(11 * page.uiScale)
                                         elide: Text.ElideRight
                                     }
@@ -644,17 +621,19 @@ Item {
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
+                                    Layout.minimumWidth: 0
                                     spacing: 3
                                     Label {
+                                        Layout.fillWidth: true
                                         text: qsTr("UEFI / BIOS Firmware")
-                                        color: page.textColor
+                                        color: page.actionTextColor
                                         font.pixelSize: Math.round(13 * page.uiScale)
                                         font.weight: Font.DemiBold
                                     }
                                     Label {
                                         Layout.fillWidth: true
                                         text: qsTr("Restart directly into firmware setup")
-                                        color: page.softTextColor
+                                        color: page.actionSoftTextColor
                                         font.pixelSize: Math.round(11 * page.uiScale)
                                         elide: Text.ElideRight
                                     }
@@ -776,13 +755,13 @@ Item {
                         spacing: 2
                         Label {
                             text: qsTr("System Diagnostic Report")
-                            color: page.textColor
+                            color: page.actionTextColor
                             font.pixelSize: Math.round(16 * page.uiScale)
                             font.weight: Font.DemiBold
                         }
                         Label {
                             text: qsTr("System hardware, kernel, driver and security telemetry snapshot")
-                            color: page.softTextColor
+                            color: page.actionSoftTextColor
                             font.pixelSize: Math.round(11 * page.uiScale)
                         }
                     }
@@ -1304,7 +1283,7 @@ Item {
                                                 id: itemTile
                                                 required property var modelData
                                                 Layout.fillWidth: true
-                                                implicitHeight: Math.round(62 * page.uiScale)
+                                                implicitHeight: Math.max(Math.round(62 * page.uiScale), itemTileContent.implicitHeight + Math.round(20 * page.uiScale))
                                                 radius: 8
                                                 color: tileMouse.containsMouse
                                                        ? (page.darkMode ? "#383050" : "#F8FAFC")
@@ -1334,7 +1313,9 @@ Item {
                                                     }
 
                                                     ColumnLayout {
+                                                        id: itemTileContent
                                                         Layout.fillWidth: true
+                                                        Layout.minimumWidth: 0
                                                         Layout.alignment: Qt.AlignVCenter
                                                         spacing: 2
 
@@ -1344,7 +1325,8 @@ Item {
                                                             color: page.softTextColor
                                                             font.pixelSize: Math.round(11 * page.uiScale)
                                                             font.weight: Font.DemiBold
-                                                            elide: Text.ElideRight
+                                                            wrapMode: Text.WordWrap
+                                                            maximumLineCount: 2
                                                             verticalAlignment: Text.AlignVCenter
                                                         }
 
@@ -1354,7 +1336,8 @@ Item {
                                                             color: page.textColor
                                                             font.pixelSize: Math.round(13 * page.uiScale)
                                                             font.weight: Font.DemiBold
-                                                            elide: Text.ElideRight
+                                                            wrapMode: Text.WordWrap
+                                                            maximumLineCount: 2
                                                             verticalAlignment: Text.AlignVCenter
                                                         }
                                                     }
@@ -1624,7 +1607,7 @@ Item {
                     Label {
                         Layout.fillWidth: true
                         text: qsTr("Reboot to UEFI / BIOS")
-                        color: page.textColor
+                        color: page.actionTextColor
                         font.pixelSize: Math.round(15 * page.uiScale)
                         font.weight: Font.Bold
                     }
@@ -1640,7 +1623,7 @@ Item {
                 Label {
                     Layout.fillWidth: true
                     text: qsTr("Your system will restart immediately and boot directly into the UEFI / BIOS firmware setup utility.")
-                    color: page.textColor
+                    color: page.actionTextColor
                     font.pixelSize: Math.round(13 * page.uiScale)
                     wrapMode: Text.WordWrap
                 }
@@ -1648,7 +1631,7 @@ Item {
                 Label {
                     Layout.fillWidth: true
                     text: qsTr("Make sure any unsaved work in other applications is saved before continuing.")
-                    color: page.warningColor
+                    color: page.darkMode ? "#FDE68A" : "#92400E"
                     font.pixelSize: Math.round(12 * page.uiScale)
                     font.weight: Font.DemiBold
                     wrapMode: Text.WordWrap

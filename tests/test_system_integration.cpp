@@ -424,6 +424,38 @@ private slots:
     qunsetenv("RO_CONTROL_POWER_SUPPLY_ONLINE");
   }
 
+  void testSystemInfoProviderDetectsResizableBarFromNvidiaSmi() {
+#if defined(Q_OS_LINUX)
+    QTemporaryDir tempDir = createExecutableTempDir();
+    QVERIFY(tempDir.isValid());
+
+    const QString scriptPath =
+        tempDir.filePath(QStringLiteral("fake-nvidia-smi.sh"));
+    QFile script(scriptPath);
+    QVERIFY(script.open(QIODevice::WriteOnly | QIODevice::Text));
+    QVERIFY(script.write("#!/bin/sh\nprintf 'Resizable BAR : Enabled\\n'\n") >
+            0);
+    script.close();
+    QVERIFY(script.setPermissions(QFileDevice::ReadOwner |
+                                  QFileDevice::WriteOwner |
+                                  QFileDevice::ExeOwner));
+
+    const QByteArray previousOverride = qgetenv("RO_CONTROL_COMMAND_NVIDIA_SMI");
+    qputenv("RO_CONTROL_COMMAND_NVIDIA_SMI", scriptPath.toUtf8());
+
+    SystemInfoProvider provider;
+    QCOMPARE(provider.resizableBarStatus(), QStringLiteral("Enabled"));
+
+    if (previousOverride.isNull()) {
+      qunsetenv("RO_CONTROL_COMMAND_NVIDIA_SMI");
+    } else {
+      qputenv("RO_CONTROL_COMMAND_NVIDIA_SMI", previousOverride);
+    }
+#else
+    QSKIP("Resizable BAR probing is only available on Linux.");
+#endif
+  }
+
   void testNvidiaInstallerDefaultsAndCancel() {
     NvidiaInstaller installer;
     QCOMPARE(installer.busy(), false);
