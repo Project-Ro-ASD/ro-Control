@@ -712,6 +712,25 @@ QString SystemInfoProvider::detectResizableBarStatus() const {
   static const QRegularExpression resizableBarPattern(
       QStringLiteral(R"(Resizable BAR\s*:\s*([^\r\n]+))"),
       QRegularExpression::CaseInsensitiveOption);
+  static const QRegularExpression bar1TotalPattern(
+      QStringLiteral(R"((?:BAR1 Memory Usage|Shared BAR1 Usage)[\s\S]{0,400}?Total\s*:\s*(\d+)\s*MiB)"),
+      QRegularExpression::CaseInsensitiveOption);
+  static const QRegularExpression framebufferTotalPattern(
+      QStringLiteral(R"((?:FB Memory Usage|Shared FB Memory Usage)[\s\S]{0,400}?Total\s*:\s*(\d+)\s*MiB)"),
+      QRegularExpression::CaseInsensitiveOption);
+
+  auto normalizedReportedState = [this](const QString &reported) -> QString {
+    const QString normalized = reported.trimmed().toLower();
+    if (normalized.contains(QStringLiteral("enabled")) ||
+        normalized == QStringLiteral("yes") || normalized == QStringLiteral("on")) {
+      return tr("Enabled");
+    }
+    if (normalized.contains(QStringLiteral("disabled")) ||
+        normalized == QStringLiteral("no") || normalized == QStringLiteral("off")) {
+      return tr("Disabled");
+    }
+    return tr("Reported: %1").arg(reported.trimmed());
+  };
 
   const QDir gpuRoot(QStringLiteral("/proc/driver/nvidia/gpus"));
   for (const QFileInfo &gpu :
@@ -720,12 +739,10 @@ QString SystemInfoProvider::detectResizableBarStatus() const {
         valueFromFile(gpu.absoluteFilePath() + QStringLiteral("/information"));
     const QRegularExpressionMatch match = resizableBarPattern.match(information);
     if (match.hasMatch()) {
-      return match.captured(1).trimmed();
+      return normalizedReportedState(match.captured(1));
     }
   }
 
-  // Recent NVIDIA drivers expose this status through NVML even when the
-  // legacy /proc information file omits it.
   CommandRunner runner;
   CommandRunner::RunOptions options;
   options.timeoutMs = 1500;
@@ -735,20 +752,65 @@ QString SystemInfoProvider::detectResizableBarStatus() const {
     const QRegularExpressionMatch match =
         resizableBarPattern.match(smiResult.stdout);
     if (match.hasMatch()) {
-      return match.captured(1).trimmed();
+      return normalizedReportedState(match.captured(1));
     }
   }
 
-  // lspci is the portable fallback. It cannot state the active aperture on
-  // every platform, but the Physical Resizable BAR capability still conveys
-  // a useful, non-empty status to the System page.
-  const auto pciResult = runner.run(
-      QStringLiteral("lspci"), {QStringLiteral("-vv")}, options);
-  if (pciResult.success() &&
-      pciResult.stdout.contains(QStringLiteral("Physical Resizable BAR"),
-                                Qt::CaseInsensitive)) {
-    return tr("Available");
+  // Linux creates resourceN_resize only for BARs which implement the PCIe
+  // Resizable BAR capability. This is a capability check, not an assumption
+  // based on GPU model or motherboard branding.
+  bool displayAdapterDetected = false;
+  bool resizableBarSupported = false;
+  const QDir devices(QStringLiteral("/sys/bus/pci/devices"));
+  for (const QFileInfo &device :
+       devices.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+    const QString devicePath = device.absoluteFilePath();
+    if (!valueFromFile(devicePath + QStringLiteral("/class"))
+             .startsWith(QStringLiteral("0x03"))) {
+      continue;
+    }
+
+    displayAdapterDetected = true;
+    if (!QDir(devicePath)
+             .entryList({QStringLiteral("resource*_resize")}, QDir::Files)
+             .isEmpty()) {
+      resizableBarSupported = true;
+      break;
+    }
   }
+
+  if (resizableBarSupported && smiResult.success()) {
+    const QRegularExpressionMatch bar1Match =
+        bar1TotalPattern.match(smiResult.stdout);
+    const QRegularExpressionMatch framebufferMatch =
+        framebufferTotalPattern.match(smiResult.stdout);
+    bool bar1Ok = false;
+    bool framebufferOk = false;
+    const qint64 bar1MiB = bar1Match.captured(1).toLongLong(&bar1Ok);
+    const qint64 framebufferMiB =
+        framebufferMatch.captured(1).toLongLong(&framebufferOk);
+
+    // NVIDIA documents a full BAR1 aperture as the operational verification
+    // for Resizable BAR. The 256 MiB aperture is the conventional disabled
+    // configuration, but only classify it as disabled when the framebuffer is
+    // larger than that legacy aperture.
+    if (bar1Ok && framebufferOk && framebufferMiB > 0) {
+      if (bar1MiB >= framebufferMiB) {
+        return tr("Enabled");
+      }
+      if (framebufferMiB > 256 && bar1MiB <= 256) {
+        return tr("Disabled");
+      }
+    }
+  }
+
+  if (resizableBarSupported) {
+    return tr("Supported — status unavailable");
+  }
+  if (displayAdapterDetected) {
+    return tr("Not supported");
+  }
+  return tr("Not applicable");
 #endif
   return {};
 }

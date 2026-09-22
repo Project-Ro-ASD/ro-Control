@@ -43,6 +43,9 @@ Item {
     readonly property color warningColor: theme && theme.warning ? theme.warning : (page.darkMode ? "#FBBF24" : "#D97706")
     readonly property color actionTextColor: page.darkMode ? "#F8FAFC" : "#172554"
     readonly property color actionSoftTextColor: page.darkMode ? "#CBD5E1" : "#475569"
+    readonly property color primaryButtonTextColor: page.darkMode ? "#E0E7FF" : "#3730A3"
+    readonly property color warningButtonTextColor: page.darkMode ? "#FEF3C7" : "#92400E"
+    readonly property color neutralButtonTextColor: page.darkMode ? "#E2E8F0" : "#334155"
 
     function deviceAndPowerSummary() {
         const dev = page.systemInfo && page.systemInfo.deviceType ? page.systemInfo.deviceType : "";
@@ -105,7 +108,7 @@ Item {
         if (page.gpuMonitor && page.gpuMonitor.memoryTotalMiB > 0)
             add(qsTr("Video Memory (VRAM)"), (page.gpuMonitor.memoryTotalMiB / 1024.0).toFixed(1) + " GB (" + page.gpuMonitor.memoryTotalMiB + " MiB)");
         add(qsTr("Resizable BAR"), page.systemInfo
-            ? (page.systemInfo.resizableBarStatus || qsTr("Not detected")) : "");
+            ? (page.systemInfo.resizableBarStatus || qsTr("Not available on this system")) : "");
         if (page.systemInfo && page.systemInfo.integratedGpuName && page.systemInfo.integratedGpuMemory)
             add(qsTr("Integrated Graphics Memory"), page.localizeGpuName(page.systemInfo.integratedGpuName) + " • " + page.systemInfo.integratedGpuMemory);
         add(qsTr("PCIe Link Interface"), page.gpuMonitor ? page.gpuMonitor.pcieLinkStatus : "");
@@ -165,7 +168,7 @@ Item {
                     { label: qsTr("Video Memory (VRAM)"), value: (page.gpuMonitor && page.gpuMonitor.memoryTotalMiB > 0) ? ((page.gpuMonitor.memoryTotalMiB / 1024.0).toFixed(1) + " GB (" + page.gpuMonitor.memoryTotalMiB + " MiB)") : "", icon: "📼" },
                     { label: qsTr("PCIe Link Interface"), value: page.gpuMonitor ? page.gpuMonitor.pcieLinkStatus : "", icon: "🔗" },
                     { label: qsTr("Resizable BAR"), value: page.systemInfo
-                        ? (page.systemInfo.resizableBarStatus || qsTr("Not detected")) : "", icon: "↔" },
+                        ? (page.systemInfo.resizableBarStatus || qsTr("Not available on this system")) : "", icon: "↔" },
                     { label: qsTr("Integrated GPU"), value: (page.systemInfo && page.systemInfo.integratedGpuName && page.systemInfo.integratedGpuMemory) ? (page.localizeGpuName(page.systemInfo.integratedGpuName) + " • " + page.systemInfo.integratedGpuMemory) : "", icon: "🎨" },
                     { label: qsTr("Graphics & Compute APIs"), value: page.systemInfo ? page.systemInfo.graphicsApiSummary : "", icon: "🚀" }
                 ]
@@ -565,14 +568,14 @@ Item {
 
                                         Label {
                                             text: qsTr("Open")
-                                            color: diagnosticActionBtn.hovered ? "#FFFFFF" : page.accentColor
+                                            color: diagnosticActionBtn.hovered ? "#FFFFFF" : page.primaryButtonTextColor
                                             font.pixelSize: Math.round(12 * page.uiScale)
                                             font.weight: Font.DemiBold
                                         }
 
                                         Label {
                                             text: "↗"
-                                            color: diagnosticActionBtn.hovered ? "#FFFFFF" : page.accentColor
+                                            color: diagnosticActionBtn.hovered ? "#FFFFFF" : page.primaryButtonTextColor
                                             font.pixelSize: Math.round(11 * page.uiScale)
                                             font.weight: Font.Bold
                                         }
@@ -656,14 +659,14 @@ Item {
 
                                         Label {
                                             text: qsTr("Restart")
-                                            color: rebootFirmwareBtn.hovered ? "#FFFFFF" : page.warningColor
+                                            color: rebootFirmwareBtn.hovered ? "#FFFFFF" : page.warningButtonTextColor
                                             font.pixelSize: Math.round(12 * page.uiScale)
                                             font.weight: Font.DemiBold
                                         }
 
                                         Label {
                                             text: "↻"
-                                            color: rebootFirmwareBtn.hovered ? "#FFFFFF" : page.warningColor
+                                            color: rebootFirmwareBtn.hovered ? "#FFFFFF" : page.warningButtonTextColor
                                             font.pixelSize: Math.round(13 * page.uiScale)
                                             font.weight: Font.Bold
                                         }
@@ -778,7 +781,7 @@ Item {
                         }
                         contentItem: Text {
                             text: "✕"
-                            color: closeDiagnosticReportButton.hovered ? page.textColor : page.softTextColor
+                            color: closeDiagnosticReportButton.hovered ? page.actionTextColor : page.neutralButtonTextColor
                             font.pixelSize: Math.round(14 * page.uiScale)
                             font.weight: Font.Bold
                             horizontalAlignment: Text.AlignHCenter
@@ -1038,7 +1041,7 @@ Item {
                                                     Label {
                                                         Layout.fillWidth: true
                                                         text: fmtItemBtn.modelData.label
-                                                        color: fmtItemBtn.isSelected ? page.accentColor : (fmtItemBtn.hovered ? page.textColor : page.softTextColor)
+                                                        color: fmtItemBtn.isSelected ? page.primaryButtonTextColor : (fmtItemBtn.hovered ? page.actionTextColor : page.neutralButtonTextColor)
                                                         font.pixelSize: Math.round(12 * page.uiScale)
                                                         font.weight: fmtItemBtn.isSelected ? Font.Bold : Font.Normal
                                                     }
@@ -1166,7 +1169,7 @@ Item {
                                                     Label {
                                                         Layout.fillWidth: true
                                                         text: actItemBtn.modelData.label
-                                                        color: actItemBtn.isSelected ? page.accentColor : (actItemBtn.hovered ? page.textColor : page.softTextColor)
+                                                        color: actItemBtn.isSelected ? page.primaryButtonTextColor : (actItemBtn.hovered ? page.actionTextColor : page.neutralButtonTextColor)
                                                         font.pixelSize: Math.round(12 * page.uiScale)
                                                         font.weight: actItemBtn.isSelected ? Font.Bold : Font.Normal
                                                     }
@@ -1500,7 +1503,7 @@ Item {
 
                         contentItem: Label {
                             text: closeReportBtn.text
-                            color: closeReportBtn.hovered ? page.textColor : page.softTextColor
+                            color: closeReportBtn.hovered ? page.actionTextColor : page.neutralButtonTextColor
                             font.pixelSize: Math.round(13 * page.uiScale)
                             font.weight: Font.DemiBold
                             horizontalAlignment: Text.AlignHCenter
@@ -1682,7 +1685,7 @@ Item {
                         contentItem: Label {
                             id: cancelRebootLabel
                             text: cancelRebootBtn.text
-                            color: cancelRebootBtn.hovered ? page.textColor : page.softTextColor
+                            color: cancelRebootBtn.hovered ? page.actionTextColor : page.neutralButtonTextColor
                             font.pixelSize: Math.round(13 * page.uiScale)
                             font.weight: Font.DemiBold
                             horizontalAlignment: Text.AlignHCenter
