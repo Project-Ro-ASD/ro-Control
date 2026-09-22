@@ -51,6 +51,10 @@ Item {
     readonly property color dialogBorderColor: page.darkMode ? "#71628E" : "#CBD5E1"
     readonly property color dialogTextColor: page.darkMode ? "#FFFFFF" : "#111827"
     readonly property color dialogSoftTextColor: page.darkMode ? "#D1D5DB" : "#475569"
+    readonly property color dialogButtonSurfaceColor: page.darkMode ? "#342D4A" : "#F1F5F9"
+    readonly property color dialogButtonHoverColor: page.darkMode ? "#4A3F68" : "#E2E8F0"
+    readonly property color primaryFilledButtonColor: "#4338CA"
+    readonly property color primaryFilledButtonTextColor: "#EEF2FF"
     readonly property color warningFilledButtonColor: "#9A3412"
 
     function deviceAndPowerSummary() {
@@ -783,7 +787,9 @@ Item {
                         hoverEnabled: true
                         background: Rectangle {
                             radius: 8
-                            color: closeDiagnosticReportButton.hovered ? (page.darkMode ? "#43385E" : "#E2E8F0") : "transparent"
+                            color: closeDiagnosticReportButton.hovered ? page.dialogButtonHoverColor : page.dialogButtonSurfaceColor
+                            border.width: 1
+                            border.color: closeDiagnosticReportButton.hovered ? page.accentColor : page.dialogBorderColor
                         }
                         contentItem: Text {
                             text: "✕"
@@ -828,9 +834,9 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 radius: 6
-                                color: page.reportViewMode === 0 ? (page.darkMode ? "#3E355B" : "#FFFFFF") : "transparent"
-                                border.width: page.reportViewMode === 0 ? 1 : 0
-                                border.color: page.reportViewMode === 0 ? (page.darkMode ? "#5B4E85" : "#CBD5E1") : "transparent"
+                                color: page.reportViewMode === 0 ? page.dialogSurfaceColor : page.dialogButtonSurfaceColor
+                                border.width: 1
+                                border.color: page.reportViewMode === 0 ? page.accentColor : page.dialogBorderColor
 
                                 MouseArea {
                                     anchors.fill: parent
@@ -843,7 +849,7 @@ Item {
                                 Label {
                                     anchors.centerIn: parent
                                     text: qsTr("Overview Cards")
-                                    color: page.reportViewMode === 0 ? page.dialogTextColor : page.dialogSoftTextColor
+                                    color: page.reportViewMode === 0 ? page.primaryButtonTextColor : page.dialogTextColor
                                     font.pixelSize: Math.round(12 * page.uiScale)
                                     font.weight: page.reportViewMode === 0 ? Font.DemiBold : Font.Normal
                                 }
@@ -853,9 +859,9 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 radius: 6
-                                color: page.reportViewMode === 1 ? (page.darkMode ? "#3E355B" : "#FFFFFF") : "transparent"
-                                border.width: page.reportViewMode === 1 ? 1 : 0
-                                border.color: page.reportViewMode === 1 ? (page.darkMode ? "#5B4E85" : "#CBD5E1") : "transparent"
+                                color: page.reportViewMode === 1 ? page.dialogSurfaceColor : page.dialogButtonSurfaceColor
+                                border.width: 1
+                                border.color: page.reportViewMode === 1 ? page.accentColor : page.dialogBorderColor
 
                                 MouseArea {
                                     anchors.fill: parent
@@ -868,7 +874,7 @@ Item {
                                 Label {
                                     anchors.centerIn: parent
                                     text: qsTr("Code / Export")
-                                    color: page.reportViewMode === 1 ? page.dialogTextColor : page.dialogSoftTextColor
+                                    color: page.reportViewMode === 1 ? page.primaryButtonTextColor : page.dialogTextColor
                                     font.pixelSize: Math.round(12 * page.uiScale)
                                     font.weight: page.reportViewMode === 1 ? Font.DemiBold : Font.Normal
                                 }
@@ -1033,9 +1039,10 @@ Item {
 
                                                 background: Rectangle {
                                                     radius: 6
-                                                    color: fmtItemBtn.hovered
-                                                           ? (page.darkMode ? "#43385E" : "#E2E8F0")
-                                                           : (fmtItemBtn.isSelected ? (page.darkMode ? "#342D4A" : "#F1F5F9") : "transparent")
+                                                    color: fmtItemBtn.hovered ? page.dialogButtonHoverColor
+                                                           : (fmtItemBtn.isSelected ? page.dialogButtonSurfaceColor : "transparent")
+                                                    border.width: fmtItemBtn.isSelected ? 1 : 0
+                                                    border.color: fmtItemBtn.isSelected ? page.accentColor : "transparent"
                                                 }
 
                                                 contentItem: RowLayout {
@@ -1161,9 +1168,10 @@ Item {
 
                                                 background: Rectangle {
                                                     radius: 6
-                                                    color: actItemBtn.hovered
-                                                           ? (page.darkMode ? "#43385E" : "#E2E8F0")
-                                                           : (actItemBtn.isSelected ? (page.darkMode ? "#342D4A" : "#F1F5F9") : "transparent")
+                                                    color: actItemBtn.hovered ? page.dialogButtonHoverColor
+                                                           : (actItemBtn.isSelected ? page.dialogButtonSurfaceColor : "transparent")
+                                                    border.width: actItemBtn.isSelected ? 1 : 0
+                                                    border.color: actItemBtn.isSelected ? page.accentColor : "transparent"
                                                 }
 
                                                 contentItem: RowLayout {
@@ -1500,9 +1508,7 @@ Item {
 
                         background: Rectangle {
                             radius: 8
-                            color: closeReportBtn.hovered
-                                   ? (page.darkMode ? "#3B3156" : "#E2E8F0")
-                                   : page.dialogSurfaceColor
+                            color: closeReportBtn.hovered ? page.dialogButtonHoverColor : page.dialogButtonSurfaceColor
                             border.width: 1
                             border.color: closeReportBtn.hovered ? page.accentColor : page.dialogBorderColor
                         }
@@ -1529,16 +1535,16 @@ Item {
 
                         background: Rectangle {
                             radius: 8
-                            color: copyReportBtn.down ? Qt.darker(page.accentColor, 1.15)
-                                                      : (copyReportBtn.hovered ? Qt.lighter(page.accentColor, 1.1) : page.accentColor)
+                            color: copyReportBtn.down ? Qt.darker(page.primaryFilledButtonColor, 1.15)
+                                                      : (copyReportBtn.hovered ? Qt.lighter(page.primaryFilledButtonColor, 1.1) : page.primaryFilledButtonColor)
                             border.width: 1
-                            border.color: page.accentColor
+                            border.color: page.primaryFilledButtonColor
                         }
 
                         contentItem: Label {
                             id: copyLabel
                             text: copyReportBtn.text
-                            color: "#FFFFFF"
+                            color: page.primaryFilledButtonTextColor
                             font.pixelSize: Math.round(13 * page.uiScale)
                             font.weight: Font.Bold
                             horizontalAlignment: Text.AlignHCenter
