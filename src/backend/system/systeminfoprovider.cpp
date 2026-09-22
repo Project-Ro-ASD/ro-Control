@@ -233,6 +233,7 @@ void SystemInfoProvider::initializeStaticInfo() {
   m_deviceType = detectDeviceType();
   m_integratedGpuName = detectIntegratedGpuName();
   m_integratedGpuMemory = detectIntegratedGpuMemory();
+  m_resizableBarStatus = detectResizableBarStatus();
   m_staticHardwareLoaded = true;
 }
 
@@ -701,6 +702,25 @@ QString SystemInfoProvider::detectIntegratedGpuMemory() const {
             .toLongLong(&ok);
     if (ok && bytes > 0)
       return formatMemoryBytes(bytes);
+  }
+#endif
+  return {};
+}
+
+QString SystemInfoProvider::detectResizableBarStatus() const {
+#if defined(Q_OS_LINUX)
+  const QDir gpuRoot(QStringLiteral("/proc/driver/nvidia/gpus"));
+  for (const QFileInfo &gpu :
+       gpuRoot.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+    const QString information =
+        valueFromFile(gpu.absoluteFilePath() + QStringLiteral("/information"));
+    const QRegularExpressionMatch match = QRegularExpression(
+        QStringLiteral(R"(Resizable BAR\s*:\s*([^\r\n]+))"),
+        QRegularExpression::CaseInsensitiveOption)
+                                            .match(information);
+    if (match.hasMatch()) {
+      return match.captured(1).trimmed();
+    }
   }
 #endif
   return {};

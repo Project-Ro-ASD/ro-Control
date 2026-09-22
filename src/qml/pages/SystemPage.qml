@@ -103,6 +103,7 @@ Item {
             add(qsTr("System Memory (RAM)"), (page.ramMonitor.totalMiB / 1024.0).toFixed(1) + " GB (" + page.ramMonitor.totalMiB + " MiB)");
         if (page.gpuMonitor && page.gpuMonitor.memoryTotalMiB > 0)
             add(qsTr("Video Memory (VRAM)"), (page.gpuMonitor.memoryTotalMiB / 1024.0).toFixed(1) + " GB (" + page.gpuMonitor.memoryTotalMiB + " MiB)");
+        add(qsTr("Resizable BAR"), page.systemInfo ? page.systemInfo.resizableBarStatus : "");
         if (page.systemInfo && page.systemInfo.integratedGpuName && page.systemInfo.integratedGpuMemory)
             add(qsTr("Integrated Graphics Memory"), page.localizeGpuName(page.systemInfo.integratedGpuName) + " • " + page.systemInfo.integratedGpuMemory);
         add(qsTr("PCIe Link Interface"), page.gpuMonitor ? page.gpuMonitor.pcieLinkStatus : "");
@@ -161,6 +162,7 @@ Item {
                     { label: qsTr("NVIDIA Driver"), value: page.nvidiaDriverSummary(), icon: "⚙️" },
                     { label: qsTr("Video Memory (VRAM)"), value: (page.gpuMonitor && page.gpuMonitor.memoryTotalMiB > 0) ? ((page.gpuMonitor.memoryTotalMiB / 1024.0).toFixed(1) + " GB (" + page.gpuMonitor.memoryTotalMiB + " MiB)") : "", icon: "📼" },
                     { label: qsTr("PCIe Link Interface"), value: page.gpuMonitor ? page.gpuMonitor.pcieLinkStatus : "", icon: "🔗" },
+                    { label: qsTr("Resizable BAR"), value: page.systemInfo ? page.systemInfo.resizableBarStatus : "", icon: "↔" },
                     { label: qsTr("Integrated GPU"), value: (page.systemInfo && page.systemInfo.integratedGpuName && page.systemInfo.integratedGpuMemory) ? (page.localizeGpuName(page.systemInfo.integratedGpuName) + " • " + page.systemInfo.integratedGpuMemory) : "", icon: "🎨" },
                     { label: qsTr("Graphics & Compute APIs"), value: page.systemInfo ? page.systemInfo.graphicsApiSummary : "", icon: "🚀" }
                 ]
@@ -193,18 +195,22 @@ Item {
         if (!page.systemInfo)
             return;
 
-        // A diagnostic report is a snapshot, never a cache of the last page
-        // visit. GPU telemetry finishes asynchronously, so report formatting
-        // is deferred until its completion signal.
-        page.systemInfo.rescanHardware();
-        if (page.cpuMonitor) page.cpuMonitor.refresh();
-        if (page.ramMonitor) page.ramMonitor.refresh();
-        if (page.gpuMonitor) {
-            page.reportRefreshPending = true;
-            page.gpuMonitor.requestRefresh();
-            return;
-        }
-        page.finalizeDiagnosticReport();
+        // Open first so the modal transition is never blocked by a hardware
+        // probe. The live report is refreshed on the next event-loop turn.
+        diagnosticReportDialog.open();
+        page.reportRefreshPending = true;
+        Qt.callLater(function() {
+            if (!page.systemInfo)
+                return;
+            page.systemInfo.refresh();
+            if (page.cpuMonitor) page.cpuMonitor.refresh();
+            if (page.ramMonitor) page.ramMonitor.refresh();
+            if (page.gpuMonitor) {
+                page.gpuMonitor.requestRefresh();
+            } else {
+                page.finalizeDiagnosticReport();
+            }
+        });
     }
 
     function finalizeDiagnosticReport() {
@@ -233,7 +239,8 @@ Item {
             page.actionFailed = true;
             page.actionFeedback = qsTr("The report could not be copied. You can copy it manually from this preview.");
         }
-        diagnosticReportDialog.open();
+        if (!diagnosticReportDialog.visible)
+            diagnosticReportDialog.open();
     }
 
     function refreshSystemData() {
@@ -1250,6 +1257,7 @@ Item {
                                     RowLayout {
                                         Layout.fillWidth: true
                                         spacing: Math.round(8 * page.uiScale)
+                                        Layout.alignment: Qt.AlignVCenter
 
                                         Label {
                                             text: sectionCard.modelData.icon
@@ -1262,6 +1270,8 @@ Item {
                                             font.pixelSize: Math.round(14 * page.uiScale)
                                             font.weight: Font.DemiBold
                                             Layout.fillWidth: true
+                                            Layout.alignment: Qt.AlignVCenter
+                                            verticalAlignment: Text.AlignVCenter
                                         }
 
                                         Rectangle {
@@ -1314,14 +1324,18 @@ Item {
                                                     anchors.leftMargin: Math.round(12 * page.uiScale)
                                                     anchors.rightMargin: Math.round(12 * page.uiScale)
                                                     spacing: Math.round(10 * page.uiScale)
+                                                    Layout.alignment: Qt.AlignVCenter
 
                                                     Label {
                                                         text: itemTile.modelData.icon || "•"
                                                         font.pixelSize: Math.round(16 * page.uiScale)
+                                                        Layout.alignment: Qt.AlignVCenter
+                                                        verticalAlignment: Text.AlignVCenter
                                                     }
 
                                                     ColumnLayout {
                                                         Layout.fillWidth: true
+                                                        Layout.alignment: Qt.AlignVCenter
                                                         spacing: 2
 
                                                         Label {
@@ -1331,6 +1345,7 @@ Item {
                                                             font.pixelSize: Math.round(11 * page.uiScale)
                                                             font.weight: Font.DemiBold
                                                             elide: Text.ElideRight
+                                                            verticalAlignment: Text.AlignVCenter
                                                         }
 
                                                         Label {
@@ -1340,6 +1355,7 @@ Item {
                                                             font.pixelSize: Math.round(13 * page.uiScale)
                                                             font.weight: Font.DemiBold
                                                             elide: Text.ElideRight
+                                                            verticalAlignment: Text.AlignVCenter
                                                         }
                                                     }
                                                 }

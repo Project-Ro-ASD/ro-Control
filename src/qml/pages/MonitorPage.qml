@@ -18,8 +18,6 @@ Item {
     property bool darkMode: false
     property bool showAdvancedInfo: true
     property real uiScale: 1.0
-    property bool telemetryRefreshAnimating: false
-    property int telemetryRefreshStep: 0
     property var cpuUsageHistory: []
     property var gpuLoadHistory: []
     property var ramUsageHistory: []
@@ -178,37 +176,6 @@ Item {
         page.ramUsageHistory = ramArr;
     }
 
-    function refreshTelemetry() {
-        if (page.telemetryRefreshAnimating)
-            return;
-        page.telemetryRefreshAnimating = true;
-        page.telemetryRefreshStep = 0;
-        telemetryRefreshQueue.restart();
-    }
-
-    function refreshTelemetryStep() {
-        if (page.telemetryRefreshStep === 0 && page.ramMonitor) {
-            page.ramMonitor.start();
-            page.ramMonitor.refresh();
-        } else if (page.telemetryRefreshStep === 1 && page.cpuMonitor) {
-            page.cpuMonitor.start();
-            page.cpuMonitor.refresh();
-        } else if (page.telemetryRefreshStep === 2 && page.gpuMonitor) {
-            page.gpuMonitor.start();
-            page.gpuMonitor.requestRefresh();
-        } else if (page.telemetryRefreshStep === 3 && page.fanController) {
-            page.fanController.start();
-            page.fanController.refresh();
-        }
-
-        page.telemetryRefreshStep += 1;
-        if (page.telemetryRefreshStep < 4) {
-            telemetryRefreshQueue.restart();
-        } else {
-            telemetryRefreshPulse.restart();
-        }
-    }
-
     ScrollView {
         id: pageScroll
         anchors.fill: parent
@@ -251,18 +218,6 @@ Item {
                 }
                 columnSpacing: Math.round(10 * page.uiScale)
                 rowSpacing: Math.round(10 * page.uiScale)
-
-                Components.ActionButton {
-                    Layout.columnSpan: telemetryGrid.columns
-                    Layout.alignment: Qt.AlignRight
-                    text: page.telemetryRefreshAnimating ? qsTr("Refreshing telemetry…") : qsTr("Refresh telemetry")
-                    enabled: !page.telemetryRefreshAnimating
-                    theme: page.theme
-                    tone: "primary"
-                    compact: true
-                    uiScale: page.uiScale
-                    onClicked: page.refreshTelemetry()
-                }
 
                 // CPU Card
                 Rectangle {
@@ -365,11 +320,9 @@ Item {
 
                             Rectangle {
                                 id: gpuSelectorButton
-                                visible: page.gpuTelemetryAvailable
+                                visible: page.gpuTelemetryAvailable && page.gpuMonitor && page.gpuMonitor.gpuCount > 1
                                 implicitHeight: Math.round(24 * page.uiScale)
-                                implicitWidth: (page.gpuMonitor && page.gpuMonitor.gpuCount > 1)
-                                               ? gpuSelectorRow.implicitWidth + Math.round(14 * page.uiScale)
-                                               : Math.round(26 * page.uiScale)
+                                implicitWidth: gpuSelectorRow.implicitWidth + Math.round(14 * page.uiScale)
                                 radius: 6
                                 color: gpuSelectorMouse.hovered
                                        ? (page.darkMode ? "#342D4A" : "#E2E8F0")
@@ -421,12 +374,6 @@ Item {
                                     spacing: 4
 
                                     Label {
-                                        text: "⚡"
-                                        font.pixelSize: Math.round(11 * page.uiScale)
-                                    }
-
-                                    Label {
-                                        visible: page.gpuMonitor && page.gpuMonitor.gpuCount > 1
                                         text: "GPU " + (page.gpuMonitor ? page.gpuMonitor.selectedGpuIndex : 0) + " ▾"
                                         color: page.accentColor
                                         font.pixelSize: Math.round(10 * page.uiScale)
@@ -1383,17 +1330,4 @@ Item {
         onTriggered: page.pushTelemetryHistory()
     }
 
-    Timer {
-        id: telemetryRefreshPulse
-        interval: 300
-        repeat: false
-        onTriggered: page.telemetryRefreshAnimating = false
-    }
-
-    Timer {
-        id: telemetryRefreshQueue
-        interval: 180
-        repeat: false
-        onTriggered: page.refreshTelemetryStep()
-    }
 }

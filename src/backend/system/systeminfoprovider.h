@@ -22,6 +22,7 @@ class SystemInfoProvider : public QObject {
       QString graphicsApiSummary READ graphicsApiSummary NOTIFY infoChanged)
   Q_PROPERTY(bool onBattery READ onBattery NOTIFY infoChanged)
   Q_PROPERTY(QString powerSource READ powerSource NOTIFY infoChanged)
+  Q_PROPERTY(QString resizableBarStatus READ resizableBarStatus NOTIFY infoChanged)
   Q_PROPERTY(
       QString integratedGpuName READ integratedGpuName NOTIFY infoChanged)
   Q_PROPERTY(
@@ -50,6 +51,7 @@ public:
   QString virtualizationType() const { return m_virtualizationType; }
   bool onBattery() const { return m_onBattery; }
   QString powerSource() const { return m_powerSource; }
+  QString resizableBarStatus() const { return m_resizableBarStatus; }
   QString integratedGpuName() const {
     return localizeGpuName(m_integratedGpuName);
   }
@@ -91,6 +93,7 @@ private:
   QString detectVirtualizationType() const;
   QString detectIntegratedGpuName() const;
   QString detectIntegratedGpuMemory() const;
+  QString detectResizableBarStatus() const;
   bool detectOnBattery(QString *sourceLabel = nullptr) const;
   void initializeStaticInfo();
   void loadDiagnosticReportPreferences();
@@ -109,6 +112,7 @@ private:
   bool m_onBattery = false;
   bool m_staticHardwareLoaded = false;
   QString m_powerSource;
+  QString m_resizableBarStatus;
   QString m_integratedGpuName;
   QString m_integratedGpuMemory;
   QString m_diagnosticReportFormat = QStringLiteral("markdown");
