@@ -212,18 +212,6 @@ qt_add_qml_module(ro-control
         src/qml/components/StatusBanner.qml
         src/qml/components/FanSettingsPopup.qml
         src/qml/components/FanRescanPopup.qml
-        src/qml/components/ModernMiniButton.qml
-        src/qml/components/ModernDialogButton.qml
-        src/qml/components/DriverActionTile.qml
-        src/qml/components/DriverOverviewCards.qml
-        src/qml/components/DriverActionTiles.qml
-        src/qml/components/DriverOperationLog.qml
-        src/qml/components/DriverRestartDialog.qml
-        src/qml/components/DriverCurrentWarningDialog.qml
-        src/qml/components/DriverSourceSwitchDialog.qml
-        src/qml/components/DriverProprietaryLicenseDialog.qml
-        src/qml/components/DriverActionModalDialog.qml
-        src/qml/components/DriverMokGuideDialog.qml
         src/qml/components/FanChannelsGrid.qml
         src/qml/components/FanProfileControls.qml
         src/qml/components/FanCustomCurveStudio.qml

@@ -238,13 +238,10 @@ public:
   Q_INVOKABLE void installProprietary(bool) {}
   Q_INVOKABLE void installOpenSource() {}
   Q_INVOKABLE void remove() {}
-  Q_INVOKABLE void deepClean() { ++m_deepCleanCount; }
-  Q_INVOKABLE void rebuildKernelModules() { ++m_rebuildCount; }
+  Q_INVOKABLE void deepClean() {}
   Q_INVOKABLE void cancelOperation() {
     emit progressMessage(QStringLiteral("Cancel requested."));
   }
-  int deepCleanCount() const { return m_deepCleanCount; }
-  int rebuildCount() const { return m_rebuildCount; }
 
 signals:
   void progressMessage(const QString &message);
@@ -257,8 +254,6 @@ private:
   bool m_proprietaryAgreementRequired = false;
   QString m_proprietaryAgreementText;
   bool m_busy = false;
-  int m_deepCleanCount = 0;
-  int m_rebuildCount = 0;
 };
 
 class UpdaterMock : public QObject {
@@ -358,8 +353,6 @@ private slots:
   void testCompletedInstallImmediatelyUpdatesDriverState();
   void testUpdateActionInvokesUpdater();
   void testWaylandRequirementIsExposedToPage();
-  void testCleanActionInvokesInstaller();
-  void testAppendLogMethod();
 
 private:
   QObject *createPage(DetectorMock *detector, InstallerMock *installer,
@@ -407,17 +400,18 @@ QObject *TestDriverPage::createPage(DetectorMock *detector,
   tempPageFile.write(pageSource.toUtf8());
   tempPageFile.close();
 
-  const QDir sourceComponentsDir(
-      QDir(sourceRoot).filePath(QStringLiteral("src/qml/components")));
-  const QStringList componentFiles = sourceComponentsDir.entryList(
-      QStringList{QStringLiteral("*.qml")}, QDir::Files);
+  const QStringList componentFiles = {
+      QStringLiteral("RefreshToolButton.qml"),
+      QStringLiteral("StatusBanner.qml"),
+  };
   for (const QString &fileName : componentFiles) {
-    const QString sourceComponentPath = sourceComponentsDir.filePath(fileName);
+    const QString sourceComponentPath =
+        QDir(sourceRoot)
+            .filePath(QStringLiteral("src/qml/components/") + fileName);
     const QString targetComponentPath =
         componentsDir + QLatin1Char('/') + fileName;
     if (!QFile::copy(sourceComponentPath, targetComponentPath)) {
-      qFatal("Failed to copy component fixture for DriverPage test: %s",
-             qPrintable(fileName));
+      qFatal("Failed to copy component fixture for DriverPage test");
     }
   }
 
@@ -598,38 +592,6 @@ void TestDriverPage::testWaylandRequirementIsExposedToPage() {
   QVERIFY(QMetaObject::invokeMethod(page.get(), "driverMutationBlockedReason",
                                     Q_RETURN_ARG(QVariant, reason)));
   QVERIFY(!reason.toString().isEmpty());
-}
-
-void TestDriverPage::testCleanActionInvokesInstaller() {
-  QQmlEngine engine;
-  DetectorMock detector;
-  InstallerMock installer;
-  UpdaterMock updater;
-  detector.setGpuFound(true);
-  detector.setSessionType(QStringLiteral("wayland"));
-
-  QScopedPointer<QObject> page(
-      createPage(&detector, &installer, &updater, &engine));
-  QVERIFY(QMetaObject::invokeMethod(
-      page.get(), "executeDriverAction",
-      Q_ARG(QVariant, QVariant(QStringLiteral("clean")))));
-  QCOMPARE(installer.deepCleanCount(), 1);
-  QCOMPARE(page->property("requestedDriverAction").toString(),
-           QStringLiteral("deep-clean"));
-}
-
-void TestDriverPage::testAppendLogMethod() {
-  QQmlEngine engine;
-  DetectorMock detector;
-  InstallerMock installer;
-  UpdaterMock updater;
-
-  QScopedPointer<QObject> page(
-      createPage(&detector, &installer, &updater, &engine));
-  QVERIFY(QMetaObject::invokeMethod(
-      page.get(), "appendLog",
-      Q_ARG(QVariant, QVariant(QStringLiteral("TestModule"))),
-      Q_ARG(QVariant, QVariant(QStringLiteral("Log message for unit test")))));
 }
 
 int main(int argc, char **argv) {
