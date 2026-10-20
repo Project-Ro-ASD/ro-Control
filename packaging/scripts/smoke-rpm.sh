@@ -51,7 +51,7 @@ dnf -y --setopt=install_weak_deps=False upgrade "${package}"
 rpm -V ro-control
 ro-control --help >/dev/null
 # Add test tools only after clean dependency and upgrade tests have passed.
-dnf -y install python3 dbus-daemon glib2-tools
+dnf -y install python3 dbus-daemon /usr/bin/gdbus
 dbus-run-session -- python3 packaging/scripts/smoke-installed-runtime.py
 # Load the full installed QML application using software/offscreen rendering.
 set +e

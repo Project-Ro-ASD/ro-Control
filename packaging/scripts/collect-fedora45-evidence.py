@@ -26,6 +26,7 @@ def main():
     pid_one = pathlib.Path('/proc/1/comm')
     booted = pid_one.exists() and pid_one.read_text().strip() == 'systemd'
     probes = {
+        'fedora_release': ['rpm', '-E', '%{fedora}'],
         'rpm': ['rpm', '-q', 'ro-control'],
         'files': ['rpm', '-V', 'ro-control'],
         'diagnostics': ['ro-control', 'diagnostics', '--json'],
@@ -60,7 +61,11 @@ def main():
     print(args.output)
     # Fail clearly if this is not a Fedora 45 booted host with a working GPU.
     distro = dict(line.split('=', 1) for line in os_data.splitlines() if '=' in line)
-    valid_host = distro.get('VERSION_ID', '').strip('"') == '45' and booted
+    distribution = distro.get('ID', '').strip('"')
+    family = distro.get('ID_LIKE', '').strip('"').split()
+    fedora_family = distribution == 'fedora' or 'fedora' in family
+    fedora45 = results['fedora_release'].get('stdout') == '45'
+    valid_host = fedora_family and fedora45 and booted
     raise SystemExit(0 if valid_host and results['gpu']['exit_code'] == 0 else 1)
 
 
