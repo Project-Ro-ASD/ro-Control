@@ -98,7 +98,7 @@ jobs:
           mkdir -p "${TOPDIR}"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS} release-rpms
 
           ARCHIVE_ROOT="ro-control-${VERSION}"
-          git archive --format=tar.gz --prefix="${ARCHIVE_ROOT}/" \
+          git -c safe.directory="${GITHUB_WORKSPACE}" archive --format=tar.gz --prefix="${ARCHIVE_ROOT}/" \
             --output="${TOPDIR}/SOURCES/${ARCHIVE_ROOT}.tar.gz" "${GITHUB_SHA}"
           cp packaging/rpm/ro-control.spec "${TOPDIR}/SPECS/ro-control.spec"
 
