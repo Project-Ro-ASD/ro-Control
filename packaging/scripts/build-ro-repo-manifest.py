@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import pathlib
+import re
 import subprocess
 
 
@@ -44,6 +45,29 @@ def rpm_header(path: pathlib.Path) -> dict[str, object]:
         "source_rpm": source_rpm_value,
         "producer_artifact_sha256": sha256(path),
     }
+
+
+def validate_identity(artifacts, repository, commit, tag, release_id, workflow_run):
+    if repository != "Project-Ro-ASD/ro-Control":
+        raise SystemExit("unexpected source repository")
+    if not re.fullmatch(r"[0-9a-f]{40}", commit):
+        raise SystemExit("source commit must be an exact 40-character SHA")
+    if not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", tag):
+        raise SystemExit("release tag must be vMAJOR.MINOR.PATCH")
+    if any(not re.fullmatch(r"[1-9][0-9]*", value) for value in (release_id, workflow_run)):
+        raise SystemExit("release ID and workflow run must be positive integers")
+    source = next(item for item in artifacts if item["architecture"] == "src")
+    for item in artifacts:
+        expected_filename = (
+            f"ro-control-{tag[1:]}-1.fc44.{item['architecture']}.rpm"
+        )
+        if item["filename"] != expected_filename:
+            raise SystemExit(f"noncanonical RPM filename: {item['filename']}")
+        if item["version"] != tag[1:] or item["release"] != "1.fc44" or item["epoch"] != 0:
+            raise SystemExit(f"RPM identity does not match tag: {item['filename']}")
+        if item["architecture"] != "src":
+            if item["source_rpm"] != source["filename"]:
+                raise SystemExit("binary/source RPM identity mismatch")
 
 
 def main() -> None:
@@ -84,6 +108,9 @@ def main() -> None:
             raise SystemExit(
                 f"binary RPM {item['filename']} does not point at the published SRPM {item['source_rpm']}"
             )
+
+    validate_identity(artifacts, args.repository, args.commit, args.tag,
+                      args.release_id, args.workflow_run)
 
     manifest = {
         "schema_version": 1,

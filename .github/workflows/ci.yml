@@ -144,7 +144,7 @@ jobs:
           fi
 
           [[ "$(basename "${MAIN_RPM}")" == "$(rpm -qp --qf '%{NVRA}.rpm' "${MAIN_RPM}")" ]]
-          [[ "$(rpm -qp --qf '%{RELEASE}' "${MAIN_RPM}")" == "1" ]]
+          [[ "$(rpm -qp --qf '%{RELEASE}' "${MAIN_RPM}")" == "1.fc44" ]]
 
           rpm -qpR "${MAIN_RPM}" | tee /tmp/ro-control.requires
           if grep -E 'PRIVATE_API' /tmp/ro-control.requires; then
@@ -166,7 +166,6 @@ jobs:
           dnf -y --refresh \
             --setopt=install_weak_deps=False \
             install \
-            --allowerasing \
             "${MAIN_RPM}"
 
           rpm -q ro-control

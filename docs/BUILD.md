@@ -65,8 +65,8 @@ The `VERSION` substitution reads the current project version from
 `packaging/rpm/ro-control.spec` expects. The resulting packages will be placed
 in:
 
-- Binary RPM: `~/rpmbuild/RPMS/x86_64/ro-control-<version>-1.x86_64.rpm`
-- Source RPM: `~/rpmbuild/SRPMS/ro-control-<version>-1.src.rpm`
+- Binary RPM: `~/rpmbuild/RPMS/x86_64/ro-control-<version>-1.fc44.x86_64.rpm`
+- Source RPM: `~/rpmbuild/SRPMS/ro-control-<version>-1.fc44.src.rpm`
 
 ---
 
@@ -77,3 +77,6 @@ Run the automated health checker before opening PRs or tagging releases:
 ```bash
 bcheck ro-control
 ```
+
+For the tag-bound Fedora 44 release and Ro-Repo acceptance procedure, see
+[RELEASE-V2.md](RELEASE-V2.md).

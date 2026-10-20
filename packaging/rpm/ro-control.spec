@@ -3,7 +3,7 @@
 
 Name:           ro-control
 Version:        %{upstream_version}
-Release:        1
+Release:        1%{?dist}
 Summary:        Smart NVIDIA driver manager and hardware monitor for Ro-ASD
 
 License:        GPL-3.0-or-later

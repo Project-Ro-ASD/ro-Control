@@ -147,7 +147,7 @@ jobs:
           MAIN_RPM_FILE="$(find dist/rpm -maxdepth 1 -type f -name "ro-control-*.${RPM_ARCH}.rpm" | head -n1)"
 
           [[ "$(basename "${MAIN_RPM_FILE}")" == "$(rpm -qp --qf '%{NVRA}.rpm' "${MAIN_RPM_FILE}")" ]]
-          [[ "$(rpm -qp --qf '%{RELEASE}' "${MAIN_RPM_FILE}")" == "1" ]]
+          [[ "$(rpm -qp --qf '%{RELEASE}' "${MAIN_RPM_FILE}")" == "1.fc44" ]]
 
           rpm -qpR "${MAIN_RPM_FILE}" | tee /tmp/ro-control.requires
           if grep -E 'PRIVATE_API' /tmp/ro-control.requires; then
