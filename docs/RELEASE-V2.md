@@ -32,7 +32,7 @@ no tag-bound provenance. Do not submit it to Ro-Repo.
 Do not reuse or modify v1.3.1. Before a new release, select a new version (for
 example 1.3.2), update CMake/spec/AppStream/changelog version metadata together,
 merge the reviewed packaging PR and obtain Emir's explicit approval for the tag
-and release. The working tree prepares 1.3.2 as unreleased/development metadata; it creates no tag or release. Before an authorized stable tag, update the AppStream release type/date and changelog release date together.
+and release. For the authorized 1.3.2 publication, AppStream is marked stable and the changelog release date is 2026-10-20. Fedora 45 remains a prerelease compatibility target; the public V2 release contains Fedora 44 artifacts only.
 
 On an authorized exact version tag, the workflow requires all build, clean-install
 and contract jobs to pass. It checks native GitHub release immutability is enabled

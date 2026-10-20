@@ -1,6 +1,6 @@
 # Fedora 45 readiness and host qualification
 
-The unreleased 1.3.2 candidate builds Fedora 44/45 on native x86_64 and aarch64.
+Version 1.3.2 builds Fedora 44/45 on native x86_64 and aarch64.
 `release.yml` validates the complete release candidate; `rpm-artifacts.yml`
 also produces both distributions on main/manual runs. Fedora-specific binary
 RPMs and SRPMs must remain in separate sets. Ro-Repo V2 currently accepts only
@@ -64,7 +64,7 @@ package replacement test for this evidence.
 1. Complete or explicitly record the remaining booted/hardware qualifications in
    #57/#58. The confirmed helper command rejection is fixed and tested separately;
    it does not establish the cause of every reported NVIDIA installation failure.
-2. Review unreleased 1.3.2 changes; set the actual stable release date/type in
+2. Review version changes; set the actual stable release date/type in
    AppStream and changelog and obtain Emir's approval for any new tag/release.
 3. Follow `RELEASE-V2.md` for immutable Fedora 44 publication/attestation checks.
    Fedora 45 compatibility RPMs are not a V2 acceptance candidate. Arrange a

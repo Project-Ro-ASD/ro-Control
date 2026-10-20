@@ -67,4 +67,4 @@ Comprehensive guides for administrators, maintainers, and developers:
 
 ro-Control is open-source software licensed under the **GNU General Public License v3.0 or later** (GPL-3.0-or-later). See [LICENSE](LICENSE) for details.
 
-Fedora 44/45 package verification and booted-system qualification: [Fedora 45 readiness](docs/FEDORA-45.md). The 1.3.2 candidate is unreleased; Fedora 45 compatibility artifacts are separate from the Fedora 44 Ro-Repo V2 release set.
+Fedora 44/45 package verification and booted-system qualification: [Fedora 45 readiness](docs/FEDORA-45.md). Fedora 45 compatibility artifacts are separate from the Fedora 44 Ro-Repo V2 release set.

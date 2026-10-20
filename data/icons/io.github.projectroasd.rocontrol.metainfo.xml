@@ -46,7 +46,7 @@
 	</categories>
 
 	<releases>
-		<release version="1.3.2" type="development" date="2026-10-20">
+		<release version="1.3.2" type="stable" date="2026-10-20">
 			<description>
 				<p>Prepares Fedora 44 and 45 RPM compatibility and fixes rejection of the installer's locale-pinned DNF helper command. Full NVIDIA hardware qualification remains pending.</p>
 				<p xml:lang="tr">Fedora 44 ve 45 RPM uyumluluğunu hazırlar ve kurucunun dil ayarlı DNF helper komutunun reddedilmesini düzeltir. Tam NVIDIA donanım doğrulaması beklenmektedir.</p>

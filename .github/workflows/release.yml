@@ -379,7 +379,7 @@ jobs:
           set -euo pipefail
           # Use the same verifier as accept-component, including run/attempt parity.
           for attempt in 1 2 3; do
-            if python3 packaging/scripts/verify-release-provenance.py ro-repo-contract release-assets; then
+            if /usr/bin/python3 packaging/scripts/verify-release-provenance.py ro-repo-contract release-assets; then
               exit 0
             fi
             if [[ "${attempt}" != 3 ]]; then sleep 10; fi
