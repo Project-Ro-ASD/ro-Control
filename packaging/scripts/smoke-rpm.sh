@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# Run in a fresh Fedora 44 container on the RPM's native architecture.
+# Run in a fresh Fedora container on the RPM's native architecture.
 set -euo pipefail
-[[ "$(rpm -E '%{fedora}')" == 44 ]]
+FEDORA_RELEASE="${FEDORA_RELEASE:-44}"
+[[ "${FEDORA_RELEASE}" == 44 || "${FEDORA_RELEASE}" == 45 ]]
+[[ "$(rpm -E '%{fedora}')" == "${FEDORA_RELEASE}" ]]
 [[ "$(uname -m)" == "${RPM_ARCH}" ]]
 mapfile -t packages < <(find release-rpms -maxdepth 1 -name "*.${RPM_ARCH}.rpm" -type f)
 [[ "${#packages[@]}" == 1 ]]
 package="${packages[0]}"
 [[ "$(rpm -qp --qf '%{NVRA}.rpm' "${package}")" == "$(basename "${package}")" ]]
-[[ "$(rpm -qp --qf '%{RELEASE}' "${package}")" == 1.fc44 ]]
+[[ "$(rpm -qp --qf '%{RELEASE}' "${package}")" == "1.fc${FEDORA_RELEASE}" ]]
 rpm -qpR "${package}" | tee /tmp/ro-control.requires
 if grep -q PRIVATE_API /tmp/ro-control.requires; then
   echo 'Forbidden Qt private ABI dependency' >&2
@@ -29,14 +31,22 @@ grep -F "${VERSION}" /tmp/ro-control.version
 # Exercise replacement without removing dependencies or masking conflicts.
 dnf -y reinstall "${package}"
 rpm -V ro-control
-# Read the unchanged legacy release only, to verify the supported upgrade path.
-dnf -y install curl
 dnf -y remove ro-control
-curl --fail --location --retry 3 \
-  "https://github.com/Project-Ro-ASD/ro-Control/releases/download/v1.3.1/ro-control-1.3.1-1.${RPM_ARCH}.rpm" \
-  --output /tmp/ro-control-baseline.rpm
-dnf -y --setopt=install_weak_deps=False install /tmp/ro-control-baseline.rpm
+if [[ "${FEDORA_RELEASE}" == 45 ]]; then
+  # Verify that a Fedora 44 installation can be replaced by the Fedora 45 build.
+  mapfile -t baselines < <(find upgrade-rpms -maxdepth 1 -type f -name "*.${RPM_ARCH}.rpm")
+  [[ "${#baselines[@]}" == 1 ]]
+  [[ "$(rpm -qp --qf '%{VERSION}-%{RELEASE}' "${baselines[0]}")" == "${VERSION}-1.fc44" ]]
+  dnf -y --setopt=install_weak_deps=False install "${baselines[0]}"
+else
+  # Read the unchanged legacy release only; never modify it.
+  dnf -y install curl
+  curl --fail --location --retry 3 \
+    "https://github.com/Project-Ro-ASD/ro-Control/releases/download/v1.3.1/ro-control-1.3.1-1.${RPM_ARCH}.rpm" \
+    --output /tmp/ro-control-baseline.rpm
+  dnf -y --setopt=install_weak_deps=False install /tmp/ro-control-baseline.rpm
+fi
 dnf -y --setopt=install_weak_deps=False upgrade "${package}"
-[[ "$(rpm -q --qf '%{VERSION}-%{RELEASE}' ro-control)" == "${VERSION}-1.fc44" ]]
+[[ "$(rpm -q --qf '%{VERSION}-%{RELEASE}' ro-control)" == "${VERSION}-1.fc${FEDORA_RELEASE}" ]]
 rpm -V ro-control
 ro-control --help >/dev/null

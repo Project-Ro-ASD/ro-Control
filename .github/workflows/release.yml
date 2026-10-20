@@ -47,7 +47,7 @@ jobs:
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
 
   rpm:
-    name: Build Fedora 44 RPM (${{ matrix.arch }})
+    name: Build Fedora ${{ matrix.fedora }} RPM (${{ matrix.arch }})
     needs: metadata
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
@@ -58,11 +58,19 @@ jobs:
       matrix:
         include:
           - arch: x86_64
+            fedora: 44
             runner: ubuntu-24.04
           - arch: aarch64
+            fedora: 44
+            runner: ubuntu-24.04-arm
+          - arch: x86_64
+            fedora: 45
+            runner: ubuntu-24.04
+          - arch: aarch64
+            fedora: 45
             runner: ubuntu-24.04-arm
     container:
-      image: fedora:44
+      image: fedora:${{ matrix.fedora }}
 
     steps:
       - name: Install packaging dependencies
@@ -87,9 +95,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
-      - name: Build exact Fedora 44 RPM set
+      - name: Build exact Fedora RPM set
         env:
           VERSION: ${{ needs.metadata.outputs.version }}
+          FEDORA_RELEASE: ${{ matrix.fedora }}
           RPM_ARCH: ${{ matrix.arch }}
         shell: bash
         run: |
@@ -105,33 +114,33 @@ jobs:
           rpmbuild -ba "${TOPDIR}/SPECS/ro-control.spec" \
             --define "_topdir ${TOPDIR}" \
             --define "upstream_version ${VERSION}" \
-            --define "dist .fc44"
+            --define "dist .fc${FEDORA_RELEASE}"
 
           BINARY_RPM="$(find "${TOPDIR}/RPMS" -type f -name "ro-control-*.${RPM_ARCH}.rpm" -print -quit)"
           test -n "${BINARY_RPM}"
           [[ "$(rpm -qp --qf '%{NAME}' "${BINARY_RPM}")" == "ro-control" ]]
           [[ "$(rpm -qp --qf '%{VERSION}' "${BINARY_RPM}")" == "${VERSION}" ]]
-          [[ "$(rpm -qp --qf '%{RELEASE}' "${BINARY_RPM}")" == *.fc44 ]]
+          [[ "$(rpm -qp --qf '%{RELEASE}' "${BINARY_RPM}")" == "1.fc${FEDORA_RELEASE}" ]]
           [[ "$(rpm -qp --qf '%{ARCH}' "${BINARY_RPM}")" == "${RPM_ARCH}" ]]
           cp "${BINARY_RPM}" release-rpms/
 
           if [[ "${RPM_ARCH}" == "x86_64" ]]; then
             SOURCE_RPM="$(find "${TOPDIR}/SRPMS" -type f -name 'ro-control-*.src.rpm' -print -quit)"
             test -n "${SOURCE_RPM}"
-            [[ "$(rpm -qp --qf '%{RELEASE}' "${SOURCE_RPM}")" == *.fc44 ]]
+            [[ "$(rpm -qp --qf '%{RELEASE}' "${SOURCE_RPM}")" == "1.fc${FEDORA_RELEASE}" ]]
             cp "${SOURCE_RPM}" release-rpms/
           fi
 
       - name: Upload exact RPM build output
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: ro-control-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
+          name: ro-control-fc${{ matrix.fedora }}-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
           path: release-rpms/*.rpm
           if-no-files-found: error
           retention-days: 14
 
   smoke:
-    name: Clean Fedora 44 install (${{ matrix.arch }})
+    name: Clean Fedora ${{ matrix.fedora }} install (${{ matrix.arch }})
     needs: [metadata, rpm]
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
@@ -140,19 +149,34 @@ jobs:
       matrix:
         include:
           - arch: x86_64
+            fedora: 44
             runner: ubuntu-24.04
           - arch: aarch64
+            fedora: 44
+            runner: ubuntu-24.04-arm
+          - arch: x86_64
+            fedora: 45
+            runner: ubuntu-24.04
+          - arch: aarch64
+            fedora: 45
             runner: ubuntu-24.04-arm
     container:
-      image: fedora:44
+      image: fedora:${{ matrix.fedora }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          name: ro-control-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
+          name: ro-control-fc${{ matrix.fedora }}-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
           path: release-rpms
+      - name: Download Fedora 44 baseline for Fedora 45 upgrade
+        if: matrix.fedora == 45
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: ro-control-fc44-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
+          path: upgrade-rpms
       - name: Test dependencies, conflicts, installation and CLI
         env:
+          FEDORA_RELEASE: ${{ matrix.fedora }}
           RPM_ARCH: ${{ matrix.arch }}
           VERSION: ${{ needs.metadata.outputs.version }}
         shell: bash
@@ -174,7 +198,7 @@ jobs:
           path: ro-repo-contract
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          pattern: ro-control-*-${{ needs.metadata.outputs.version }}
+          pattern: ro-control-fc44-*-${{ needs.metadata.outputs.version }}
           path: release-assets
           merge-multiple: true
       - name: Validate real RPMs against consumer contract (no publication)
@@ -201,10 +225,40 @@ jobs:
           path: release-assets/
           if-no-files-found: error
 
+  fedora45-bundle:
+    name: Fedora 45 compatibility bundle
+    needs: [metadata, rpm, smoke]
+    runs-on: ubuntu-24.04
+    container:
+      image: fedora:45
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: ro-control-fc45-*-${{ needs.metadata.outputs.version }}
+          path: compatibility-assets
+          merge-multiple: true
+      - name: Verify Fedora 45 RPM set and checksums
+        env:
+          VERSION: ${{ needs.metadata.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          dnf install -y python3 rpm rpmlint
+          python3 -m unittest discover -s packaging/tests -v
+          python3 packaging/scripts/build-compatibility-report.py compatibility-assets
+          (cd compatibility-assets && sha256sum --check SHA256SUMS)
+          rpmlint compatibility-assets/*.rpm
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ro-control-fc45-compatibility-${{ github.run_id }}
+          path: compatibility-assets/
+          if-no-files-found: error
+
   release:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     name: Publish attested Ro-Repo V2 release
-    needs: [metadata, rpm, smoke, contract]
+    needs: [metadata, rpm, smoke, contract, fedora45-bundle]
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
@@ -227,7 +281,7 @@ jobs:
       - name: Download exact RPM set
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          pattern: ro-control-*-${{ needs.metadata.outputs.version }}
+          pattern: ro-control-fc44-*-${{ needs.metadata.outputs.version }}
           path: release-assets
           merge-multiple: true
 

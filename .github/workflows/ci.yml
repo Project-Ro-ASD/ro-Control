@@ -18,10 +18,14 @@ concurrency:
 
 jobs:
   build:
-    name: Build & Test
+    name: Build & Test (Fedora ${{ matrix.fedora }})
+    strategy:
+      fail-fast: false
+      matrix:
+        fedora: [44, 45]
     runs-on: ubuntu-latest
     container:
-      image: fedora:44
+      image: fedora:${{ matrix.fedora }}
 
     steps:
       - name: Checkout repository

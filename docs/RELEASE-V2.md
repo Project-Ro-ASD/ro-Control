@@ -68,3 +68,28 @@ performed here. Bundle preflight success alone does not prove live acceptance.
 
 Containers verify Fedora 44 userspace and native RPM transactions; they do not
 prove booted Fedora/systemd service behavior or physical GPU operations.
+
+## Fedora 45 compatibility
+
+The same release preflight now builds Fedora 44 **and Fedora 45** on native
+x86_64/aarch64 runners. CI compiles and runs the Qt tests and desktop/AppStream
+validation against both distributions. Fedora 45 runtime jobs test fresh
+installation, installed files, dependencies, linking, CLI and replacement of the
+same-source Fedora 44 package with the Fedora 45 RPM. This exercises the package
+upgrade transaction under Fedora 45 userspace; it is not a full OS upgrade test.
+
+Fedora 45 RPMs use `1.fc45` and have their own matching SRPM. Download
+`ro-control-fc45-compatibility-<run-id>` for the two RPMs, SRPM, `SHA256SUMS` and
+`compatibility-report.json`. The report intentionally is not named or presented
+as `component-artifact-manifest-v1.json`: the pinned Ro-Repo V2 schema and
+producer registry accept **only Fedora 44**. The publication job downloads only
+`ro-control-fc44-*`; Fedora 45 RPMs must never be mixed into that release set.
+Fedora 45 compatibility checks must pass before the Fedora 44 publication job
+can proceed on a future authorized tag.
+
+Fedora 45 container results do not prove physical NVIDIA driver installation,
+Secure Boot enrollment, akmods kernel-module builds, reboot or graphical login.
+Those require booted Fedora 44/45 systems with supported NVIDIA hardware and
+separate test evidence. Container packaging success must not close the reported
+NVIDIA installer bug. Fedora 45 distribution-channel publication needs an
+explicitly reviewed downstream contract and separate authorization.

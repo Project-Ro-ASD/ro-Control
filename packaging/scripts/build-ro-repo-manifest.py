@@ -47,7 +47,9 @@ def rpm_header(path: pathlib.Path) -> dict[str, object]:
     }
 
 
-def validate_identity(artifacts, repository, commit, tag, release_id, workflow_run):
+def validate_identity(artifacts, repository, commit, tag, release_id, workflow_run, fedora_release=44):
+    if fedora_release not in (44, 45):
+        raise SystemExit("unsupported Fedora release")
     if repository != "Project-Ro-ASD/ro-Control":
         raise SystemExit("unexpected source repository")
     if not re.fullmatch(r"[0-9a-f]{40}", commit):
@@ -59,11 +61,11 @@ def validate_identity(artifacts, repository, commit, tag, release_id, workflow_r
     source = next(item for item in artifacts if item["architecture"] == "src")
     for item in artifacts:
         expected_filename = (
-            f"ro-control-{tag[1:]}-1.fc44.{item['architecture']}.rpm"
+            f"ro-control-{tag[1:]}-1.fc{fedora_release}.{item['architecture']}.rpm"
         )
         if item["filename"] != expected_filename:
             raise SystemExit(f"noncanonical RPM filename: {item['filename']}")
-        if item["version"] != tag[1:] or item["release"] != "1.fc44" or item["epoch"] != 0:
+        if item["version"] != tag[1:] or item["release"] != f"1.fc{fedora_release}" or item["epoch"] != 0:
             raise SystemExit(f"RPM identity does not match tag: {item['filename']}")
         if item["architecture"] != "src":
             if item["source_rpm"] != source["filename"]:
