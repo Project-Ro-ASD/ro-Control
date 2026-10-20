@@ -96,6 +96,7 @@ jobs:
             rpm-build \
             rpmlint \
             systemd-rpm-macros \
+            systemd \
             cmake \
             extra-cmake-modules \
             gcc-c++ \
