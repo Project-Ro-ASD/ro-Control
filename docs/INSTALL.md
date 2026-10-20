@@ -6,8 +6,8 @@ This document details installation, package deployment, system requirements, and
 
 ## 1. System Requirements
 
-- **Operating System:** Ro-ASD / Fedora Linux 40+ (x86_64 or aarch64)
-- **Desktop Environment:** KDE Plasma 6 (KF6) / Wayland or X11
+- **Operating System:** Ro-ASD / Fedora Linux 44 or 45 (automated package coverage; see FEDORA-45.md for host qualification) (x86_64 or aarch64)
+- **Desktop Environment:** KDE Plasma 6 (KF6); NVIDIA driver setup requires a detected Wayland session
 - **Graphics Hardware:** NVIDIA GeForce, Quadro, RTX, or Tesla GPUs (PCIe)
 - **Privilege Manager:** Polkit (PolicyKit 1.0+)
 - **Package Manager:** DNF / RPM
@@ -21,14 +21,14 @@ To install the pre-built release package using DNF:
 
 ```bash
 # Install local RPM with automatic dependency resolution
-sudo dnf install -y ./ro-control-<version>-1.<arch>.rpm
+sudo dnf install -y ./ro-control-<version>-1.fc<fedora>.<arch>.rpm
 ```
 
-Replace `<version>` and `<arch>` with the release you are installing (for
-example `ro-control-1.3.0-1.x86_64.rpm`).
+Replace `<version>`, `<fedora>` and `<arch>` with the release you are installing (for
+example `ro-control-1.3.2-1.fc45.x86_64.rpm`; this is an unreleased candidate, so use the actual CI filename).
 
 ### Installation via KDE Discover
-1. Open the `.rpm` file with **Discover** (`plasma-discover ro-control-<version>-1.<arch>.rpm`) or double-click in Dolphin.
+1. Open the `.rpm` file with **Discover** (`plasma-discover ro-control-<version>-1.fc<fedora>.<arch>.rpm`) or double-click in Dolphin.
 2. Review package details (License: `GPL-3.0-or-later`, Publisher: `Sopwit`).
 3. Click **Install** and authenticate via the system Polkit dialog.
 
@@ -77,3 +77,5 @@ To remove ro-Control and clean up system configurations:
 ```bash
 sudo dnf remove -y ro-control
 ```
+
+Fedora 45 qualification and remaining hardware checks: [FEDORA-45.md](FEDORA-45.md).

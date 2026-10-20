@@ -1,9 +1,15 @@
 name: Release
 
 "on":
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
   push:
     tags:
       - "v*"
+
+permissions:
+  contents: read
 
 concurrency:
   group: release-${{ github.ref }}
@@ -26,21 +32,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG="${GITHUB_REF_NAME}"
-          VERSION="${TAG#v}"
           PROJECT_VERSION="$(sed -n 's/^[[:space:]]*VERSION[[:space:]]\([0-9.][0-9.]*\)$/\1/p' CMakeLists.txt | head -n1)"
           SPEC_DEFAULT_VERSION="$(sed -n -E 's/.*upstream_version[[:space:]]+([0-9.]+).*/\1/p; s/.*upstream_version:([0-9.]+).*/\1/p' packaging/rpm/ro-control.spec | head -n1)"
 
-          [[ "${TAG}" == "v${VERSION}" ]]
-          [[ "${VERSION}" == "${PROJECT_VERSION}" ]]
+          VERSION="${PROJECT_VERSION}"
+          [[ "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
           [[ "${VERSION}" == "${SPEC_DEFAULT_VERSION}" ]]
           [[ "$(git rev-parse HEAD)" == "${GITHUB_SHA}" ]]
-          [[ "$(git rev-parse "refs/tags/${TAG}^{commit}")" == "${GITHUB_SHA}" ]]
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            [[ "${GITHUB_REF_NAME}" == "v${VERSION}" ]]
+            [[ "$(git rev-parse "refs/tags/${GITHUB_REF_NAME}^{commit}")" == "${GITHUB_SHA}" ]]
+          fi
 
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
 
   rpm:
-    name: Build Fedora 44 RPM (${{ matrix.arch }})
+    name: Build Fedora ${{ matrix.fedora }} RPM (${{ matrix.arch }})
     needs: metadata
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
@@ -51,21 +58,28 @@ jobs:
       matrix:
         include:
           - arch: x86_64
+            fedora: 44
             runner: ubuntu-24.04
           - arch: aarch64
+            fedora: 44
+            runner: ubuntu-24.04-arm
+          - arch: x86_64
+            fedora: 45
+            runner: ubuntu-24.04
+          - arch: aarch64
+            fedora: 45
             runner: ubuntu-24.04-arm
     container:
-      image: fedora:44
+      image: fedora:${{ matrix.fedora }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-
       - name: Install packaging dependencies
         run: |
           dnf install -y \
+            python3 \
             git \
             rpm-build \
+            systemd-rpm-macros \
             cmake \
             extra-cmake-modules \
             gcc-c++ \
@@ -79,9 +93,13 @@ jobs:
             desktop-file-utils \
             appstream
 
-      - name: Build exact Fedora 44 RPM set
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Build exact Fedora RPM set
         env:
           VERSION: ${{ needs.metadata.outputs.version }}
+          FEDORA_RELEASE: ${{ matrix.fedora }}
           RPM_ARCH: ${{ matrix.arch }}
         shell: bash
         run: |
@@ -89,62 +107,159 @@ jobs:
           TOPDIR="${HOME}/rpmbuild"
           mkdir -p "${TOPDIR}"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS} release-rpms
 
-          STAGE_DIR="$(mktemp -d)"
           ARCHIVE_ROOT="ro-control-${VERSION}"
-          mkdir -p "${STAGE_DIR}/${ARCHIVE_ROOT}"
-          git archive "${GITHUB_SHA}" | tar -x -C "${STAGE_DIR}/${ARCHIVE_ROOT}"
-          tar -C "${STAGE_DIR}" -czf "${TOPDIR}/SOURCES/${ARCHIVE_ROOT}.tar.gz" "${ARCHIVE_ROOT}"
-          rm -rf "${STAGE_DIR}"
-
+          git -c safe.directory="${GITHUB_WORKSPACE}" archive --format=tar.gz --prefix="${ARCHIVE_ROOT}/" \
+            --output="${TOPDIR}/SOURCES/${ARCHIVE_ROOT}.tar.gz" "${GITHUB_SHA}"
           cp packaging/rpm/ro-control.spec "${TOPDIR}/SPECS/ro-control.spec"
-          # Ro-Repo V2 requires the real RPM Release field to carry the Fedora 44 dist tag.
-          sed -i -E 's/^Release:[[:space:]]+1$/Release:        1%{?dist}/' "${TOPDIR}/SPECS/ro-control.spec"
-          grep -Eq '^Release:[[:space:]]+1%\{\?dist\}$' "${TOPDIR}/SPECS/ro-control.spec"
 
           rpmbuild -ba "${TOPDIR}/SPECS/ro-control.spec" \
             --define "_topdir ${TOPDIR}" \
             --define "upstream_version ${VERSION}" \
-            --define "dist .fc44"
+            --define "dist .fc${FEDORA_RELEASE}"
 
           BINARY_RPM="$(find "${TOPDIR}/RPMS" -type f -name "ro-control-*.${RPM_ARCH}.rpm" -print -quit)"
           test -n "${BINARY_RPM}"
           [[ "$(rpm -qp --qf '%{NAME}' "${BINARY_RPM}")" == "ro-control" ]]
           [[ "$(rpm -qp --qf '%{VERSION}' "${BINARY_RPM}")" == "${VERSION}" ]]
-          [[ "$(rpm -qp --qf '%{RELEASE}' "${BINARY_RPM}")" == *.fc44 ]]
+          [[ "$(rpm -qp --qf '%{RELEASE}' "${BINARY_RPM}")" == "1.fc${FEDORA_RELEASE}" ]]
           [[ "$(rpm -qp --qf '%{ARCH}' "${BINARY_RPM}")" == "${RPM_ARCH}" ]]
           cp "${BINARY_RPM}" release-rpms/
 
           if [[ "${RPM_ARCH}" == "x86_64" ]]; then
             SOURCE_RPM="$(find "${TOPDIR}/SRPMS" -type f -name 'ro-control-*.src.rpm' -print -quit)"
             test -n "${SOURCE_RPM}"
-            [[ "$(rpm -qp --qf '%{RELEASE}' "${SOURCE_RPM}")" == *.fc44 ]]
+            [[ "$(rpm -qp --qf '%{RELEASE}' "${SOURCE_RPM}")" == "1.fc${FEDORA_RELEASE}" ]]
             cp "${SOURCE_RPM}" release-rpms/
           fi
-
-      - name: Install and smoke-test binary RPM
-        env:
-          RPM_ARCH: ${{ matrix.arch }}
-        run: |
-          set -euo pipefail
-          RPM_FILE="$(find release-rpms -maxdepth 1 -type f -name "*.${RPM_ARCH}.rpm" -print -quit)"
-          test -n "${RPM_FILE}"
-          dnf install -y --nogpgcheck "${RPM_FILE}"
-          rpm -q ro-control
-          command -v ro-control
-          ldd -r /usr/bin/ro-control
-          ro-control --help >/dev/null
 
       - name: Upload exact RPM build output
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: ro-control-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
+          name: ro-control-fc${{ matrix.fedora }}-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
           path: release-rpms/*.rpm
           if-no-files-found: error
           retention-days: 14
 
-  release:
-    name: Publish attested Ro-Repo V2 release
+  smoke:
+    name: Clean Fedora ${{ matrix.fedora }} install (${{ matrix.arch }})
     needs: [metadata, rpm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            fedora: 44
+            runner: ubuntu-24.04
+          - arch: aarch64
+            fedora: 44
+            runner: ubuntu-24.04-arm
+          - arch: x86_64
+            fedora: 45
+            runner: ubuntu-24.04
+          - arch: aarch64
+            fedora: 45
+            runner: ubuntu-24.04-arm
+    container:
+      image: fedora:${{ matrix.fedora }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: ro-control-fc${{ matrix.fedora }}-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
+          path: release-rpms
+      - name: Download Fedora 44 baseline for Fedora 45 upgrade
+        if: matrix.fedora == 45
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: ro-control-fc44-${{ matrix.arch }}-${{ needs.metadata.outputs.version }}
+          path: upgrade-rpms
+      - name: Test dependencies, conflicts, installation and CLI
+        env:
+          FEDORA_RELEASE: ${{ matrix.fedora }}
+          RPM_ARCH: ${{ matrix.arch }}
+          VERSION: ${{ needs.metadata.outputs.version }}
+        shell: bash
+        run: bash packaging/scripts/smoke-rpm.sh
+
+  contract:
+    name: Ro-Repo V2 bundle preflight
+    needs: [metadata, rpm, smoke]
+    runs-on: ubuntu-24.04
+    container:
+      image: fedora:44
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Checkout reviewed Ro-Repo contract
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: Project-Ro-ASD/Ro-Repo
+          ref: 9fb1deb363ab6f43b595bf526bba966ec0587c27
+          path: ro-repo-contract
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: ro-control-fc44-*-${{ needs.metadata.outputs.version }}
+          path: release-assets
+          merge-multiple: true
+      - name: Validate real RPMs against consumer contract (no publication)
+        env:
+          VERSION: ${{ needs.metadata.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          dnf install -y python3 python3-jsonschema rpm rpmlint dnf-plugins-core
+          python3 -m unittest discover -s packaging/tests -v
+          (cd release-assets && sha256sum -- *.rpm > SHA256SUMS)
+          # ID 1 is an explicit preflight placeholder, never a release identity.
+          python3 packaging/scripts/build-ro-repo-manifest.py \
+            --artifacts-dir release-assets \
+            --output release-assets/component-artifact-manifest-v1.json \
+            --repository "${GITHUB_REPOSITORY}" --commit "${GITHUB_SHA}" \
+            --tag "v${VERSION}" --release-id 1 --workflow-run "${GITHUB_RUN_ID}"
+          bash ro-repo-contract/scripts/query_fedora_package_names.sh fedora-44-package-names.txt
+          python3 packaging/scripts/check-ro-repo-contract.py \
+            ro-repo-contract release-assets fedora-44-package-names.txt
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ro-control-v2-preflight-${{ github.run_id }}
+          path: release-assets/
+          if-no-files-found: error
+
+  fedora45-bundle:
+    name: Fedora 45 compatibility bundle
+    needs: [metadata, rpm, smoke]
+    runs-on: ubuntu-24.04
+    container:
+      image: fedora:45
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: ro-control-fc45-*-${{ needs.metadata.outputs.version }}
+          path: compatibility-assets
+          merge-multiple: true
+      - name: Verify Fedora 45 RPM set and checksums
+        env:
+          VERSION: ${{ needs.metadata.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          dnf install -y python3 rpm rpmlint
+          python3 -m unittest discover -s packaging/tests -v
+          python3 packaging/scripts/build-compatibility-report.py compatibility-assets
+          (cd compatibility-assets && sha256sum --check SHA256SUMS)
+          rpmlint compatibility-assets/*.rpm
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ro-control-fc45-compatibility-${{ github.run_id }}
+          path: compatibility-assets/
+          if-no-files-found: error
+
+  release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    name: Publish attested Ro-Repo V2 release
+    needs: [metadata, rpm, smoke, contract, fedora45-bundle]
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
@@ -157,15 +272,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
+      - name: Checkout reviewed Ro-Repo contract
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: Project-Ro-ASD/Ro-Repo
+          ref: 9fb1deb363ab6f43b595bf526bba966ec0587c27
+          path: ro-repo-contract
+
       - name: Download exact RPM set
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          pattern: ro-control-*-${{ needs.metadata.outputs.version }}
+          pattern: ro-control-fc44-*-${{ needs.metadata.outputs.version }}
           path: release-assets
           merge-multiple: true
 
       - name: Install release metadata tools
-        run: sudo apt-get update && sudo apt-get install -y rpm jq
+        run: sudo apt-get update && sudo apt-get install -y rpm jq python3-jsonschema
 
       - name: Verify release bundle before publication
         shell: bash
@@ -177,7 +299,7 @@ jobs:
             exit 1
           fi
 
-          ARCHES="$(for rpm in "${RPMS[@]}"; do rpm -qp --qf '%|SOURCEPACKAGE?{src}:%{ARCH}|\n' "release-assets/${rpm}"; done | sort | paste -sd, -)"
+          ARCHES="$(for rpm in "${RPMS[@]}"; do rpm -qp --qf '%|SOURCEPACKAGE?{src}:{%{ARCH}}|\n' "release-assets/${rpm}"; done | sort | paste -sd, -)"
           [[ "${ARCHES}" == "aarch64,src,x86_64" ]]
 
           for rpm in "${RPMS[@]}"; do
@@ -200,15 +322,12 @@ jobs:
         run: |
           set -euo pipefail
           TAG="${GITHUB_REF_NAME}"
-          EXISTING="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" 2>/dev/null || true)"
-          if [[ -n "${EXISTING}" ]]; then
-            EXISTING_ID="$(jq -r '.id' <<<"${EXISTING}")"
-            if [[ "$(jq -r '.draft' <<<"${EXISTING}")" == "true" ]]; then
-              gh api --method DELETE "repos/${GITHUB_REPOSITORY}/releases/${EXISTING_ID}"
-            else
-              echo "Published release ${TAG} already exists; tag/release reuse is forbidden." >&2
-              exit 1
-            fi
+          # Fail closed on API failures and on existing releases, including drafts.
+          [[ "$(gh api "repos/${GITHUB_REPOSITORY}/immutable-releases" --jq .enabled)" == true ]]
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/releases" > /tmp/existing-releases.json
+          if jq -e --arg tag "${TAG}" '.[] | select(.tag_name == $tag)' /tmp/existing-releases.json >/dev/null; then
+            echo "Release ${TAG} already exists; no release or draft may be replaced." >&2
+            exit 1
           fi
 
           RELEASE_JSON="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/releases" \
@@ -218,7 +337,7 @@ jobs:
             -F draft=true \
             -F generate_release_notes=true)"
           RELEASE_ID="$(jq -r '.id' <<<"${RELEASE_JSON}")"
-          test -n "${RELEASE_ID}"
+          [[ "${RELEASE_ID}" =~ ^[1-9][0-9]*$ ]]
           echo "release_id=${RELEASE_ID}" >> "${GITHUB_OUTPUT}"
 
       - name: Generate strict SHA256SUMS
@@ -252,6 +371,28 @@ jobs:
             release-assets/SHA256SUMS
             release-assets/component-artifact-manifest-v1.json
 
+      - name: Verify exact attested producer invocation before publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Use the same verifier as accept-component, including run/attempt parity.
+          for attempt in 1 2 3; do
+            if /usr/bin/python3 packaging/scripts/verify-release-provenance.py ro-repo-contract release-assets; then
+              exit 0
+            fi
+            if [[ "${attempt}" != 3 ]]; then sleep 10; fi
+          done
+          exit 1
+
+      - name: Retain attestation verification evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ro-control-provenance-${{ github.run_id }}
+          path: verified-release-provenance.json
+          if-no-files-found: error
+
       - name: Upload immutable release asset set
         env:
           GH_TOKEN: ${{ github.token }}
@@ -271,3 +412,15 @@ jobs:
         run: |
           set -euo pipefail
           gh api --method PATCH "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" -F draft=false >/dev/null
+
+      - name: Confirm immutable published release identity
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.draft.outputs.release_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" > /tmp/published-release.json
+          jq -e --arg tag "${GITHUB_REF_NAME}" --argjson id "${RELEASE_ID}" \
+            '.id == $id and .tag_name == $tag and .draft == false and .immutable == true' \
+            /tmp/published-release.json

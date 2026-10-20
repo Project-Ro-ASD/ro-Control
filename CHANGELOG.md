@@ -5,6 +5,20 @@ All notable changes to **ro-Control** will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.3.2] - 2026-10-20
+
+### Fixed
+- Allow the installer's exact `env LANG=C dnf` privileged-helper wrapper;
+  arbitrary environment assignments and commands remain rejected.
+
+### Changed
+- Prepare native Fedora 44/45 RPM and matching SRPM sets, per-distribution
+  checksums, installed CLI/QML/D-Bus verification and package upgrade checks.
+- Keep Fedora 45 evidence separate from the Fedora 44 Ro-Repo V2 contract.
+- Add a booted Fedora 45 qualification runbook and read-only evidence collector.
+- Physical NVIDIA installation, Secure Boot and reboot qualification remain
+  tracked in issues #57 and #58; container results do not establish those claims.
+
 ## [v1.3.1] - 2026-09-07
 
 ### Added

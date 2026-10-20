@@ -87,3 +87,7 @@ test_results/
 vgcore.*
 callgrind.out.*
 massif.out.*
+
+# Python packaging checks
+__pycache__/
+*.pyc

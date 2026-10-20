@@ -1,9 +1,9 @@
-%global upstream_version %{!?upstream_version:1.3.1}%{?upstream_version}
+%global upstream_version %{!?upstream_version:1.3.2}%{?upstream_version}
 %global debug_package %{nil}
 
 Name:           ro-control
 Version:        %{upstream_version}
-Release:        1
+Release:        1%{?dist}
 Summary:        Smart NVIDIA driver manager and hardware monitor for Ro-ASD
 
 License:        GPL-3.0-or-later
@@ -12,6 +12,7 @@ URL:            https://github.com/Project-Ro-ASD/ro-Control
 Source0:        https://github.com/Project-Ro-ASD/ro-Control/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 ExclusiveArch:  x86_64 aarch64
 
+BuildRequires:  python3
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  extra-cmake-modules
@@ -65,6 +66,7 @@ tar -xzf %{SOURCE0} --strip-components=1
 %cmake_install
 
 %check
+python3 -m unittest discover -s packaging/tests -v
 export QT_QPA_PLATFORM=offscreen
 export QT_QUICK_CONTROLS_STYLE=Basic
 %ctest --output-on-failure
@@ -111,6 +113,11 @@ fi
 %{_prefix}/lib/systemd/user/ro-control.service
 
 %changelog
+* Tue Oct 20 2026 Sopwit <sopwith.osdev@gmail.com> - 1.3.2-1
+- Prepare native Fedora 44/45 packaging and installed runtime verification.
+- Accept only the installer-specific env LANG=C dnf helper wrapper.
+- Preserve separate Fedora 44 Ro-Repo V2 and Fedora 45 compatibility sets.
+
 * Mon Sep 07 2026 Sopwit <sopwith.osdev@gmail.com> - 1.3.1-1
 - Keep GPU refresh work off the QML/UI thread.
 - Back off optional NVIDIA fan RPM probes when NV-CONTROL is unavailable.
