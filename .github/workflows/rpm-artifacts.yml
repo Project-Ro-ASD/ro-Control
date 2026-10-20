@@ -64,7 +64,7 @@ jobs:
             ${{ needs.metadata.outputs.archive_prefix }}.tar.gz
 
   rpm:
-    name: Build RPM (${{ matrix.arch }})
+    name: Build RPM (Fedora ${{ matrix.fedora }}, ${{ matrix.arch }})
     runs-on: ${{ matrix.runs_on }}
     needs: [metadata, source-archive]
     timeout-minutes: 60
@@ -73,11 +73,19 @@ jobs:
       matrix:
         include:
           - arch: x86_64
+            fedora: 44
             runs_on: ubuntu-24.04
           - arch: aarch64
+            fedora: 44
+            runs_on: ubuntu-24.04-arm
+          - arch: x86_64
+            fedora: 45
+            runs_on: ubuntu-24.04
+          - arch: aarch64
+            fedora: 45
             runs_on: ubuntu-24.04-arm
     container:
-      image: fedora:44
+      image: fedora:${{ matrix.fedora }}
 
     steps:
       - name: Checkout repository
@@ -92,6 +100,7 @@ jobs:
       - name: Install RPM tooling and dependencies
         run: |
           dnf install -y \
+            python3 \
             git \
             rpm-build \
             rpmlint \
@@ -114,12 +123,13 @@ jobs:
         env:
           VERSION: ${{ needs.metadata.outputs.version }}
           ARCHIVE_PREFIX: ${{ needs.metadata.outputs.archive_prefix }}
+          FEDORA_RELEASE: ${{ matrix.fedora }}
           RPM_ARCH: ${{ matrix.arch }}
         run: |
           mkdir -p ~/rpmbuild/SOURCES ~/rpmbuild/SPECS dist/rpm
           cp "dist/${ARCHIVE_PREFIX}.tar.gz" "${HOME}/rpmbuild/SOURCES/"
           cp packaging/rpm/ro-control.spec "${HOME}/rpmbuild/SPECS/ro-control.spec"
-          FEDORA_VERSION=44
+          FEDORA_VERSION="${{ matrix.fedora }}"
           MAIN_RPM_PATTERN="ro-control-[0-9]*.${RPM_ARCH}.rpm"
 
           rpmbuild -ba "${HOME}/rpmbuild/SPECS/ro-control.spec" \
@@ -140,6 +150,7 @@ jobs:
 
       - name: Validate metadata and RPM dependency surface
         env:
+          FEDORA_RELEASE: ${{ matrix.fedora }}
           RPM_ARCH: ${{ matrix.arch }}
         run: |
           desktop-file-validate data/icons/io.github.projectroasd.rocontrol.desktop
@@ -148,7 +159,7 @@ jobs:
           MAIN_RPM_FILE="$(find dist/rpm -maxdepth 1 -type f -name "ro-control-*.${RPM_ARCH}.rpm" | head -n1)"
 
           [[ "$(basename "${MAIN_RPM_FILE}")" == "$(rpm -qp --qf '%{NVRA}.rpm' "${MAIN_RPM_FILE}")" ]]
-          [[ "$(rpm -qp --qf '%{RELEASE}' "${MAIN_RPM_FILE}")" == "1.fc44" ]]
+          [[ "$(rpm -qp --qf '%{RELEASE}' "${MAIN_RPM_FILE}")" == "1.fc${FEDORA_RELEASE}" ]]
 
           rpm -qpR "${MAIN_RPM_FILE}" | tee /tmp/ro-control.requires
           if grep -E 'PRIVATE_API' /tmp/ro-control.requires; then
@@ -161,6 +172,6 @@ jobs:
       - name: Upload RPM artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: ro-control-${{ matrix.arch }}-rpm
+          name: ro-control-fc${{ matrix.fedora }}-${{ matrix.arch }}-rpm
           path: |
             dist/rpm/*.rpm

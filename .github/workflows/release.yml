@@ -76,6 +76,7 @@ jobs:
       - name: Install packaging dependencies
         run: |
           dnf install -y \
+            python3 \
             git \
             rpm-build \
             systemd-rpm-macros \

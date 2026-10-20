@@ -13,6 +13,17 @@ run_allowed_command() {
   shift
 
   case "$command_name" in
+    env)
+      # The installer pins DNF output to C locale. Never allow arbitrary env
+      # assignments, command execution, or PATH changes through the helper.
+      if [ "$#" -lt 2 ] || [ "$1" != "LANG=C" ] || [ "$2" != "dnf" ]; then
+        echo "ro-control-helper: only env LANG=C dnf is allowed" >&2
+        exit 64
+      fi
+      shift 2
+      LANG=C run_allowed_command dnf "$@"
+      return "$?"
+      ;;
     dnf|/usr/bin/dnf)
       resolved_path="$(command -v dnf 2>/dev/null || true)"
       ;;

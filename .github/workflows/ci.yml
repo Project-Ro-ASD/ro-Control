@@ -34,6 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           dnf install -y \
+            python3 \
             cmake \
             extra-cmake-modules \
             gcc-c++ \
@@ -88,6 +89,7 @@ jobs:
       - name: Install RPM tooling and dependencies
         run: |
           dnf install -y \
+            python3 \
             git \
             rpm-build \
             rpmlint \
