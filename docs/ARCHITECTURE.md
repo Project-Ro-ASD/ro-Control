@@ -77,3 +77,20 @@
 | :--- | :--- | :--- |
 | `TelemetryUpdated` | `()` | Emitted periodically (1 Hz) when telemetry registers an update |
 | `ThermalAlert` | `(s: source, i: temperatureC, i: thresholdC)` | Emitted when hardware temperatures exceed safety thresholds |
+
+
+## 4. GUI instance ownership
+
+Only one GUI runs per user runtime directory. Before creating hardware backends,
+`GuiInstance` takes an atomic `QLockFile` lock and listens on a user-only local socket.
+Subsequent GUI launches send an activation request and exit successfully. Requests received
+while the window is loading are queued; hidden/minimized windows are restored, raised and
+asked to activate (focus remains subject to the compositor's policy).
+
+Only the lock owner removes stale sockets. Qt's PID-based stale-lock recovery permits a new
+GUI after a crash; a live GUI's lock never expires based on age. If locking or activation
+fails, the new process reports an error rather than starting a duplicate. CLI commands and
+the separate daemon mode do not acquire this GUI lock. No new TCP listener or D-Bus API is added.
+
+`test_gui_instance` covers real subprocess exclusion, simultaneous startup, crash recovery,
+early activation, hidden/minimized restoration and unusable lock paths.

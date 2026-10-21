@@ -53,12 +53,5 @@ ro-control --help >/dev/null
 # Add test tools only after clean dependency and upgrade tests have passed.
 dnf -y install python3 dbus-daemon /usr/bin/gdbus
 dbus-run-session -- python3 packaging/scripts/smoke-installed-runtime.py
-# Load the full installed QML application using software/offscreen rendering.
-set +e
-QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=Basic \
-  timeout 15s dbus-run-session -- ro-control >/tmp/ro-control-gui.log 2>&1
-gui_status=$?
-set -e
-cat /tmp/ro-control-gui.log
-[[ "${gui_status}" == 124 ]]
-if grep -Ei 'failed to load component|module .*is not installed|Type .*unavailable|Cannot load library' /tmp/ro-control-gui.log; then exit 1; fi
+# Load the installed QML GUI and exercise real concurrent launches/crash recovery.
+dbus-run-session -- python3 packaging/scripts/smoke-gui-instance.py

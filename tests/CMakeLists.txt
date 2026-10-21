@@ -226,3 +226,8 @@ ro_control_register_test(test_theme)
 set_tests_properties(test_theme PROPERTIES
     ENVIRONMENT "${RO_CONTROL_TEST_ENV};QT_QUICK_BACKEND=software"
 )
+
+qt_add_executable(test_gui_instance test_gui_instance.cpp)
+ro_control_configure_test(test_gui_instance)
+target_link_libraries(test_gui_instance PRIVATE Qt6::Test ro-control-backend)
+ro_control_register_test(test_gui_instance)
