@@ -1,6 +1,6 @@
 # Fedora 45 readiness and host qualification
 
-Version 1.3.2 builds Fedora 44/45 on native x86_64 and aarch64.
+Version 1.3.3 builds Fedora 44/45 on native x86_64 and aarch64.
 `release.yml` validates the complete release candidate; `rpm-artifacts.yml`
 also produces both distributions on main/manual runs. Fedora-specific binary
 RPMs and SRPMs must remain in separate sets. Ro-Repo V2 currently accepts only
