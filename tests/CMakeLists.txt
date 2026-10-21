@@ -83,10 +83,23 @@ qt_add_executable(test_preferences
 ro_control_configure_test(test_preferences)
 
 target_link_libraries(test_preferences PRIVATE
+    Qt6::Widgets
     Qt6::Qml
     Qt6::Test
     ro-control-backend
 )
+
+if(TARGET Qt6::lrelease)
+    target_compile_definitions(test_preferences PRIVATE RO_CONTROL_TEST_TRANSLATIONS=1)
+    qt_add_translations(test_preferences
+        TS_FILES
+            ${CMAKE_SOURCE_DIR}/i18n/ro-control_tr.ts
+            ${CMAKE_SOURCE_DIR}/i18n/ro-control_de.ts
+            ${CMAKE_SOURCE_DIR}/i18n/ro-control_es.ts
+        QM_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        RESOURCE_PREFIX "/i18n"
+    )
+endif()
 
 ro_control_register_test(test_preferences)
 

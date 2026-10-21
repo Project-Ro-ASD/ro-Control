@@ -19,7 +19,8 @@ def stop(process):
 
 with tempfile.TemporaryDirectory(prefix='ro-control-gui-') as directory:
     root = Path(directory)
-    environment = dict(os.environ, QT_QPA_PLATFORM='offscreen',
+    environment = dict(os.environ, LC_ALL='tr_TR.UTF-8', LANG='tr_TR.UTF-8',
+                       LANGUAGE='tr', QT_QPA_PLATFORM='offscreen',
                        QT_QUICK_BACKEND='software', QT_QUICK_CONTROLS_STYLE='Basic',
                        XDG_RUNTIME_DIR=str(root), XDG_CONFIG_HOME=str(root / 'config'),
                        XDG_CACHE_HOME=str(root / 'cache'))
