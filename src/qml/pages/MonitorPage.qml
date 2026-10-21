@@ -1,10 +1,12 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../components" as Components
 
 Item {
     id: page
+    Style.Theme { id: fallbackTheme; darkMode: page.darkMode }
     required property var systemInfo
     required property var cpuMonitor
     required property var gpuMonitor
@@ -14,7 +16,7 @@ Item {
     property var powerController: null
     property var healthGuard: null
 
-    property var theme: ({})
+    property var theme: fallbackTheme
     property bool darkMode: false
     property bool showAdvancedInfo: true
     property real uiScale: 1.0
@@ -28,15 +30,15 @@ Item {
     property bool showAllGpuProcesses: false
     property string terminationError: ""
 
-    readonly property color bgColor: theme && theme.card ? theme.card : (page.darkMode ? "#29233B" : "#FFFFFF")
-    readonly property color cardColor: theme && theme.cardStrong ? theme.cardStrong : (page.darkMode ? "#342D4A" : "#F1F5F9")
-    readonly property color borderColor: theme && theme.border ? theme.border : (page.darkMode ? "#4D436B" : "#CBD5E1")
-    readonly property color textColor: theme && theme.text ? theme.text : (page.darkMode ? "#F8FAFC" : "#0F172A")
-    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (page.darkMode ? "#94A3B8" : "#64748B")
-    readonly property color infoBg: theme && theme.infoBg ? theme.infoBg : (page.darkMode ? "#1E2548" : "#EFF6FF")
-    readonly property color accentColor: theme && theme.accentA ? theme.accentA : (page.darkMode ? "#818CF8" : "#4F46E5")
-    readonly property color successColor: theme && theme.success ? theme.success : (page.darkMode ? "#4ADE80" : "#059669")
-    readonly property color activeCardColor: theme && theme.card ? theme.card : (page.darkMode ? "#342D4A" : "#E2E8F0")
+    readonly property color bgColor: theme.card
+    readonly property color cardColor: theme.cardStrong
+    readonly property color borderColor: theme && theme.border ? theme.border : (page.darkMode ? theme.border : theme.textMuted)
+    readonly property color textColor: theme.text
+    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (theme.textMuted)
+    readonly property color infoBg: theme.infoBg
+    readonly property color accentColor: theme.accentA
+    readonly property color successColor: theme.success
+    readonly property color activeCardColor: theme.cardStrong
     readonly property int summaryCardHeight: Math.round(152 * page.uiScale)
     readonly property bool nvidiaGpuDetected: page.nvidiaDetector && page.nvidiaDetector.gpuFound
     readonly property bool gpuTelemetryAvailable: page.nvidiaGpuDetected && page.gpuMonitor && page.gpuMonitor.available
@@ -217,20 +219,20 @@ Item {
 
         ColumnLayout {
             width: pageScroll.availableWidth
-            spacing: 12
+            spacing: Style.RoTokens.spaceMd
 
             Rectangle {
                 visible: page.nvidiaGpuDetected && !page.gpuTelemetryAvailable
                 Layout.fillWidth: true
                 implicitHeight: unavailableGpuLabel.implicitHeight + 24
-                radius: 10
+                radius: Style.RoTokens.radiusSm
                 color: page.infoBg
                 border.width: 1
                 border.color: page.borderColor
                 Label {
                     id: unavailableGpuLabel
                     anchors.fill: parent
-                    anchors.margins: 12
+                    anchors.margins: Style.RoTokens.spaceMd
                     text: page.gpuUnavailableMessage()
                     color: page.textColor
                     verticalAlignment: Text.AlignVCenter
@@ -265,15 +267,15 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: Math.round(152 * page.uiScale)
                     Layout.minimumHeight: Math.round(152 * page.uiScale)
-                    radius: 14
+                    radius: Style.RoTokens.radiusMd
                     color: page.cardColor
                     border.width: 1
                     border.color: page.borderColor
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: Math.round(14 * page.uiScale)
-                        spacing: Math.round(4 * page.uiScale)
+                        anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceXs * page.uiScale)
 
                         Label {
                             text: qsTr("CPU")
@@ -284,14 +286,14 @@ Item {
 
                         RowLayout {
                             Layout.fillWidth: true
-                            spacing: Math.round(12 * page.uiScale)
+                            spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                             ColumnLayout {
                                 spacing: 1
                                 Label {
                                     text: qsTr("USAGE")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -309,12 +311,12 @@ Item {
                                 Label {
                                     text: qsTr("TEMPERATURE")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
                                     text: page.cpuTelemetryAvailable ? page.formatTemp(page.cpuMonitor.temperatureC) : qsTr("Unavailable")
-                                    color: (page.cpuMonitor && page.cpuMonitor.temperatureC > 80) ? (page.theme && page.theme.warning ? page.theme.warning : "#EF4444") : page.textColor
+                                    color: (page.cpuMonitor && page.cpuMonitor.temperatureC > 80) ? (page.theme && page.theme.warning ? page.theme.warning : theme.danger) : page.textColor
                                     font.pixelSize: Math.round(22 * page.uiScale)
                                     font.weight: Font.Bold
                                 }
@@ -325,7 +327,7 @@ Item {
                             Layout.fillWidth: true
                             Layout.preferredHeight: Math.round(30 * page.uiScale)
                             values: page.cpuUsageHistory
-                            lineColor: page.darkMode ? "#818CF8" : "#4F46E5"
+                            lineColor: theme.accentA
                         }
                     }
                 }
@@ -336,19 +338,19 @@ Item {
                     Layout.fillWidth: page.gpuTelemetryAvailable
                     Layout.preferredHeight: Math.round(152 * page.uiScale)
                     Layout.minimumHeight: Math.round(152 * page.uiScale)
-                    radius: 14
+                    radius: Style.RoTokens.radiusMd
                     color: page.cardColor
                     border.width: 1
                     border.color: page.borderColor
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: Math.round(14 * page.uiScale)
-                        spacing: Math.round(4 * page.uiScale)
+                        anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceXs * page.uiScale)
 
                         RowLayout {
                             Layout.fillWidth: true
-                            spacing: 8
+                            spacing: Style.RoTokens.spaceSm
 
                             Label {
                                 text: qsTr("GPU")
@@ -366,14 +368,14 @@ Item {
                                 implicitWidth: (page.gpuMonitor && page.gpuMonitor.gpuCount > 1)
                                                ? gpuSelectorRow.implicitWidth + Math.round(14 * page.uiScale)
                                                : Math.round(26 * page.uiScale)
-                                radius: 6
+                                radius: Style.RoTokens.radiusSm
                                 color: gpuSelectorMouse.hovered
-                                       ? (page.darkMode ? "#342D4A" : "#E2E8F0")
-                                       : (page.darkMode ? "#1E2548" : "#EEF2FF")
+                                       ? (theme.cardStrong)
+                                       : (page.darkMode ? theme.infoBg : theme.accentC)
                                 border.width: 1
                                 border.color: gpuSelectorMouse.hovered
                                               ? page.accentColor
-                                              : (page.darkMode ? "#4338CA" : "#C7D2FE")
+                                              : (page.darkMode ? theme.accentA : theme.accentC)
 
                                 ToolTip {
                                     id: gpuTooltip
@@ -414,7 +416,7 @@ Item {
                                 RowLayout {
                                     id: gpuSelectorRow
                                     anchors.centerIn: parent
-                                    spacing: 4
+                                    spacing: Style.RoTokens.spaceXs
 
                                     Label {
                                         text: "⚡"
@@ -425,7 +427,7 @@ Item {
                                         visible: page.gpuMonitor && page.gpuMonitor.gpuCount > 1
                                         text: "GPU " + (page.gpuMonitor ? page.gpuMonitor.selectedGpuIndex : 0) + " ▾"
                                         color: page.accentColor
-                                        font.pixelSize: Math.round(10 * page.uiScale)
+                                        font.pixelSize: Math.round(11 * page.uiScale)
                                         font.weight: Font.Bold
                                     }
                                 }
@@ -457,14 +459,14 @@ Item {
 
                         RowLayout {
                             Layout.fillWidth: true
-                            spacing: Math.round(12 * page.uiScale)
+                            spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                             ColumnLayout {
                                 spacing: 1
                                 Label {
                                     text: qsTr("LOAD")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -482,14 +484,14 @@ Item {
                                 Label {
                                     text: qsTr("TEMPERATURE")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 RowLayout {
-                                    spacing: 4
+                                    spacing: Style.RoTokens.spaceXs
                                     Label {
                                         text: page.gpuTelemetryAvailable ? page.formatTemp(page.gpuMonitor.temperatureC) : qsTr("Unavailable")
-                                        color: (page.gpuTelemetryAvailable && page.gpuMonitor.temperatureC > 80) ? (page.theme && page.theme.warning ? page.theme.warning : "#EF4444") : (page.gpuTelemetryAvailable ? page.textColor : page.softTextColor)
+                                        color: (page.gpuTelemetryAvailable && page.gpuMonitor.temperatureC > 80) ? (page.theme && page.theme.warning ? page.theme.warning : theme.danger) : (page.gpuTelemetryAvailable ? page.textColor : page.softTextColor)
                                         font.pixelSize: Math.round(22 * page.uiScale)
                                         font.weight: Font.Bold
                                     }
@@ -501,7 +503,7 @@ Item {
                             Layout.fillWidth: true
                             Layout.preferredHeight: Math.round(30 * page.uiScale)
                             values: page.gpuTelemetryAvailable ? page.gpuLoadHistory : []
-                            lineColor: page.darkMode ? "#34D399" : "#10B981"
+                            lineColor: theme.success
                         }
                     }
                 }
@@ -511,15 +513,15 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: Math.round(152 * page.uiScale)
                     Layout.minimumHeight: Math.round(152 * page.uiScale)
-                    radius: 14
+                    radius: Style.RoTokens.radiusMd
                     color: page.cardColor
                     border.width: 1
                     border.color: page.borderColor
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: Math.round(14 * page.uiScale)
-                        spacing: Math.round(4 * page.uiScale)
+                        anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceXs * page.uiScale)
 
                         Label {
                             text: qsTr("Memory")
@@ -530,14 +532,14 @@ Item {
 
                         RowLayout {
                             Layout.fillWidth: true
-                            spacing: Math.round(12 * page.uiScale)
+                            spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                             ColumnLayout {
                                 spacing: 1
                                 Label {
                                     text: qsTr("USAGE")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -555,7 +557,7 @@ Item {
                                 Label {
                                     text: qsTr("ALLOCATED")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -571,7 +573,7 @@ Item {
                             Layout.fillWidth: true
                             Layout.preferredHeight: Math.round(30 * page.uiScale)
                             values: page.ramUsageHistory
-                            lineColor: page.darkMode ? "#FBBF24" : "#D97706"
+                            lineColor: theme.warning
                         }
                     }
                 }
@@ -582,15 +584,15 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: Math.round(152 * page.uiScale)
                     Layout.minimumHeight: Math.round(152 * page.uiScale)
-                    radius: 14
+                    radius: Style.RoTokens.radiusMd
                     color: page.cardColor
                     border.width: 1
                     border.color: page.borderColor
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: Math.round(14 * page.uiScale)
-                        spacing: Math.round(4 * page.uiScale)
+                        anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceXs * page.uiScale)
 
                         Label {
                             text: qsTr("ZRAM")
@@ -601,14 +603,14 @@ Item {
 
                         RowLayout {
                             Layout.fillWidth: true
-                            spacing: Math.round(12 * page.uiScale)
+                            spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                             ColumnLayout {
                                 spacing: 1
                                 Label {
                                     text: qsTr("USAGE")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -631,7 +633,7 @@ Item {
                                 Label {
                                     text: qsTr("ALLOCATED")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -656,7 +658,7 @@ Item {
                                      ? (page.ramMonitor.zramCompressionRatio > 0 || page.ramMonitor.zramPhysicalMiB > 0 ? " • " : "") + qsTr("zswap enabled")
                                      : "")
                             color: page.softTextColor
-                            font.pixelSize: Math.round(10 * page.uiScale)
+                            font.pixelSize: Math.round(11 * page.uiScale)
                             font.weight: Font.DemiBold
                             elide: Text.ElideRight
                         }
@@ -667,18 +669,18 @@ Item {
 
                             Rectangle {
                                 anchors.fill: parent
-                                radius: 2
-                                color: page.darkMode ? "#2D2644" : "#E2E8F0"
+                                radius: Math.min(width, height) / 2
+                                color: theme.cardStrong
                             }
 
                             Rectangle {
                                 anchors.left: parent.left
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
-                                radius: 2
+                                radius: Math.min(width, height) / 2
                                 width: Math.min(parent.width, Math.max(0, parent.width * (page.ramMonitor.zramTotalMiB > 0 ? (page.ramMonitor.zramUsedMiB / page.ramMonitor.zramTotalMiB) : 0)))
-                                color: page.darkMode ? "#F59E0B" : "#D97706"
-                                Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                                color: theme.warning
+                                Behavior on width { NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutCubic } }
                             }
                         }
                     }
@@ -688,7 +690,7 @@ Item {
             // GPU Performance & Power Telemetry Section (4 Tiles in 1 Row)
             Rectangle {
                 Layout.fillWidth: true
-                radius: 14
+                radius: Style.RoTokens.radiusMd
                 color: page.cardColor
                 border.width: 1
                 border.color: page.borderColor
@@ -698,12 +700,12 @@ Item {
                 ColumnLayout {
                     id: gpuPerfLayout
                     anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 10
+                    anchors.margins: Style.RoTokens.spaceMd
+                    spacing: Style.RoTokens.spaceMd
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 8
+                        spacing: Style.RoTokens.spaceSm
 
                         Label {
                             Layout.fillWidth: true
@@ -754,14 +756,14 @@ Item {
                                 required property var modelData
                                 Layout.fillWidth: true
                                 implicitHeight: Math.round(64 * page.uiScale)
-                                radius: 10
+                                radius: Style.RoTokens.radiusSm
                                 color: page.bgColor
                                 border.width: 1
                                 border.color: page.borderColor
 
                                 Column {
                                     anchors.fill: parent
-                                    anchors.margins: Math.round(8 * page.uiScale)
+                                    anchors.margins: Math.round(Style.RoTokens.spaceSm * page.uiScale)
                                     spacing: Math.round(3 * page.uiScale)
 
                                     Label {
@@ -791,7 +793,7 @@ Item {
             // GPU Power & TDP Management Section
             Rectangle {
                 Layout.fillWidth: true
-                radius: 14
+                radius: Style.RoTokens.radiusMd
                 color: page.cardColor
                 border.width: 1
                 border.color: page.borderColor
@@ -802,12 +804,12 @@ Item {
                 ColumnLayout {
                     id: powerArea
                     anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 12
+                    anchors.margins: Style.RoTokens.spaceMd
+                    spacing: Style.RoTokens.spaceMd
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 8
+                        spacing: Style.RoTokens.spaceSm
 
                         Label {
                             Layout.fillWidth: true
@@ -822,14 +824,14 @@ Item {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 10
+                        spacing: Style.RoTokens.spaceMd
 
                         Rectangle {
                             visible: page.powerController && page.powerController.supported
                             Layout.maximumWidth: page.width <= 560 ? 0 : implicitWidth
                             implicitHeight: Math.round(30 * page.uiScale)
                             implicitWidth: currentDrawRow.implicitWidth + Math.round(16 * page.uiScale)
-                            radius: 6
+                            radius: Style.RoTokens.radiusSm
                             color: page.bgColor
                             border.width: 1
                             border.color: page.borderColor
@@ -837,7 +839,7 @@ Item {
                             RowLayout {
                                 id: currentDrawRow
                                 anchors.centerIn: parent
-                                spacing: 4
+                                spacing: Style.RoTokens.spaceXs
 
                                 Label {
                                     text: qsTr("Draw:")
@@ -860,15 +862,15 @@ Item {
                             Layout.maximumWidth: page.width <= 560 ? 0 : implicitWidth
                             implicitHeight: Math.round(30 * page.uiScale)
                             implicitWidth: powerLimitRow.implicitWidth + Math.round(16 * page.uiScale)
-                            radius: 6
-                            color: page.darkMode ? "#1E2548" : "#EEF2FF"
+                            radius: Style.RoTokens.radiusSm
+                            color: page.darkMode ? theme.infoBg : theme.accentC
                             border.width: 1
-                            border.color: page.darkMode ? "#4338CA" : "#C7D2FE"
+                            border.color: page.darkMode ? theme.accentA : theme.accentC
 
                             RowLayout {
                                 id: powerLimitRow
                                 anchors.centerIn: parent
-                                spacing: 4
+                                spacing: Style.RoTokens.spaceXs
 
                                 Label {
                                     text: qsTr("Limit:")
@@ -889,7 +891,7 @@ Item {
                         Item { Layout.fillWidth: true }
 
                         RowLayout {
-                            spacing: Math.round(8 * page.uiScale)
+                            spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
                             visible: page.powerController && (page.powerController.controlSupported
                                                                || page.powerController.systemPowerProfileSupported)
 
@@ -907,7 +909,7 @@ Item {
                                     implicitWidth: page.width <= 560 ? Math.round(84 * page.uiScale) : Math.round(96 * page.uiScale)
 
                                     background: Rectangle {
-                                        radius: 8
+                                        radius: Style.RoTokens.radiusSm
                                         color: (page.powerController && page.powerController.activePreset === powerPresetBtn.modelData.preset)
                                                ? page.accentColor
                                                : page.bgColor
@@ -920,7 +922,7 @@ Item {
                                     contentItem: Text {
                                         text: powerPresetBtn.modelData.label
                                         color: (page.powerController && page.powerController.activePreset === powerPresetBtn.modelData.preset)
-                                               ? "#FFFFFF"
+                                               ? theme.card
                                                : page.textColor
                                         font.pixelSize: Math.round(12 * page.uiScale)
                                         font.weight: (page.powerController && page.powerController.activePreset === powerPresetBtn.modelData.preset) ? Font.Bold : Font.DemiBold
@@ -944,7 +946,7 @@ Item {
             // GPU Task Manager Section
             Rectangle {
                 Layout.fillWidth: true
-                radius: 14
+                radius: Style.RoTokens.radiusMd
                 color: page.cardColor
                 border.width: 1
                 border.color: page.borderColor
@@ -954,12 +956,12 @@ Item {
                 ColumnLayout {
                     id: taskManagerLayout
                     anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 10
+                    anchors.margins: Style.RoTokens.spaceMd
+                    spacing: Style.RoTokens.spaceMd
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 8
+                        spacing: Style.RoTokens.spaceSm
 
                         Label {
                             Layout.fillWidth: true
@@ -975,39 +977,39 @@ Item {
                             implicitHeight: Math.round(36 * page.uiScale)
                             hoverEnabled: true
                             scale: down ? 0.98 : 1.0
-                            Behavior on scale { NumberAnimation { duration: 90; easing.type: Easing.OutQuad } }
+                            Behavior on scale { NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutQuad } }
                             background: Rectangle {
-                                radius: Math.round(9 * page.uiScale)
+                                radius: Math.round(Style.RoTokens.radiusSm * page.uiScale)
                                 color: processExpansionButton.down
                                        ? Qt.darker(page.accentColor, 1.16)
-                                       : (processExpansionButton.hovered ? "#8B8FFF" : page.accentColor)
+                                       : (processExpansionButton.hovered ? theme.accentA : page.accentColor)
                                 border.width: 1
-                                border.color: processExpansionButton.hovered ? "#B8BAFF" : page.accentColor
+                                border.color: processExpansionButton.hovered ? theme.accentA : page.accentColor
 
                             }
                             contentItem: RowLayout {
                                 id: processExpansionContent
-                                spacing: Math.round(8 * page.uiScale)
+                                spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
                                 Text {
                                     text: page.showAllGpuProcesses ? qsTr("Show less") : qsTr("All processes")
-                                    color: "#FFFFFF"
+                                    color: theme.card
                                     font.pixelSize: Math.round(12 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Rectangle {
                                     implicitWidth: 1
                                     implicitHeight: Math.round(16 * page.uiScale)
-                                    color: "#55FFFFFF"
+                                    color: Qt.rgba(theme.text.r, theme.text.g, theme.text.b, 0.3333)
                                 }
                                 Text {
                                     text: page.showAllGpuProcesses ? "−" : (page.gpuMonitor ? page.gpuMonitor.gpuProcessCount : 0)
-                                    color: "#FFFFFF"
+                                    color: theme.card
                                     font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.Bold
                                 }
                                 Text {
                                     text: page.showAllGpuProcesses ? "⌃" : "⌄"
-                                    color: "#DDFFFFFF"
+                                    color: Qt.rgba(theme.text.r, theme.text.g, theme.text.b, 0.8667)
                                     font.pixelSize: Math.round(13 * page.uiScale)
                                 }
                             }
@@ -1019,7 +1021,7 @@ Item {
                     Rectangle {
                         Layout.fillWidth: true
                         implicitHeight: Math.round(72 * page.uiScale)
-                        radius: 10
+                        radius: Style.RoTokens.radiusSm
                         color: page.bgColor
                         border.width: 1
                         border.color: page.borderColor
@@ -1027,21 +1029,21 @@ Item {
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.margins: 16
-                            spacing: 14
+                            anchors.margins: Style.RoTokens.spaceLg
+                            spacing: Style.RoTokens.spaceMd
 
                             Rectangle {
                                 implicitWidth: Math.round(36 * page.uiScale)
                                 implicitHeight: Math.round(36 * page.uiScale)
                                 Layout.preferredWidth: Math.round(36 * page.uiScale)
                                 Layout.preferredHeight: Math.round(36 * page.uiScale)
-                                radius: 8
-                                color: page.darkMode ? "#1E293B" : "#E2E8F0"
+                                radius: Style.RoTokens.radiusSm
+                                color: page.darkMode ? theme.text : theme.cardStrong
 
                                 Label {
                                     anchors.centerIn: parent
                                     text: "✓"
-                                    color: "#22C55E"
+                                    color: theme.success
                                     font.pixelSize: Math.round(18 * page.uiScale)
                                     font.weight: Font.Bold
                                 }
@@ -1071,7 +1073,7 @@ Item {
                     // Process list table when processes exist
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 6
+                        spacing: Style.RoTokens.spaceSm
                         visible: page.gpuMonitor && page.gpuMonitor.gpuProcessCount > 0
 
                         // Table header
@@ -1079,7 +1081,7 @@ Item {
                             Layout.fillWidth: true
                             Layout.leftMargin: 12
                             Layout.rightMargin: 12
-                            spacing: 12
+                            spacing: Style.RoTokens.spaceMd
 
                             Label {
                                 Layout.preferredWidth: Math.round(60 * page.uiScale)
@@ -1135,7 +1137,7 @@ Item {
                             ColumnLayout {
                                 id: processRowsColumn
                                 width: parent.width
-                                spacing: 6
+                                spacing: Style.RoTokens.spaceSm
 
                                 Repeater {
                                     model: {
@@ -1147,22 +1149,22 @@ Item {
                                         required property var modelData
                                         Layout.fillWidth: true
                                         implicitHeight: Math.round(48 * page.uiScale)
-                                        radius: 8
+                                        radius: Style.RoTokens.radiusSm
                                         color: page.bgColor
                                         border.width: 1
                                         border.color: page.borderColor
 
                                         RowLayout {
                                             anchors.fill: parent
-                                            anchors.leftMargin: 12
-                                            anchors.rightMargin: 12
-                                            spacing: 12
+                                            anchors.leftMargin: Style.RoTokens.spaceMd
+                                            anchors.rightMargin: Style.RoTokens.spaceMd
+                                            spacing: Style.RoTokens.spaceMd
 
                                             Rectangle {
                                                 Layout.preferredWidth: Math.round(60 * page.uiScale)
                                                 Layout.preferredHeight: Math.round(24 * page.uiScale)
-                                                radius: 4
-                                                color: page.darkMode ? "#1E293B" : "#E2E8F0"
+                                                radius: Style.RoTokens.radiusXs
+                                                color: page.darkMode ? theme.text : theme.cardStrong
 
                                                 Label {
                                                     anchors.centerIn: parent
@@ -1187,18 +1189,18 @@ Item {
                                                 visible: page.width > 560
                                                 Layout.preferredWidth: Math.round(110 * page.uiScale)
                                                 Layout.preferredHeight: Math.round(22 * page.uiScale)
-                                                radius: 4
+                                                radius: Style.RoTokens.radiusXs
                                                 color: (modelData.type && modelData.type.indexOf("Compute") !== -1)
-                                                       ? (page.darkMode ? "#312E81" : "#EEF2FF")
-                                                       : (page.darkMode ? "#064E3B" : "#ECFDF5")
+                                                       ? (theme.accentC)
+                                                       : (theme.successBg)
 
                                                 Label {
                                                     anchors.centerIn: parent
                                                     text: modelData.type || qsTr("Compute")
                                                     color: (modelData.type && modelData.type.indexOf("Compute") !== -1)
-                                                           ? (page.darkMode ? "#A5B4FC" : "#4F46E5")
-                                                           : (page.darkMode ? "#6EE7B7" : "#059669")
-                                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                                           ? (theme.accentA)
+                                                           : (theme.success)
+                                                    font.pixelSize: Math.round(11 * page.uiScale)
                                                     font.weight: Font.DemiBold
                                                 }
                                             }
@@ -1207,10 +1209,10 @@ Item {
                                                 visible: page.width > 560
                                                 Layout.preferredWidth: Math.round(140 * page.uiScale)
                                                 Layout.preferredHeight: Math.round(26 * page.uiScale)
-                                                radius: 6
-                                                color: page.darkMode ? "#1E2238" : "#EEF2F6"
+                                                radius: Style.RoTokens.radiusSm
+                                                color: theme.cardStrong
                                                 border.width: 1
-                                                border.color: page.darkMode ? "#342D4A" : "#E2E8F0"
+                                                border.color: theme.cardStrong
                                                 clip: true
 
                                                 Rectangle {
@@ -1222,8 +1224,8 @@ Item {
                                                         var pct = total > 0 ? Math.min(1.0, Math.max(0.04, modelData.vramMiB / total)) : 0;
                                                         return parent.width * pct;
                                                     }
-                                                    radius: 5
-                                                    color: page.darkMode ? "#4338CA" : "#C7D2FE"
+                                                    radius: Style.RoTokens.radiusXs
+                                                    color: page.darkMode ? theme.accentA : theme.accentC
                                                     opacity: 0.7
                                                 }
 
@@ -1249,18 +1251,18 @@ Item {
                                                 implicitHeight: Math.round(28 * page.uiScale)
 
                                                 background: Rectangle {
-                                                    radius: 6
-                                                    color: endProcessBtn.down ? (page.darkMode ? "#7F1D1D" : "#FEE2E2")
-                                                                              : (endProcessBtn.hovered ? (page.darkMode ? "#450A0A" : "#FEF2F2")
-                                                                                                       : (page.darkMode ? "#29233B" : "#F8FAFC"))
+                                                    radius: Style.RoTokens.radiusSm
+                                                    color: endProcessBtn.down ? (theme.dangerBg)
+                                                                              : (endProcessBtn.hovered ? (theme.dangerBg)
+                                                                                                       : (page.darkMode ? theme.card : theme.text))
                                                     border.width: 1
-                                                    border.color: endProcessBtn.hovered ? (page.darkMode ? "#EF4444" : "#DC2626")
+                                                    border.color: endProcessBtn.hovered ? (theme.danger)
                                                                                         : page.borderColor
                                                 }
 
                                                 contentItem: Text {
                                                     text: endProcessBtn.text
-                                                    color: endProcessBtn.hovered ? (page.darkMode ? "#F87171" : "#DC2626")
+                                                    color: endProcessBtn.hovered ? (theme.danger)
                                                                                  : page.textColor
                                                     font.pixelSize: Math.round(11 * page.uiScale)
                                                     font.weight: Font.DemiBold
@@ -1292,18 +1294,18 @@ Item {
         focus: true
         anchors.centerIn: parent
         width: Math.min(parent ? parent.width - 40 : 420, Math.round(420 * page.uiScale))
-        padding: Math.round(18 * page.uiScale)
+        padding: Math.round(Style.RoTokens.spaceLg * page.uiScale)
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
-            radius: 12
+            radius: Style.RoTokens.radiusMd
             color: page.cardColor
             border.width: 1
             border.color: page.borderColor
         }
 
         contentItem: ColumnLayout {
-            spacing: 12
+            spacing: Style.RoTokens.spaceMd
             Label {
                 Layout.fillWidth: true
                 text: qsTr("End GPU process?")
@@ -1323,7 +1325,7 @@ Item {
                 visible: page.terminationError.length > 0
                 Layout.fillWidth: true
                 text: page.terminationError
-                color: page.theme && page.theme.danger ? page.theme.danger : "#DC2626"
+                color: page.theme && page.theme.danger ? page.theme.danger : theme.danger
                 wrapMode: Text.WordWrap
                 font.pixelSize: Math.round(11 * page.uiScale)
             }

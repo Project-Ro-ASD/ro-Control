@@ -1,0 +1,9 @@
+{
+  "repository": "Project-Ro-ASD/Ro-Theme",
+  "commit": "6d15eadf96b19afdab6b58ae6e14e372050c08ca",
+  "files": {
+    "data/theme/colors.light.json": "0ae443d4838a11b23e02eed2fb2ffc0e68827edf6c56fa939115186fe02e77c6",
+    "data/theme/colors.dark.json": "01b3516a4ae7ffe8797d966b881cab48557e2afe34437280d77edbfe87d5306e",
+    "src/qml/style/RoTokens.qml": "e4baa03888c08c80e341da981ae35e0c8dfeb5a982de91b8bb36a900790dd7d2"
+  }
+}

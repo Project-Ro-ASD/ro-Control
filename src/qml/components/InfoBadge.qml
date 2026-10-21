@@ -1,17 +1,20 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 
 Rectangle {
     id: badge
+    Style.Theme { id: fallbackTheme; darkMode: false }
 
+    property var theme: fallbackTheme
     property string text: ""
-    property color backgroundColor: "#e5eefc"
-    property color foregroundColor: "#15304f"
+    property color backgroundColor: theme.accentC
+    property color foregroundColor: theme.text
 
-    radius: 999
+    radius: height / 2
     color: backgroundColor
     border.width: 1
-    border.color: Qt.tint(backgroundColor, "#22000000")
+    border.color: Qt.tint(backgroundColor, Qt.rgba(theme.window.r, theme.window.g, theme.window.b, 0.1333))
     implicitHeight: 36
     implicitWidth: badgeLabel.implicitWidth + 28
 

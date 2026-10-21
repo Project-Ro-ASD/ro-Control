@@ -214,3 +214,20 @@ target_link_libraries(test_dbus_service PRIVATE
 )
 
 ro_control_register_test(test_dbus_service)
+
+# Shared palette contrast and real keyboard interaction in Qt Quick controls.
+find_package(Qt6 REQUIRED COMPONENTS QuickTest)
+qt_add_executable(test_theme test_theme.cpp)
+target_link_libraries(test_theme PRIVATE Qt6::QuickTest Qt6::QuickControls2)
+target_compile_definitions(test_theme PRIVATE
+    QUICK_TEST_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qml"
+)
+ro_control_register_test(test_theme)
+set_tests_properties(test_theme PROPERTIES
+    ENVIRONMENT "${RO_CONTROL_TEST_ENV};QT_QUICK_BACKEND=software"
+)
+
+qt_add_executable(test_gui_instance test_gui_instance.cpp)
+ro_control_configure_test(test_gui_instance)
+target_link_libraries(test_gui_instance PRIVATE Qt6::Test ro-control-backend)
+ro_control_register_test(test_gui_instance)

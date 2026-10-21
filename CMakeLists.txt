@@ -63,6 +63,7 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 REQUIRED COMPONENTS
     Core
     Concurrent
+    Network
     Qml
     Quick          # Qt Quick / QML engine
     QuickControls2 # QML controls (Button, Slider, etc.)
@@ -111,6 +112,7 @@ set(BACKEND_SOURCES
     src/backend/fan/fancontroller.cpp
     src/backend/power/powercontroller.cpp
     src/backend/system/healthguard.cpp
+    src/backend/system/guiinstance.cpp
     src/backend/system/dbusservice.cpp
 )
 
@@ -135,6 +137,7 @@ add_library(ro-control-backend STATIC ${BACKEND_SOURCES})
 target_link_libraries(ro-control-backend PUBLIC
     Qt6::Core
     Qt6::Concurrent
+    Qt6::Network
     Qt6::DBus
     Qt6::Gui
     Qt6::Qml
@@ -191,10 +194,16 @@ set_source_files_properties(src/qml/assets/icon-settings.svg PROPERTIES
     QT_RESOURCE_ALIAS "assets/icon-settings.svg"
 )
 
+set_source_files_properties(src/qml/style/RoTokens.qml src/qml/style/Motion.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
 qt_add_qml_module(ro-control
     URI "rocontrol"
     VERSION 1.0
     QML_FILES
+        src/qml/style/Motion.qml
+        src/qml/style/RoTokens.qml
+        src/qml/style/Theme.qml
+        src/qml/style/Palettes.js
         src/qml/Main.qml
         src/qml/pages/DriverPage.qml
         src/qml/pages/MonitorPage.qml

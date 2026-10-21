@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import "style" as Style
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
@@ -36,7 +37,7 @@ ApplicationWindow {
     readonly property bool showAdvancedInfo: (hasUiPreferences && root.uiPreferences.showAdvancedInfo !== undefined)
                                              ? root.uiPreferences.showAdvancedInfo
                                              : true
-    readonly property real uiScale: 1.0
+    readonly property real uiScale: Math.max(1.0, Qt.application.font.pixelSize / 13)
     readonly property var visibleLanguages: root.hasLanguageManager
                                             ? root.languageManager.availableLanguages
                                             : []
@@ -125,32 +126,27 @@ ApplicationWindow {
         }
     }
 
-    QtObject {
+    Style.Theme {
         id: colors
-        // Clean high-contrast palettes for light and dark themes
-        readonly property color window: root.darkMode ? "#1A1625" : "#F4F6F8"
-        readonly property color shell: root.darkMode ? "#241F33" : "#EAEFF4"
-        readonly property color shellAlt: root.darkMode ? "#1F1B2B" : "#FFFFFF"
-        readonly property color card: root.darkMode ? "#29233B" : "#FFFFFF"
-        readonly property color cardStrong: root.darkMode ? "#342D4A" : "#F1F5F9"
-        readonly property color border: root.darkMode ? "#4D436B" : "#CBD5E1"
-        readonly property color text: root.darkMode ? "#F8FAFC" : "#0F172A"
-        readonly property color textMuted: root.darkMode ? "#CBD5E1" : "#475569"
-        readonly property color textSoft: root.darkMode ? "#94A3B8" : "#64748B"
-        readonly property color accentA: root.darkMode ? "#818CF8" : "#4F46E5"
-        readonly property color accentB: root.darkMode ? "#A5B4FC" : "#6366F1"
-        readonly property color accentC: root.darkMode ? "#312E81" : "#EEF2FF"
-        readonly property color success: root.darkMode ? "#4ADE80" : "#059669"
-        readonly property color warning: root.darkMode ? "#FBBF24" : "#D97706"
-        readonly property color danger: root.darkMode ? "#F87171" : "#DC2626"
-        readonly property color successBg: root.darkMode ? "#143828" : "#ECFDF5"
-        readonly property color warningBg: root.darkMode ? "#3A2E12" : "#FFFBEB"
-        readonly property color dangerBg: root.darkMode ? "#3D171E" : "#FEF2F2"
-        readonly property color infoBg: root.darkMode ? "#1E2548" : "#EFF6FF"
-        readonly property color heroStart: root.darkMode ? "#1A1625" : "#F4F6F8"
-        readonly property color heroEnd: root.darkMode ? "#241F33" : "#EAEFF4"
+        darkMode: root.darkMode
+        followSystem: root.hasUiPreferences && root.uiPreferences.selectedThemeMode === "system"
     }
 
+    palette.window: colors.window
+    palette.base: colors.card
+    palette.alternateBase: colors.cardStrong
+    palette.button: colors.cardStrong
+    palette.windowText: colors.text
+    palette.text: colors.text
+    palette.buttonText: colors.text
+    palette.highlight: colors.accentA
+    palette.highlightedText: colors.onAccent
+    Binding {
+        target: Style.Motion
+        property: "factor"
+        value: root.hasUiPreferences && root.uiPreferences.animationDurationFactor !== undefined
+               ? root.uiPreferences.animationDurationFactor : 1
+    }
     color: colors.window
     font.pixelSize: Math.round(13 * uiScale)
     Material.theme: darkMode ? Material.Dark : Material.Light
@@ -161,20 +157,18 @@ ApplicationWindow {
 
     Rectangle {
         anchors.fill: parent
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: colors.heroStart }
-            GradientStop { position: 1.0; color: colors.shell }
-        }
+        color: colors.window
     }
 
     ColumnLayout {
+        objectName: "applicationSurface"
         anchors.fill: parent
-        anchors.margins: Math.round(16 * root.uiScale)
-        spacing: Math.round(10 * root.uiScale)
+        anchors.margins: Math.round(Style.RoTokens.spaceLg * root.uiScale)
+        spacing: Math.round(Style.RoTokens.spaceMd * root.uiScale)
 
         Rectangle {
             Layout.fillWidth: true
-            radius: Math.round(14 * root.uiScale)
+            radius: Math.round(Style.RoTokens.radiusMd * root.uiScale)
             color: colors.shellAlt
             border.width: 1
             border.color: colors.border
@@ -183,16 +177,17 @@ ApplicationWindow {
             RowLayout {
                 id: topBar
                 anchors.fill: parent
-                anchors.leftMargin: Math.round(12 * root.uiScale)
-                anchors.rightMargin: Math.round(12 * root.uiScale)
-                anchors.topMargin: Math.round(6 * root.uiScale)
-                anchors.bottomMargin: Math.round(6 * root.uiScale)
-                spacing: Math.round(12 * root.uiScale)
+                anchors.leftMargin: Math.round(Style.RoTokens.spaceMd * root.uiScale)
+                anchors.rightMargin: Math.round(Style.RoTokens.spaceMd * root.uiScale)
+                anchors.topMargin: Math.round(Style.RoTokens.spaceSm * root.uiScale)
+                anchors.bottomMargin: Math.round(Style.RoTokens.spaceSm * root.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceMd * root.uiScale)
 
                 TabBar {
                     id: tabBar
+                    objectName: "navigationTabs"
                     Layout.alignment: Qt.AlignVCenter
-                    spacing: Math.round(6 * root.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceSm * root.uiScale)
 
                     background: Item {}
 
@@ -218,15 +213,24 @@ ApplicationWindow {
                             text: driverTab.text
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
-                            color: tabBar.currentIndex === 0 ? "#FFFFFF" : colors.textMuted
+                            color: tabBar.currentIndex === 0 ? colors.onAccent : colors.textMuted
                             font.pixelSize: Math.round(13 * root.uiScale)
                             font.weight: tabBar.currentIndex === 0 ? Font.DemiBold : Font.Medium
                         }
                         background: Rectangle {
-                            radius: Math.round(10 * root.uiScale)
+                            radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
                             color: tabBar.currentIndex === 0 ? colors.accentA : (driverTab.hovered ? colors.cardStrong : "transparent")
-                            border.width: 1
-                            border.color: tabBar.currentIndex === 0 ? colors.accentA : (driverTab.hovered ? colors.border : "transparent")
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -Style.RoTokens.spaceXs
+                                radius: Style.RoTokens.radiusMd
+                                color: "transparent"
+                                border.width: 2 * Style.RoTokens.borderWidth
+                                border.color: colors.accentA
+                                visible: driverTab.visualFocus
+                            }
+                            border.width: driverTab.visualFocus ? 2 : 1
+                            border.color: driverTab.visualFocus ? colors.accentA : tabBar.currentIndex === 0 ? colors.accentA : (driverTab.hovered ? colors.border : "transparent")
                         }
                     }
 
@@ -241,15 +245,24 @@ ApplicationWindow {
                             text: monitorTab.text
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
-                            color: tabBar.currentIndex === 1 ? "#FFFFFF" : colors.textMuted
+                            color: tabBar.currentIndex === 1 ? colors.onAccent : colors.textMuted
                             font.pixelSize: Math.round(13 * root.uiScale)
                             font.weight: tabBar.currentIndex === 1 ? Font.DemiBold : Font.Medium
                         }
                         background: Rectangle {
-                            radius: Math.round(10 * root.uiScale)
+                            radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
                             color: tabBar.currentIndex === 1 ? colors.accentA : (monitorTab.hovered ? colors.cardStrong : "transparent")
-                            border.width: 1
-                            border.color: tabBar.currentIndex === 1 ? colors.accentA : (monitorTab.hovered ? colors.border : "transparent")
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -Style.RoTokens.spaceXs
+                                radius: Style.RoTokens.radiusMd
+                                color: "transparent"
+                                border.width: 2 * Style.RoTokens.borderWidth
+                                border.color: colors.accentA
+                                visible: monitorTab.visualFocus
+                            }
+                            border.width: monitorTab.visualFocus ? 2 : 1
+                            border.color: monitorTab.visualFocus ? colors.accentA : tabBar.currentIndex === 1 ? colors.accentA : (monitorTab.hovered ? colors.border : "transparent")
                         }
                     }
 
@@ -264,15 +277,24 @@ ApplicationWindow {
                             text: fanTab.text
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
-                            color: tabBar.currentIndex === 2 ? "#FFFFFF" : colors.textMuted
+                            color: tabBar.currentIndex === 2 ? colors.onAccent : colors.textMuted
                             font.pixelSize: Math.round(13 * root.uiScale)
                             font.weight: tabBar.currentIndex === 2 ? Font.DemiBold : Font.Medium
                         }
                         background: Rectangle {
-                            radius: Math.round(10 * root.uiScale)
+                            radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
                             color: tabBar.currentIndex === 2 ? colors.accentA : (fanTab.hovered ? colors.cardStrong : "transparent")
-                            border.width: 1
-                            border.color: tabBar.currentIndex === 2 ? colors.accentA : (fanTab.hovered ? colors.border : "transparent")
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -Style.RoTokens.spaceXs
+                                radius: Style.RoTokens.radiusMd
+                                color: "transparent"
+                                border.width: 2 * Style.RoTokens.borderWidth
+                                border.color: colors.accentA
+                                visible: fanTab.visualFocus
+                            }
+                            border.width: fanTab.visualFocus ? 2 : 1
+                            border.color: fanTab.visualFocus ? colors.accentA : tabBar.currentIndex === 2 ? colors.accentA : (fanTab.hovered ? colors.border : "transparent")
                         }
                     }
 
@@ -287,15 +309,24 @@ ApplicationWindow {
                             text: systemTab.text
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
-                            color: tabBar.currentIndex === 3 ? "#FFFFFF" : colors.textMuted
+                            color: tabBar.currentIndex === 3 ? colors.onAccent : colors.textMuted
                             font.pixelSize: Math.round(13 * root.uiScale)
                             font.weight: tabBar.currentIndex === 3 ? Font.DemiBold : Font.Medium
                         }
                         background: Rectangle {
-                            radius: Math.round(10 * root.uiScale)
+                            radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
                             color: tabBar.currentIndex === 3 ? colors.accentA : (systemTab.hovered ? colors.cardStrong : "transparent")
-                            border.width: 1
-                            border.color: tabBar.currentIndex === 3 ? colors.accentA : (systemTab.hovered ? colors.border : "transparent")
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -Style.RoTokens.spaceXs
+                                radius: Style.RoTokens.radiusMd
+                                color: "transparent"
+                                border.width: 2 * Style.RoTokens.borderWidth
+                                border.color: colors.accentA
+                                visible: systemTab.visualFocus
+                            }
+                            border.width: systemTab.visualFocus ? 2 : 1
+                            border.color: systemTab.visualFocus ? colors.accentA : tabBar.currentIndex === 3 ? colors.accentA : (systemTab.hovered ? colors.border : "transparent")
                         }
                     }
                 }
@@ -305,13 +336,13 @@ ApplicationWindow {
                 }
 
                 RowLayout {
-                    spacing: Math.round(10 * root.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * root.uiScale)
                     Layout.alignment: Qt.AlignVCenter
 
                     Rectangle {
                         Layout.preferredHeight: Math.round(38 * root.uiScale)
                         Layout.preferredWidth: Math.max(Math.round(136 * root.uiScale), Math.max(sessionText.implicitWidth, deviceBadgeText.implicitWidth) + Math.round(28 * root.uiScale))
-                        radius: Math.round(10 * root.uiScale)
+                        radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
                         color: colors.card
                         border.width: 1
                         border.color: colors.border
@@ -365,7 +396,7 @@ ApplicationWindow {
                         icon.source: "qrc:/qt/qml/rocontrol/assets/icon-settings.svg"
                         icon.width: Math.round(20 * root.uiScale)
                         icon.height: Math.round(20 * root.uiScale)
-                        icon.color: (settingsButton.down || settingsPopup.visible) ? "#FFFFFF" : colors.text
+                        icon.color: (settingsButton.down || settingsPopup.visible) ? colors.onAccent : colors.text
                         display: AbstractButton.IconOnly
                         onClicked: {
                             if (settingsPopup.visible)
@@ -379,10 +410,10 @@ ApplicationWindow {
                             text: qsTr("Settings")
                             delay: 300
                             timeout: 5000
-                            topPadding: Math.round(6 * root.uiScale)
-                            bottomPadding: Math.round(6 * root.uiScale)
-                            leftPadding: Math.round(12 * root.uiScale)
-                            rightPadding: Math.round(12 * root.uiScale)
+                            topPadding: Math.round(Style.RoTokens.spaceSm * root.uiScale)
+                            bottomPadding: Math.round(Style.RoTokens.spaceSm * root.uiScale)
+                            leftPadding: Math.round(Style.RoTokens.spaceMd * root.uiScale)
+                            rightPadding: Math.round(Style.RoTokens.spaceMd * root.uiScale)
 
                             contentItem: Label {
                                 text: settingsTip.text
@@ -392,10 +423,10 @@ ApplicationWindow {
                             }
 
                             background: Rectangle {
-                                radius: 8
-                                color: root.darkMode ? "#241E34" : "#FFFFFF"
+                                radius: Style.RoTokens.radiusSm
+                                color: colors.card
                                 border.width: 1
-                                border.color: root.darkMode ? "#4D436B" : "#CBD5E1"
+                                border.color: root.darkMode ? colors.border : colors.textMuted
 
                                 Rectangle {
                                     anchors.left: parent.left
@@ -403,7 +434,7 @@ ApplicationWindow {
                                     anchors.bottom: parent.bottom
                                     anchors.margins: 3
                                     width: 3
-                                    radius: 1.5
+                                    radius: Math.min(width, height) / 2
                                     color: colors.accentA
                                 }
                             }
@@ -427,23 +458,23 @@ ApplicationWindow {
             id: settingsPopup
             modal: false
             focus: true
-            padding: Math.round(14 * root.uiScale)
+            padding: Math.round(Style.RoTokens.spaceMd * root.uiScale)
             closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
             height: Math.min(root.height - Math.round(24 * root.uiScale), implicitHeight)
 
             background: Rectangle {
-                radius: Math.round(14 * root.uiScale)
+                radius: Math.round(Style.RoTokens.radiusMd * root.uiScale)
                 color: colors.shellAlt
                 border.width: 1
                 border.color: colors.border
             }
 
             contentItem: ColumnLayout {
-                spacing: Math.round(12 * root.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceMd * root.uiScale)
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: Math.round(8 * root.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceSm * root.uiScale)
 
                     Label {
                         text: qsTr("Settings")
@@ -456,7 +487,7 @@ ApplicationWindow {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: Math.round(6 * root.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceSm * root.uiScale)
 
                     Label {
                         text: qsTr("Language")
@@ -483,7 +514,7 @@ ApplicationWindow {
                                 text: modelData.nativeLabel
 
                                 background: Rectangle {
-                                    radius: Math.round(8 * root.uiScale)
+                                    radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
                                     color: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
                                            ? colors.accentA
                                            : (langBtn.hovered ? colors.cardStrong : colors.card)
@@ -496,7 +527,7 @@ ApplicationWindow {
                                 contentItem: Text {
                                     text: langBtn.text
                                     color: (root.hasLanguageManager && !root.languageManager.followsSystem && langBtn.modelData.code === root.languageManager.currentLanguage)
-                                           ? "#FFFFFF"
+                                           ? colors.onAccent
                                            : colors.text
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
@@ -530,7 +561,7 @@ ApplicationWindow {
 
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: Math.round(6 * root.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceSm * root.uiScale)
 
                     Label {
                         text: qsTr("Theme")
@@ -542,7 +573,7 @@ ApplicationWindow {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: Math.round(6 * root.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceSm * root.uiScale)
 
                         Repeater {
                             model: root.visibleThemeModes
@@ -555,7 +586,7 @@ ApplicationWindow {
                                 text: modelData.label
 
                                 background: Rectangle {
-                                    radius: Math.round(8 * root.uiScale)
+                                    radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
                                     color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
                                            ? colors.accentA
                                            : (themeBtn.hovered ? colors.cardStrong : colors.card)
@@ -568,7 +599,7 @@ ApplicationWindow {
                                 contentItem: Text {
                                     text: themeBtn.text
                                     color: (root.hasUiPreferences && themeBtn.modelData.code === root.uiPreferences.selectedThemeMode)
-                                           ? "#FFFFFF"
+                                           ? colors.onAccent
                                            : colors.text
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
@@ -606,14 +637,14 @@ ApplicationWindow {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            radius: Math.round(22 * root.uiScale)
+            radius: Math.round(Style.RoTokens.radiusLg * root.uiScale)
             color: colors.card
             border.width: 1
             border.color: colors.border
 
             StackLayout {
                 anchors.fill: parent
-                anchors.margins: Math.round(10 * root.uiScale)
+                anchors.margins: Math.round(Style.RoTokens.spaceMd * root.uiScale)
                 currentIndex: tabBar.currentIndex
 
                 Pages.DriverPage {

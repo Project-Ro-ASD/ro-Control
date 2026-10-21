@@ -1,6 +1,7 @@
 #include <QActionGroup>
 #include <QApplication>
 #include <QCoreApplication>
+#include <QDir>
 #include <QEventLoop>
 #include <QFutureWatcher>
 #include <QIcon>
@@ -12,6 +13,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
 #include <QSGRendererInterface>
+#include <QStandardPaths>
 #include <QStringList>
 #include <QTextStream>
 #include <QTranslator>
@@ -33,6 +35,7 @@
 #include "backend/nvidia/updater.h"
 #include "backend/power/powercontroller.h"
 #include "backend/system/dbusservice.h"
+#include "backend/system/guiinstance.h"
 #include "backend/system/healthguard.h"
 #include "backend/system/languagemanager.h"
 #include "backend/system/systeminfoprovider.h"
@@ -712,6 +715,21 @@ int main(int argc, char *argv[]) {
   app.setWindowIcon(QIcon::fromTheme(
       "ro-control", QIcon(":/qt/qml/rocontrol/assets/ro-control-logo.svg")));
 
+  QString instanceDirectory =
+      QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
+  if (instanceDirectory.isEmpty())
+    instanceDirectory =
+        QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+  GuiInstance guiInstance(
+      QDir(instanceDirectory).filePath(QStringLiteral("ro-control-instance")));
+  const auto instanceResult = guiInstance.start();
+  if (instanceResult == GuiInstance::Result::ActivatedExisting)
+    return 0;
+  if (instanceResult == GuiInstance::Result::Error) {
+    err << guiInstance.errorString() << Qt::endl;
+    return 1;
+  }
+
   QTranslator translator;
   NvidiaDetector detector;
   NvidiaInstaller installer;
@@ -884,16 +902,8 @@ int main(int argc, char *argv[]) {
 
   trayIcon.setContextMenu(&trayMenu);
 
-  QObject::connect(restoreAction, &QAction::triggered, [&engine]() {
-    const auto rootObjects = engine.rootObjects();
-    if (!rootObjects.isEmpty()) {
-      if (auto *window = qobject_cast<QQuickWindow *>(rootObjects.first())) {
-        window->show();
-        window->raise();
-        window->requestActivate();
-      }
-    }
-  });
+  QObject::connect(restoreAction, &QAction::triggered,
+                   [&guiInstance]() { guiInstance.activateWindow(); });
 
   QObject::connect(&trayIcon, &QSystemTrayIcon::activated,
                    [&engine](QSystemTrayIcon::ActivationReason reason) {
@@ -964,6 +974,7 @@ int main(int argc, char *argv[]) {
   const auto rootObjects = engine.rootObjects();
   if (!rootObjects.isEmpty()) {
     if (auto *window = qobject_cast<QQuickWindow *>(rootObjects.first())) {
+      guiInstance.setWindow(window);
       // Desynchronize the 1s telemetry timers so they never fire back-to-back
       // inside the same event-loop iteration / QML frame.
       cpuMonitor.stop();

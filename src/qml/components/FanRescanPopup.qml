@@ -1,11 +1,13 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 import QtQuick.Layouts
 
 Popup {
     id: popup
+    Style.Theme { id: fallbackTheme; darkMode: popup.darkMode }
     required property var fanController
-    property var theme: ({})
+    property var theme: fallbackTheme
     property bool darkMode: false
     property real uiScale: 1.0
 
@@ -30,19 +32,19 @@ Popup {
         return count;
     }
 
-    readonly property color bgColor: theme && theme.card ? theme.card : (popup.darkMode ? "#241E34" : "#FFFFFF")
-    readonly property color cardColor: theme && theme.cardStrong ? theme.cardStrong : (popup.darkMode ? "#2E2742" : "#F8FAFC")
-    readonly property color borderColor: theme && theme.border ? theme.border : (popup.darkMode ? "#43385E" : "#E2E8F0")
-    readonly property color textColor: theme && theme.text ? theme.text : (popup.darkMode ? "#F8FAFC" : "#0F172A")
-    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (popup.darkMode ? "#94A3B8" : "#64748B")
-    readonly property color accentColor: theme && theme.accentA ? theme.accentA : (popup.darkMode ? "#818CF8" : "#4F46E5")
-    readonly property color accentButtonText: "#FFFFFF"
-    readonly property color successBg: theme && theme.successBg ? theme.successBg : (popup.darkMode ? "#143828" : "#ECFDF5")
-    readonly property color successText: theme && theme.success ? theme.success : (popup.darkMode ? "#4ADE80" : "#059669")
-    readonly property color warningBg: theme && theme.warningBg ? theme.warningBg : (popup.darkMode ? "#3A2E12" : "#FFFBEB")
-    readonly property color warningText: theme && theme.warning ? theme.warning : (popup.darkMode ? "#FBBF24" : "#D97706")
-    readonly property color infoBg: popup.darkMode ? "#1A233A" : "#EFF6FF"
-    readonly property color infoText: popup.darkMode ? "#93C5FD" : "#2563EB"
+    readonly property color bgColor: theme.card
+    readonly property color cardColor: theme && theme.cardStrong ? theme.cardStrong : (popup.darkMode ? theme.cardStrong : theme.text)
+    readonly property color borderColor: theme && theme.border ? theme.border : (popup.darkMode ? theme.border : theme.cardStrong)
+    readonly property color textColor: theme.text
+    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (theme.textMuted)
+    readonly property color accentColor: theme.accentA
+    readonly property color accentButtonText: theme.onAccent
+    readonly property color successBg: theme.successBg
+    readonly property color successText: theme.success
+    readonly property color warningBg: theme.warningBg
+    readonly property color warningText: theme.warning
+    readonly property color infoBg: theme.infoBg
+    readonly property color infoText: theme.accentA
 
     modal: true
     focus: true
@@ -51,26 +53,26 @@ Popup {
     height: Math.min(parent ? parent.height - 40 : 620, contentColumn.implicitHeight + topPadding + bottomPadding)
     x: Math.round(((parent ? parent.width : 600) - width) / 2)
     y: Math.max(16, Math.round(((parent ? parent.height : 600) - height) / 2))
-    padding: Math.round(18 * popup.uiScale)
+    padding: Math.round(Style.RoTokens.spaceLg * popup.uiScale)
 
     Behavior on height {
-        NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutCubic }
     }
     Behavior on y {
-        NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutCubic }
     }
 
     enter: Transition {
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 200; easing.type: Easing.OutCubic }
-            NumberAnimation { property: "scale"; from: 0.95; to: 1.0; duration: 200; easing.type: Easing.OutBack }
+            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: Style.Motion.fastMs; easing.type: Easing.OutCubic }
+            NumberAnimation { property: "scale"; from: 0.95; to: 1.0; duration: Style.Motion.fastMs; easing.type: Easing.OutCubic }
         }
     }
 
     exit: Transition {
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 150; easing.type: Easing.InCubic }
-            NumberAnimation { property: "scale"; from: 1.0; to: 0.96; duration: 150 }
+            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: Style.Motion.fastMs; easing.type: Easing.InCubic }
+            NumberAnimation { property: "scale"; from: 1.0; to: 0.96; duration: Style.Motion.fastMs }
         }
     }
 
@@ -158,7 +160,7 @@ Popup {
     }
 
     background: Rectangle {
-        radius: 14
+        radius: Style.RoTokens.radiusMd
         color: popup.bgColor
         border.width: 1
         border.color: popup.borderColor
@@ -172,18 +174,18 @@ Popup {
         ColumnLayout {
             id: contentColumn
             width: contentScroll.availableWidth
-            spacing: Math.round(14 * popup.uiScale)
+            spacing: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
 
         // ---------------- HEADER ----------------
         RowLayout {
             Layout.fillWidth: true
-            spacing: Math.round(12 * popup.uiScale)
+            spacing: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
 
             Rectangle {
                 implicitWidth: Math.round(38 * popup.uiScale)
                 implicitHeight: Math.round(38 * popup.uiScale)
-                radius: Math.round(10 * popup.uiScale)
-                color: popup.step === "done" ? popup.successBg : (popup.darkMode ? "#31284A" : "#EEF2FF")
+                radius: Math.round(Style.RoTokens.radiusSm * popup.uiScale)
+                color: popup.step === "done" ? popup.successBg : (popup.darkMode ? theme.cardStrong : theme.accentC)
                 border.width: 1
                 border.color: popup.step === "done" ? popup.successText : popup.accentColor
 
@@ -235,8 +237,8 @@ Popup {
                 hoverEnabled: true
 
                 background: Rectangle {
-                    radius: Math.round(14 * popup.uiScale)
-                    color: closeBtn.hovered ? (popup.darkMode ? "#3B3156" : "#E2E8F0") : "transparent"
+                    radius: Math.round(Style.RoTokens.radiusMd * popup.uiScale)
+                    color: closeBtn.hovered ? (popup.darkMode ? theme.hover : theme.cardStrong) : "transparent"
                 }
 
                 contentItem: Text {
@@ -273,11 +275,11 @@ Popup {
         ColumnLayout {
             visible: popup.step === "confirm"
             Layout.fillWidth: true
-            spacing: Math.round(12 * popup.uiScale)
+            spacing: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
 
             Rectangle {
                 Layout.fillWidth: true
-                radius: 10
+                radius: Style.RoTokens.radiusSm
                 color: popup.cardColor
                 border.width: 1
                 border.color: popup.borderColor
@@ -286,8 +288,8 @@ Popup {
                 ColumnLayout {
                     id: confirmContentCol
                     anchors.fill: parent
-                    anchors.margins: Math.round(12 * popup.uiScale)
-                    spacing: Math.round(10 * popup.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
 
                     Label {
                         text: qsTr("What will this hardware setup wizard do?")
@@ -299,12 +301,12 @@ Popup {
                     // Feature row 1
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 10
+                        spacing: Style.RoTokens.spaceMd
                         Rectangle {
                             implicitWidth: Math.round(24 * popup.uiScale)
                             implicitHeight: Math.round(24 * popup.uiScale)
-                            radius: 6
-                            color: popup.darkMode ? "#222C42" : "#EFF6FF"
+                            radius: Style.RoTokens.radiusSm
+                            color: popup.darkMode ? theme.cardStrong : theme.infoBg
                             Label {
                                 anchors.centerIn: parent
                                 text: "🌡️"
@@ -323,7 +325,7 @@ Popup {
                             Label {
                                 text: qsTr("Scans /sys/class/thermal and motherboard hardware monitoring chips")
                                 color: popup.softTextColor
-                                font.pixelSize: Math.round(10 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                             }
                         }
                     }
@@ -331,12 +333,12 @@ Popup {
                     // Feature row 2
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 10
+                        spacing: Style.RoTokens.spaceMd
                         Rectangle {
                             implicitWidth: Math.round(24 * popup.uiScale)
                             implicitHeight: Math.round(24 * popup.uiScale)
-                            radius: 6
-                            color: popup.darkMode ? "#2C2242" : "#F5F3FF"
+                            radius: Style.RoTokens.radiusSm
+                            color: popup.darkMode ? theme.hover : theme.accentC
                             Label {
                                 anchors.centerIn: parent
                                 text: "⚡"
@@ -355,7 +357,7 @@ Popup {
                             Label {
                                 text: qsTr("Probes dedicated GPU cooling channels and PWM control registers")
                                 color: popup.softTextColor
-                                font.pixelSize: Math.round(10 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                             }
                         }
                     }
@@ -363,12 +365,12 @@ Popup {
                     // Feature row 3
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 10
+                        spacing: Style.RoTokens.spaceMd
                         Rectangle {
                             implicitWidth: Math.round(24 * popup.uiScale)
                             implicitHeight: Math.round(24 * popup.uiScale)
-                            radius: 6
-                            color: popup.darkMode ? "#1E342B" : "#ECFDF5"
+                            radius: Style.RoTokens.radiusSm
+                            color: theme.successBg
                             Label {
                                 anchors.centerIn: parent
                                 text: "❄️"
@@ -387,7 +389,7 @@ Popup {
                             Label {
                                 text: qsTr("Recalibrates zero-RPM stops, baseline curves, and safety overrides")
                                 color: popup.softTextColor
-                                font.pixelSize: Math.round(10 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                             }
                         }
                     }
@@ -397,15 +399,15 @@ Popup {
             // Safe Operation Note
             Rectangle {
                 Layout.fillWidth: true
-                radius: 8
+                radius: Style.RoTokens.radiusSm
                 color: popup.infoBg
                 implicitHeight: safeNoteCol.implicitHeight + Math.round(14 * popup.uiScale)
 
                 RowLayout {
                     id: safeNoteCol
                     anchors.fill: parent
-                    anchors.margins: Math.round(8 * popup.uiScale)
-                    spacing: 8
+                    anchors.margins: Math.round(Style.RoTokens.spaceSm * popup.uiScale)
+                    spacing: Style.RoTokens.spaceSm
 
                     Label {
                         text: "ℹ️"
@@ -415,7 +417,7 @@ Popup {
                         Layout.fillWidth: true
                         text: qsTr("Non-intrusive probe: Fan speeds will not be interrupted during this scan.")
                         color: popup.infoText
-                        font.pixelSize: Math.round(10 * popup.uiScale)
+                        font.pixelSize: Math.round(11 * popup.uiScale)
                         wrapMode: Text.WordWrap
                     }
                 }
@@ -424,7 +426,7 @@ Popup {
             // Actions
             RowLayout {
                 Layout.fillWidth: true
-                spacing: Math.round(8 * popup.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceSm * popup.uiScale)
 
                 Item { Layout.fillWidth: true }
 
@@ -436,9 +438,9 @@ Popup {
                     hoverEnabled: true
 
                     background: Rectangle {
-                        radius: 8
-                        color: cancelBtn.down ? (popup.darkMode ? "#3B3156" : "#E2E8F0")
-                                              : (cancelBtn.hovered ? (popup.darkMode ? "#342D4A" : "#F1F5F9")
+                        radius: Style.RoTokens.radiusSm
+                        color: cancelBtn.down ? (popup.darkMode ? theme.hover : theme.cardStrong)
+                                              : (cancelBtn.hovered ? (theme.cardStrong)
                                                                    : popup.cardColor)
                         border.width: 1
                         border.color: cancelBtn.hovered ? popup.accentColor : popup.borderColor
@@ -463,17 +465,17 @@ Popup {
                     hoverEnabled: true
 
                     scale: down ? 0.98 : (hovered ? 1.01 : 1.0)
-                    Behavior on scale { NumberAnimation { duration: 100 } }
+                    Behavior on scale { NumberAnimation { duration: Style.Motion.fastMs } }
 
                     background: Rectangle {
-                        radius: 8
-                        color: startScanBtn.down ? (popup.darkMode ? "#4F46E5" : "#3730A3")
-                                                 : (startScanBtn.hovered ? (popup.darkMode ? "#939BFA" : "#5B52E8")
+                        radius: Style.RoTokens.radiusSm
+                        color: startScanBtn.down ? (theme.accentA)
+                                                 : (startScanBtn.hovered ? (theme.accentA)
                                                                          : popup.accentColor)
                     }
 
                     contentItem: RowLayout {
-                        spacing: 6
+                        spacing: Style.RoTokens.spaceSm
                         anchors.centerIn: parent
                         Label {
                             text: "🔍"
@@ -496,11 +498,11 @@ Popup {
         ColumnLayout {
             visible: popup.step === "scanning"
             Layout.fillWidth: true
-            spacing: Math.round(12 * popup.uiScale)
+            spacing: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
 
             Rectangle {
                 Layout.fillWidth: true
-                radius: 10
+                radius: Style.RoTokens.radiusSm
                 color: popup.cardColor
                 border.width: 1
                 border.color: popup.borderColor
@@ -509,12 +511,12 @@ Popup {
                 ColumnLayout {
                     id: scanningContentCol
                     anchors.fill: parent
-                    anchors.margins: Math.round(14 * popup.uiScale)
-                    spacing: Math.round(12 * popup.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 8
+                        spacing: Style.RoTokens.spaceSm
 
                         Label {
                             text: popup.currentPhaseText
@@ -537,8 +539,8 @@ Popup {
                     Rectangle {
                         Layout.fillWidth: true
                         implicitHeight: Math.round(8 * popup.uiScale)
-                        radius: 4
-                        color: popup.darkMode ? "#1E2238" : "#E2E8F0"
+                        radius: Style.RoTokens.radiusXs
+                        color: theme.cardStrong
                         clip: true
 
                         Rectangle {
@@ -546,11 +548,11 @@ Popup {
                             anchors.top: parent.top
                             anchors.bottom: parent.bottom
                             width: parent.width * (popup.scanProgress / 100.0)
-                            radius: 4
+                            radius: Style.RoTokens.radiusXs
                             color: popup.accentColor
 
                             Behavior on width {
-                                NumberAnimation { duration: 300; easing.type: Easing.OutQuad }
+                                NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutQuad }
                             }
                         }
                     }
@@ -558,20 +560,20 @@ Popup {
                     // Checklist
                     ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: Math.round(8 * popup.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceSm * popup.uiScale)
 
                         RowLayout {
-                            spacing: 10
+                            spacing: Style.RoTokens.spaceMd
                             Rectangle {
                                 implicitWidth: Math.round(18 * popup.uiScale)
                                 implicitHeight: Math.round(18 * popup.uiScale)
-                                radius: 4
-                                color: popup.phase1Done ? popup.successBg : (popup.darkMode ? "#31284A" : "#EEF2FF")
+                                radius: Style.RoTokens.radiusXs
+                                color: popup.phase1Done ? popup.successBg : (popup.darkMode ? theme.cardStrong : theme.accentC)
                                 Label {
                                     anchors.centerIn: parent
                                     text: popup.phase1Done ? "✓" : "1"
                                     color: popup.phase1Done ? popup.successText : popup.accentColor
-                                    font.pixelSize: Math.round(10 * popup.uiScale)
+                                    font.pixelSize: Math.round(11 * popup.uiScale)
                                     font.weight: Font.Bold
                                 }
                             }
@@ -584,17 +586,17 @@ Popup {
                         }
 
                         RowLayout {
-                            spacing: 10
+                            spacing: Style.RoTokens.spaceMd
                             Rectangle {
                                 implicitWidth: Math.round(18 * popup.uiScale)
                                 implicitHeight: Math.round(18 * popup.uiScale)
-                                radius: 4
-                                color: popup.phase2Done ? popup.successBg : (popup.phase1Done ? (popup.darkMode ? "#31284A" : "#EEF2FF") : (popup.darkMode ? "#231F33" : "#F1F5F9"))
+                                radius: Style.RoTokens.radiusXs
+                                color: popup.phase2Done ? popup.successBg : (popup.phase1Done ? (popup.darkMode ? theme.cardStrong : theme.accentC) : (theme.cardStrong))
                                 Label {
                                     anchors.centerIn: parent
                                     text: popup.phase2Done ? "✓" : "2"
                                     color: popup.phase2Done ? popup.successText : (popup.phase1Done ? popup.accentColor : popup.softTextColor)
-                                    font.pixelSize: Math.round(10 * popup.uiScale)
+                                    font.pixelSize: Math.round(11 * popup.uiScale)
                                     font.weight: Font.Bold
                                 }
                             }
@@ -607,17 +609,17 @@ Popup {
                         }
 
                         RowLayout {
-                            spacing: 10
+                            spacing: Style.RoTokens.spaceMd
                             Rectangle {
                                 implicitWidth: Math.round(18 * popup.uiScale)
                                 implicitHeight: Math.round(18 * popup.uiScale)
-                                radius: 4
-                                color: popup.phase3Done ? popup.successBg : (popup.phase2Done ? (popup.darkMode ? "#31284A" : "#EEF2FF") : (popup.darkMode ? "#231F33" : "#F1F5F9"))
+                                radius: Style.RoTokens.radiusXs
+                                color: popup.phase3Done ? popup.successBg : (popup.phase2Done ? (popup.darkMode ? theme.cardStrong : theme.accentC) : (theme.cardStrong))
                                 Label {
                                     anchors.centerIn: parent
                                     text: popup.phase3Done ? "✓" : "3"
                                     color: popup.phase3Done ? popup.successText : (popup.phase2Done ? popup.accentColor : popup.softTextColor)
-                                    font.pixelSize: Math.round(10 * popup.uiScale)
+                                    font.pixelSize: Math.round(11 * popup.uiScale)
                                     font.weight: Font.Bold
                                 }
                             }
@@ -637,12 +639,12 @@ Popup {
         ColumnLayout {
             visible: popup.step === "done"
             Layout.fillWidth: true
-            spacing: Math.round(10 * popup.uiScale)
+            spacing: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
 
             // Success Summary Banner
             Rectangle {
                 Layout.fillWidth: true
-                radius: 10
+                radius: Style.RoTokens.radiusSm
                 color: popup.scannedChannelCount > 0 ? popup.successBg : popup.warningBg
                 border.width: 1
                 border.color: popup.scannedChannelCount > 0 ? popup.successText : popup.warningText
@@ -651,11 +653,11 @@ Popup {
                 ColumnLayout {
                     id: doneLayout
                     anchors.fill: parent
-                    anchors.margins: Math.round(10 * popup.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
                     spacing: 3
 
                     RowLayout {
-                        spacing: 8
+                        spacing: Style.RoTokens.spaceSm
                         Label {
                             text: popup.scannedChannelCount > 0 ? "✓" : "!"
                             color: popup.scannedChannelCount > 0 ? popup.successText : popup.warningText
@@ -679,7 +681,7 @@ Popup {
                                     .arg(popup.scannedCapability)
                               : qsTr("The scan is complete, but firmware or the driver did not expose readable fan telemetry.")
                         color: popup.textColor
-                        font.pixelSize: Math.round(10 * popup.uiScale)
+                        font.pixelSize: Math.round(11 * popup.uiScale)
                     }
                 }
             }
@@ -697,7 +699,7 @@ Popup {
                 Label {
                     text: (popup.fanController ? popup.fanController.systemFanCount : 0) + " " + qsTr("found")
                     color: popup.softTextColor
-                    font.pixelSize: Math.round(10 * popup.uiScale)
+                    font.pixelSize: Math.round(11 * popup.uiScale)
                 }
             }
 
@@ -709,7 +711,7 @@ Popup {
                 implicitHeight: Layout.preferredHeight
                 clip: true
                 boundsBehavior: Flickable.StopAtBounds
-                spacing: Math.round(6 * popup.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceSm * popup.uiScale)
                 model: popup.fanController ? popup.fanController.systemFans : []
                 visible: popup.fanController && popup.fanController.systemFanCount > 0
 
@@ -717,24 +719,24 @@ Popup {
                     required property var modelData
                     width: channelListView.width
                     height: Math.round(46 * popup.uiScale)
-                    radius: 8
+                    radius: Style.RoTokens.radiusSm
                     color: popup.cardColor
                     border.width: 1
                     border.color: popup.borderColor
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: Math.round(10 * popup.uiScale)
-                        anchors.rightMargin: Math.round(10 * popup.uiScale)
-                        spacing: Math.round(10 * popup.uiScale)
+                        anchors.leftMargin: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
+                        anchors.rightMargin: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
 
                         // Type Icon Badge
                         Rectangle {
                             Layout.alignment: Qt.AlignVCenter
                             implicitWidth: Math.round(28 * popup.uiScale)
                             implicitHeight: Math.round(28 * popup.uiScale)
-                            radius: 6
-                            color: popup.darkMode ? "#3B3156" : "#EEF2FF"
+                            radius: Style.RoTokens.radiusSm
+                            color: popup.darkMode ? theme.hover : theme.accentC
 
                             Label {
                                 anchors.centerIn: parent
@@ -764,7 +766,7 @@ Popup {
                                 text: modelData.rpm > 0 ? qsTr("%1 RPM • %2%").arg(modelData.rpm).arg(modelData.speedPercent || 0)
                                                         : qsTr("0 RPM • Zero-dB / Passive")
                                 color: popup.softTextColor
-                                font.pixelSize: Math.round(10 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                             }
                         }
 
@@ -773,8 +775,8 @@ Popup {
                             Layout.alignment: Qt.AlignVCenter
                             implicitHeight: Math.round(22 * popup.uiScale)
                             implicitWidth: statusBadgeText.implicitWidth + Math.round(14 * popup.uiScale)
-                            radius: 4
-                            color: modelData.controllable ? popup.successBg : (popup.darkMode ? "#2E241E" : "#FFFBEB")
+                            radius: Style.RoTokens.radiusXs
+                            color: modelData.controllable ? popup.successBg : (theme.warningBg)
                             border.width: 1
                             border.color: modelData.controllable ? popup.successText : popup.warningText
 
@@ -783,7 +785,7 @@ Popup {
                                 anchors.centerIn: parent
                                 text: modelData.controllable ? qsTr("Controllable") : qsTr("Monitored")
                                 color: modelData.controllable ? popup.successText : popup.warningText
-                                font.pixelSize: Math.round(9 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                                 font.weight: Font.DemiBold
                             }
                         }
@@ -795,7 +797,7 @@ Popup {
             Rectangle {
                 Layout.fillWidth: true
                 visible: !popup.fanController || popup.fanController.systemFanCount === 0
-                radius: 8
+                radius: Style.RoTokens.radiusSm
                 color: popup.cardColor
                 border.width: 1
                 border.color: popup.borderColor
@@ -804,7 +806,7 @@ Popup {
                 ColumnLayout {
                     id: emptyStateCol
                     anchors.fill: parent
-                    anchors.margins: Math.round(12 * popup.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
                     spacing: 3
 
                     Label {
@@ -817,7 +819,7 @@ Popup {
                     Label {
                         text: qsTr("Direct PWM fan tachometers are not exposed by the hardware. Thermal management is handled automatically via motherboard ACPI profiles.")
                         color: popup.softTextColor
-                        font.pixelSize: Math.round(10 * popup.uiScale)
+                        font.pixelSize: Math.round(11 * popup.uiScale)
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }
@@ -827,7 +829,7 @@ Popup {
             // Bottom Action Bar
             RowLayout {
                 Layout.fillWidth: true
-                spacing: Math.round(8 * popup.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceSm * popup.uiScale)
 
                 Button {
                     id: testPulseBtn
@@ -838,19 +840,19 @@ Popup {
                     opacity: enabled ? 1.0 : 0.55
 
                     scale: down ? 0.98 : (hovered ? 1.01 : 1.0)
-                    Behavior on scale { NumberAnimation { duration: 100 } }
+                    Behavior on scale { NumberAnimation { duration: Style.Motion.fastMs } }
 
                     background: Rectangle {
-                        radius: 8
+                        radius: Style.RoTokens.radiusSm
                         color: popup.testRunning
-                               ? (popup.darkMode ? "#3A2E12" : "#FFFBEB")
-                               : (testPulseBtn.hovered ? (popup.darkMode ? "#342D4A" : "#F1F5F9") : popup.cardColor)
+                               ? (theme.warningBg)
+                               : (testPulseBtn.hovered ? (theme.cardStrong) : popup.cardColor)
                         border.width: 1
                         border.color: popup.testRunning ? popup.warningText : (testPulseBtn.hovered ? popup.accentColor : popup.borderColor)
                     }
 
                     contentItem: RowLayout {
-                        spacing: 6
+                        spacing: Style.RoTokens.spaceSm
                         anchors.centerIn: parent
                         Label {
                             text: popup.testRunning ? "⚡" : "🔊"
@@ -888,12 +890,12 @@ Popup {
                     hoverEnabled: true
 
                     scale: down ? 0.98 : (hovered ? 1.01 : 1.0)
-                    Behavior on scale { NumberAnimation { duration: 100 } }
+                    Behavior on scale { NumberAnimation { duration: Style.Motion.fastMs } }
 
                     background: Rectangle {
-                        radius: 8
-                        color: finishBtn.down ? (popup.darkMode ? "#4F46E5" : "#3730A3")
-                                              : (finishBtn.hovered ? (popup.darkMode ? "#939BFA" : "#5B52E8")
+                        radius: Style.RoTokens.radiusSm
+                        color: finishBtn.down ? (theme.accentA)
+                                              : (finishBtn.hovered ? (theme.accentA)
                                                                    : popup.accentColor)
                     }
 

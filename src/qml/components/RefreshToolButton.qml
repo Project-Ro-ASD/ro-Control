@@ -1,8 +1,10 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 
 ToolButton {
     id: control
+    Style.Theme { id: fallbackTheme; darkMode: control.darkMode }
 
     required property var theme
     property real uiScale: 1.0
@@ -20,23 +22,23 @@ ToolButton {
         text: control.tooltip
         delay: 300
         timeout: 5000
-        topPadding: Math.round(6 * control.uiScale)
-        bottomPadding: Math.round(6 * control.uiScale)
-        leftPadding: Math.round(12 * control.uiScale)
-        rightPadding: Math.round(12 * control.uiScale)
+        topPadding: Math.round(Style.RoTokens.spaceSm * control.uiScale)
+        bottomPadding: Math.round(Style.RoTokens.spaceSm * control.uiScale)
+        leftPadding: Math.round(Style.RoTokens.spaceMd * control.uiScale)
+        rightPadding: Math.round(Style.RoTokens.spaceMd * control.uiScale)
 
         contentItem: Label {
             text: refreshTip.text
-            color: control.theme && control.theme.text ? control.theme.text : (control.darkMode ? "#F3F4F6" : "#1F2937")
+            color: control.theme && control.theme.text ? control.theme.text : (theme.text)
             font.pixelSize: Math.round(11 * control.uiScale)
             font.weight: Font.Medium
         }
 
         background: Rectangle {
-            radius: 8
-            color: control.darkMode ? "#241E34" : "#FFFFFF"
+            radius: Style.RoTokens.radiusSm
+            color: theme.card
             border.width: 1
-            border.color: control.darkMode ? "#4D436B" : "#CBD5E1"
+            border.color: control.darkMode ? theme.border : theme.textMuted
 
             Rectangle {
                 anchors.left: parent.left
@@ -44,8 +46,8 @@ ToolButton {
                 anchors.bottom: parent.bottom
                 anchors.margins: 3
                 width: 3
-                radius: 1.5
-                color: control.theme && control.theme.accentA ? control.theme.accentA : "#6366F1"
+                radius: Math.min(width, height) / 2
+                color: control.theme && control.theme.accentA ? control.theme.accentA : theme.accentA
             }
         }
     }
@@ -68,17 +70,17 @@ ToolButton {
             scale: control.down ? 0.92 : control.hovered && control.enabled ? 1.06 : 1.0
 
             Behavior on scale {
-                NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+                NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutCubic }
             }
 
             RotationAnimation {
                 id: busySpin
                 target: refreshIcon
                 property: "rotation"
-                running: control.busy
+                running: control.busy && Style.Motion.factor > 0
                 from: 0
                 to: 360
-                duration: 900
+                duration: 900 * Style.Motion.factor
                 loops: Animation.Infinite
             }
 
@@ -88,7 +90,7 @@ ToolButton {
                 property: "rotation"
                 from: refreshIcon.rotation
                 to: refreshIcon.rotation + 180
-                duration: 260
+                duration: Style.Motion.fastMs
                 easing.type: Easing.OutCubic
             }
         }
@@ -112,8 +114,8 @@ ToolButton {
             anchors.margins: control.darkMode ? 0 : Math.max(3, Math.round(3 * control.uiScale))
             radius: width / 2
             color: !control.enabled ? "transparent"
-                  : control.down ? Qt.tint(control.theme.infoBg, control.darkMode ? "#30ffffff" : "#18000000")
-                  : control.hovered ? Qt.tint(control.theme.infoBg, control.darkMode ? "#40ffffff" : "#12000000")
+                  : control.down ? Qt.tint(control.theme.infoBg, control.darkMode ? Qt.rgba(theme.text.r, theme.text.g, theme.text.b, 0.1882) : Qt.rgba(theme.window.r, theme.window.g, theme.window.b, 0.0941))
+                  : control.hovered ? Qt.tint(control.theme.infoBg, control.darkMode ? Qt.rgba(theme.text.r, theme.text.g, theme.text.b, 0.2510) : Qt.rgba(theme.window.r, theme.window.g, theme.window.b, 0.0706))
                   : control.theme.infoBg
             border.width: 1
             border.color: control.hovered && control.enabled ? control.theme.accentA

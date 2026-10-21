@@ -7,6 +7,9 @@
 class UiPreferencesManager : public QObject {
   Q_OBJECT
 
+  Q_PROPERTY(
+      qreal animationDurationFactor READ animationDurationFactor CONSTANT)
+
   Q_PROPERTY(QString themeMode READ themeMode WRITE setThemeMode NOTIFY
                  themeModeChanged)
   Q_PROPERTY(
@@ -18,6 +21,7 @@ class UiPreferencesManager : public QObject {
 public:
   explicit UiPreferencesManager(QObject *parent = nullptr);
 
+  qreal animationDurationFactor() const;
   QString themeMode() const;
   QString selectedThemeMode() const;
   QVariantList availableThemeModes() const;

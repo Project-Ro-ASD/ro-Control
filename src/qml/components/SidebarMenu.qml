@@ -1,16 +1,18 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 import QtQuick.Layouts
 
 Rectangle {
     id: sidebar
+    Style.Theme { id: fallbackTheme; darkMode: false }
     width: 286
     required property var theme
-    color: (theme && theme.sidebarBg) ? theme.sidebarBg : ((theme && theme.shell) ? theme.shell : "#241F33")
+    color: (theme && theme.sidebarBg) ? theme.sidebarBg : ((theme && theme.shell) ? theme.shell : theme.cardStrong)
     border.width: 1
-    border.color: (theme && theme.sidebarBorder) ? theme.sidebarBorder : ((theme && theme.border) ? theme.border : "#383152")
+    border.color: (theme && theme.sidebarBorder) ? theme.sidebarBorder : ((theme && theme.border) ? theme.border : theme.hover)
     clip: true
 
     property int currentIndex: 0
@@ -22,8 +24,8 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.topMargin: 22
-        anchors.bottomMargin: 22
+        anchors.topMargin: Style.RoTokens.spaceXl
+        anchors.bottomMargin: Style.RoTokens.spaceXl
         spacing: 0
 
         Repeater {
@@ -39,12 +41,12 @@ Rectangle {
                 Layout.topMargin: menuCard.index === 0 ? 0 : 10
                 Layout.fillWidth: true
                 implicitHeight: 90
-                radius: 22
+                radius: Style.RoTokens.radiusLg
                 color: sidebar.currentIndex === menuCard.index
-                       ? ((sidebar.theme && sidebar.theme.sidebarActive) ? sidebar.theme.sidebarActive : ((sidebar.theme && sidebar.theme.cardStrong) ? sidebar.theme.cardStrong : "#342D4A"))
+                       ? ((sidebar.theme && sidebar.theme.sidebarActive) ? sidebar.theme.sidebarActive : ((sidebar.theme && sidebar.theme.cardStrong) ? sidebar.theme.cardStrong : theme.cardStrong))
                        : "transparent"
                 border.width: sidebar.currentIndex === menuCard.index ? 1 : 0
-                border.color: (sidebar.theme && sidebar.theme.sidebarBorder) ? sidebar.theme.sidebarBorder : ((sidebar.theme && sidebar.theme.border) ? sidebar.theme.border : "#4D436B")
+                border.color: (sidebar.theme && sidebar.theme.sidebarBorder) ? sidebar.theme.sidebarBorder : ((sidebar.theme && sidebar.theme.border) ? sidebar.theme.border : theme.border)
 
                 Rectangle {
                     visible: sidebar.currentIndex === menuCard.index
@@ -52,30 +54,30 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     width: 4
                     height: parent.height - 20
-                    radius: 2
-                    color: (sidebar.theme && sidebar.theme.sidebarAccent) ? sidebar.theme.sidebarAccent : ((sidebar.theme && sidebar.theme.accentA) ? sidebar.theme.accentA : "#818CF8")
+                    radius: Math.min(width, height) / 2
+                    color: (sidebar.theme && sidebar.theme.sidebarAccent) ? sidebar.theme.sidebarAccent : ((sidebar.theme && sidebar.theme.accentA) ? sidebar.theme.accentA : theme.accentA)
                 }
 
                 RowLayout {
                     anchors.fill: parent
-                    anchors.leftMargin: 22
-                    anchors.rightMargin: 22
-                    spacing: 16
+                    anchors.leftMargin: Style.RoTokens.spaceXl
+                    anchors.rightMargin: Style.RoTokens.spaceXl
+                    spacing: Style.RoTokens.spaceLg
 
                     Rectangle {
                         implicitWidth: 48
                         implicitHeight: 48
-                        radius: 16
+                        radius: Style.RoTokens.radiusLg
                         color: sidebar.currentIndex === menuCard.index
-                               ? ((sidebar.theme && sidebar.theme.sidebarAccent) ? sidebar.theme.sidebarAccent : ((sidebar.theme && sidebar.theme.accentA) ? sidebar.theme.accentA : "#818CF8"))
-                               : ((sidebar.theme && sidebar.theme.cardStrong) ? sidebar.theme.cardStrong : "#29233B")
+                               ? ((sidebar.theme && sidebar.theme.sidebarAccent) ? sidebar.theme.sidebarAccent : ((sidebar.theme && sidebar.theme.accentA) ? sidebar.theme.accentA : theme.accentA))
+                               : ((sidebar.theme && sidebar.theme.cardStrong) ? sidebar.theme.cardStrong : theme.card)
 
                         Label {
                             anchors.centerIn: parent
                             text: menuCard.modelData.marker
                             color: sidebar.currentIndex === menuCard.index
-                                   ? "#ffffff"
-                                   : ((sidebar.theme && sidebar.theme.sidebarMuted) ? sidebar.theme.sidebarMuted : ((sidebar.theme && sidebar.theme.textSoft) ? sidebar.theme.textSoft : "#94A3B8"))
+                                   ? theme.card
+                                   : ((sidebar.theme && sidebar.theme.sidebarMuted) ? sidebar.theme.sidebarMuted : ((sidebar.theme && sidebar.theme.textSoft) ? sidebar.theme.textSoft : theme.textMuted))
                             font.pixelSize: 18
                             font.weight: Font.DemiBold
                         }
@@ -84,7 +86,7 @@ Rectangle {
                     Label {
                         Layout.fillWidth: true
                         text: menuCard.modelData.title
-                        color: (sidebar.theme && sidebar.theme.sidebarText) ? sidebar.theme.sidebarText : ((sidebar.theme && sidebar.theme.text) ? sidebar.theme.text : "#F8FAFC")
+                        color: (sidebar.theme && sidebar.theme.sidebarText) ? sidebar.theme.sidebarText : ((sidebar.theme && sidebar.theme.text) ? sidebar.theme.text : theme.text)
                         font.pixelSize: 16
                         font.weight: sidebar.currentIndex === menuCard.index ? Font.DemiBold : Font.Medium
                     }
@@ -92,9 +94,9 @@ Rectangle {
                     Rectangle {
                         implicitWidth: 10
                         implicitHeight: 10
-                        radius: 5
+                        radius: Style.RoTokens.radiusXs
                         visible: sidebar.currentIndex === menuCard.index
-                        color: (sidebar.theme && sidebar.theme.sidebarAccent) ? sidebar.theme.sidebarAccent : ((sidebar.theme && sidebar.theme.accentA) ? sidebar.theme.accentA : "#818CF8")
+                        color: (sidebar.theme && sidebar.theme.sidebarAccent) ? sidebar.theme.sidebarAccent : ((sidebar.theme && sidebar.theme.accentA) ? sidebar.theme.accentA : theme.accentA)
                     }
                 }
 
@@ -104,7 +106,7 @@ Rectangle {
                     cursorShape: Qt.PointingHandCursor
                     onEntered: {
                         if (sidebar.currentIndex !== menuCard.index)
-                            menuCard.color = (sidebar.theme && sidebar.theme.sidebarHover) ? sidebar.theme.sidebarHover : ((sidebar.theme && sidebar.theme.card) ? sidebar.theme.card : "#29233B");
+                            menuCard.color = (sidebar.theme && sidebar.theme.sidebarHover) ? sidebar.theme.sidebarHover : ((sidebar.theme && sidebar.theme.card) ? sidebar.theme.card : theme.card);
                     }
                     onExited: {
                         if (sidebar.currentIndex !== menuCard.index)
