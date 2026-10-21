@@ -434,7 +434,7 @@ ApplicationWindow {
                                     anchors.bottom: parent.bottom
                                     anchors.margins: 3
                                     width: 3
-                                    radius: 1.5
+                                    radius: Math.min(width, height) / 2
                                     color: colors.accentA
                                 }
                             }

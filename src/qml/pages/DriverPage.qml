@@ -131,7 +131,7 @@ Item {
                     anchors.bottom: parent.bottom
                     anchors.margins: 3
                     width: 3
-                    radius: 1.5
+                    radius: Math.min(width, height) / 2
                     color: tile.accentColor
                 }
             }
@@ -153,7 +153,7 @@ Item {
                 anchors.bottom: parent.bottom
                 anchors.margins: Style.RoTokens.spaceSm
                 width: 4
-                radius: 2
+                radius: Math.min(width, height) / 2
                 color: tile.accentColor
                 visible: tile.enabled
                 opacity: tile.hovered ? 1.0 : 0.7
@@ -202,7 +202,7 @@ Item {
                         anchors.centerIn: parent
                         text: tile.badgeText.length > 0 ? tile.badgeText : qsTr("ACTIVE")
                         color: theme.success
-                        font.pixelSize: Math.round(9 * page.uiScale)
+                        font.pixelSize: Math.round(11 * page.uiScale)
                         font.weight: Font.Bold
                     }
                 }
@@ -721,7 +721,7 @@ Item {
                                 visible: page.nvidiaUpdater.updateAvailable
                                 implicitHeight: Math.round(22 * page.uiScale)
                                 implicitWidth: updateBadgeText.implicitWidth + Math.round(14 * page.uiScale)
-                                radius: 5
+                                radius: Style.RoTokens.radiusXs
                                 color: theme.warningBg
                                 border.width: 1
                                 border.color: theme.warning
@@ -731,7 +731,7 @@ Item {
                                     anchors.centerIn: parent
                                     text: qsTr("UPDATE AVAILABLE")
                                     color: theme.warning
-                                    font.pixelSize: Math.round(9 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.Bold
                                 }
                             }
@@ -788,7 +788,7 @@ Item {
                                 visible: page.nvidiaDetector.secureBootEnabled
                                 implicitHeight: Math.round(22 * page.uiScale)
                                 implicitWidth: mokBadgeLayout.implicitWidth + Math.round(14 * page.uiScale)
-                                radius: 5
+                                radius: Style.RoTokens.radiusXs
                                 color: mokBadgeMouse.hovered
                                        ? (theme.accentC)
                                        : (theme.accentC)
@@ -814,7 +814,7 @@ Item {
                                         id: mokBadgeText
                                         text: qsTr("MOK GUIDE ↗")
                                         color: theme.accentA
-                                        font.pixelSize: Math.round(9 * page.uiScale)
+                                        font.pixelSize: Math.round(11 * page.uiScale)
                                         font.weight: Font.Bold
                                     }
                                 }
@@ -1023,7 +1023,7 @@ Item {
                         Rectangle {
                             Layout.preferredWidth: liveStatusRow.implicitWidth + Math.round(18 * page.uiScale)
                             Layout.preferredHeight: Math.round(26 * page.uiScale)
-                            radius: 7
+                            radius: Style.RoTokens.radiusSm
                             color: page.activityFollowTail ? page.successBg : page.bgColor
                             border.width: 1
                             border.color: page.activityFollowTail ? (page.theme && page.theme.success ? page.theme.success : page.borderColor)
@@ -1037,7 +1037,7 @@ Item {
                                 Rectangle {
                                     implicitWidth: Math.round(7 * page.uiScale)
                                     implicitHeight: Math.round(7 * page.uiScale)
-                                    radius: Math.round(3.5 * page.uiScale)
+                                    radius: width / 2
                                     color: page.activityFollowTail ? (page.theme && page.theme.success ? page.theme.success : theme.success)
                                                                    : (page.theme && page.theme.warning ? page.theme.warning : theme.warning)
 
@@ -1590,7 +1590,7 @@ Item {
                                 anchors.bottom: parent.bottom
                                 anchors.margins: 3
                                 width: 3
-                                radius: 1.5
+                                radius: Math.min(width, height) / 2
                                 color: page.dangerColor
                             }
                         }
@@ -1697,7 +1697,7 @@ Item {
                 Rectangle {
                     width: Math.round(4 * page.uiScale)
                     height: Math.round(28 * page.uiScale)
-                    radius: 2
+                    radius: Math.min(width, height) / 2
                     color: driverActionModalPopup.actionAccentColor
                 }
 
@@ -1859,7 +1859,7 @@ Item {
         }
 
         background: Rectangle {
-            radius: Math.round(16 * page.uiScale)
+            radius: Math.round(Style.RoTokens.radiusLg * page.uiScale)
             color: page.bgColor
             border.width: 1
             border.color: page.borderColor
@@ -1922,7 +1922,7 @@ Item {
                     implicitWidth: Math.round(30 * page.uiScale)
                     implicitHeight: Math.round(30 * page.uiScale)
                     background: Rectangle {
-                        radius: 15
+                        radius: Style.RoTokens.radiusMd
                         color: closeMokBtn.hovered ? (page.darkMode ? theme.hover : theme.cardStrong) : "transparent"
                     }
                     contentItem: Text {

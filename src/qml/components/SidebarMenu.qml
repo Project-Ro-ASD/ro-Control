@@ -54,7 +54,7 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     width: 4
                     height: parent.height - 20
-                    radius: 2
+                    radius: Math.min(width, height) / 2
                     color: (sidebar.theme && sidebar.theme.sidebarAccent) ? sidebar.theme.sidebarAccent : ((sidebar.theme && sidebar.theme.accentA) ? sidebar.theme.accentA : theme.accentA)
                 }
 
@@ -67,7 +67,7 @@ Rectangle {
                     Rectangle {
                         implicitWidth: 48
                         implicitHeight: 48
-                        radius: 16
+                        radius: Style.RoTokens.radiusLg
                         color: sidebar.currentIndex === menuCard.index
                                ? ((sidebar.theme && sidebar.theme.sidebarAccent) ? sidebar.theme.sidebarAccent : ((sidebar.theme && sidebar.theme.accentA) ? sidebar.theme.accentA : theme.accentA))
                                : ((sidebar.theme && sidebar.theme.cardStrong) ? sidebar.theme.cardStrong : theme.card)
@@ -94,7 +94,7 @@ Rectangle {
                     Rectangle {
                         implicitWidth: 10
                         implicitHeight: 10
-                        radius: 5
+                        radius: Style.RoTokens.radiusXs
                         visible: sidebar.currentIndex === menuCard.index
                         color: (sidebar.theme && sidebar.theme.sidebarAccent) ? sidebar.theme.sidebarAccent : ((sidebar.theme && sidebar.theme.accentA) ? sidebar.theme.accentA : theme.accentA)
                     }

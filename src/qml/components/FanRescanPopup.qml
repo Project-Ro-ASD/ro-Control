@@ -325,7 +325,7 @@ Popup {
                             Label {
                                 text: qsTr("Scans /sys/class/thermal and motherboard hardware monitoring chips")
                                 color: popup.softTextColor
-                                font.pixelSize: Math.round(10 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                             }
                         }
                     }
@@ -357,7 +357,7 @@ Popup {
                             Label {
                                 text: qsTr("Probes dedicated GPU cooling channels and PWM control registers")
                                 color: popup.softTextColor
-                                font.pixelSize: Math.round(10 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                             }
                         }
                     }
@@ -389,7 +389,7 @@ Popup {
                             Label {
                                 text: qsTr("Recalibrates zero-RPM stops, baseline curves, and safety overrides")
                                 color: popup.softTextColor
-                                font.pixelSize: Math.round(10 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                             }
                         }
                     }
@@ -417,7 +417,7 @@ Popup {
                         Layout.fillWidth: true
                         text: qsTr("Non-intrusive probe: Fan speeds will not be interrupted during this scan.")
                         color: popup.infoText
-                        font.pixelSize: Math.round(10 * popup.uiScale)
+                        font.pixelSize: Math.round(11 * popup.uiScale)
                         wrapMode: Text.WordWrap
                     }
                 }
@@ -573,7 +573,7 @@ Popup {
                                     anchors.centerIn: parent
                                     text: popup.phase1Done ? "✓" : "1"
                                     color: popup.phase1Done ? popup.successText : popup.accentColor
-                                    font.pixelSize: Math.round(10 * popup.uiScale)
+                                    font.pixelSize: Math.round(11 * popup.uiScale)
                                     font.weight: Font.Bold
                                 }
                             }
@@ -596,7 +596,7 @@ Popup {
                                     anchors.centerIn: parent
                                     text: popup.phase2Done ? "✓" : "2"
                                     color: popup.phase2Done ? popup.successText : (popup.phase1Done ? popup.accentColor : popup.softTextColor)
-                                    font.pixelSize: Math.round(10 * popup.uiScale)
+                                    font.pixelSize: Math.round(11 * popup.uiScale)
                                     font.weight: Font.Bold
                                 }
                             }
@@ -619,7 +619,7 @@ Popup {
                                     anchors.centerIn: parent
                                     text: popup.phase3Done ? "✓" : "3"
                                     color: popup.phase3Done ? popup.successText : (popup.phase2Done ? popup.accentColor : popup.softTextColor)
-                                    font.pixelSize: Math.round(10 * popup.uiScale)
+                                    font.pixelSize: Math.round(11 * popup.uiScale)
                                     font.weight: Font.Bold
                                 }
                             }
@@ -681,7 +681,7 @@ Popup {
                                     .arg(popup.scannedCapability)
                               : qsTr("The scan is complete, but firmware or the driver did not expose readable fan telemetry.")
                         color: popup.textColor
-                        font.pixelSize: Math.round(10 * popup.uiScale)
+                        font.pixelSize: Math.round(11 * popup.uiScale)
                     }
                 }
             }
@@ -699,7 +699,7 @@ Popup {
                 Label {
                     text: (popup.fanController ? popup.fanController.systemFanCount : 0) + " " + qsTr("found")
                     color: popup.softTextColor
-                    font.pixelSize: Math.round(10 * popup.uiScale)
+                    font.pixelSize: Math.round(11 * popup.uiScale)
                 }
             }
 
@@ -766,7 +766,7 @@ Popup {
                                 text: modelData.rpm > 0 ? qsTr("%1 RPM • %2%").arg(modelData.rpm).arg(modelData.speedPercent || 0)
                                                         : qsTr("0 RPM • Zero-dB / Passive")
                                 color: popup.softTextColor
-                                font.pixelSize: Math.round(10 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                             }
                         }
 
@@ -785,7 +785,7 @@ Popup {
                                 anchors.centerIn: parent
                                 text: modelData.controllable ? qsTr("Controllable") : qsTr("Monitored")
                                 color: modelData.controllable ? popup.successText : popup.warningText
-                                font.pixelSize: Math.round(9 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                                 font.weight: Font.DemiBold
                             }
                         }
@@ -819,7 +819,7 @@ Popup {
                     Label {
                         text: qsTr("Direct PWM fan tachometers are not exposed by the hardware. Thermal management is handled automatically via motherboard ACPI profiles.")
                         color: popup.softTextColor
-                        font.pixelSize: Math.round(10 * popup.uiScale)
+                        font.pixelSize: Math.round(11 * popup.uiScale)
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }

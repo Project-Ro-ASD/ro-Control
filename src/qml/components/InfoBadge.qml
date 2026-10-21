@@ -11,7 +11,7 @@ Rectangle {
     property color backgroundColor: theme.accentC
     property color foregroundColor: theme.text
 
-    radius: 999
+    radius: height / 2
     color: backgroundColor
     border.width: 1
     border.color: Qt.tint(backgroundColor, Qt.rgba(theme.window.r, theme.window.g, theme.window.b, 0.1333))

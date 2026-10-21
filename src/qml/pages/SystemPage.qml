@@ -281,7 +281,7 @@ Item {
                 Layout.fillWidth: true
                 visible: page.actionFeedback.length > 0
                 implicitHeight: actionFeedbackLabel.implicitHeight + Math.round(18 * page.uiScale)
-                radius: 9
+                radius: Style.RoTokens.radiusSm
                 color: page.actionFailed ? (theme.warningBg) : page.infoBg
                 border.width: 1
                 border.color: page.actionFailed ? page.warningColor : page.accentColor
@@ -689,7 +689,7 @@ Item {
         }
 
         background: Rectangle {
-            radius: 16
+            radius: Style.RoTokens.radiusLg
             color: page.cardColor
             border.width: 1
             border.color: page.borderColor
@@ -703,7 +703,7 @@ Item {
                 Layout.fillWidth: true
                 implicitHeight: Math.round(64 * page.uiScale)
                 color: theme.hover
-                radius: 16
+                radius: Style.RoTokens.radiusLg
 
                 Rectangle {
                     anchors.bottom: parent.bottom
@@ -1250,7 +1250,7 @@ Item {
                                                 anchors.centerIn: parent
                                                 text: sectionCard.modelData.items.length + " " + qsTr("items")
                                                 color: page.softTextColor
-                                                font.pixelSize: Math.round(10 * page.uiScale)
+                                                font.pixelSize: Math.round(11 * page.uiScale)
                                                 font.weight: Font.DemiBold
                                             }
                                         }
@@ -1541,7 +1541,7 @@ Item {
         footer: null
 
         background: Rectangle {
-            radius: 16
+            radius: Style.RoTokens.radiusLg
             color: page.cardColor
             border.width: 1
             border.color: page.borderColor
@@ -1555,7 +1555,7 @@ Item {
                 Layout.fillWidth: true
                 implicitHeight: Math.round(60 * page.uiScale)
                 color: theme.warningBg
-                radius: 16
+                radius: Style.RoTokens.radiusLg
                 Rectangle {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left

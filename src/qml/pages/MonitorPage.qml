@@ -293,7 +293,7 @@ Item {
                                 Label {
                                     text: qsTr("USAGE")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -311,7 +311,7 @@ Item {
                                 Label {
                                     text: qsTr("TEMPERATURE")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -427,7 +427,7 @@ Item {
                                         visible: page.gpuMonitor && page.gpuMonitor.gpuCount > 1
                                         text: "GPU " + (page.gpuMonitor ? page.gpuMonitor.selectedGpuIndex : 0) + " ▾"
                                         color: page.accentColor
-                                        font.pixelSize: Math.round(10 * page.uiScale)
+                                        font.pixelSize: Math.round(11 * page.uiScale)
                                         font.weight: Font.Bold
                                     }
                                 }
@@ -466,7 +466,7 @@ Item {
                                 Label {
                                     text: qsTr("LOAD")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -484,7 +484,7 @@ Item {
                                 Label {
                                     text: qsTr("TEMPERATURE")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 RowLayout {
@@ -539,7 +539,7 @@ Item {
                                 Label {
                                     text: qsTr("USAGE")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -557,7 +557,7 @@ Item {
                                 Label {
                                     text: qsTr("ALLOCATED")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -610,7 +610,7 @@ Item {
                                 Label {
                                     text: qsTr("USAGE")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -633,7 +633,7 @@ Item {
                                 Label {
                                     text: qsTr("ALLOCATED")
                                     color: page.softTextColor
-                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                    font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Label {
@@ -658,7 +658,7 @@ Item {
                                      ? (page.ramMonitor.zramCompressionRatio > 0 || page.ramMonitor.zramPhysicalMiB > 0 ? " • " : "") + qsTr("zswap enabled")
                                      : "")
                             color: page.softTextColor
-                            font.pixelSize: Math.round(10 * page.uiScale)
+                            font.pixelSize: Math.round(11 * page.uiScale)
                             font.weight: Font.DemiBold
                             elide: Text.ElideRight
                         }
@@ -669,7 +669,7 @@ Item {
 
                             Rectangle {
                                 anchors.fill: parent
-                                radius: 2
+                                radius: Math.min(width, height) / 2
                                 color: theme.cardStrong
                             }
 
@@ -677,7 +677,7 @@ Item {
                                 anchors.left: parent.left
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
-                                radius: 2
+                                radius: Math.min(width, height) / 2
                                 width: Math.min(parent.width, Math.max(0, parent.width * (page.ramMonitor.zramTotalMiB > 0 ? (page.ramMonitor.zramUsedMiB / page.ramMonitor.zramTotalMiB) : 0)))
                                 color: theme.warning
                                 Behavior on width { NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutCubic } }
@@ -979,7 +979,7 @@ Item {
                             scale: down ? 0.98 : 1.0
                             Behavior on scale { NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutQuad } }
                             background: Rectangle {
-                                radius: Math.round(9 * page.uiScale)
+                                radius: Math.round(Style.RoTokens.radiusSm * page.uiScale)
                                 color: processExpansionButton.down
                                        ? Qt.darker(page.accentColor, 1.16)
                                        : (processExpansionButton.hovered ? theme.accentA : page.accentColor)
@@ -1200,7 +1200,7 @@ Item {
                                                     color: (modelData.type && modelData.type.indexOf("Compute") !== -1)
                                                            ? (theme.accentA)
                                                            : (theme.success)
-                                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                                    font.pixelSize: Math.round(11 * page.uiScale)
                                                     font.weight: Font.DemiBold
                                                 }
                                             }
@@ -1224,7 +1224,7 @@ Item {
                                                         var pct = total > 0 ? Math.min(1.0, Math.max(0.04, modelData.vramMiB / total)) : 0;
                                                         return parent.width * pct;
                                                     }
-                                                    radius: 5
+                                                    radius: Style.RoTokens.radiusXs
                                                     color: page.darkMode ? theme.accentA : theme.accentC
                                                     opacity: 0.7
                                                 }

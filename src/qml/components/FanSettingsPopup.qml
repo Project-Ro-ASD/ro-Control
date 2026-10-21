@@ -225,7 +225,7 @@ Popup {
     }
 
     background: Rectangle {
-        radius: 16
+        radius: Style.RoTokens.radiusLg
         color: popup.bgColor
         border.width: 1
         border.color: popup.borderColor
@@ -347,7 +347,7 @@ Popup {
                             anchors.centerIn: parent
                             text: popup.currentFan ? (popup.currentFan.type || "SYS") : "FAN"
                             color: popup.accentColor
-                            font.pixelSize: Math.round(10 * popup.uiScale)
+                            font.pixelSize: Math.round(11 * popup.uiScale)
                             font.weight: Font.Bold
                         }
                     }
@@ -376,7 +376,7 @@ Popup {
                 hoverEnabled: true
 
                 background: Rectangle {
-                    radius: Math.round(16 * popup.uiScale)
+                    radius: Math.round(Style.RoTokens.radiusLg * popup.uiScale)
                     color: closeBtn.hovered ? (popup.darkMode ? theme.hover : theme.cardStrong) : "transparent"
                 }
 
@@ -458,7 +458,7 @@ Popup {
                                 Label {
                                     text: qsTr("LIVE SPEED")
                                     color: popup.softTextColor
-                                    font.pixelSize: Math.round(10 * popup.uiScale)
+                                    font.pixelSize: Math.round(11 * popup.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Item { Layout.fillWidth: true }
@@ -516,7 +516,7 @@ Popup {
                                 Label {
                                     text: qsTr("TACHOMETER")
                                     color: popup.softTextColor
-                                    font.pixelSize: Math.round(10 * popup.uiScale)
+                                    font.pixelSize: Math.round(11 * popup.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Item { Layout.fillWidth: true }
@@ -539,7 +539,7 @@ Popup {
                                 color: (popup.currentFan && (popup.currentFan.isZeroRpm || popup.currentFan.rpm === 0))
                                        ? (theme.success)
                                        : popup.softTextColor
-                                font.pixelSize: Math.round(10 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                                 font.weight: Font.Medium
                             }
                         }
@@ -561,7 +561,7 @@ Popup {
                                 Label {
                                     text: qsTr("TEMPERATURE")
                                     color: popup.softTextColor
-                                    font.pixelSize: Math.round(10 * popup.uiScale)
+                                    font.pixelSize: Math.round(11 * popup.uiScale)
                                     font.weight: Font.DemiBold
                                 }
                                 Item { Layout.fillWidth: true }
@@ -587,7 +587,7 @@ Popup {
                                     return qsTr("Optimal Thermal State");
                                 }
                                 color: popup.softTextColor
-                                font.pixelSize: Math.round(10 * popup.uiScale)
+                                font.pixelSize: Math.round(11 * popup.uiScale)
                             }
                         }
                     }
@@ -1150,14 +1150,14 @@ Popup {
                                                     implicitHeight: 4
                                                     width: ptSlider.availableWidth
                                                     height: implicitHeight
-                                                    radius: 2
+                                                    radius: Math.min(width, height) / 2
                                                     color: theme.cardStrong
 
                                                     Rectangle {
                                                         width: ptSlider.visualPosition * parent.width
                                                         height: parent.height
                                                         color: popup.accentColor
-                                                        radius: 2
+                                                        radius: Math.min(width, height) / 2
                                                     }
                                                 }
 
@@ -1166,7 +1166,7 @@ Popup {
                                                     y: ptSlider.topPadding + ptSlider.availableHeight / 2 - height / 2
                                                     implicitWidth: 14
                                                     implicitHeight: 14
-                                                    radius: 7
+                                                    radius: Style.RoTokens.radiusSm
                                                     color: theme.card
                                                     border.color: popup.accentColor
                                                     border.width: 2
@@ -1248,14 +1248,14 @@ Popup {
                                     implicitHeight: 6
                                     width: guardSlider.availableWidth
                                     height: implicitHeight
-                                    radius: 3
+                                    radius: height / 2
                                     color: theme.cardStrong
 
                                     Rectangle {
                                         width: guardSlider.visualPosition * parent.width
                                         height: parent.height
                                         color: popup.warningText
-                                        radius: 3
+                                        radius: height / 2
                                     }
                                 }
 
@@ -1346,7 +1346,7 @@ Popup {
                 Layout.fillWidth: popup.compactLayout
                 text: qsTr("Direct fan control unavailable")
                 color: popup.softTextColor
-                font.pixelSize: Math.round(10 * popup.uiScale)
+                font.pixelSize: Math.round(11 * popup.uiScale)
             }
 
             Label {

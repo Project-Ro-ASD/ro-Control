@@ -421,7 +421,7 @@ Item {
                                                 Label {
                                                     text: fanCard.modelData.type || "SYS"
                                                     color: page.textColor
-                                                    font.pixelSize: Math.round(10 * page.uiScale)
+                                                    font.pixelSize: Math.round(11 * page.uiScale)
                                                     font.weight: Font.Bold
                                                 }
                                             }
@@ -476,7 +476,7 @@ Item {
                                             Label {
                                                 text: qsTr("SPEED")
                                                 color: page.softTextColor
-                                                font.pixelSize: Math.round(10 * page.uiScale)
+                                                font.pixelSize: Math.round(11 * page.uiScale)
                                                 font.weight: Font.DemiBold
                                             }
 
@@ -506,7 +506,7 @@ Item {
                                             Label {
                                                 text: qsTr("RPM")
                                                 color: page.softTextColor
-                                                font.pixelSize: Math.round(10 * page.uiScale)
+                                                font.pixelSize: Math.round(11 * page.uiScale)
                                                 font.weight: Font.DemiBold
                                             }
 
@@ -541,7 +541,7 @@ Item {
                                             Label {
                                                 text: qsTr("TEMPERATURE")
                                                 color: page.softTextColor
-                                                font.pixelSize: Math.round(10 * page.uiScale)
+                                                font.pixelSize: Math.round(11 * page.uiScale)
                                                 font.weight: Font.DemiBold
                                             }
 
@@ -802,7 +802,7 @@ Item {
                                         Layout.fillWidth: true
                                         text: modeBtn.modelData.desc
                                         color: page.softTextColor
-                                        font.pixelSize: Math.round(10 * page.uiScale)
+                                        font.pixelSize: Math.round(11 * page.uiScale)
                                         elide: Text.ElideRight
                                     }
                                 }
@@ -928,7 +928,7 @@ Item {
                                                         anchors.centerIn: parent
                                                         text: "#" + (ptCard.index + 1)
                                                         color: page.accentColor
-                                                        font.pixelSize: Math.round(10 * page.uiScale)
+                                                        font.pixelSize: Math.round(11 * page.uiScale)
                                                         font.weight: Font.Bold
                                                     }
                                                 }
@@ -954,7 +954,7 @@ Item {
                                             Rectangle {
                                                 Layout.fillWidth: true
                                                 implicitHeight: Math.round(6 * page.uiScale)
-                                                radius: 3
+                                                radius: height / 2
                                                 color: theme.cardStrong
                                                 clip: true
 
@@ -963,7 +963,7 @@ Item {
                                                     anchors.top: parent.top
                                                     anchors.bottom: parent.bottom
                                                     width: parent.width * Math.min(1.0, Math.max(0.0, (ptCard.ptData.speed || 0) / 100.0))
-                                                    radius: 3
+                                                    radius: height / 2
                                                     color: {
                                                         var s = ptCard.ptData.speed || 0;
                                                         if (s > 80) return page.warningText;
