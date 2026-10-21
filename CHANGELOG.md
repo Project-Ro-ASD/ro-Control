@@ -5,7 +5,21 @@ All notable changes to **ro-Control** will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.3.3] - 2026-10-21
+## [v1.3.4] - 2026-10-21
+
+### Fixed
+- Keep a single GUI instance per user runtime directory. Reopening activates the
+  existing window; hidden/minimized windows and startup requests are handled.
+- Recover the GUI instance lock after a crash without affecting CLI/daemon modes.
+
+### Changed
+- Apply shared Ro-Theme light/dark palettes, navy accents, token-based geometry,
+  keyboard focus and reduced-motion transitions.
+- Verify simultaneous launches and crash recovery with the installed Fedora
+  44/45 x86_64/aarch64 RPMs, in addition to the 15 CTest suites.
+- Include the V2 packaging and publication fixes prepared below.
+
+## [v1.3.3] - prepared only; not published
 
 ### Fixed
 - Complete release publication using the workflow token's supported permissions.
@@ -17,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v1.3.2] - 2026-10-20 (tag only; no GitHub Release)
 
 The publication attempt stopped at an administrator-only settings query before
-creating a release. The tag is preserved; the corrected publication is v1.3.3.
+creating a release. The tag is preserved; its publication fix was prepared in v1.3.3 and ships in v1.3.4.
 
 
 ### Fixed
