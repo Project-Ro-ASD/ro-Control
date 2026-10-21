@@ -223,3 +223,6 @@ target_compile_definitions(test_theme PRIVATE
     QUICK_TEST_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qml"
 )
 ro_control_register_test(test_theme)
+set_tests_properties(test_theme PROPERTIES
+    ENVIRONMENT "${RO_CONTROL_TEST_ENV};QT_QUICK_BACKEND=software"
+)
