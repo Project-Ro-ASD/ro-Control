@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 project(ro-control
-    VERSION 1.3.3
+    VERSION 1.3.4
     DESCRIPTION "Linux hardware monitor, cooling controller, and NVIDIA driver manager"
     HOMEPAGE_URL "https://github.com/Project-Ro-ASD/ro-Control"
     LANGUAGES CXX

@@ -30,9 +30,9 @@ no tag-bound provenance. Do not submit it to Ro-Repo.
 ## Authorized release procedure
 
 Do not reuse or modify v1.3.1. Before a new release, select a new version (for
-example 1.3.3), update CMake/spec/AppStream/changelog version metadata together,
+example 1.3.4), update CMake/spec/AppStream/changelog version metadata together,
 merge the reviewed packaging PR and obtain Emir's explicit approval for the tag
-and release. For the authorized 1.3.3 publication, AppStream is marked stable and the changelog release date is 2026-10-21. Fedora 45 remains a prerelease compatibility target; the public V2 release contains Fedora 44 artifacts only.
+and release. For the authorized 1.3.4 publication, AppStream is marked stable and the changelog release date is 2026-10-21. Fedora 45 remains a prerelease compatibility target; the public V2 release contains Fedora 44 artifacts only.
 
 On an authorized exact version tag, the workflow requires all build, clean-install
 and contract jobs to pass. The release operator checks native GitHub release immutability is enabled
@@ -98,5 +98,6 @@ explicitly reviewed downstream contract and separate authorization.
 
 
 The original v1.3.2 tag is preserved as an unsuccessful publication attempt;
-no GitHub Release was created for it. v1.3.3 carries the workflow permissions fix.
+no GitHub Release was created for it. The workflow permissions fix was prepared in
+v1.3.3; v1.3.4 includes it together with the Ro-Theme and single-instance changes.
 No tag is moved or reused to hide that history.

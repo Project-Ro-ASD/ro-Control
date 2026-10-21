@@ -25,7 +25,7 @@ sudo dnf install -y ./ro-control-<version>-1.fc<fedora>.<arch>.rpm
 ```
 
 Replace `<version>`, `<fedora>` and `<arch>` with the release you are installing (for
-example `ro-control-1.3.3-1.fc45.x86_64.rpm`; this is an unreleased candidate, so use the actual CI filename).
+example `ro-control-1.3.4-1.fc45.x86_64.rpm`; this is an unreleased candidate, so use the actual CI filename).
 
 ### Installation via KDE Discover
 1. Open the `.rpm` file with **Discover** (`plasma-discover ro-control-<version>-1.fc<fedora>.<arch>.rpm`) or double-click in Dolphin.

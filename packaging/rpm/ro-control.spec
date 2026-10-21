@@ -1,4 +1,4 @@
-%global upstream_version %{!?upstream_version:1.3.3}%{?upstream_version}
+%global upstream_version %{!?upstream_version:1.3.4}%{?upstream_version}
 %global debug_package %{nil}
 
 Name:           ro-control
@@ -113,6 +113,10 @@ fi
 %{_prefix}/lib/systemd/user/ro-control.service
 
 %changelog
+* Wed Oct 21 2026 Sopwit <sopwith.osdev@gmail.com> - 1.3.4-1
+- Apply shared Ro-Theme styling and enforce a single GUI instance.
+- Include attested Fedora 44 release packaging and Fedora 45 compatibility checks.
+
 * Wed Oct 21 2026 Sopwit <sopwith.osdev@gmail.com> - 1.3.3-1
 - Complete attested publication without requiring an administrator token in CI.
 - Include the Fedora 44/45 packaging and NVIDIA helper fix prepared in 1.3.2.
