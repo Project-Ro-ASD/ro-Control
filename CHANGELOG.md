@@ -5,7 +5,20 @@ All notable changes to **ro-Control** will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.3.2] - 2026-10-20
+## [v1.3.3] - 2026-10-21
+
+### Fixed
+- Complete release publication using the workflow token's supported permissions.
+  Repository immutability settings require administrator read access and are
+  checked by the release operator before tagging; CI verifies the published
+  release's actual immutable status and all artifact provenance.
+- Include the Fedora 44/45 RPM and NVIDIA helper fixes prepared below.
+
+## [v1.3.2] - 2026-10-20 (tag only; no GitHub Release)
+
+The publication attempt stopped at an administrator-only settings query before
+creating a release. The tag is preserved; the corrected publication is v1.3.3.
+
 
 ### Fixed
 - Allow the installer's exact `env LANG=C dnf` privileged-helper wrapper;

@@ -323,7 +323,9 @@ jobs:
           set -euo pipefail
           TAG="${GITHUB_REF_NAME}"
           # Fail closed on API failures and on existing releases, including drafts.
-          [[ "$(gh api "repos/${GITHUB_REPOSITORY}/immutable-releases" --jq .enabled)" == true ]]
+          # Reading immutable-releases settings requires Administration: read,
+          # which GITHUB_TOKEN cannot request. The release operator checks it
+          # before tagging; the published release's immutable flag is verified below.
           gh api --paginate "repos/${GITHUB_REPOSITORY}/releases" > /tmp/existing-releases.json
           if jq -e --arg tag "${TAG}" '.[] | select(.tag_name == $tag)' /tmp/existing-releases.json >/dev/null; then
             echo "Release ${TAG} already exists; no release or draft may be replaced." >&2

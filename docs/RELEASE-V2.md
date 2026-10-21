@@ -30,13 +30,15 @@ no tag-bound provenance. Do not submit it to Ro-Repo.
 ## Authorized release procedure
 
 Do not reuse or modify v1.3.1. Before a new release, select a new version (for
-example 1.3.2), update CMake/spec/AppStream/changelog version metadata together,
+example 1.3.3), update CMake/spec/AppStream/changelog version metadata together,
 merge the reviewed packaging PR and obtain Emir's explicit approval for the tag
-and release. For the authorized 1.3.2 publication, AppStream is marked stable and the changelog release date is 2026-10-20. Fedora 45 remains a prerelease compatibility target; the public V2 release contains Fedora 44 artifacts only.
+and release. For the authorized 1.3.3 publication, AppStream is marked stable and the changelog release date is 2026-10-21. Fedora 45 remains a prerelease compatibility target; the public V2 release contains Fedora 44 artifacts only.
 
 On an authorized exact version tag, the workflow requires all build, clean-install
-and contract jobs to pass. It checks native GitHub release immutability is enabled
-and refuses to replace any existing release, including drafts. It creates a new
+and contract jobs to pass. The release operator checks native GitHub release immutability is enabled
+with `bash packaging/scripts/check-release-settings.sh` before tagging. This
+settings endpoint requires administrator read access and cannot be called with
+the workflow token. CI uses supported contents/attestation permissions and refuses to replace any existing release, including drafts. It creates a new
 draft, uses its real numeric release ID in the final manifest, and attests all
 three RPMs, SHA256SUMS and the manifest. The pinned consumer's verifier must verify
 repository, source digest, tag ref, signer workflow and the exact run/attempt for
@@ -93,3 +95,8 @@ Those require booted Fedora 44/45 systems with supported NVIDIA hardware and
 separate test evidence. Container packaging success must not close the reported
 NVIDIA installer bug. Fedora 45 distribution-channel publication needs an
 explicitly reviewed downstream contract and separate authorization.
+
+
+The original v1.3.2 tag is preserved as an unsuccessful publication attempt;
+no GitHub Release was created for it. v1.3.3 carries the workflow permissions fix.
+No tag is moved or reused to hide that history.
