@@ -1042,7 +1042,7 @@ Item {
                                                                    : (page.theme && page.theme.warning ? page.theme.warning : theme.warning)
 
                                     SequentialAnimation on opacity {
-                                        running: page.activityFollowTail && page.operationRunning
+                                        running: page.activityFollowTail && page.operationRunning && Style.Motion.factor > 0
                                         loops: Animation.Infinite
                                         NumberAnimation { from: 1.0; to: 0.25; duration: 550 * Style.Motion.factor; easing.type: Easing.InOutQuad }
                                         NumberAnimation { from: 0.25; to: 1.0; duration: 550 * Style.Motion.factor; easing.type: Easing.InOutQuad }

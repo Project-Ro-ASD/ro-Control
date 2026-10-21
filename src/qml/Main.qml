@@ -220,6 +220,15 @@ ApplicationWindow {
                         background: Rectangle {
                             radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
                             color: tabBar.currentIndex === 0 ? colors.accentA : (driverTab.hovered ? colors.cardStrong : "transparent")
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -Style.RoTokens.spaceXs
+                                radius: Style.RoTokens.radiusMd
+                                color: "transparent"
+                                border.width: 2 * Style.RoTokens.borderWidth
+                                border.color: colors.accentA
+                                visible: driverTab.visualFocus
+                            }
                             border.width: driverTab.visualFocus ? 2 : 1
                             border.color: driverTab.visualFocus ? colors.accentA : tabBar.currentIndex === 0 ? colors.accentA : (driverTab.hovered ? colors.border : "transparent")
                         }
@@ -243,6 +252,15 @@ ApplicationWindow {
                         background: Rectangle {
                             radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
                             color: tabBar.currentIndex === 1 ? colors.accentA : (monitorTab.hovered ? colors.cardStrong : "transparent")
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -Style.RoTokens.spaceXs
+                                radius: Style.RoTokens.radiusMd
+                                color: "transparent"
+                                border.width: 2 * Style.RoTokens.borderWidth
+                                border.color: colors.accentA
+                                visible: monitorTab.visualFocus
+                            }
                             border.width: monitorTab.visualFocus ? 2 : 1
                             border.color: monitorTab.visualFocus ? colors.accentA : tabBar.currentIndex === 1 ? colors.accentA : (monitorTab.hovered ? colors.border : "transparent")
                         }
@@ -266,6 +284,15 @@ ApplicationWindow {
                         background: Rectangle {
                             radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
                             color: tabBar.currentIndex === 2 ? colors.accentA : (fanTab.hovered ? colors.cardStrong : "transparent")
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -Style.RoTokens.spaceXs
+                                radius: Style.RoTokens.radiusMd
+                                color: "transparent"
+                                border.width: 2 * Style.RoTokens.borderWidth
+                                border.color: colors.accentA
+                                visible: fanTab.visualFocus
+                            }
                             border.width: fanTab.visualFocus ? 2 : 1
                             border.color: fanTab.visualFocus ? colors.accentA : tabBar.currentIndex === 2 ? colors.accentA : (fanTab.hovered ? colors.border : "transparent")
                         }
@@ -289,6 +316,15 @@ ApplicationWindow {
                         background: Rectangle {
                             radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
                             color: tabBar.currentIndex === 3 ? colors.accentA : (systemTab.hovered ? colors.cardStrong : "transparent")
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -Style.RoTokens.spaceXs
+                                radius: Style.RoTokens.radiusMd
+                                color: "transparent"
+                                border.width: 2 * Style.RoTokens.borderWidth
+                                border.color: colors.accentA
+                                visible: systemTab.visualFocus
+                            }
                             border.width: systemTab.visualFocus ? 2 : 1
                             border.color: systemTab.visualFocus ? colors.accentA : tabBar.currentIndex === 3 ? colors.accentA : (systemTab.hovered ? colors.border : "transparent")
                         }

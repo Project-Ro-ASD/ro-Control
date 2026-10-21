@@ -46,5 +46,15 @@ Button {
                             : control.fillColor
         border.width: control.visualFocus ? 2 * Style.RoTokens.borderWidth : Style.RoTokens.borderWidth
         border.color: control.visualFocus ? control.theme.accentA : control.borderColor
+        Rectangle {
+            objectName: "keyboardFocusRing"
+            anchors.fill: parent
+            anchors.margins: -Style.RoTokens.spaceXs
+            radius: Style.RoTokens.radiusMd + Style.RoTokens.spaceXs
+            color: "transparent"
+            border.width: 2 * Style.RoTokens.borderWidth
+            border.color: control.theme.accentA
+            visible: control.visualFocus
+        }
     }
 }

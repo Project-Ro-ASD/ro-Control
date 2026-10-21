@@ -64,6 +64,7 @@ TestCase {
         action.forceActiveFocus(Qt.TabFocusReason);
         verify(action.activeFocus);
         verify(action.visualFocus);
+        verify(findChild(action, "keyboardFocusRing").visible);
         keyClick(Qt.Key_Space);
         compare(clicked.count, 1);
         action.enabled = false;
