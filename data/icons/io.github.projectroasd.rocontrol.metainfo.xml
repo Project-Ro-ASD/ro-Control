@@ -46,6 +46,12 @@
 	</categories>
 
 	<releases>
+		<release version="1.3.5" type="stable" date="2026-10-21">
+			<description>
+				<p>Fixes a startup crash when following the system language and adds localized startup regression tests.</p>
+				<p xml:lang="tr">Sistem dilini takip ederken oluşan başlangıç çökmesini düzeltir ve farklı dillerde başlangıç regresyon testleri ekler.</p>
+			</description>
+		</release>
 		<release version="1.3.4" type="stable" date="2026-10-21">
 			<description>
 				<p>Applies shared Ro-Theme styling, prevents duplicate GUI instances, and completes verified Fedora 44 RPM publication with Fedora 45 compatibility checks. Full NVIDIA hardware qualification remains pending.</p>
