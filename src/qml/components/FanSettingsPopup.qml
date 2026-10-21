@@ -1,11 +1,13 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 import QtQuick.Layouts
 
 Popup {
     id: popup
+    Style.Theme { id: fallbackTheme; darkMode: popup.darkMode }
     required property var fanController
-    property var theme: ({})
+    property var theme: fallbackTheme
     property bool darkMode: false
     property real uiScale: 1.0
 
@@ -24,19 +26,19 @@ Popup {
     readonly property bool hasHardwareControl: currentFan && currentFan.controllable === true
     readonly property bool compactLayout: width < Math.round(520 * popup.uiScale)
 
-    readonly property color bgColor: theme && theme.card ? theme.card : (popup.darkMode ? "#241E34" : "#FFFFFF")
-    readonly property color cardColor: theme && theme.cardStrong ? theme.cardStrong : (popup.darkMode ? "#2E2742" : "#F8FAFC")
-    readonly property color borderColor: theme && theme.border ? theme.border : (popup.darkMode ? "#43385E" : "#E2E8F0")
-    readonly property color textColor: theme && theme.text ? theme.text : (popup.darkMode ? "#F8FAFC" : "#0F172A")
-    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (popup.darkMode ? "#94A3B8" : "#64748B")
-    readonly property color accentColor: theme && theme.accentA ? theme.accentA : (popup.darkMode ? "#818CF8" : "#4F46E5")
-    readonly property color accentButtonText: "#FFFFFF"
-    readonly property color infoBg: theme && theme.infoBg ? theme.infoBg : (popup.darkMode ? "#1E2548" : "#EFF6FF")
-    readonly property color infoText: popup.darkMode ? "#93C5FD" : "#2563EB"
-    readonly property color warningBg: theme && theme.warningBg ? theme.warningBg : (popup.darkMode ? "#3A2E12" : "#FFFBEB")
-    readonly property color warningText: theme && theme.warning ? theme.warning : (popup.darkMode ? "#FBBF24" : "#D97706")
-    readonly property color successBg: theme && theme.successBg ? theme.successBg : (popup.darkMode ? "#143828" : "#ECFDF5")
-    readonly property color successText: theme && theme.success ? theme.success : (popup.darkMode ? "#4ADE80" : "#059669")
+    readonly property color bgColor: theme.card
+    readonly property color cardColor: theme && theme.cardStrong ? theme.cardStrong : (popup.darkMode ? theme.cardStrong : theme.text)
+    readonly property color borderColor: theme && theme.border ? theme.border : (popup.darkMode ? theme.border : theme.cardStrong)
+    readonly property color textColor: theme.text
+    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (theme.textMuted)
+    readonly property color accentColor: theme.accentA
+    readonly property color accentButtonText: theme.onAccent
+    readonly property color infoBg: theme.infoBg
+    readonly property color infoText: theme.accentA
+    readonly property color warningBg: theme.warningBg
+    readonly property color warningText: theme.warning
+    readonly property color successBg: theme.successBg
+    readonly property color successText: theme.success
 
     modal: true
     focus: true
@@ -45,19 +47,19 @@ Popup {
     height: Math.max(0, Math.min(parent ? parent.height - 24 : 560, Math.round(560 * popup.uiScale)))
     x: Math.round(((parent ? parent.width : 600) - width) / 2)
     y: Math.round(((parent ? parent.height : 600) - height) / 2)
-    padding: Math.round(16 * popup.uiScale)
+    padding: Math.round(Style.RoTokens.spaceLg * popup.uiScale)
 
     enter: Transition {
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 200; easing.type: Easing.OutCubic }
-            NumberAnimation { property: "scale"; from: 0.94; to: 1.0; duration: 200; easing.type: Easing.OutBack }
+            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: Style.Motion.fastMs; easing.type: Easing.OutCubic }
+            NumberAnimation { property: "scale"; from: 0.94; to: 1.0; duration: Style.Motion.fastMs; easing.type: Easing.OutCubic }
         }
     }
 
     exit: Transition {
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 150; easing.type: Easing.InCubic }
-            NumberAnimation { property: "scale"; from: 1.0; to: 0.96; duration: 150 }
+            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: Style.Motion.fastMs; easing.type: Easing.InCubic }
+            NumberAnimation { property: "scale"; from: 1.0; to: 0.96; duration: Style.Motion.fastMs }
         }
     }
 
@@ -231,20 +233,20 @@ Popup {
 
     contentItem: ColumnLayout {
         width: popup.availableWidth
-        spacing: Math.round(12 * popup.uiScale)
+        spacing: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
 
         // Pinned Header Bar (Always visible at top)
         RowLayout {
             Layout.fillWidth: true
             Layout.preferredWidth: popup.availableWidth
-            spacing: 12
+            spacing: Style.RoTokens.spaceMd
 
             Rectangle {
                 visible: !popup.compactLayout
                 implicitWidth: Math.round(36 * popup.uiScale)
                 implicitHeight: Math.round(36 * popup.uiScale)
-                radius: Math.round(18 * popup.uiScale)
-                color: popup.darkMode ? "#3B3156" : "#EEF2FF"
+                radius: Math.round(Style.RoTokens.radiusLg * popup.uiScale)
+                color: popup.darkMode ? theme.hover : theme.accentC
                 border.width: 1
                 border.color: popup.accentColor
 
@@ -266,7 +268,7 @@ Popup {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 8
+                    spacing: Style.RoTokens.spaceSm
                     Label {
                         visible: !popup.editingFanName
                         text: popup.currentFan ? popup.currentFan.name : qsTr("Fan Settings & Dynamics")
@@ -289,7 +291,7 @@ Popup {
                         font.pixelSize: Math.round(16 * popup.uiScale)
                         font.weight: Font.DemiBold
                         background: Rectangle {
-                            radius: 6
+                            radius: Style.RoTokens.radiusSm
                             color: popup.cardColor
                             border.width: 1
                             border.color: fanNameField.activeFocus ? popup.accentColor : popup.borderColor
@@ -308,7 +310,7 @@ Popup {
                         background: Rectangle {
                             radius: width / 2
                             color: renameFanButton.hovered
-                                   ? (popup.darkMode ? "#3B3156" : "#EEF2FF")
+                                   ? (popup.darkMode ? theme.hover : theme.accentC)
                                    : "transparent"
                             border.width: renameFanButton.hovered ? 1 : 0
                             border.color: popup.accentColor
@@ -337,8 +339,8 @@ Popup {
                         visible: !popup.compactLayout
                         implicitWidth: fanTypeBadge.implicitWidth + 12
                         implicitHeight: Math.round(20 * popup.uiScale)
-                        radius: 4
-                        color: popup.darkMode ? "#342D4A" : "#E2E8F0"
+                        radius: Style.RoTokens.radiusXs
+                        color: theme.cardStrong
 
                         Label {
                             id: fanTypeBadge
@@ -375,7 +377,7 @@ Popup {
 
                 background: Rectangle {
                     radius: Math.round(16 * popup.uiScale)
-                    color: closeBtn.hovered ? (popup.darkMode ? "#3B3156" : "#E2E8F0") : "transparent"
+                    color: closeBtn.hovered ? (popup.darkMode ? theme.hover : theme.cardStrong) : "transparent"
                 }
 
                 contentItem: Text {
@@ -407,12 +409,12 @@ Popup {
             ColumnLayout {
                 id: popupScrollLayout
                 width: popupScroll.availableWidth
-                spacing: Math.round(12 * popup.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
 
                 Rectangle {
                     Layout.fillWidth: true
                     visible: popup.currentFan && !popup.hasHardwareControl
-                    radius: 8
+                    radius: Style.RoTokens.radiusSm
                     color: popup.infoBg
                     border.width: 1
                     border.color: popup.accentColor
@@ -421,7 +423,7 @@ Popup {
                     Label {
                         id: readOnlyNotice
                         anchors.fill: parent
-                        anchors.margins: Math.round(8 * popup.uiScale)
+                        anchors.margins: Math.round(Style.RoTokens.spaceSm * popup.uiScale)
                         text: qsTr("This channel provides telemetry only. Its BIOS, firmware, or driver owns fan control, so ro-Control will not present simulated settings.")
                         color: popup.infoText
                         font.pixelSize: Math.round(11 * popup.uiScale)
@@ -432,7 +434,7 @@ Popup {
                 // Live Dynamic Telemetry Cards (Speed %, RPM, Temperature)
                 Rectangle {
                     Layout.fillWidth: true
-                    radius: 12
+                    radius: Style.RoTokens.radiusMd
                     color: popup.cardColor
                     border.width: 1
                     border.color: popup.borderColor
@@ -441,7 +443,7 @@ Popup {
                     GridLayout {
                         id: liveMetricsRow
                         anchors.fill: parent
-                        anchors.margins: 12
+                        anchors.margins: Style.RoTokens.spaceMd
                         columnSpacing: 12
                         rowSpacing: 10
                         columns: popup.compactLayout ? 1 : 5
@@ -449,7 +451,7 @@ Popup {
                         // Live Speed Gauge
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 4
+                            spacing: Style.RoTokens.spaceXs
 
                             RowLayout {
                                 Layout.fillWidth: true
@@ -472,8 +474,8 @@ Popup {
                             Rectangle {
                                 Layout.fillWidth: true
                                 implicitHeight: Math.round(8 * popup.uiScale)
-                                radius: 4
-                                color: popup.darkMode ? "#1E2238" : "#E2E8F0"
+                                radius: Style.RoTokens.radiusXs
+                                color: theme.cardStrong
                                 clip: true
 
                                 Rectangle {
@@ -484,15 +486,15 @@ Popup {
                                         var spd = popup.currentFan ? (popup.currentFan.speedPercent || 0) : 0;
                                         return parent.width * Math.min(1.0, Math.max(0.0, spd / 100.0));
                                     }
-                                    radius: 4
+                                    radius: Style.RoTokens.radiusXs
                                     color: {
                                         var s = popup.currentFan ? (popup.currentFan.speedPercent || 0) : 0;
                                         if (s > 80) return popup.warningText;
                                         if (s > 50) return popup.accentColor;
-                                        return popup.darkMode ? "#34D399" : "#10B981";
+                                        return theme.success;
                                     }
 
-                                    Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
+                                    Behavior on width { NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutQuad } }
                                 }
                             }
                         }
@@ -507,7 +509,7 @@ Popup {
                         // Live RPM Readout
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 4
+                            spacing: Style.RoTokens.spaceXs
 
                             RowLayout {
                                 Layout.fillWidth: true
@@ -535,7 +537,7 @@ Popup {
                                       ? qsTr("Silent Zero-RPM Active")
                                       : qsTr("Active Airflow Cooling")
                                 color: (popup.currentFan && (popup.currentFan.isZeroRpm || popup.currentFan.rpm === 0))
-                                       ? (popup.darkMode ? "#34D399" : "#10B981")
+                                       ? (theme.success)
                                        : popup.softTextColor
                                 font.pixelSize: Math.round(10 * popup.uiScale)
                                 font.weight: Font.Medium
@@ -552,7 +554,7 @@ Popup {
                         // Temperature
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 4
+                            spacing: Style.RoTokens.spaceXs
 
                             RowLayout {
                                 Layout.fillWidth: true
@@ -594,7 +596,7 @@ Popup {
                 // Profile Selector Row
                 ColumnLayout {
                     Layout.fillWidth: true
-                    spacing: 6
+                    spacing: Style.RoTokens.spaceSm
 
                     Label {
                         text: qsTr("Select Optimization Profile")
@@ -627,9 +629,9 @@ Popup {
                                 hoverEnabled: true
 
                                 background: Rectangle {
-                                    radius: 8
+                                    radius: Style.RoTokens.radiusSm
                                     color: popup.activeMode === modeBtn.modelData.mode ? popup.accentColor
-                                           : (modeBtn.hovered ? (popup.darkMode ? "#3B3156" : "#F1F5F9") : popup.cardColor)
+                                           : (modeBtn.hovered ? (popup.darkMode ? theme.hover : theme.cardStrong) : popup.cardColor)
                                     border.width: 1
                                     border.color: popup.activeMode === modeBtn.modelData.mode ? popup.accentColor : popup.borderColor
 
@@ -654,7 +656,7 @@ Popup {
                 // Dynamic Mode Configuration Section
                 Rectangle {
                     Layout.fillWidth: true
-                    radius: 12
+                    radius: Style.RoTokens.radiusMd
                     color: popup.cardColor
                     border.width: 1
                     border.color: popup.borderColor
@@ -664,14 +666,14 @@ Popup {
                         id: configAreaLayout
                         enabled: popup.hasHardwareControl
                         anchors.fill: parent
-                        anchors.margins: 14
-                        spacing: 12
+                        anchors.margins: Style.RoTokens.spaceMd
+                        spacing: Style.RoTokens.spaceMd
 
                         // Manual Slider View
                         ColumnLayout {
                             visible: popup.activeMode === "manual"
                             Layout.fillWidth: true
-                            spacing: 10
+                            spacing: Style.RoTokens.spaceMd
 
                             RowLayout {
                                 Layout.fillWidth: true
@@ -688,7 +690,7 @@ Popup {
                                 Rectangle {
                                     implicitWidth: Math.round(60 * popup.uiScale)
                                     implicitHeight: Math.round(26 * popup.uiScale)
-                                    radius: 6
+                                    radius: Style.RoTokens.radiusSm
                                     color: popup.accentColor
 
                                     Label {
@@ -716,14 +718,14 @@ Popup {
                                     implicitHeight: 8
                                     width: manualPopupSlider.availableWidth
                                     height: implicitHeight
-                                    radius: 4
-                                    color: popup.darkMode ? "#1E2238" : "#E2E8F0"
+                                    radius: Style.RoTokens.radiusXs
+                                    color: theme.cardStrong
 
                                     Rectangle {
                                         width: manualPopupSlider.visualPosition * parent.width
                                         height: parent.height
                                         color: popup.accentColor
-                                        radius: 4
+                                        radius: Style.RoTokens.radiusXs
                                     }
                                 }
 
@@ -732,8 +734,8 @@ Popup {
                                     y: manualPopupSlider.topPadding + manualPopupSlider.availableHeight / 2 - height / 2
                                     implicitWidth: 20
                                     implicitHeight: 20
-                                    radius: 10
-                                    color: "#FFFFFF"
+                                    radius: Style.RoTokens.radiusSm
+                                    color: theme.card
                                     border.color: popup.accentColor
                                     border.width: 2.5
                                 }
@@ -765,7 +767,7 @@ Popup {
                                         hoverEnabled: true
 
                                         background: Rectangle {
-                                            radius: 6
+                                            radius: Style.RoTokens.radiusSm
                                             color: popup.activeManualSpeed === presetBtn.modelData ? popup.accentColor : popup.bgColor
                                             border.width: 1
                                             border.color: popup.borderColor
@@ -793,7 +795,7 @@ Popup {
                         ColumnLayout {
                             visible: popup.activeMode === "custom"
                             Layout.fillWidth: true
-                            spacing: 10
+                            spacing: Style.RoTokens.spaceMd
 
                             RowLayout {
                                 Layout.fillWidth: true
@@ -814,11 +816,11 @@ Popup {
                                     hoverEnabled: true
 
                                     background: Rectangle {
-                                        radius: Math.round(8 * popup.uiScale)
+                                        radius: Math.round(Style.RoTokens.radiusSm * popup.uiScale)
                                         color: resetBaselineButton.down
-                                               ? (popup.darkMode ? "#40375B" : "#E0E7FF")
+                                               ? (popup.darkMode ? theme.hover : theme.accentC)
                                                : (resetBaselineButton.hovered
-                                                  ? (popup.darkMode ? "#372F50" : "#EEF2FF")
+                                                  ? (popup.darkMode ? theme.hover : theme.accentC)
                                                   : "transparent")
                                         border.width: 1
                                         border.color: resetBaselineButton.hovered ? popup.accentColor : popup.borderColor
@@ -826,7 +828,7 @@ Popup {
 
                                     contentItem: RowLayout {
                                         id: resetBaselineContent
-                                        spacing: Math.round(6 * popup.uiScale)
+                                        spacing: Math.round(Style.RoTokens.spaceSm * popup.uiScale)
 
                                         Label {
                                             text: "↺"
@@ -860,7 +862,7 @@ Popup {
                             // Interactive Presets Buttons
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: Math.round(6 * popup.uiScale)
+                                spacing: Math.round(Style.RoTokens.spaceSm * popup.uiScale)
 
                                 Label {
                                     text: qsTr("Presets:")
@@ -918,13 +920,13 @@ Popup {
                                         required property var modelData
                                         text: presetPopupBtn.modelData.name
                                         implicitHeight: Math.round(26 * popup.uiScale)
-                                        leftPadding: Math.round(10 * popup.uiScale)
-                                        rightPadding: Math.round(10 * popup.uiScale)
+                                        leftPadding: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
+                                        rightPadding: Math.round(Style.RoTokens.spaceMd * popup.uiScale)
                                         hoverEnabled: true
 
                                         background: Rectangle {
-                                            radius: 6
-                                            color: presetPopupBtn.hovered ? (popup.darkMode ? "#3B3156" : "#E2E8F0") : popup.bgColor
+                                            radius: Style.RoTokens.radiusSm
+                                            color: presetPopupBtn.hovered ? (popup.darkMode ? theme.hover : theme.cardStrong) : popup.bgColor
                                             border.width: 1
                                             border.color: presetPopupBtn.hovered ? popup.accentColor : popup.borderColor
                                         }
@@ -949,7 +951,7 @@ Popup {
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: Math.round(120 * popup.uiScale)
-                                radius: 10
+                                radius: Style.RoTokens.radiusSm
                                 color: popup.bgColor
                                 border.width: 1
                                 border.color: popup.borderColor
@@ -958,7 +960,7 @@ Popup {
                                 Canvas {
                                     id: curveCanvas
                                     anchors.fill: parent
-                                    anchors.margins: 8
+                                    anchors.margins: Style.RoTokens.spaceSm
 
                                     property var pts: popup.activeCurvePoints
                                     property int liveTemp: (popup.currentFan && popup.currentFan.temperatureC > 0)
@@ -1050,7 +1052,7 @@ Popup {
                                             var py = mapY(pts[j].speed);
 
                                             ctx.beginPath();
-                                            ctx.fillStyle = "#FFFFFF";
+                                            ctx.fillStyle = theme.card;
                                             ctx.arc(px, py, 5, 0, Math.PI * 2);
                                             ctx.fill();
 
@@ -1101,14 +1103,14 @@ Popup {
                                                                       : ({ temp: 40 + curvePtBox.index * 15, speed: 30 + curvePtBox.index * 20 })
                                         Layout.fillWidth: true
                                         implicitHeight: Math.round(62 * popup.uiScale)
-                                        radius: 8
+                                        radius: Style.RoTokens.radiusSm
                                         color: popup.bgColor
                                         border.width: 1
                                         border.color: popup.borderColor
 
                                         ColumnLayout {
                                             anchors.fill: parent
-                                            anchors.margins: 8
+                                            anchors.margins: Style.RoTokens.spaceSm
                                             spacing: 2
 
                                             RowLayout {
@@ -1149,7 +1151,7 @@ Popup {
                                                     width: ptSlider.availableWidth
                                                     height: implicitHeight
                                                     radius: 2
-                                                    color: popup.darkMode ? "#1E2238" : "#E2E8F0"
+                                                    color: theme.cardStrong
 
                                                     Rectangle {
                                                         width: ptSlider.visualPosition * parent.width
@@ -1165,7 +1167,7 @@ Popup {
                                                     implicitWidth: 14
                                                     implicitHeight: 14
                                                     radius: 7
-                                                    color: "#FFFFFF"
+                                                    color: theme.card
                                                     border.color: popup.accentColor
                                                     border.width: 2
                                                 }
@@ -1180,7 +1182,7 @@ Popup {
                         ColumnLayout {
                             visible: popup.activeMode !== "manual" && popup.activeMode !== "custom"
                             Layout.fillWidth: true
-                            spacing: 4
+                            spacing: Style.RoTokens.spaceXs
 
                             Label {
                                 text: qsTr("Profile Cooling Dynamics")
@@ -1209,7 +1211,7 @@ Popup {
                         // Thermal Emergency Safety Guard
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 4
+                            spacing: Style.RoTokens.spaceXs
 
                             RowLayout {
                                 Layout.fillWidth: true
@@ -1247,7 +1249,7 @@ Popup {
                                     width: guardSlider.availableWidth
                                     height: implicitHeight
                                     radius: 3
-                                    color: popup.darkMode ? "#1E2238" : "#E2E8F0"
+                                    color: theme.cardStrong
 
                                     Rectangle {
                                         width: guardSlider.visualPosition * parent.width
@@ -1262,8 +1264,8 @@ Popup {
                                     y: guardSlider.topPadding + guardSlider.availableHeight / 2 - height / 2
                                     implicitWidth: 16
                                     implicitHeight: 16
-                                    radius: 8
-                                    color: "#FFFFFF"
+                                    radius: Style.RoTokens.radiusSm
+                                    color: theme.card
                                     border.color: popup.warningText
                                     border.width: 2
                                 }
@@ -1276,7 +1278,7 @@ Popup {
                 Rectangle {
                     visible: popup.saveFeedbackVisible
                     Layout.fillWidth: true
-                    radius: 8
+                    radius: Style.RoTokens.radiusSm
                     color: popup.successBg
                     border.width: 1
                     border.color: popup.successText
@@ -1284,7 +1286,7 @@ Popup {
 
                     RowLayout {
                         anchors.centerIn: parent
-                        spacing: 8
+                        spacing: Style.RoTokens.spaceSm
                         Label {
                             text: "✓"
                             color: popup.successText
@@ -1320,9 +1322,9 @@ Popup {
                 enabled: popup.fanController && popup.fanController.controlSupported
 
                 background: Rectangle {
-                    radius: 8
-                    color: popup.testingFanActive ? (popup.darkMode ? "#581C87" : "#F3E8FF")
-                           : (testBtn.hovered ? (popup.darkMode ? "#3B3156" : "#E2E8F0") : popup.cardColor)
+                    radius: Style.RoTokens.radiusSm
+                    color: popup.testingFanActive ? (theme.accentC)
+                           : (testBtn.hovered ? (popup.darkMode ? theme.hover : theme.cardStrong) : popup.cardColor)
                     border.width: 1
                     border.color: popup.testingFanActive ? popup.warningText : popup.borderColor
                 }
@@ -1376,9 +1378,9 @@ Popup {
                 enabled: popup.hasHardwareControl
 
                 background: Rectangle {
-                    radius: 8
-                    color: resetToAutoBtn.down ? (popup.darkMode ? "#3B3156" : "#E2E8F0")
-                                               : (resetToAutoBtn.hovered ? (popup.darkMode ? "#342D4A" : "#F1F5F9")
+                    radius: Style.RoTokens.radiusSm
+                    color: resetToAutoBtn.down ? (popup.darkMode ? theme.hover : theme.cardStrong)
+                                               : (resetToAutoBtn.hovered ? (theme.cardStrong)
                                                                         : popup.cardColor)
                     border.width: 1
                     border.color: resetToAutoBtn.hovered ? popup.accentColor : popup.borderColor
@@ -1405,9 +1407,9 @@ Popup {
                 enabled: popup.hasHardwareControl
 
                 background: Rectangle {
-                    radius: 8
-                    color: applyBtn.down ? (popup.darkMode ? "#4F46E5" : "#3730A3")
-                                         : (applyBtn.hovered ? (popup.darkMode ? "#939BFA" : "#5B52E8")
+                    radius: Style.RoTokens.radiusSm
+                    color: applyBtn.down ? (theme.accentA)
+                                         : (applyBtn.hovered ? (theme.accentA)
                                                              : popup.accentColor)
                 }
 

@@ -1,9 +1,11 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 import QtQuick.Layouts
 
 Rectangle {
     id: banner
+    Style.Theme { id: fallbackTheme; darkMode: false }
 
     required property var theme
     property string tone: "info"
@@ -19,7 +21,7 @@ Rectangle {
                                      : theme.accentA
     readonly property color textTone: theme.text
 
-    radius: 8
+    radius: Style.RoTokens.radiusSm
     color: bannerColor
     border.width: 1
     border.color: borderTone
@@ -32,13 +34,13 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: 10
-        spacing: 8
+        anchors.margins: Style.RoTokens.spaceMd
+        spacing: Style.RoTokens.spaceSm
 
         Rectangle {
             implicitWidth: 8
             implicitHeight: 8
-            radius: 4
+            radius: Style.RoTokens.radiusXs
             color: banner.borderTone
         }
 

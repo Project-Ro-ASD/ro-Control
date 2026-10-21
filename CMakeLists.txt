@@ -191,10 +191,16 @@ set_source_files_properties(src/qml/assets/icon-settings.svg PROPERTIES
     QT_RESOURCE_ALIAS "assets/icon-settings.svg"
 )
 
+set_source_files_properties(src/qml/style/RoTokens.qml src/qml/style/Motion.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
 qt_add_qml_module(ro-control
     URI "rocontrol"
     VERSION 1.0
     QML_FILES
+        src/qml/style/Motion.qml
+        src/qml/style/RoTokens.qml
+        src/qml/style/Theme.qml
+        src/qml/style/Palettes.js
         src/qml/Main.qml
         src/qml/pages/DriverPage.qml
         src/qml/pages/MonitorPage.qml

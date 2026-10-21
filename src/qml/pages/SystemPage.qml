@@ -1,10 +1,12 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../components" as Components
 
 Item {
     id: page
+    Style.Theme { id: fallbackTheme; darkMode: page.darkMode }
     required property var systemInfo
     property var cpuMonitor: null
     property var gpuMonitor: null
@@ -12,7 +14,7 @@ Item {
     property var nvidiaDetector: null
     property var powerController: null
 
-    property var theme: ({})
+    property var theme: fallbackTheme
     property bool darkMode: false
     property bool showAdvancedInfo: true
     property real uiScale: 1.0
@@ -32,15 +34,15 @@ Item {
         onTriggered: page.lastCopiedKey = ""
     }
 
-    readonly property color bgColor: theme && theme.card ? theme.card : (page.darkMode ? "#29233B" : "#FFFFFF")
-    readonly property color cardColor: theme && theme.cardStrong ? theme.cardStrong : (page.darkMode ? "#342D4A" : "#F1F5F9")
-    readonly property color borderColor: theme && theme.border ? theme.border : (page.darkMode ? "#4D436B" : "#CBD5E1")
-    readonly property color textColor: theme && theme.text ? theme.text : (page.darkMode ? "#F8FAFC" : "#0F172A")
-    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (page.darkMode ? "#94A3B8" : "#64748B")
-    readonly property color accentColor: theme && theme.accentA ? theme.accentA : (page.darkMode ? "#818CF8" : "#4F46E5")
-    readonly property color infoBg: theme && theme.infoBg ? theme.infoBg : (page.darkMode ? "#1E2548" : "#EFF6FF")
-    readonly property color successColor: theme && theme.success ? theme.success : (page.darkMode ? "#4ADE80" : "#059669")
-    readonly property color warningColor: theme && theme.warning ? theme.warning : (page.darkMode ? "#FBBF24" : "#D97706")
+    readonly property color bgColor: theme.card
+    readonly property color cardColor: theme.cardStrong
+    readonly property color borderColor: theme && theme.border ? theme.border : (page.darkMode ? theme.border : theme.textMuted)
+    readonly property color textColor: theme.text
+    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (theme.textMuted)
+    readonly property color accentColor: theme.accentA
+    readonly property color infoBg: theme.infoBg
+    readonly property color successColor: theme.success
+    readonly property color warningColor: theme.warning
 
     function deviceAndPowerSummary() {
         const dev = page.systemInfo && page.systemInfo.deviceType ? page.systemInfo.deviceType : "";
@@ -261,10 +263,10 @@ Item {
 
         ColumnLayout {
             width: pageScroll.availableWidth
-            spacing: Math.round(14 * page.uiScale)
+            spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
-            Rectangle { Layout.fillWidth: true; implicitHeight: 52; radius: 12; color: page.cardColor; border.width: 1; border.color: page.borderColor
-                RowLayout { anchors.fill: parent; anchors.margins: 12; spacing: 12
+            Rectangle { Layout.fillWidth: true; implicitHeight: 52; radius: Style.RoTokens.radiusMd; color: page.cardColor; border.width: 1; border.color: page.borderColor
+                RowLayout { anchors.fill: parent; anchors.margins: Style.RoTokens.spaceMd; spacing: Style.RoTokens.spaceMd
                     Label { text: qsTr("System health"); color: page.textColor; font.weight: Font.DemiBold }
                     Label { Layout.fillWidth: true; text: page.systemHealthSummary(); color: page.softTextColor; elide: Text.ElideRight }
                     Button {
@@ -280,7 +282,7 @@ Item {
                 visible: page.actionFeedback.length > 0
                 implicitHeight: actionFeedbackLabel.implicitHeight + Math.round(18 * page.uiScale)
                 radius: 9
-                color: page.actionFailed ? (page.darkMode ? "#3A2E12" : "#FFFBEB") : page.infoBg
+                color: page.actionFailed ? (theme.warningBg) : page.infoBg
                 border.width: 1
                 border.color: page.actionFailed ? page.warningColor : page.accentColor
                 Label {
@@ -297,7 +299,7 @@ Item {
             // Section 1: Hardware Specifications
             Rectangle {
                 Layout.fillWidth: true
-                radius: 14
+                radius: Style.RoTokens.radiusMd
                 color: page.cardColor
                 border.width: 1
                 border.color: page.borderColor
@@ -306,8 +308,8 @@ Item {
                 ColumnLayout {
                     id: hwSectionLayout
                     anchors.fill: parent
-                    anchors.margins: Math.round(14 * page.uiScale)
-                    spacing: Math.round(12 * page.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                     Label {
                         text: qsTr("Hardware Specifications")
@@ -330,14 +332,14 @@ Item {
                                 required property var modelData
                                 Layout.fillWidth: true
                                 implicitHeight: Math.round(64 * page.uiScale)
-                                radius: 10
+                                radius: Style.RoTokens.radiusSm
                                 color: page.bgColor
                                 border.width: 1
                                 border.color: page.borderColor
 
                                 Column {
                                     anchors.fill: parent
-                                    anchors.margins: Math.round(8 * page.uiScale)
+                                    anchors.margins: Math.round(Style.RoTokens.spaceSm * page.uiScale)
                                     spacing: Math.round(3 * page.uiScale)
 
                                     Label {
@@ -374,7 +376,7 @@ Item {
             // Section 2: Operating System & Software Stack
             Rectangle {
                 Layout.fillWidth: true
-                radius: 14
+                radius: Style.RoTokens.radiusMd
                 color: page.cardColor
                 border.width: 1
                 border.color: page.borderColor
@@ -383,8 +385,8 @@ Item {
                 ColumnLayout {
                     id: osSectionLayout
                     anchors.fill: parent
-                    anchors.margins: Math.round(14 * page.uiScale)
-                    spacing: Math.round(12 * page.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                     Label {
                         text: qsTr("Operating System & Software Stack")
@@ -406,14 +408,14 @@ Item {
                                 required property var modelData
                                 Layout.fillWidth: true
                                 implicitHeight: Math.round(64 * page.uiScale)
-                                radius: 10
+                                radius: Style.RoTokens.radiusSm
                                 color: page.bgColor
                                 border.width: 1
                                 border.color: page.borderColor
 
                                 Column {
                                     anchors.fill: parent
-                                    anchors.margins: Math.round(8 * page.uiScale)
+                                    anchors.margins: Math.round(Style.RoTokens.spaceSm * page.uiScale)
                                     spacing: Math.round(3 * page.uiScale)
 
                                     Label {
@@ -450,7 +452,7 @@ Item {
             // Section 3: Diagnostic Actions & Firmware Control
             Rectangle {
                 Layout.fillWidth: true
-                radius: 14
+                radius: Style.RoTokens.radiusMd
                 color: page.cardColor
                 border.width: 1
                 border.color: page.borderColor
@@ -459,8 +461,8 @@ Item {
                 ColumnLayout {
                     id: actionsSectionLayout
                     anchors.fill: parent
-                    anchors.margins: Math.round(14 * page.uiScale)
-                    spacing: Math.round(12 * page.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                     Label {
                         text: qsTr("Diagnostics & System Controls")
@@ -490,10 +492,10 @@ Item {
                             hoverEnabled: true
 
                             scale: !enabled ? 1.0 : (down ? 0.985 : (hovered ? 1.01 : 1.0))
-                            Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
+                            Behavior on scale { NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutQuad } }
 
                             background: Rectangle {
-                                radius: 10
+                                radius: Style.RoTokens.radiusSm
                                 color: diagnosticActionBtn.hovered
                                        ? (page.darkMode ? Qt.tint(page.bgColor, Qt.rgba(page.accentColor.r, page.accentColor.g, page.accentColor.b, 0.12))
                                                         : Qt.tint(page.bgColor, Qt.rgba(page.accentColor.r, page.accentColor.g, page.accentColor.b, 0.06)))
@@ -503,13 +505,13 @@ Item {
                             }
 
                             contentItem: RowLayout {
-                                spacing: Math.round(12 * page.uiScale)
+                                spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                                 Rectangle {
                                     Layout.preferredWidth: Math.round(38 * page.uiScale)
                                     Layout.preferredHeight: Math.round(38 * page.uiScale)
-                                    radius: 8
-                                    color: page.darkMode ? "#312E81" : "#E0E7FF"
+                                    radius: Style.RoTokens.radiusSm
+                                    color: theme.accentC
 
                                     Label {
                                         anchors.centerIn: parent
@@ -541,28 +543,28 @@ Item {
                                 Rectangle {
                                     implicitHeight: Math.round(32 * page.uiScale)
                                     implicitWidth: openBtnRow.implicitWidth + Math.round(20 * page.uiScale)
-                                    radius: 6
+                                    radius: Style.RoTokens.radiusSm
                                     color: diagnosticActionBtn.down
                                            ? Qt.darker(page.accentColor, 1.1)
-                                           : (diagnosticActionBtn.hovered ? page.accentColor : (page.darkMode ? "#312E81" : "#EEF2FF"))
+                                           : (diagnosticActionBtn.hovered ? page.accentColor : (theme.accentC))
                                     border.width: 1
                                     border.color: page.accentColor
 
                                     RowLayout {
                                         id: openBtnRow
                                         anchors.centerIn: parent
-                                        spacing: Math.round(4 * page.uiScale)
+                                        spacing: Math.round(Style.RoTokens.spaceXs * page.uiScale)
 
                                         Label {
                                             text: qsTr("Open")
-                                            color: diagnosticActionBtn.hovered ? "#FFFFFF" : page.accentColor
+                                            color: diagnosticActionBtn.hovered ? theme.card : page.accentColor
                                             font.pixelSize: Math.round(12 * page.uiScale)
                                             font.weight: Font.DemiBold
                                         }
 
                                         Label {
                                             text: "↗"
-                                            color: diagnosticActionBtn.hovered ? "#FFFFFF" : page.accentColor
+                                            color: diagnosticActionBtn.hovered ? theme.card : page.accentColor
                                             font.pixelSize: Math.round(11 * page.uiScale)
                                             font.weight: Font.Bold
                                         }
@@ -580,10 +582,10 @@ Item {
                             hoverEnabled: true
 
                             scale: !enabled ? 1.0 : (down ? 0.985 : (hovered ? 1.01 : 1.0))
-                            Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
+                            Behavior on scale { NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutQuad } }
 
                             background: Rectangle {
-                                radius: 10
+                                radius: Style.RoTokens.radiusSm
                                 color: rebootFirmwareBtn.hovered
                                        ? (page.darkMode ? Qt.tint(page.bgColor, Qt.rgba(page.warningColor.r, page.warningColor.g, page.warningColor.b, 0.12))
                                                         : Qt.tint(page.bgColor, Qt.rgba(page.warningColor.r, page.warningColor.g, page.warningColor.b, 0.06)))
@@ -593,13 +595,13 @@ Item {
                             }
 
                             contentItem: RowLayout {
-                                spacing: Math.round(12 * page.uiScale)
+                                spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                                 Rectangle {
                                     Layout.preferredWidth: Math.round(38 * page.uiScale)
                                     Layout.preferredHeight: Math.round(38 * page.uiScale)
-                                    radius: 8
-                                    color: page.darkMode ? "#3A2E12" : "#FFFBEB"
+                                    radius: Style.RoTokens.radiusSm
+                                    color: theme.warningBg
                                     Label {
                                         anchors.centerIn: parent
                                         text: "↻"
@@ -630,28 +632,28 @@ Item {
                                 Rectangle {
                                     implicitHeight: Math.round(32 * page.uiScale)
                                     implicitWidth: restartBtnRow.implicitWidth + Math.round(20 * page.uiScale)
-                                    radius: 6
+                                    radius: Style.RoTokens.radiusSm
                                     color: rebootFirmwareBtn.down
                                            ? Qt.darker(page.warningColor, 1.1)
-                                           : (rebootFirmwareBtn.hovered ? page.warningColor : (page.darkMode ? "#3A2E12" : "#FFFBEB"))
+                                           : (rebootFirmwareBtn.hovered ? page.warningColor : (theme.warningBg))
                                     border.width: 1
                                     border.color: page.warningColor
 
                                     RowLayout {
                                         id: restartBtnRow
                                         anchors.centerIn: parent
-                                        spacing: Math.round(4 * page.uiScale)
+                                        spacing: Math.round(Style.RoTokens.spaceXs * page.uiScale)
 
                                         Label {
                                             text: qsTr("Restart")
-                                            color: rebootFirmwareBtn.hovered ? "#FFFFFF" : page.warningColor
+                                            color: rebootFirmwareBtn.hovered ? theme.card : page.warningColor
                                             font.pixelSize: Math.round(12 * page.uiScale)
                                             font.weight: Font.DemiBold
                                         }
 
                                         Label {
                                             text: "↻"
-                                            color: rebootFirmwareBtn.hovered ? "#FFFFFF" : page.warningColor
+                                            color: rebootFirmwareBtn.hovered ? theme.card : page.warningColor
                                             font.pixelSize: Math.round(13 * page.uiScale)
                                             font.weight: Font.Bold
                                         }
@@ -678,12 +680,12 @@ Item {
         footer: null
 
         enter: Transition {
-            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 180; easing.type: Easing.OutQuad }
-            NumberAnimation { property: "scale"; from: 0.96; to: 1.0; duration: 180; easing.type: Easing.OutQuad }
+            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: Style.Motion.fastMs; easing.type: Easing.OutQuad }
+            NumberAnimation { property: "scale"; from: 0.96; to: 1.0; duration: Style.Motion.fastMs; easing.type: Easing.OutQuad }
         }
         exit: Transition {
-            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 140; easing.type: Easing.InQuad }
-            NumberAnimation { property: "scale"; from: 1.0; to: 0.96; duration: 140; easing.type: Easing.InQuad }
+            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: Style.Motion.fastMs; easing.type: Easing.InQuad }
+            NumberAnimation { property: "scale"; from: 1.0; to: 0.96; duration: Style.Motion.fastMs; easing.type: Easing.InQuad }
         }
 
         background: Rectangle {
@@ -700,7 +702,7 @@ Item {
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: Math.round(64 * page.uiScale)
-                color: page.darkMode ? "#2E2640" : "#F8FAFC"
+                color: theme.hover
                 radius: 16
 
                 Rectangle {
@@ -720,15 +722,15 @@ Item {
 
                 RowLayout {
                     anchors.fill: parent
-                    anchors.leftMargin: Math.round(20 * page.uiScale)
-                    anchors.rightMargin: Math.round(16 * page.uiScale)
-                    spacing: Math.round(12 * page.uiScale)
+                    anchors.leftMargin: Math.round(Style.RoTokens.spaceXl * page.uiScale)
+                    anchors.rightMargin: Math.round(Style.RoTokens.spaceLg * page.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                     Rectangle {
                         implicitWidth: Math.round(36 * page.uiScale)
                         implicitHeight: Math.round(36 * page.uiScale)
-                        radius: 8
-                        color: page.darkMode ? "#312E81" : "#E0E7FF"
+                        radius: Style.RoTokens.radiusSm
+                        color: theme.accentC
                         Label {
                             anchors.centerIn: parent
                             text: "▤"
@@ -761,8 +763,8 @@ Item {
                         implicitHeight: Math.round(32 * page.uiScale)
                         hoverEnabled: true
                         background: Rectangle {
-                            radius: 8
-                            color: closeDiagnosticReportButton.hovered ? (page.darkMode ? "#43385E" : "#E2E8F0") : "transparent"
+                            radius: Style.RoTokens.radiusSm
+                            color: closeDiagnosticReportButton.hovered ? (page.darkMode ? theme.border : theme.cardStrong) : "transparent"
                         }
                         contentItem: Text {
                             text: "✕"
@@ -786,15 +788,15 @@ Item {
                 RowLayout {
                     id: controlsRow
                     anchors.fill: parent
-                    anchors.margins: Math.round(16 * page.uiScale)
-                    spacing: Math.round(14 * page.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceLg * page.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                     // View Mode Segmented Switcher
                     Rectangle {
                         implicitHeight: Math.round(34 * page.uiScale)
                         implicitWidth: Math.min(Math.round(260 * page.uiScale), Math.max(Math.round(170 * page.uiScale), controlsRow.width))
-                        radius: 8
-                        color: page.darkMode ? "#241E34" : "#E2E8F0"
+                        radius: Style.RoTokens.radiusSm
+                        color: theme.cardStrong
                         border.width: 1
                         border.color: page.borderColor
 
@@ -806,10 +808,10 @@ Item {
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                radius: 6
-                                color: page.reportViewMode === 0 ? (page.darkMode ? "#3E355B" : "#FFFFFF") : "transparent"
+                                radius: Style.RoTokens.radiusSm
+                                color: page.reportViewMode === 0 ? (page.darkMode ? theme.hover : theme.card) : "transparent"
                                 border.width: page.reportViewMode === 0 ? 1 : 0
-                                border.color: page.reportViewMode === 0 ? (page.darkMode ? "#5B4E85" : "#CBD5E1") : "transparent"
+                                border.color: page.reportViewMode === 0 ? (page.darkMode ? theme.border : theme.textMuted) : "transparent"
 
                                 MouseArea {
                                     anchors.fill: parent
@@ -831,10 +833,10 @@ Item {
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                radius: 6
-                                color: page.reportViewMode === 1 ? (page.darkMode ? "#3E355B" : "#FFFFFF") : "transparent"
+                                radius: Style.RoTokens.radiusSm
+                                color: page.reportViewMode === 1 ? (page.darkMode ? theme.hover : theme.card) : "transparent"
                                 border.width: page.reportViewMode === 1 ? 1 : 0
-                                border.color: page.reportViewMode === 1 ? (page.darkMode ? "#5B4E85" : "#CBD5E1") : "transparent"
+                                border.color: page.reportViewMode === 1 ? (page.darkMode ? theme.border : theme.textMuted) : "transparent"
 
                                 MouseArea {
                                     anchors.fill: parent
@@ -862,16 +864,16 @@ Item {
                         visible: page.reportViewMode === 0 && controlsRow.width >= Math.round(430 * page.uiScale)
                         implicitHeight: Math.round(34 * page.uiScale)
                         implicitWidth: Math.min(controlsRow.width * 0.45, Math.round(240 * page.uiScale))
-                        radius: 8
+                        radius: Style.RoTokens.radiusSm
                         color: page.bgColor
                         border.width: 1
                         border.color: filterInput.activeFocus ? page.accentColor : page.borderColor
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: Math.round(10 * page.uiScale)
-                            anchors.rightMargin: Math.round(8 * page.uiScale)
-                            spacing: 6
+                            anchors.leftMargin: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                            anchors.rightMargin: Math.round(Style.RoTokens.spaceSm * page.uiScale)
+                            spacing: Style.RoTokens.spaceSm
 
                             Label {
                                 text: "🔍"
@@ -922,11 +924,11 @@ Item {
                     RowLayout {
                         visible: page.reportViewMode === 1
                         Layout.maximumWidth: Math.max(0, controlsRow.width - Math.round(180 * page.uiScale))
-                        spacing: Math.round(14 * page.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                         // Format Dropdown Selector
                         RowLayout {
-                            spacing: Math.round(8 * page.uiScale)
+                            spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
                             Label {
                                 text: qsTr("Format:")
                                 color: page.softTextColor
@@ -938,8 +940,8 @@ Item {
                                 id: formatSelectorButton
                                 implicitHeight: Math.round(32 * page.uiScale)
                                 implicitWidth: formatBtnRow.implicitWidth + Math.round(20 * page.uiScale)
-                                radius: 8
-                                color: formatMouse.containsMouse ? (page.darkMode ? "#342D4A" : "#E2E8F0") : page.bgColor
+                                radius: Style.RoTokens.radiusSm
+                                color: formatMouse.containsMouse ? (theme.cardStrong) : page.bgColor
                                 border.width: 1
                                 border.color: (formatMouse.containsMouse || formatPopup.visible) ? page.accentColor : page.borderColor
 
@@ -957,7 +959,7 @@ Item {
                                 RowLayout {
                                     id: formatBtnRow
                                     anchors.centerIn: parent
-                                    spacing: 6
+                                    spacing: Style.RoTokens.spaceSm
 
                                     Label {
                                         text: {
@@ -983,11 +985,11 @@ Item {
                                     id: formatPopup
                                     y: formatSelectorButton.height + 4
                                     width: Math.round(150 * page.uiScale)
-                                    padding: 4
+                                    padding: Style.RoTokens.spaceXs
                                     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
                                     background: Rectangle {
-                                        radius: 10
+                                        radius: Style.RoTokens.radiusSm
                                         color: page.bgColor
                                         border.width: 1
                                         border.color: page.borderColor
@@ -1011,17 +1013,17 @@ Item {
                                                 readonly property bool isSelected: page.systemInfo && page.systemInfo.diagnosticReportFormat === fmtItemBtn.modelData.id
 
                                                 background: Rectangle {
-                                                    radius: 6
+                                                    radius: Style.RoTokens.radiusSm
                                                     color: fmtItemBtn.hovered
-                                                           ? (page.darkMode ? "#43385E" : "#E2E8F0")
-                                                           : (fmtItemBtn.isSelected ? (page.darkMode ? "#342D4A" : "#F1F5F9") : "transparent")
+                                                           ? (page.darkMode ? theme.border : theme.cardStrong)
+                                                           : (fmtItemBtn.isSelected ? (theme.cardStrong) : "transparent")
                                                 }
 
                                                 contentItem: RowLayout {
                                                     anchors.fill: parent
-                                                    anchors.leftMargin: Math.round(10 * page.uiScale)
-                                                    anchors.rightMargin: Math.round(10 * page.uiScale)
-                                                    spacing: 6
+                                                    anchors.leftMargin: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                                                    anchors.rightMargin: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                                                    spacing: Style.RoTokens.spaceSm
 
                                                     Label {
                                                         Layout.fillWidth: true
@@ -1056,7 +1058,7 @@ Item {
 
                         // Destination / Auto-Action Dropdown Selector
                         RowLayout {
-                            spacing: Math.round(8 * page.uiScale)
+                            spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
                             Label {
                                 text: qsTr("Action:")
                                 color: page.softTextColor
@@ -1068,8 +1070,8 @@ Item {
                                 id: actionSelectorButton
                                 implicitHeight: Math.round(32 * page.uiScale)
                                 implicitWidth: actionBtnRow.implicitWidth + Math.round(20 * page.uiScale)
-                                radius: 8
-                                color: actionMouse.containsMouse ? (page.darkMode ? "#342D4A" : "#E2E8F0") : page.bgColor
+                                radius: Style.RoTokens.radiusSm
+                                color: actionMouse.containsMouse ? (theme.cardStrong) : page.bgColor
                                 border.width: 1
                                 border.color: (actionMouse.containsMouse || actionPopup.visible) ? page.accentColor : page.borderColor
 
@@ -1087,7 +1089,7 @@ Item {
                                 RowLayout {
                                     id: actionBtnRow
                                     anchors.centerIn: parent
-                                    spacing: 6
+                                    spacing: Style.RoTokens.spaceSm
 
                                     Label {
                                         text: {
@@ -1112,11 +1114,11 @@ Item {
                                     id: actionPopup
                                     y: actionSelectorButton.height + 4
                                     width: Math.round(160 * page.uiScale)
-                                    padding: 4
+                                    padding: Style.RoTokens.spaceXs
                                     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
                                     background: Rectangle {
-                                        radius: 10
+                                        radius: Style.RoTokens.radiusSm
                                         color: page.bgColor
                                         border.width: 1
                                         border.color: page.borderColor
@@ -1139,17 +1141,17 @@ Item {
                                                 readonly property bool isSelected: page.systemInfo && page.systemInfo.diagnosticReportDestination === actItemBtn.modelData.id
 
                                                 background: Rectangle {
-                                                    radius: 6
+                                                    radius: Style.RoTokens.radiusSm
                                                     color: actItemBtn.hovered
-                                                           ? (page.darkMode ? "#43385E" : "#E2E8F0")
-                                                           : (actItemBtn.isSelected ? (page.darkMode ? "#342D4A" : "#F1F5F9") : "transparent")
+                                                           ? (page.darkMode ? theme.border : theme.cardStrong)
+                                                           : (actItemBtn.isSelected ? (theme.cardStrong) : "transparent")
                                                 }
 
                                                 contentItem: RowLayout {
                                                     anchors.fill: parent
-                                                    anchors.leftMargin: Math.round(10 * page.uiScale)
-                                                    anchors.rightMargin: Math.round(10 * page.uiScale)
-                                                    spacing: 6
+                                                    anchors.leftMargin: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                                                    anchors.rightMargin: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                                                    spacing: Style.RoTokens.spaceSm
 
                                                     Label {
                                                         Layout.fillWidth: true
@@ -1199,7 +1201,7 @@ Item {
 
                     ColumnLayout {
                         width: cardsScrollView.availableWidth
-                        spacing: Math.round(16 * page.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceLg * page.uiScale)
 
                         Repeater {
                             model: page.diagnosticReportSections()
@@ -1208,7 +1210,7 @@ Item {
                                 id: sectionCard
                                 required property var modelData
                                 Layout.fillWidth: true
-                                radius: 12
+                                radius: Style.RoTokens.radiusMd
                                 color: page.bgColor
                                 border.width: 1
                                 border.color: page.borderColor
@@ -1217,13 +1219,13 @@ Item {
                                 ColumnLayout {
                                     id: secColumn
                                     anchors.fill: parent
-                                    anchors.margins: Math.round(12 * page.uiScale)
-                                    spacing: Math.round(10 * page.uiScale)
+                                    anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                                     // Section Header with Category Badge
                                     RowLayout {
                                         Layout.fillWidth: true
-                                        spacing: Math.round(8 * page.uiScale)
+                                        spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                                         Label {
                                             text: sectionCard.modelData.icon
@@ -1241,8 +1243,8 @@ Item {
                                         Rectangle {
                                             implicitHeight: Math.round(20 * page.uiScale)
                                             implicitWidth: secCountLabel.implicitWidth + Math.round(12 * page.uiScale)
-                                            radius: 10
-                                            color: page.darkMode ? "#342D4A" : "#E2E8F0"
+                                            radius: Style.RoTokens.radiusSm
+                                            color: theme.cardStrong
                                             Label {
                                                 id: secCountLabel
                                                 anchors.centerIn: parent
@@ -1269,10 +1271,10 @@ Item {
                                                 required property var modelData
                                                 Layout.fillWidth: true
                                                 implicitHeight: Math.round(62 * page.uiScale)
-                                                radius: 8
+                                                radius: Style.RoTokens.radiusSm
                                                 color: tileMouse.containsMouse
-                                                       ? (page.darkMode ? "#383050" : "#F8FAFC")
-                                                       : (page.darkMode ? "#2E2742" : "#F1F5F9")
+                                                       ? (page.darkMode ? theme.hover : theme.text)
+                                                       : (theme.cardStrong)
                                                 border.width: 1
                                                 border.color: tileMouse.containsMouse ? page.accentColor : page.borderColor
 
@@ -1285,9 +1287,9 @@ Item {
 
                                                 RowLayout {
                                                     anchors.fill: parent
-                                                    anchors.leftMargin: Math.round(12 * page.uiScale)
-                                                    anchors.rightMargin: Math.round(12 * page.uiScale)
-                                                    spacing: Math.round(10 * page.uiScale)
+                                                    anchors.leftMargin: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                                                    anchors.rightMargin: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                                                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                                                     Label {
                                                         text: itemTile.modelData.icon || "•"
@@ -1329,14 +1331,14 @@ Item {
                             visible: page.diagnosticReportSections().length === 0
                             Layout.fillWidth: true
                             implicitHeight: Math.round(160 * page.uiScale)
-                            radius: 12
+                            radius: Style.RoTokens.radiusMd
                             color: page.bgColor
                             border.width: 1
                             border.color: page.borderColor
 
                             ColumnLayout {
                                 anchors.centerIn: parent
-                                spacing: Math.round(8 * page.uiScale)
+                                spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                                 Label {
                                     Layout.alignment: Qt.AlignHCenter
@@ -1376,14 +1378,14 @@ Item {
                 Rectangle {
                     visible: page.reportViewMode === 1
                     anchors.fill: parent
-                    radius: 10
+                    radius: Style.RoTokens.radiusSm
                     color: page.bgColor
                     border.width: 1
                     border.color: page.borderColor
 
                     ScrollView {
                         anchors.fill: parent
-                        anchors.margins: Math.round(10 * page.uiScale)
+                        anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
                         clip: true
 
                         TextArea {
@@ -1405,9 +1407,9 @@ Item {
                                 return fmt === "json" ? "monospace" : ""
                             }
                             font.pixelSize: Math.round(13 * page.uiScale)
-                            selectedTextColor: "#FFFFFF"
+                            selectedTextColor: theme.card
                             selectionColor: page.accentColor
-                            padding: Math.round(8 * page.uiScale)
+                            padding: Math.round(Style.RoTokens.spaceSm * page.uiScale)
                             background: null
                         }
                     }
@@ -1422,23 +1424,23 @@ Item {
 
                 RowLayout {
                     anchors.fill: parent
-                    anchors.margins: Math.round(16 * page.uiScale)
-                    spacing: Math.round(12 * page.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceLg * page.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                     // Copied Feedback Badge
                     Rectangle {
                         visible: page.reportCopied
                         implicitHeight: Math.round(32 * page.uiScale)
                         implicitWidth: copyFeedbackRow.implicitWidth + Math.round(16 * page.uiScale)
-                        radius: 8
-                        color: page.darkMode ? "#143828" : "#ECFDF5"
+                        radius: Style.RoTokens.radiusSm
+                        color: theme.successBg
                         border.width: 1
                         border.color: page.successColor
 
                         RowLayout {
                             id: copyFeedbackRow
                             anchors.centerIn: parent
-                            spacing: 6
+                            spacing: Style.RoTokens.spaceSm
                             Label {
                                 text: "✓"
                                 color: page.successColor
@@ -1465,9 +1467,9 @@ Item {
                         hoverEnabled: true
 
                         background: Rectangle {
-                            radius: 8
+                            radius: Style.RoTokens.radiusSm
                             color: closeReportBtn.hovered
-                                   ? (page.darkMode ? "#3B3156" : "#E2E8F0")
+                                   ? (page.darkMode ? theme.hover : theme.cardStrong)
                                    : page.bgColor
                             border.width: 1
                             border.color: closeReportBtn.hovered ? page.accentColor : page.borderColor
@@ -1494,7 +1496,7 @@ Item {
                         hoverEnabled: true
 
                         background: Rectangle {
-                            radius: 8
+                            radius: Style.RoTokens.radiusSm
                             color: copyReportBtn.down ? Qt.darker(page.accentColor, 1.15)
                                                       : (copyReportBtn.hovered ? Qt.lighter(page.accentColor, 1.1) : page.accentColor)
                             border.width: 1
@@ -1504,7 +1506,7 @@ Item {
                         contentItem: Label {
                             id: copyLabel
                             text: copyReportBtn.text
-                            color: "#FFFFFF"
+                            color: theme.card
                             font.pixelSize: Math.round(13 * page.uiScale)
                             font.weight: Font.Bold
                             horizontalAlignment: Text.AlignHCenter
@@ -1552,7 +1554,7 @@ Item {
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: Math.round(60 * page.uiScale)
-                color: page.darkMode ? "#3A2E12" : "#FFFBEB"
+                color: theme.warningBg
                 radius: 16
                 Rectangle {
                     anchors.bottom: parent.bottom
@@ -1566,13 +1568,13 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: 1
-                    color: page.darkMode ? "#4D3D18" : "#FDE68A"
+                    color: page.darkMode ? theme.warningBg : theme.warning
                 }
 
                 RowLayout {
                     anchors.fill: parent
-                    anchors.margins: Math.round(16 * page.uiScale)
-                    spacing: Math.round(10 * page.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceLg * page.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                     Label {
                         text: "⚠️"
@@ -1593,7 +1595,7 @@ Item {
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.margins: Math.round(18 * page.uiScale)
-                spacing: Math.round(10 * page.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                 Label {
                     Layout.fillWidth: true
@@ -1624,9 +1626,9 @@ Item {
                 GridLayout {
                     id: firmwareButtons
                     anchors.fill: parent
-                    anchors.leftMargin: Math.round(18 * page.uiScale)
-                    anchors.rightMargin: Math.round(18 * page.uiScale)
-                    anchors.bottomMargin: Math.round(14 * page.uiScale)
+                    anchors.leftMargin: Math.round(Style.RoTokens.spaceLg * page.uiScale)
+                    anchors.rightMargin: Math.round(Style.RoTokens.spaceLg * page.uiScale)
+                    anchors.bottomMargin: Math.round(Style.RoTokens.spaceMd * page.uiScale)
                     columnSpacing: Math.round(10 * page.uiScale)
                     rowSpacing: Math.round(8 * page.uiScale)
                     columns: rebootConfirmDialog.width < Math.round(340 * page.uiScale) ? 1 : 3
@@ -1646,10 +1648,10 @@ Item {
                         hoverEnabled: true
 
                         background: Rectangle {
-                            radius: 8
+                            radius: Style.RoTokens.radiusSm
                             color: cancelRebootBtn.down
-                                   ? (page.darkMode ? "#342A4E" : "#CBD5E1")
-                                   : (cancelRebootBtn.hovered ? (page.darkMode ? "#3B3156" : "#E2E8F0") : page.bgColor)
+                                   ? (theme.hoverMuted)
+                                   : (cancelRebootBtn.hovered ? (page.darkMode ? theme.hover : theme.cardStrong) : page.bgColor)
                             border.width: 1
                             border.color: cancelRebootBtn.hovered ? page.accentColor : page.borderColor
                         }
@@ -1676,7 +1678,7 @@ Item {
                         hoverEnabled: true
 
                         background: Rectangle {
-                            radius: 8
+                            radius: Style.RoTokens.radiusSm
                             color: confirmRebootBtn.down
                                    ? Qt.darker(page.warningColor, 1.15)
                                    : (confirmRebootBtn.hovered ? Qt.lighter(page.warningColor, 1.1) : page.warningColor)
@@ -1685,7 +1687,7 @@ Item {
                         contentItem: Label {
                             id: confirmRebootLabel
                             text: confirmRebootBtn.text
-                            color: "#FFFFFF"
+                            color: theme.card
                             font.pixelSize: Math.round(13 * page.uiScale)
                             font.weight: Font.Bold
                             horizontalAlignment: Text.AlignHCenter

@@ -1,16 +1,18 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 import QtQuick.Layouts
 
 Rectangle {
     id: panel
+    Style.Theme { id: fallbackTheme; darkMode: false }
 
     required property var theme
     property string title: ""
     property string subtitle: ""
     default property alias content: bodyColumn.data
 
-    radius: 24
+    radius: Style.RoTokens.radiusSm
     color: theme.card
     border.width: 1
     border.color: theme.border
@@ -21,10 +23,10 @@ Rectangle {
         x: 20
         y: 20
         width: parent.width - 40
-        spacing: 16
+        spacing: Style.RoTokens.spaceLg
 
         ColumnLayout {
-            spacing: 6
+            spacing: Style.RoTokens.spaceSm
             Layout.fillWidth: true
 
             Label {
@@ -48,7 +50,7 @@ Rectangle {
 
         ColumnLayout {
             id: bodyColumn
-            spacing: 12
+            spacing: Style.RoTokens.spaceMd
             Layout.fillWidth: true
         }
     }

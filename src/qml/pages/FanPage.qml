@@ -1,16 +1,18 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../components" as Components
 
 Item {
     id: page
+    Style.Theme { id: fallbackTheme; darkMode: page.darkMode }
     required property var systemInfo
     required property var cpuMonitor
     required property var gpuMonitor
     required property var fanController
 
-    property var theme: ({})
+    property var theme: fallbackTheme
     property bool darkMode: false
     property bool showAdvancedInfo: true
     property real uiScale: 1.0
@@ -34,18 +36,18 @@ Item {
     readonly property bool supportsBatteryFanSync: hasControllableFan
                                                    && (systemInfo.onBattery || systemInfo.deviceType === "Laptop")
 
-    readonly property color bgColor: theme && theme.card ? theme.card : (page.darkMode ? "#29233B" : "#FFFFFF")
-    readonly property color cardColor: theme && theme.cardStrong ? theme.cardStrong : (page.darkMode ? "#342D4A" : "#F1F5F9")
-    readonly property color borderColor: theme && theme.border ? theme.border : (page.darkMode ? "#4D436B" : "#CBD5E1")
-    readonly property color textColor: theme && theme.text ? theme.text : (page.darkMode ? "#F8FAFC" : "#0F172A")
-    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (page.darkMode ? "#94A3B8" : "#64748B")
-    readonly property color accentColor: theme && theme.accentA ? theme.accentA : (page.darkMode ? "#818CF8" : "#4F46E5")
-    readonly property color accentButtonText: "#FFFFFF"
-    readonly property color infoBg: theme && theme.infoBg ? theme.infoBg : (page.darkMode ? "#1E2548" : "#EFF6FF")
-    readonly property color warningBg: theme && theme.warningBg ? theme.warningBg : (page.darkMode ? "#3A2E12" : "#FFFBEB")
-    readonly property color warningText: theme && theme.warning ? theme.warning : (page.darkMode ? "#FBBF24" : "#D97706")
-    readonly property color successBg: theme && theme.successBg ? theme.successBg : (page.darkMode ? "#143828" : "#ECFDF5")
-    readonly property color successText: theme && theme.success ? theme.success : (page.darkMode ? "#4ADE80" : "#059669")
+    readonly property color bgColor: theme.card
+    readonly property color cardColor: theme.cardStrong
+    readonly property color borderColor: theme && theme.border ? theme.border : (page.darkMode ? theme.border : theme.textMuted)
+    readonly property color textColor: theme.text
+    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (theme.textMuted)
+    readonly property color accentColor: theme.accentA
+    readonly property color accentButtonText: theme.onAccent
+    readonly property color infoBg: theme.infoBg
+    readonly property color warningBg: theme.warningBg
+    readonly property color warningText: theme.warning
+    readonly property color successBg: theme.successBg
+    readonly property color successText: theme.success
 
     component TelemetrySparkline: Canvas {
         id: sparkline
@@ -239,12 +241,12 @@ Item {
 
         ColumnLayout {
             width: pageScroll.availableWidth
-            spacing: Math.round(14 * page.uiScale)
+            spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
             // Section 1: Detected System Fans Grid
             Rectangle {
                 Layout.fillWidth: true
-                radius: 14
+                radius: Style.RoTokens.radiusMd
                 color: page.cardColor
                 border.width: 1
                 border.color: page.borderColor
@@ -253,12 +255,12 @@ Item {
                 ColumnLayout {
                     id: fansSectionLayout
                     anchors.fill: parent
-                    anchors.margins: Math.round(14 * page.uiScale)
-                    spacing: Math.round(12 * page.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 8
+                        spacing: Style.RoTokens.spaceSm
 
                         Label {
                             Layout.fillWidth: true
@@ -276,7 +278,7 @@ Item {
                             hoverEnabled: true
 
                             background: Rectangle {
-                                radius: 8
+                                radius: Style.RoTokens.radiusSm
                                 color: page.accentColor
                             }
 
@@ -300,15 +302,15 @@ Item {
                             visible: true
                             text: qsTr("Fan Setup Wizard")
                             implicitHeight: Math.round(34 * page.uiScale)
-                            leftPadding: Math.round(14 * page.uiScale)
-                            rightPadding: Math.round(14 * page.uiScale)
+                            leftPadding: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                            rightPadding: Math.round(Style.RoTokens.spaceMd * page.uiScale)
                             hoverEnabled: true
 
                             background: Rectangle {
-                                radius: 8
-                                color: rescanBtn.down ? (page.darkMode ? "#3B3156" : "#E2E8F0")
-                                                      : (rescanBtn.hovered ? (page.darkMode ? "#342D4A" : "#F1F5F9")
-                                                                           : (page.darkMode ? "#29233B" : "#FFFFFF"))
+                                radius: Style.RoTokens.radiusSm
+                                color: rescanBtn.down ? (page.darkMode ? theme.hover : theme.cardStrong)
+                                                      : (rescanBtn.hovered ? (theme.cardStrong)
+                                                                           : (theme.card))
                                 border.width: 1
                                 border.color: rescanBtn.hovered ? page.accentColor : page.borderColor
                             }
@@ -356,20 +358,20 @@ Item {
                                 required property int index
                                 Layout.fillWidth: true
                                 implicitHeight: Math.round(152 * page.uiScale)
-                                radius: 12
+                                radius: Style.RoTokens.radiusMd
                                 scale: (page.reorderMode && page.draggingFanIndex === fanCard.index) ? 1.03 : 1.0
                                 z: (page.reorderMode && page.draggingFanIndex === fanCard.index) ? 10 : 1
                                 color: (page.reorderMode && page.draggingFanIndex === fanCard.index)
-                                       ? (page.darkMode ? "#3D345C" : "#EDE9FE")
+                                       ? (page.darkMode ? theme.hover : theme.accentC)
                                        : ((page.fanController && page.fanController.selectedFanIndex === fanCard.index)
-                                          ? (page.darkMode ? "#383152" : "#E0E7FF")
+                                          ? (page.darkMode ? theme.hover : theme.accentC)
                                           : page.bgColor)
                                 border.width: (page.reorderMode && page.draggingFanIndex === fanCard.index) ? 2 : ((page.fanController && page.fanController.selectedFanIndex === fanCard.index) ? 2 : 1)
                                 border.color: (page.reorderMode && page.draggingFanIndex === fanCard.index)
                                               ? page.accentColor
                                               : ((page.fanController && page.fanController.selectedFanIndex === fanCard.index) ? page.accentColor : page.borderColor)
 
-                                Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
+                                Behavior on scale { NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutQuad } }
 
                                 MouseArea {
                                     id: fanCardMouseArea
@@ -391,18 +393,18 @@ Item {
 
                                 ColumnLayout {
                                     anchors.fill: parent
-                                    anchors.margins: Math.round(12 * page.uiScale)
-                                    spacing: Math.round(8 * page.uiScale)
+                                    anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                                    spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                                     RowLayout {
                                         Layout.fillWidth: true
-                                        spacing: 8
+                                        spacing: Style.RoTokens.spaceSm
 
                                         Rectangle {
                                             implicitWidth: Math.round(54 * page.uiScale)
                                             implicitHeight: Math.round(24 * page.uiScale)
-                                            radius: 6
-                                            color: page.darkMode ? "#4A3E6D" : "#E2E8F0"
+                                            radius: Style.RoTokens.radiusSm
+                                            color: page.darkMode ? theme.hover : theme.cardStrong
 
                                             Row {
                                                 anchors.centerIn: parent
@@ -443,7 +445,7 @@ Item {
                                             hoverEnabled: true
                                             background: Rectangle {
                                                 radius: width / 2
-                                                color: fanSettingsButton.hovered ? (page.darkMode ? "#3B3156" : "#E2E8F0") : "transparent"
+                                                color: fanSettingsButton.hovered ? (page.darkMode ? theme.hover : theme.cardStrong) : "transparent"
                                             }
                                             contentItem: Label {
                                                 text: fanSettingsButton.text
@@ -464,7 +466,7 @@ Item {
 
                                     RowLayout {
                                         Layout.fillWidth: true
-                                        spacing: Math.round(10 * page.uiScale)
+                                        spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                                         // Speed Metric
                                         ColumnLayout {
@@ -562,14 +564,14 @@ Item {
                                                 : page.fanSpeedHistory
                                         lineColor: (page.fanController && page.fanController.selectedFanIndex === fanCard.index)
                                                    ? page.accentColor
-                                                   : (page.darkMode ? "#6366F1" : "#4F46E5")
+                                                   : (theme.accentA)
                                     }
 
                                     // Reordering Controls Bar (visible in reorder mode)
                                     RowLayout {
                                         visible: page.reorderMode
                                         Layout.fillWidth: true
-                                        spacing: 6
+                                        spacing: Style.RoTokens.spaceSm
 
                                         Button {
                                             id: moveLeftBtn
@@ -579,9 +581,9 @@ Item {
                                             hoverEnabled: true
 
                                             background: Rectangle {
-                                                radius: 6
-                                                color: moveLeftBtn.down ? (page.darkMode ? "#4A3E6D" : "#CBD5E1")
-                                                                        : (moveLeftBtn.hovered ? (page.darkMode ? "#383152" : "#E2E8F0")
+                                                radius: Style.RoTokens.radiusSm
+                                                color: moveLeftBtn.down ? (page.darkMode ? theme.hover : theme.textMuted)
+                                                                        : (moveLeftBtn.hovered ? (page.darkMode ? theme.hover : theme.cardStrong)
                                                                                                : page.bgColor)
                                                 border.width: 1
                                                 border.color: moveLeftBtn.hovered ? page.accentColor : page.borderColor
@@ -603,14 +605,14 @@ Item {
                                         Rectangle {
                                             Layout.fillWidth: true
                                             implicitHeight: Math.round(28 * page.uiScale)
-                                            radius: 6
-                                            color: page.darkMode ? "#2E2442" : "#F3E8FF"
+                                            radius: Style.RoTokens.radiusSm
+                                            color: theme.accentC
                                             border.width: 1
-                                            border.color: page.darkMode ? "#4C3872" : "#DDD6FE"
+                                            border.color: theme.border
 
                                             RowLayout {
                                                 anchors.centerIn: parent
-                                                spacing: 4
+                                                spacing: Style.RoTokens.spaceXs
 
                                                 Label {
                                                     text: "⠿"
@@ -635,9 +637,9 @@ Item {
                                             hoverEnabled: true
 
                                             background: Rectangle {
-                                                radius: 6
-                                                color: moveRightBtn.down ? (page.darkMode ? "#4A3E6D" : "#CBD5E1")
-                                                                         : (moveRightBtn.hovered ? (page.darkMode ? "#383152" : "#E2E8F0")
+                                                radius: Style.RoTokens.radiusSm
+                                                color: moveRightBtn.down ? (page.darkMode ? theme.hover : theme.textMuted)
+                                                                         : (moveRightBtn.hovered ? (page.darkMode ? theme.hover : theme.cardStrong)
                                                                                                 : page.bgColor)
                                                 border.width: 1
                                                 border.color: moveRightBtn.hovered ? page.accentColor : page.borderColor
@@ -665,7 +667,7 @@ Item {
                         Layout.fillWidth: true
                         visible: page.hasDetectedFans && page.orderedFans.length === 1
                         implicitHeight: singleChannelInfo.implicitHeight + Math.round(20 * page.uiScale)
-                        radius: 8
+                        radius: Style.RoTokens.radiusSm
                         color: page.infoBg
                         border.width: 1
                         border.color: page.borderColor
@@ -673,7 +675,7 @@ Item {
                         Label {
                             id: singleChannelInfo
                             anchors.fill: parent
-                            anchors.margins: Math.round(10 * page.uiScale)
+                            anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
                             text: qsTr("Only one RPM channel is exposed by Linux. CPU and chassis fans will appear automatically when the motherboard firmware or kernel sensor driver publishes their RPM telemetry.")
                             color: page.softTextColor
                             wrapMode: Text.WordWrap
@@ -686,7 +688,7 @@ Item {
             // Section 2: Fan Control & Profile Settings Section
             Rectangle {
                 Layout.fillWidth: true
-                radius: 14
+                radius: Style.RoTokens.radiusMd
                 color: page.cardColor
                 border.width: 1
                 border.color: page.borderColor
@@ -695,12 +697,12 @@ Item {
                 ColumnLayout {
                     id: profileSectionLayout
                     anchors.fill: parent
-                    anchors.margins: Math.round(16 * page.uiScale)
-                    spacing: Math.round(14 * page.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceLg * page.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 8
+                        spacing: Style.RoTokens.spaceSm
 
                         Label {
                             text: qsTr("Optimization Profiles & Control")
@@ -713,10 +715,10 @@ Item {
                         Rectangle {
                             implicitWidth: statusBadgeText.implicitWidth + 18
                             implicitHeight: Math.round(28 * page.uiScale)
-                            radius: 6
+                            radius: Style.RoTokens.radiusSm
                             color: page.fanController && page.fanController.controlSupported ? page.successBg : page.infoBg
                             border.width: 1
-                            border.color: page.fanController && page.fanController.controlSupported ? page.successText : (page.darkMode ? "#4D5B9E" : "#93C5FD")
+                            border.color: page.fanController && page.fanController.controlSupported ? page.successText : (page.darkMode ? theme.border : theme.accentA)
 
                             Label {
                                 id: statusBadgeText
@@ -761,10 +763,10 @@ Item {
                                 enabled: page.fanController && page.fanController.controlSupported
 
                                 background: Rectangle {
-                                    radius: 10
+                                    radius: Style.RoTokens.radiusSm
                                     color: modeBtn.isCurrent
-                                           ? (page.darkMode ? "#342D4A" : "#EEF2FF")
-                                           : (modeBtn.hovered ? (page.darkMode ? "#2E2742" : "#F8FAFC") : page.bgColor)
+                                           ? (page.darkMode ? theme.cardStrong : theme.accentC)
+                                           : (modeBtn.hovered ? (theme.hover) : page.bgColor)
                                     border.width: modeBtn.isCurrent ? 2 : 1
                                     border.color: modeBtn.isCurrent ? page.accentColor : page.borderColor
 
@@ -772,18 +774,18 @@ Item {
 
                                 contentItem: ColumnLayout {
                                     anchors.fill: parent
-                                    anchors.margins: Math.round(10 * page.uiScale)
+                                    anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
                                     spacing: 2
 
                                     RowLayout {
                                         Layout.fillWidth: true
-                                        spacing: 6
+                                        spacing: Style.RoTokens.spaceSm
 
                                         Rectangle {
                                             implicitWidth: Math.round(8 * page.uiScale)
                                             implicitHeight: Math.round(8 * page.uiScale)
-                                            radius: Math.round(4 * page.uiScale)
-                                            color: modeBtn.isCurrent ? page.accentColor : (page.darkMode ? "#403858" : "#CBD5E1")
+                                            radius: Math.round(Style.RoTokens.radiusXs * page.uiScale)
+                                            color: modeBtn.isCurrent ? page.accentColor : (page.darkMode ? theme.hover : theme.textMuted)
                                         }
 
                                         Label {
@@ -816,7 +818,7 @@ Item {
                     // Modern Custom Curve Studio (when Custom mode selected)
                     Rectangle {
                         Layout.fillWidth: true
-                        radius: 12
+                        radius: Style.RoTokens.radiusMd
                         color: page.bgColor
                         border.width: 1
                         border.color: page.borderColor
@@ -826,12 +828,12 @@ Item {
                         ColumnLayout {
                             id: customSummaryLayout
                             anchors.fill: parent
-                            anchors.margins: Math.round(14 * page.uiScale)
-                            spacing: Math.round(12 * page.uiScale)
+                            anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                            spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: 10
+                                spacing: Style.RoTokens.spaceMd
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
@@ -858,8 +860,8 @@ Item {
                                     hoverEnabled: true
 
                                     background: Rectangle {
-                                        radius: 8
-                                        color: configureStudioBtn.hovered ? (page.darkMode ? "#3B3156" : "#EDE9FE") : (page.darkMode ? "#2E2442" : "#F3E8FF")
+                                        radius: Style.RoTokens.radiusSm
+                                        color: configureStudioBtn.hovered ? (page.darkMode ? theme.hover : theme.accentC) : (theme.accentC)
                                         border.width: 1
                                         border.color: page.accentColor
                                     }
@@ -903,15 +905,15 @@ Item {
 
                                         Layout.fillWidth: true
                                         implicitHeight: Math.round(64 * page.uiScale)
-                                        radius: 8
+                                        radius: Style.RoTokens.radiusSm
                                         color: page.cardColor
                                         border.width: 1
                                         border.color: page.borderColor
 
                                         ColumnLayout {
                                             anchors.fill: parent
-                                            anchors.margins: Math.round(8 * page.uiScale)
-                                            spacing: 4
+                                            anchors.margins: Math.round(Style.RoTokens.spaceSm * page.uiScale)
+                                            spacing: Style.RoTokens.spaceXs
 
                                             RowLayout {
                                                 Layout.fillWidth: true
@@ -919,8 +921,8 @@ Item {
                                                 Rectangle {
                                                     implicitWidth: Math.round(20 * page.uiScale)
                                                     implicitHeight: Math.round(18 * page.uiScale)
-                                                    radius: 4
-                                                    color: page.darkMode ? "#221C30" : "#E2E8F0"
+                                                    radius: Style.RoTokens.radiusXs
+                                                    color: theme.cardStrong
 
                                                     Label {
                                                         anchors.centerIn: parent
@@ -953,7 +955,7 @@ Item {
                                                 Layout.fillWidth: true
                                                 implicitHeight: Math.round(6 * page.uiScale)
                                                 radius: 3
-                                                color: page.darkMode ? "#1E2238" : "#E2E8F0"
+                                                color: theme.cardStrong
                                                 clip: true
 
                                                 Rectangle {
@@ -966,7 +968,7 @@ Item {
                                                         var s = ptCard.ptData.speed || 0;
                                                         if (s > 80) return page.warningText;
                                                         if (s > 50) return page.accentColor;
-                                                        return page.darkMode ? "#34D399" : "#10B981";
+                                                        return theme.success;
                                                     }
                                                 }
                                             }
@@ -978,7 +980,7 @@ Item {
                             // Preset Pills Row
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: Math.round(8 * page.uiScale)
+                                spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                                 Label {
                                     text: qsTr("Curve Presets:")
@@ -1000,13 +1002,13 @@ Item {
                                         required property var modelData
                                         text: presetBtn.modelData.name
                                         implicitHeight: Math.round(28 * page.uiScale)
-                                        leftPadding: Math.round(10 * page.uiScale)
-                                        rightPadding: Math.round(10 * page.uiScale)
+                                        leftPadding: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                                        rightPadding: Math.round(Style.RoTokens.spaceMd * page.uiScale)
                                         hoverEnabled: true
 
                                         background: Rectangle {
-                                            radius: 6
-                                            color: presetBtn.hovered ? (page.darkMode ? "#3B3156" : "#E2E8F0") : page.cardColor
+                                            radius: Style.RoTokens.radiusSm
+                                            color: presetBtn.hovered ? (page.darkMode ? theme.hover : theme.cardStrong) : page.cardColor
                                             border.width: 1
                                             border.color: presetBtn.hovered ? page.accentColor : page.borderColor
                                         }
@@ -1033,7 +1035,7 @@ Item {
                     // Bottom Row: FanControl Dynamics & Battery Switches (Equal size)
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: Math.round(12 * page.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
                         visible: page.hasControllableFan || page.supportsBatteryFanSync
 
                         Rectangle {
@@ -1041,15 +1043,15 @@ Item {
                             Layout.preferredWidth: 1
                             visible: page.hasControllableFan
                             implicitHeight: Math.round(58 * page.uiScale)
-                            radius: 10
+                            radius: Style.RoTokens.radiusSm
                             color: page.bgColor
                             border.width: 1
                             border.color: page.borderColor
 
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.margins: Math.round(12 * page.uiScale)
-                                spacing: 10
+                                anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                                spacing: Style.RoTokens.spaceMd
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
@@ -1081,8 +1083,8 @@ Item {
                                     indicator: Rectangle {
                                         implicitWidth: Math.round(44 * page.uiScale)
                                         implicitHeight: Math.round(24 * page.uiScale)
-                                        radius: Math.round(12 * page.uiScale)
-                                        color: smoothingSwitch.checked ? page.accentColor : (page.darkMode ? "#342D4A" : "#CBD5E1")
+                                        radius: Math.round(Style.RoTokens.radiusMd * page.uiScale)
+                                        color: smoothingSwitch.checked ? page.accentColor : (theme.hoverMuted)
                                         border.width: 1
                                         border.color: smoothingSwitch.checked ? page.accentColor : page.borderColor
 
@@ -1092,10 +1094,10 @@ Item {
                                             y: (parent.height - height) / 2
                                             width: Math.round(20 * page.uiScale)
                                             height: Math.round(20 * page.uiScale)
-                                            radius: Math.round(10 * page.uiScale)
-                                            color: "#FFFFFF"
+                                            radius: Math.round(Style.RoTokens.radiusSm * page.uiScale)
+                                            color: theme.card
 
-                                            Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.InOutQuad } }
+                                            Behavior on x { NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.InOutQuad } }
                                         }
                                     }
 
@@ -1112,15 +1114,15 @@ Item {
                             Layout.preferredWidth: 1
                             visible: page.supportsBatteryFanSync
                             implicitHeight: Math.round(58 * page.uiScale)
-                            radius: 10
+                            radius: Style.RoTokens.radiusSm
                             color: page.bgColor
                             border.width: 1
                             border.color: page.borderColor
 
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.margins: Math.round(12 * page.uiScale)
-                                spacing: 10
+                                anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                                spacing: Style.RoTokens.spaceMd
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
@@ -1154,8 +1156,8 @@ Item {
                                     indicator: Rectangle {
                                         implicitWidth: Math.round(44 * page.uiScale)
                                         implicitHeight: Math.round(24 * page.uiScale)
-                                        radius: Math.round(12 * page.uiScale)
-                                        color: batterySyncSwitch.checked ? page.accentColor : (page.darkMode ? "#342D4A" : "#CBD5E1")
+                                        radius: Math.round(Style.RoTokens.radiusMd * page.uiScale)
+                                        color: batterySyncSwitch.checked ? page.accentColor : (theme.hoverMuted)
                                         border.width: 1
                                         border.color: batterySyncSwitch.checked ? page.accentColor : page.borderColor
 
@@ -1165,10 +1167,10 @@ Item {
                                             y: (parent.height - height) / 2
                                             width: Math.round(20 * page.uiScale)
                                             height: Math.round(20 * page.uiScale)
-                                            radius: Math.round(10 * page.uiScale)
-                                            color: "#FFFFFF"
+                                            radius: Math.round(Style.RoTokens.radiusSm * page.uiScale)
+                                            color: theme.card
 
-                                            Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.InOutQuad } }
+                                            Behavior on x { NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.InOutQuad } }
                                         }
                                     }
 

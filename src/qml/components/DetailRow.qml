@@ -1,15 +1,17 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 import QtQuick.Layouts
 
 Rectangle {
     id: row
+    Style.Theme { id: fallbackTheme; darkMode: false }
 
     required property var theme
     property string label: ""
     property string value: ""
 
-    radius: 12
+    radius: Style.RoTokens.radiusMd
     color: theme.cardStrong
     border.width: 1
     border.color: theme.border
@@ -18,8 +20,8 @@ Rectangle {
     RowLayout {
         id: contentRow
         anchors.fill: parent
-        anchors.margins: 10
-        spacing: 12
+        anchors.margins: Style.RoTokens.spaceMd
+        spacing: Style.RoTokens.spaceMd
 
         Label {
             Layout.preferredWidth: Math.min(180, row.width * 0.42)

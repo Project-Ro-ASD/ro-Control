@@ -1,16 +1,18 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../components" as Components
 
 Item {
     id: page
+    Style.Theme { id: fallbackTheme; darkMode: page.darkMode }
     required property var nvidiaDetector
     required property var nvidiaInstaller
     required property var nvidiaUpdater
     property var systemInfo: null
 
-    property var theme: ({})
+    property var theme: fallbackTheme
     property bool darkMode: false
     property bool showAdvancedInfo: true
     property real uiScale: 1.0
@@ -56,17 +58,17 @@ Item {
                                                       : page.nvidiaUpdater.updateAvailable
                                                       ? (theme && theme.warning ? theme.warning : page.softTextColor)
                                                       : page.softTextColor
-    readonly property color bgColor: theme && theme.card ? theme.card : (page.darkMode ? "#29233B" : "#FFFFFF")
-    readonly property color cardColor: theme && theme.cardStrong ? theme.cardStrong : (page.darkMode ? "#342D4A" : "#F1F5F9")
-    readonly property color borderColor: theme && theme.border ? theme.border : (page.darkMode ? "#4D436B" : "#CBD5E1")
-    readonly property color textColor: theme && theme.text ? theme.text : (page.darkMode ? "#F8FAFC" : "#0F172A")
-    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (page.darkMode ? "#94A3B8" : "#64748B")
-    readonly property color infoBg: theme && theme.infoBg ? theme.infoBg : (page.darkMode ? "#1E2548" : "#EFF6FF")
-    readonly property color successBg: theme && theme.successBg ? theme.successBg : (page.darkMode ? "#143828" : "#ECFDF5")
-    readonly property color warningBg: theme && theme.warningBg ? theme.warningBg : (page.darkMode ? "#3A2E12" : "#FFFBEB")
-    readonly property color dangerBg: theme && theme.dangerBg ? theme.dangerBg : (page.darkMode ? "#3D171E" : "#FEF2F2")
-    readonly property color dangerColor: theme && theme.danger ? theme.danger : (page.darkMode ? "#F87171" : "#EF4444")
-    readonly property color accentColor: theme && theme.accentA ? theme.accentA : (page.darkMode ? "#818CF8" : "#4F46E5")
+    readonly property color bgColor: theme.card
+    readonly property color cardColor: theme.cardStrong
+    readonly property color borderColor: theme && theme.border ? theme.border : (page.darkMode ? theme.border : theme.textMuted)
+    readonly property color textColor: theme.text
+    readonly property color softTextColor: theme && theme.textSoft ? theme.textSoft : (theme.textMuted)
+    readonly property color infoBg: theme.infoBg
+    readonly property color successBg: theme.successBg
+    readonly property color warningBg: theme.warningBg
+    readonly property color dangerBg: theme.dangerBg
+    readonly property color dangerColor: theme.danger
+    readonly property color accentColor: theme.accentA
 
     onOperationRunningChanged: {
         if (operationRunning)
@@ -77,7 +79,7 @@ Item {
         id: tile
         property string title: ""
         property string subtitle: ""
-        property color accentColor: "#10B981"
+        property color accentColor: theme.success
         property bool activeBadge: false
         property string badgeText: ""
         property string tooltipText: ""
@@ -92,10 +94,10 @@ Item {
         opacity: enabled ? 1.0 : 0.45
 
         Behavior on scale {
-            NumberAnimation { duration: 120; easing.type: Easing.OutQuad }
+            NumberAnimation { duration: Style.Motion.fastMs; easing.type: Easing.OutQuad }
         }
         Behavior on opacity {
-            NumberAnimation { duration: 150 }
+            NumberAnimation { duration: Style.Motion.fastMs }
         }
 
         ToolTip {
@@ -104,10 +106,10 @@ Item {
             text: tile.tooltipText
             delay: 300
             timeout: 6000
-            topPadding: Math.round(8 * page.uiScale)
-            bottomPadding: Math.round(8 * page.uiScale)
-            leftPadding: Math.round(14 * page.uiScale)
-            rightPadding: Math.round(12 * page.uiScale)
+            topPadding: Math.round(Style.RoTokens.spaceSm * page.uiScale)
+            bottomPadding: Math.round(Style.RoTokens.spaceSm * page.uiScale)
+            leftPadding: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+            rightPadding: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
             contentItem: Label {
                 text: tileTip.text
@@ -118,10 +120,10 @@ Item {
             }
 
             background: Rectangle {
-                radius: 8
-                color: page.darkMode ? "#241E34" : "#FFFFFF"
+                radius: Style.RoTokens.radiusSm
+                color: theme.card
                 border.width: 1
-                border.color: page.darkMode ? "#4D436B" : "#CBD5E1"
+                border.color: page.darkMode ? theme.border : theme.textMuted
 
                 Rectangle {
                     anchors.left: parent.left
@@ -136,7 +138,7 @@ Item {
         }
 
         background: Rectangle {
-            radius: 10
+            radius: Style.RoTokens.radiusSm
             color: !tile.enabled ? page.cardColor
                    : tile.down ? Qt.darker(page.bgColor, 1.05)
                    : tile.hovered ? (page.darkMode ? Qt.tint(page.bgColor, Qt.rgba(tile.accentColor.r, tile.accentColor.g, tile.accentColor.b, 0.14))
@@ -149,7 +151,7 @@ Item {
                 anchors.left: parent.left
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                anchors.margins: 8
+                anchors.margins: Style.RoTokens.spaceSm
                 width: 4
                 radius: 2
                 color: tile.accentColor
@@ -160,15 +162,15 @@ Item {
 
         contentItem: ColumnLayout {
             anchors.fill: parent
-            anchors.leftMargin: 18
-            anchors.rightMargin: 14
-            anchors.topMargin: 8
-            anchors.bottomMargin: 8
+            anchors.leftMargin: Style.RoTokens.spaceLg
+            anchors.rightMargin: Style.RoTokens.spaceMd
+            anchors.topMargin: Style.RoTokens.spaceSm
+            anchors.bottomMargin: Style.RoTokens.spaceSm
             spacing: 2
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 6
+                spacing: Style.RoTokens.spaceSm
 
                 Label {
                     Layout.fillWidth: true
@@ -190,16 +192,16 @@ Item {
                     visible: tile.activeBadge && !tile.busy
                     Layout.preferredHeight: Math.round(18 * page.uiScale)
                     Layout.preferredWidth: badgeLabel.implicitWidth + 10
-                    radius: 4
-                    color: page.darkMode ? "#064E3B" : "#ECFDF5"
+                    radius: Style.RoTokens.radiusXs
+                    color: theme.successBg
                     border.width: 1
-                    border.color: "#10B981"
+                    border.color: theme.success
 
                     Label {
                         id: badgeLabel
                         anchors.centerIn: parent
                         text: tile.badgeText.length > 0 ? tile.badgeText : qsTr("ACTIVE")
-                        color: "#10B981"
+                        color: theme.success
                         font.pixelSize: Math.round(9 * page.uiScale)
                         font.weight: Font.Bold
                     }
@@ -223,37 +225,37 @@ Item {
         property real uiScale: page.uiScale
 
         implicitHeight: Math.round(32 * uiScale)
-        leftPadding: Math.round(14 * uiScale)
-        rightPadding: Math.round(14 * uiScale)
+        leftPadding: Math.round(Style.RoTokens.spaceMd * uiScale)
+        rightPadding: Math.round(Style.RoTokens.spaceMd * uiScale)
 
         scale: !enabled ? 1.0 : (down ? 0.96 : (hovered ? 1.02 : 1.0))
-        Behavior on scale { NumberAnimation { duration: 100 } }
+        Behavior on scale { NumberAnimation { duration: Style.Motion.fastMs } }
 
         contentItem: Label {
             text: miniBtn.text
             font.pixelSize: Math.round(11 * miniBtn.uiScale)
             font.weight: Font.DemiBold
             color: !miniBtn.enabled ? page.softTextColor
-                   : tone === "danger" ? (miniBtn.hovered ? "#FFFFFF" : "#EF4444")
-                   : tone === "primary" ? "#FFFFFF"
-                   : tone === "success" ? "#FFFFFF"
+                   : tone === "danger" ? theme.danger
+                   : tone === "primary" ? theme.onAccent
+                   : tone === "success" ? theme.success
                    : page.textColor
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
 
         background: Rectangle {
-            radius: 6
+            radius: Style.RoTokens.radiusSm
             color: !miniBtn.enabled ? Qt.rgba(0,0,0,0)
                    : tone === "primary" ? (miniBtn.down ? Qt.darker(page.accentColor, 1.1) : (miniBtn.hovered ? Qt.lighter(page.accentColor, 1.1) : page.accentColor))
-                   : tone === "danger" ? (miniBtn.down ? "#DC2626" : (miniBtn.hovered ? "#EF4444" : (page.darkMode ? "#3D171E" : "#FEE2E2")))
-                   : tone === "success" ? (miniBtn.down ? "#16A34A" : (miniBtn.hovered ? "#22C55E" : (page.darkMode ? "#143828" : "#DCFCE7")))
+                   : tone === "danger" ? theme.dangerBg
+                   : tone === "success" ? theme.successBg
                    : (miniBtn.down ? Qt.darker(page.bgColor, 1.1) : (miniBtn.hovered ? page.cardColor : page.bgColor))
             border.width: 1
             border.color: !miniBtn.enabled ? page.borderColor
-                         : tone === "danger" ? "#EF4444"
+                         : tone === "danger" ? theme.danger
                          : tone === "primary" ? page.accentColor
-                         : tone === "success" ? "#22C55E"
+                         : tone === "success" ? theme.success
                          : page.borderColor
             opacity: miniBtn.enabled ? 1.0 : 0.5
         }
@@ -268,31 +270,32 @@ Item {
         implicitHeight: Math.round(38 * uiScale)
 
         scale: !enabled ? 1.0 : (down ? 0.97 : (hovered ? 1.015 : 1.0))
-        Behavior on scale { NumberAnimation { duration: 100 } }
+        Behavior on scale { NumberAnimation { duration: Style.Motion.fastMs } }
 
         contentItem: Label {
             text: dlgBtn.text
             font.pixelSize: Math.round(13 * dlgBtn.uiScale)
             font.weight: Font.DemiBold
             color: !dlgBtn.enabled ? page.softTextColor
-                   : tone === "primary" || tone === "danger" || tone === "success" ? "#FFFFFF"
+                   : tone === "primary" ? theme.onAccent
+                   : tone === "danger" || tone === "success" ? theme.window
                    : page.textColor
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
 
         background: Rectangle {
-            radius: 8
+            radius: Style.RoTokens.radiusSm
             color: !dlgBtn.enabled ? page.cardColor
                    : tone === "primary" ? (dlgBtn.down ? Qt.darker(page.accentColor, 1.1) : (dlgBtn.hovered ? Qt.lighter(page.accentColor, 1.08) : page.accentColor))
-                   : tone === "danger" ? (dlgBtn.down ? "#DC2626" : (dlgBtn.hovered ? "#EF4444" : "#DC2626"))
-                   : tone === "success" ? (dlgBtn.down ? "#16A34A" : (dlgBtn.hovered ? "#22C55E" : "#16A34A"))
+                   : tone === "danger" ? (dlgBtn.down ? theme.danger : (dlgBtn.hovered ? theme.danger : theme.danger))
+                   : tone === "success" ? (dlgBtn.down ? theme.success : (dlgBtn.hovered ? theme.success : theme.success))
                    : (dlgBtn.down ? Qt.darker(page.bgColor, 1.08) : (dlgBtn.hovered ? page.cardColor : page.bgColor))
             border.width: 1
             border.color: !dlgBtn.enabled ? page.borderColor
-                         : tone === "primary" ? Qt.tint(page.accentColor, "#33FFFFFF")
-                         : tone === "danger" ? Qt.tint("#EF4444", "#33FFFFFF")
-                         : tone === "success" ? Qt.tint("#22C55E", "#33FFFFFF")
+                         : tone === "primary" ? Qt.tint(page.accentColor, Qt.rgba(theme.text.r, theme.text.g, theme.text.b, 0.2000))
+                         : tone === "danger" ? Qt.tint(theme.danger, Qt.rgba(theme.text.r, theme.text.g, theme.text.b, 0.2000))
+                         : tone === "success" ? Qt.tint(theme.success, Qt.rgba(theme.text.r, theme.text.g, theme.text.b, 0.2000))
                          : page.borderColor
         }
     }
@@ -392,7 +395,7 @@ Item {
             driverActionModalPopup.actionKey = "update";
             driverActionModalPopup.actionTitle = qsTr("Update NVIDIA Driver");
             driverActionModalPopup.actionSubtitle = qsTr("Apply the latest version from configured repositories");
-            driverActionModalPopup.actionAccentColor = "#2563EB";
+            driverActionModalPopup.actionAccentColor = theme.accentA;
             driverActionModalPopup.actionDescription = qsTr("Updates the installed NVIDIA driver package set, rebuilds its kernel module, and regenerates initramfs.");
             driverActionModalPopup.actionPoints = [
                 qsTr("Applies the latest compatible driver package version."),
@@ -420,7 +423,7 @@ Item {
             driverActionModalPopup.actionKey = "closed";
             driverActionModalPopup.actionTitle = qsTr("NVIDIA Proprietary Kernel Module (akmod-nvidia)");
             driverActionModalPopup.actionSubtitle = qsTr("Official Package • akmod-nvidia & CUDA libraries");
-            driverActionModalPopup.actionAccentColor = "#10B981";
+            driverActionModalPopup.actionAccentColor = theme.success;
             driverActionModalPopup.actionDescription = qsTr("Installs NVIDIA's official proprietary binary driver stack. This stack delivers full hardware feature support including DLSS, CUDA acceleration, NVENC hardware encoding, OptiX, and Ray Tracing.");
             driverActionModalPopup.actionPoints = [
                 qsTr("Downloads and installs akmod-nvidia, xorg-x11-drv-nvidia, and core libraries."),
@@ -442,7 +445,7 @@ Item {
             driverActionModalPopup.actionKey = "open";
             driverActionModalPopup.actionTitle = qsTr("NVIDIA Open Kernel Modules (akmod-nvidia-open)");
             driverActionModalPopup.actionSubtitle = qsTr("NVIDIA driver with open kernel modules");
-            driverActionModalPopup.actionAccentColor = "#0EA5E9";
+            driverActionModalPopup.actionAccentColor = theme.accentA;
             driverActionModalPopup.actionDescription = qsTr("Installs NVIDIA Open Kernel Modules. This is not a full community graphics stack: NVIDIA userspace components remain part of the installation.");
             driverActionModalPopup.actionPoints = [
                 qsTr("Hardware Requirement: Turing (RTX 2000 / GTX 1600) or newer GPU architecture."),
@@ -459,7 +462,7 @@ Item {
             driverActionModalPopup.actionKey = "clean";
             driverActionModalPopup.actionTitle = qsTr("Deep Clean & Module Purge");
             driverActionModalPopup.actionSubtitle = qsTr("Remove NVIDIA packages and clear cached metadata");
-            driverActionModalPopup.actionAccentColor = "#F59E0B";
+            driverActionModalPopup.actionAccentColor = theme.warning;
             driverActionModalPopup.actionDescription = qsTr("Removes installed NVIDIA driver packages and clears DNF's cached metadata so a later installation starts from a clean package state.");
             driverActionModalPopup.actionPoints = [
                 qsTr("Removes akmod-nvidia, akmod-nvidia-open, NVIDIA Xorg packages, and nvidia-settings."),
@@ -474,7 +477,7 @@ Item {
             driverActionModalPopup.actionKey = "rebuild";
             driverActionModalPopup.actionTitle = qsTr("Rebuild Kernel Modules & Initramfs");
             driverActionModalPopup.actionSubtitle = qsTr("Akmods Force Recompilation & Dracut Image Regeneration");
-            driverActionModalPopup.actionAccentColor = "#8B5CF6";
+            driverActionModalPopup.actionAccentColor = theme.accentA;
             driverActionModalPopup.actionDescription = qsTr("Forces a complete recompilation of NVIDIA kernel modules against the currently running Linux kernel and updates the early boot ramdisk (initramfs).");
             driverActionModalPopup.actionPoints = [
                 qsTr("Executes 'akmods --force' to recompile the driver for kernel: %1.").arg(page.systemInfo ? page.systemInfo.kernelVersion : "Linux"),
@@ -637,10 +640,10 @@ Item {
 
         ColumnLayout {
             width: pageScroll.availableWidth
-            spacing: 10
+            spacing: Style.RoTokens.spaceMd
 
-            Rectangle { visible: page.nvidiaDetector && page.nvidiaDetector.activeDriver.indexOf("Restart Required") !== -1; Layout.fillWidth: true; implicitHeight: 44; radius: 10; color: page.warningBg; border.width: 1; border.color: page.theme.warning
-                Label { anchors.fill: parent; anchors.margins: 12; text: qsTr("Restart required — the installed NVIDIA driver will be active after reboot."); color: page.textColor; verticalAlignment: Text.AlignVCenter; font.weight: Font.DemiBold }
+            Rectangle { visible: page.nvidiaDetector && page.nvidiaDetector.activeDriver.indexOf("Restart Required") !== -1; Layout.fillWidth: true; implicitHeight: 44; radius: Style.RoTokens.radiusSm; color: page.warningBg; border.width: 1; border.color: page.theme.warning
+                Label { anchors.fill: parent; anchors.margins: Style.RoTokens.spaceMd; text: qsTr("Restart required — the installed NVIDIA driver will be active after reboot."); color: page.textColor; verticalAlignment: Text.AlignVCenter; font.weight: Font.DemiBold }
             }
 
             GridLayout {
@@ -652,7 +655,7 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true
                     implicitHeight: Math.max(Math.round(132 * page.uiScale), gpuInfoColumn.implicitHeight + Math.round(28 * page.uiScale))
-                    radius: 14
+                    radius: Style.RoTokens.radiusMd
                     color: page.cardColor
                     border.width: 1
                     border.color: page.borderColor
@@ -660,8 +663,8 @@ Item {
                     Column {
                         id: gpuInfoColumn
                         anchors.fill: parent
-                        anchors.margins: Math.round(14 * page.uiScale)
-                        spacing: Math.round(6 * page.uiScale)
+                        anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                         Label { text: qsTr("GPU"); color: page.softTextColor; font.weight: Font.DemiBold; font.pixelSize: Math.round(13 * page.uiScale) }
                         Label {
@@ -691,19 +694,19 @@ Item {
                     visible: page.nvidiaDetector.gpuFound
                     Layout.fillWidth: true
                     implicitHeight: Math.round(132 * page.uiScale)
-                    radius: 14
+                    radius: Style.RoTokens.radiusMd
                     color: page.cardColor
                     border.width: 1
                     border.color: page.borderColor
 
                     Column {
                         anchors.fill: parent
-                        anchors.margins: Math.round(14 * page.uiScale)
-                        spacing: Math.round(6 * page.uiScale)
+                        anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                         RowLayout {
                             width: parent.width
-                            spacing: 8
+                            spacing: Style.RoTokens.spaceSm
 
                             Label {
                                 text: qsTr("Driver")
@@ -719,15 +722,15 @@ Item {
                                 implicitHeight: Math.round(22 * page.uiScale)
                                 implicitWidth: updateBadgeText.implicitWidth + Math.round(14 * page.uiScale)
                                 radius: 5
-                                color: page.darkMode ? "#3B2E10" : "#FEF3C7"
+                                color: theme.warningBg
                                 border.width: 1
-                                border.color: page.darkMode ? "#D97706" : "#F59E0B"
+                                border.color: theme.warning
 
                                 Label {
                                     id: updateBadgeText
                                     anchors.centerIn: parent
                                     text: qsTr("UPDATE AVAILABLE")
-                                    color: page.darkMode ? "#FBBF24" : "#D97706"
+                                    color: theme.warning
                                     font.pixelSize: Math.round(9 * page.uiScale)
                                     font.weight: Font.Bold
                                 }
@@ -757,7 +760,7 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true
                     implicitHeight: Math.max(Math.round(132 * page.uiScale), secureBootCol.implicitHeight + Math.round(28 * page.uiScale))
-                    radius: 14
+                    radius: Style.RoTokens.radiusMd
                     color: page.cardColor
                     border.width: 1
                     border.color: page.borderColor
@@ -765,12 +768,12 @@ Item {
                     Column {
                         id: secureBootCol
                         anchors.fill: parent
-                        anchors.margins: Math.round(14 * page.uiScale)
-                        spacing: Math.round(6 * page.uiScale)
+                        anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                         RowLayout {
                             width: parent.width
-                            spacing: 8
+                            spacing: Style.RoTokens.spaceSm
 
                             Label {
                                 text: qsTr("Secure Boot")
@@ -787,12 +790,12 @@ Item {
                                 implicitWidth: mokBadgeLayout.implicitWidth + Math.round(14 * page.uiScale)
                                 radius: 5
                                 color: mokBadgeMouse.hovered
-                                       ? (page.darkMode ? "#402E5C" : "#EDE9FE")
-                                       : (page.darkMode ? "#2E2442" : "#F3E8FF")
+                                       ? (theme.accentC)
+                                       : (theme.accentC)
                                 border.width: 1
                                 border.color: mokBadgeMouse.hovered
-                                              ? (page.darkMode ? "#A855F7" : "#7C3AED")
-                                              : (page.darkMode ? "#7C3AED" : "#C084FC")
+                                              ? (theme.accentA)
+                                              : (theme.accentA)
 
                                 MouseArea {
                                     id: mokBadgeMouse
@@ -805,12 +808,12 @@ Item {
                                 RowLayout {
                                     id: mokBadgeLayout
                                     anchors.centerIn: parent
-                                    spacing: 4
+                                    spacing: Style.RoTokens.spaceXs
 
                                     Label {
                                         id: mokBadgeText
                                         text: qsTr("MOK GUIDE ↗")
-                                        color: page.darkMode ? "#C084FC" : "#7C3AED"
+                                        color: theme.accentA
                                         font.pixelSize: Math.round(9 * page.uiScale)
                                         font.weight: Font.Bold
                                     }
@@ -844,7 +847,7 @@ Item {
 
             Rectangle {
                 Layout.fillWidth: true
-                radius: 14
+                radius: Style.RoTokens.radiusMd
                 color: page.cardColor
                 border.width: 1
                 border.color: page.borderColor
@@ -853,12 +856,12 @@ Item {
                 ColumnLayout {
                     id: actionLayout
                     anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 10
+                    anchors.margins: Style.RoTokens.spaceMd
+                    spacing: Style.RoTokens.spaceMd
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 8
+                        spacing: Style.RoTokens.spaceSm
 
                         Label {
                             Layout.fillWidth: true
@@ -892,7 +895,7 @@ Item {
                     Rectangle {
                         visible: page.nvidiaHardwareAvailable && !page.waylandDriverFlowSupported
                         Layout.fillWidth: true
-                        radius: 8
+                        radius: Style.RoTokens.radiusSm
                         color: page.warningBg
                         border.width: 1
                         border.color: page.theme && page.theme.warning ? page.theme.warning : page.borderColor
@@ -901,7 +904,7 @@ Item {
                         Label {
                             id: sessionWarning
                             anchors.fill: parent
-                            anchors.margins: Math.round(8 * page.uiScale)
+                            anchors.margins: Math.round(Style.RoTokens.spaceSm * page.uiScale)
                             text: qsTr("Managed installation and updates are available only in a Wayland session. Switch sessions, then refresh this page.")
                             color: page.textColor
                             wrapMode: Text.Wrap
@@ -918,7 +921,7 @@ Item {
                         DriverActionTile {
                             title: qsTr("NVIDIA Proprietary Module")
                             subtitle: qsTr("NVIDIA Official Release • Proprietary")
-                            accentColor: "#10B981"
+                            accentColor: theme.success
                             activeBadge: page.closedSourceDriverDetected
                             badgeText: qsTr("INSTALLED")
                             busy: page.requestedDriverAction === "closed-install" && page.operationRunning
@@ -931,7 +934,7 @@ Item {
                         DriverActionTile {
                             title: qsTr("NVIDIA Open Kernel Modules")
                             subtitle: qsTr("akmod-nvidia-open")
-                            accentColor: "#0EA5E9"
+                            accentColor: theme.accentA
                             activeBadge: page.openSourceDriverDetected
                             badgeText: qsTr("INSTALLED")
                             busy: page.requestedDriverAction === "open-install" && page.operationRunning
@@ -944,7 +947,7 @@ Item {
                         DriverActionTile {
                             title: qsTr("Deep Clean")
                             subtitle: qsTr("Remove NVIDIA packages and clear DNF cache")
-                            accentColor: "#F59E0B"
+                            accentColor: theme.warning
                             busy: page.requestedDriverAction === "deep-clean" && page.operationRunning
                             enabled: page.driverInstalledLocally && !page.nvidiaInstaller.busy && !page.operationRunning
                             disabledReason: !page.driverInstalledLocally ? qsTr("An installed NVIDIA driver is required for cleanup.") : ""
@@ -955,7 +958,7 @@ Item {
                         DriverActionTile {
                             title: qsTr("Rebuild Modules")
                             subtitle: qsTr("Akmods & initramfs regeneration")
-                            accentColor: "#8B5CF6"
+                            accentColor: theme.accentA
                             busy: page.requestedDriverAction === "rebuild-modules" && page.operationRunning
                             enabled: page.driverInstalledLocally && page.waylandDriverFlowSupported && !page.nvidiaInstaller.busy && !page.operationRunning
                             disabledReason: !page.driverInstalledLocally ? qsTr("An installed NVIDIA driver is required to rebuild modules.") : (!page.waylandDriverFlowSupported ? qsTr("Managed NVIDIA maintenance requires a Wayland session.") : "")
@@ -967,7 +970,7 @@ Item {
                             visible: page.nvidiaUpdater.updateAvailable
                             title: qsTr("Update NVIDIA Driver")
                             subtitle: qsTr("Apply the latest compatible package version")
-                            accentColor: "#2563EB"
+                            accentColor: theme.accentA
                             busy: page.requestedDriverAction === "closed-update" && page.operationRunning
                             enabled: visible && page.canRunDriverMutation && !page.nvidiaUpdater.busy && !page.operationRunning
                             disabledReason: page.driverMutationBlockedReason()
@@ -979,7 +982,7 @@ Item {
                             visible: page.pendingDriverStateText.length > 0
                             title: qsTr("Restart System")
                             subtitle: qsTr("Reboot to activate new driver")
-                            accentColor: "#EF4444"
+                            accentColor: theme.danger
                             enabled: visible && !page.operationRunning
                             tooltipText: qsTr("System restart required to load newly installed kernel driver.")
                             onClicked: restartPopup.open()
@@ -991,7 +994,7 @@ Item {
 
             Rectangle {
                 Layout.fillWidth: true
-                radius: 10
+                radius: Style.RoTokens.radiusSm
                 color: page.cardColor
                 border.width: 1
                 border.color: page.borderColor
@@ -1002,12 +1005,12 @@ Item {
                 ColumnLayout {
                     id: activityLayout
                     anchors.fill: parent
-                    anchors.margins: 12
+                    anchors.margins: Style.RoTokens.spaceMd
                     spacing: 7
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 10
+                        spacing: Style.RoTokens.spaceMd
 
                         Label {
                             Layout.fillWidth: true
@@ -1029,20 +1032,20 @@ Item {
                             RowLayout {
                                 id: liveStatusRow
                                 anchors.centerIn: parent
-                                spacing: 6
+                                spacing: Style.RoTokens.spaceSm
 
                                 Rectangle {
                                     implicitWidth: Math.round(7 * page.uiScale)
                                     implicitHeight: Math.round(7 * page.uiScale)
                                     radius: Math.round(3.5 * page.uiScale)
-                                    color: page.activityFollowTail ? (page.theme && page.theme.success ? page.theme.success : "#22C55E")
-                                                                   : (page.theme && page.theme.warning ? page.theme.warning : "#F59E0B")
+                                    color: page.activityFollowTail ? (page.theme && page.theme.success ? page.theme.success : theme.success)
+                                                                   : (page.theme && page.theme.warning ? page.theme.warning : theme.warning)
 
                                     SequentialAnimation on opacity {
                                         running: page.activityFollowTail && page.operationRunning
                                         loops: Animation.Infinite
-                                        NumberAnimation { from: 1.0; to: 0.25; duration: 550; easing.type: Easing.InOutQuad }
-                                        NumberAnimation { from: 0.25; to: 1.0; duration: 550; easing.type: Easing.InOutQuad }
+                                        NumberAnimation { from: 1.0; to: 0.25; duration: 550 * Style.Motion.factor; easing.type: Easing.InOutQuad }
+                                        NumberAnimation { from: 0.25; to: 1.0; duration: 550 * Style.Motion.factor; easing.type: Easing.InOutQuad }
                                     }
                                 }
 
@@ -1093,8 +1096,8 @@ Item {
                         ScrollBar.vertical.policy: ScrollBar.AlwaysOn
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                         background: Rectangle {
-                            radius: 8
-                            color: page.darkMode ? "#181424" : "#F8FAFC"
+                            radius: Style.RoTokens.radiusSm
+                            color: page.darkMode ? theme.card : theme.text
                             border.width: 1
                             border.color: page.borderColor
                         }
@@ -1102,7 +1105,7 @@ Item {
                         Label {
                             anchors.left: parent.left
                             anchors.top: parent.top
-                            anchors.margins: Math.round(12 * page.uiScale)
+                            anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
                             visible: activityLog.text.length === 0
                             text: qsTr("> Ready. Awaiting driver tasks, updates, or kernel operations...")
                             color: page.softTextColor
@@ -1121,10 +1124,10 @@ Item {
                             textFormat: TextEdit.PlainText
                             color: page.textColor
                             selectedTextColor: page.bgColor
-                            selectionColor: page.theme && page.theme.accentA ? page.theme.accentA : "#3778c2"
+                            selectionColor: page.theme && page.theme.accentA ? page.theme.accentA : theme.accentA
                             font.family: (Qt.platform.os === "osx") ? "Menlo" : (Qt.platform.os === "windows" ? "Consolas" : "Monospace")
                             font.pixelSize: Math.round(12 * page.uiScale)
-                            padding: Math.round(10 * page.uiScale)
+                            padding: Math.round(Style.RoTokens.spaceMd * page.uiScale)
                             background: null
 
                             Keys.onPressed: function(event) {
@@ -1145,7 +1148,7 @@ Item {
                     RowLayout {
                         visible: page.activityExpanded
                         Layout.fillWidth: true
-                        spacing: 8
+                        spacing: Style.RoTokens.spaceSm
 
                         Label {
                             Layout.fillWidth: true
@@ -1278,11 +1281,11 @@ Item {
         height: Math.min(page.height - 40, restartContent.implicitHeight + topPadding + bottomPadding)
         x: Math.round((page.width - width) / 2)
         y: Math.round((page.height - height) / 2)
-        padding: 14
+        padding: Style.RoTokens.spaceMd
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
-            radius: 12
+            radius: Style.RoTokens.radiusMd
             color: page.bgColor
             border.width: 1
             border.color: page.borderColor
@@ -1296,7 +1299,7 @@ Item {
             ColumnLayout {
                 id: restartContent
                 width: restartScroll.availableWidth
-                spacing: 10
+                spacing: Style.RoTokens.spaceMd
 
             Label {
                 Layout.fillWidth: true
@@ -1316,10 +1319,10 @@ Item {
             Rectangle {
                 visible: page.nvidiaDetector.secureBootEnabled
                 Layout.fillWidth: true
-                radius: 8
-                color: page.darkMode ? "#2E2442" : "#F3E8FF"
+                radius: Style.RoTokens.radiusSm
+                color: theme.accentC
                 border.width: 1
-                border.color: page.darkMode ? "#7C3AED" : "#C084FC"
+                border.color: theme.accentA
                 implicitHeight: mokNoticeCol.implicitHeight + Math.round(14 * page.uiScale)
 
                 RowLayout {
@@ -1327,8 +1330,8 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.margins: Math.round(10 * page.uiScale)
-                    spacing: Math.round(8 * page.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                     Label {
                         text: "🔐"
@@ -1338,7 +1341,7 @@ Item {
                     Label {
                         Layout.fillWidth: true
                         text: qsTr("Secure Boot active: If prompted on restart, complete the one-time MOK enrollment to authenticate the driver.")
-                        color: page.darkMode ? "#E9D5FF" : "#581C87"
+                        color: theme.accentC
                         font.pixelSize: Math.round(11 * page.uiScale)
                         wrapMode: Text.Wrap
                     }
@@ -1356,7 +1359,7 @@ Item {
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 8
+                spacing: Style.RoTokens.spaceSm
 
                 ModernDialogButton {
                     text: qsTr("Cancel")
@@ -1385,11 +1388,11 @@ Item {
         height: Math.min(page.height - 40, currentDriverContent.implicitHeight + topPadding + bottomPadding)
         x: Math.round((page.width - width) / 2)
         y: Math.round((page.height - height) / 2)
-        padding: 14
+        padding: Style.RoTokens.spaceMd
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
-            radius: 12
+            radius: Style.RoTokens.radiusMd
             color: page.bgColor
             border.width: 1
             border.color: page.borderColor
@@ -1403,7 +1406,7 @@ Item {
             ColumnLayout {
                 id: currentDriverContent
                 width: currentDriverScroll.availableWidth
-                spacing: 10
+                spacing: Style.RoTokens.spaceMd
 
             Label {
                 Layout.fillWidth: true
@@ -1422,7 +1425,7 @@ Item {
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 8
+                spacing: Style.RoTokens.spaceSm
 
                 ModernDialogButton {
                     text: qsTr("Cancel")
@@ -1452,11 +1455,11 @@ Item {
         height: Math.min(page.height - 40, sourceSwitchContent.implicitHeight + topPadding + bottomPadding)
         x: Math.round((page.width - width) / 2)
         y: Math.round((page.height - height) / 2)
-        padding: 14
+        padding: Style.RoTokens.spaceMd
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
-            radius: 12
+            radius: Style.RoTokens.radiusMd
             color: page.bgColor
             border.width: 1
             border.color: page.borderColor
@@ -1470,7 +1473,7 @@ Item {
             ColumnLayout {
                 id: sourceSwitchContent
                 width: sourceSwitchScroll.availableWidth
-                spacing: 10
+                spacing: Style.RoTokens.spaceMd
 
             Label {
                 Layout.fillWidth: true
@@ -1491,7 +1494,7 @@ Item {
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 8
+                spacing: Style.RoTokens.spaceSm
 
                 ModernDialogButton {
                     text: qsTr("Cancel")
@@ -1523,22 +1526,22 @@ Item {
         height: Math.min(page.height - 80, Math.round(500 * page.uiScale))
         x: Math.round((page.width - width) / 2)
         y: Math.round((page.height - height) / 2)
-        padding: 14
+        padding: Style.RoTokens.spaceMd
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
-            radius: 12
+            radius: Style.RoTokens.radiusMd
             color: page.bgColor
             border.width: 1
             border.color: page.borderColor
         }
 
         contentItem: ColumnLayout {
-            spacing: 10
+            spacing: Style.RoTokens.spaceMd
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 8
+                spacing: Style.RoTokens.spaceSm
 
                 Label {
                     Layout.fillWidth: true
@@ -1563,10 +1566,10 @@ Item {
                         text: qsTr("Close")
                         delay: 300
                         timeout: 5000
-                        topPadding: Math.round(6 * page.uiScale)
-                        bottomPadding: Math.round(6 * page.uiScale)
-                        leftPadding: Math.round(12 * page.uiScale)
-                        rightPadding: Math.round(12 * page.uiScale)
+                        topPadding: Math.round(Style.RoTokens.spaceSm * page.uiScale)
+                        bottomPadding: Math.round(Style.RoTokens.spaceSm * page.uiScale)
+                        leftPadding: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                        rightPadding: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                         contentItem: Label {
                             text: closeTip.text
@@ -1576,10 +1579,10 @@ Item {
                         }
 
                         background: Rectangle {
-                            radius: 8
-                            color: page.darkMode ? "#241E34" : "#FFFFFF"
+                            radius: Style.RoTokens.radiusSm
+                            color: theme.card
                             border.width: 1
-                            border.color: page.darkMode ? "#4D436B" : "#CBD5E1"
+                            border.color: page.darkMode ? theme.border : theme.textMuted
 
                             Rectangle {
                                 anchors.left: parent.left
@@ -1611,7 +1614,7 @@ Item {
                 text: page.closedLicenseText()
                 color: page.textColor
                 background: Rectangle {
-                    radius: 8
+                    radius: Style.RoTokens.radiusSm
                     color: page.cardColor
                     border.width: 1
                     border.color: page.borderColor
@@ -1620,7 +1623,7 @@ Item {
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 8
+                spacing: Style.RoTokens.spaceSm
 
                 ModernDialogButton {
                     text: qsTr("Reject")
@@ -1649,7 +1652,7 @@ Item {
         property string actionKey: ""
         property string actionTitle: ""
         property string actionSubtitle: ""
-        property color actionAccentColor: "#10B981"
+        property color actionAccentColor: theme.success
         property string actionDescription: ""
         property var actionPoints: []
         property string actionWarning: ""
@@ -1665,13 +1668,13 @@ Item {
         height: Math.min(page.height - 40, driverActionContent.implicitHeight + topPadding + bottomPadding)
         x: Math.round((page.width - width) / 2)
         y: Math.round((page.height - height) / 2)
-        padding: Math.round(18 * page.uiScale)
+        padding: Math.round(Style.RoTokens.spaceLg * page.uiScale)
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         onOpened: secureBootAcknowledged = false
 
         background: Rectangle {
-            radius: Math.round(14 * page.uiScale)
+            radius: Math.round(Style.RoTokens.radiusMd * page.uiScale)
             color: page.bgColor
             border.width: 1
             border.color: page.borderColor
@@ -1685,11 +1688,11 @@ Item {
             ColumnLayout {
                 id: driverActionContent
                 width: driverActionScroll.availableWidth
-                spacing: Math.round(12 * page.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: Math.round(10 * page.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                 Rectangle {
                     width: Math.round(4 * page.uiScale)
@@ -1743,14 +1746,14 @@ Item {
 
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: Math.round(6 * page.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                 Repeater {
                     model: driverActionModalPopup.actionPoints
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: Math.round(8 * page.uiScale)
+                        spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                         Label {
                             text: "•"
@@ -1774,7 +1777,7 @@ Item {
             Rectangle {
                 visible: driverActionModalPopup.actionWarning.length > 0
                 Layout.fillWidth: true
-                radius: 10
+                radius: Style.RoTokens.radiusSm
                 color: page.warningBg
                 border.width: 1
                 border.color: page.theme && page.theme.warning ? page.theme.warning : page.borderColor
@@ -1785,8 +1788,8 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.margins: Math.round(12 * page.uiScale)
-                    spacing: Math.round(10 * page.uiScale)
+                    anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                    spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                     Label {
                         text: "⚠️"
@@ -1807,7 +1810,7 @@ Item {
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: Math.round(10 * page.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                 ModernDialogButton {
                     Layout.preferredWidth: 0
@@ -1839,19 +1842,19 @@ Item {
         height: Math.min(page.height - 40, mokGuideContent.implicitHeight + topPadding + bottomPadding)
         x: Math.round((page.width - width) / 2)
         y: Math.round((page.height - height) / 2)
-        padding: Math.round(20 * page.uiScale)
+        padding: Math.round(Style.RoTokens.spaceXl * page.uiScale)
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         enter: Transition {
             ParallelAnimation {
-                NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 180; easing.type: Easing.OutCubic }
-                NumberAnimation { property: "scale"; from: 0.95; to: 1.0; duration: 180; easing.type: Easing.OutBack }
+                NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: Style.Motion.fastMs; easing.type: Easing.OutCubic }
+                NumberAnimation { property: "scale"; from: 0.95; to: 1.0; duration: Style.Motion.fastMs; easing.type: Easing.OutCubic }
             }
         }
         exit: Transition {
             ParallelAnimation {
-                NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 140; easing.type: Easing.InCubic }
-                NumberAnimation { property: "scale"; from: 1.0; to: 0.96; duration: 140 }
+                NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: Style.Motion.fastMs; easing.type: Easing.InCubic }
+                NumberAnimation { property: "scale"; from: 1.0; to: 0.96; duration: Style.Motion.fastMs }
             }
         }
 
@@ -1870,20 +1873,20 @@ Item {
             ColumnLayout {
                 id: mokGuideContent
                 width: mokGuideScroll.availableWidth
-                spacing: Math.round(14 * page.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
             // Header
             RowLayout {
                 Layout.fillWidth: true
-                spacing: Math.round(12 * page.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                 Rectangle {
                     implicitWidth: Math.round(38 * page.uiScale)
                     implicitHeight: Math.round(38 * page.uiScale)
-                    radius: Math.round(10 * page.uiScale)
-                    color: page.darkMode ? "#2E2442" : "#F3E8FF"
+                    radius: Math.round(Style.RoTokens.radiusSm * page.uiScale)
+                    color: theme.accentC
                     border.width: 1
-                    border.color: "#7C3AED"
+                    border.color: theme.accentA
 
                     Text {
                         anchors.fill: parent
@@ -1920,7 +1923,7 @@ Item {
                     implicitHeight: Math.round(30 * page.uiScale)
                     background: Rectangle {
                         radius: 15
-                        color: closeMokBtn.hovered ? (page.darkMode ? "#3B3156" : "#E2E8F0") : "transparent"
+                        color: closeMokBtn.hovered ? (page.darkMode ? theme.hover : theme.cardStrong) : "transparent"
                     }
                     contentItem: Text {
                         text: "✕"
@@ -1936,7 +1939,7 @@ Item {
             // 3-Step Clean Action Flow
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: Math.round(8 * page.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                 Repeater {
                     model: [
@@ -1960,7 +1963,7 @@ Item {
                     delegate: Rectangle {
                         required property var modelData
                         Layout.fillWidth: true
-                        radius: 10
+                        radius: Style.RoTokens.radiusSm
                         color: page.cardColor
                         border.width: 1
                         border.color: page.borderColor
@@ -1969,22 +1972,22 @@ Item {
                         RowLayout {
                             id: stepRow
                             anchors.fill: parent
-                            anchors.margins: Math.round(10 * page.uiScale)
-                            spacing: Math.round(12 * page.uiScale)
+                            anchors.margins: Math.round(Style.RoTokens.spaceMd * page.uiScale)
+                            spacing: Math.round(Style.RoTokens.spaceMd * page.uiScale)
 
                             Rectangle {
                                 width: Math.round(24 * page.uiScale)
                                 height: Math.round(24 * page.uiScale)
-                                radius: Math.round(12 * page.uiScale)
-                                color: page.darkMode ? "#2E2442" : "#F3E8FF"
+                                radius: Math.round(Style.RoTokens.radiusMd * page.uiScale)
+                                color: theme.accentC
                                 border.width: 1
-                                border.color: "#7C3AED"
+                                border.color: theme.accentA
                                 Layout.alignment: Qt.AlignVCenter
 
                                 Label {
                                     anchors.centerIn: parent
                                     text: modelData.step
-                                    color: page.darkMode ? "#C084FC" : "#7C3AED"
+                                    color: theme.accentA
                                     font.pixelSize: Math.round(11 * page.uiScale)
                                     font.weight: Font.Bold
                                 }
@@ -2017,7 +2020,7 @@ Item {
             // Footer
             RowLayout {
                 Layout.fillWidth: true
-                spacing: Math.round(8 * page.uiScale)
+                spacing: Math.round(Style.RoTokens.spaceSm * page.uiScale)
 
                 Item { Layout.fillWidth: true }
 

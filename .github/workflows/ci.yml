@@ -49,6 +49,9 @@ jobs:
             desktop-file-utils \
             appstream
 
+      - name: Check shared theme snapshots
+        run: python3 tools/sync-theme.py --check
+
       - name: Configure (CMake)
         run: |
           cmake -B build \

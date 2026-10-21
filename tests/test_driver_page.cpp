@@ -424,6 +424,17 @@ QObject *TestDriverPage::createPage(DetectorMock *detector,
     qFatal("Failed to copy qmldir fixture for DriverPage test");
   }
 
+  const QString styleDir = qmlRoot + QStringLiteral("/style");
+  QDir().mkpath(styleDir);
+  for (const QString &file :
+       {QStringLiteral("Theme.qml"), QStringLiteral("Motion.qml"),
+        QStringLiteral("RoTokens.qml"), QStringLiteral("Palettes.js"),
+        QStringLiteral("qmldir")}) {
+    if (!QFile::copy(QDir(sourceRoot).filePath("src/qml/style/" + file),
+                     styleDir + QLatin1Char('/') + file))
+      qFatal("Failed to copy theme fixture");
+  }
+
   QQmlComponent component(engine, QUrl::fromLocalFile(tempPagePath));
 
   if (!component.isReady()) {
@@ -448,6 +459,11 @@ QObject *TestDriverPage::createPage(DetectorMock *detector,
   theme.insert(QStringLiteral("textMuted"), QStringLiteral("#656d76"));
   theme.insert(QStringLiteral("textSoft"), QStringLiteral("#57606a"));
 
+  theme.insert(QStringLiteral("onAccent"), QStringLiteral("#ffffff"));
+  theme.insert(QStringLiteral("controlBorder"), QStringLiteral("#86858b"));
+  theme.insert(QStringLiteral("hover"), QStringLiteral("#eeeeee"));
+  theme.insert(QStringLiteral("pressed"), QStringLiteral("#dddddd"));
+  theme.insert(QStringLiteral("window"), QStringLiteral("#f3f3f5"));
   QVariantMap initialProperties;
   initialProperties.insert(QStringLiteral("width"), 1280);
   initialProperties.insert(QStringLiteral("height"), 900);

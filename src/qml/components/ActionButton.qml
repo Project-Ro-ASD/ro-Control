@@ -1,34 +1,33 @@
 import QtQuick
+import "../style" as Style
 import QtQuick.Controls
 
 Button {
     id: control
+    Style.Theme { id: fallbackTheme; darkMode: false }
 
     required property var theme
     property string tone: "neutral"
 
-    readonly property color fillColor: !enabled ? Qt.rgba(0, 0, 0, 0)
-                                       : tone === "primary" ? theme.accentA
-                                       : tone === "success" ? theme.success
-                                       : tone === "warning" ? theme.warning
-                                       : tone === "danger" ? theme.danger
-                                       : theme.cardStrong
-    readonly property color borderColor: !enabled ? theme.border
-                                         : tone === "primary" ? Qt.tint(theme.accentA, "#33ffffff")
-                                         : tone === "success" ? Qt.tint(theme.success, "#22ffffff")
-                                         : tone === "warning" ? Qt.tint(theme.warning, "#18ffffff")
-                                         : tone === "danger" ? Qt.tint(theme.danger, "#18ffffff")
-                                         : theme.border
+    readonly property color fillColor: tone === "primary" ? theme.accentA : theme.cardStrong
+    readonly property color borderColor: tone === "danger" ? theme.danger
+                                         : tone === "warning" ? theme.warning
+                                         : tone === "success" ? theme.success
+                                         : tone === "primary" ? theme.accentA : theme.controlBorder
     readonly property color textColor: !enabled ? theme.textSoft
-                                       : tone === "neutral" ? theme.text
-                                       : "#ffffff"
+                                       : tone === "primary" ? theme.onAccent
+                                       : tone === "danger" ? theme.danger
+                                       : tone === "warning" ? theme.warning
+                                       : tone === "success" ? theme.success : theme.text
+    activeFocusOnTab: true
+    opacity: enabled ? 1 : Style.RoTokens.opacityDisabled
 
     implicitHeight: 46
     implicitWidth: Math.max(160, contentItem.implicitWidth + leftPadding + rightPadding)
-    leftPadding: 18
-    rightPadding: 18
-    topPadding: 12
-    bottomPadding: 12
+    leftPadding: Style.RoTokens.spaceLg
+    rightPadding: Style.RoTokens.spaceLg
+    topPadding: Style.RoTokens.spaceMd
+    bottomPadding: Style.RoTokens.spaceMd
 
     contentItem: Text {
         text: control.text
@@ -41,12 +40,11 @@ Button {
     }
 
     background: Rectangle {
-        radius: 14
-        color: control.down && control.enabled ? Qt.darker(control.fillColor, 1.08)
-                                               : control.hovered && control.enabled ? Qt.tint(control.fillColor, "#08ffffff")
-                                                                                   : control.fillColor
-        border.width: 1
-        border.color: control.borderColor
-        opacity: control.enabled ? 1.0 : 0.6
+        radius: Style.RoTokens.radiusMd
+        color: control.down && control.tone !== "primary" ? control.theme.pressed
+                            : control.hovered && control.tone !== "primary" ? control.theme.hover
+                            : control.fillColor
+        border.width: control.visualFocus ? 2 * Style.RoTokens.borderWidth : Style.RoTokens.borderWidth
+        border.color: control.visualFocus ? control.theme.accentA : control.borderColor
     }
 }
