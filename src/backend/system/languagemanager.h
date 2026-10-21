@@ -56,4 +56,5 @@ private:
   QTranslator *m_translator = nullptr;
   QString m_currentLanguage = QStringLiteral("en");
   bool m_followsSystem = true;
+  bool m_changingLanguage = false;
 };

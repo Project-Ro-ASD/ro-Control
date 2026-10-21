@@ -1,8 +1,15 @@
+#include <QApplication>
 #include <QCoreApplication>
+#include <QFile>
+#include <QLocale>
+#include <QProcess>
+#include <QProcessEnvironment>
 #include <QQmlEngine>
 #include <QSettings>
 #include <QSignalSpy>
+#include <QTemporaryDir>
 #include <QTest>
+#include <QTextStream>
 #include <QTranslator>
 
 #include "backend/system/languagemanager.h"
@@ -18,6 +25,9 @@ private slots:
   void testUiPreferencesNormalizesInvalidThemeMode();
   void testLanguageManagerExposesEffectiveLanguageMetadata();
   void testLanguageManagerDynamicLocaleChange();
+  void testTranslatorNotificationsDoNotReloadSystemLanguage();
+  void testSystemTranslationStartup_data();
+  void testSystemTranslationStartup();
 };
 
 void TestPreferences::init() {
@@ -122,6 +132,89 @@ void TestPreferences::testLanguageManagerDynamicLocaleChange() {
   QVERIFY(!manager.currentLanguage().isEmpty());
 }
 
-QTEST_MAIN(TestPreferences)
+void TestPreferences::testTranslatorNotificationsDoNotReloadSystemLanguage() {
+  QQmlEngine engine;
+  QTranslator translator;
+  LanguageManager manager(QCoreApplication::instance(), &engine, &translator);
+  if (!translator.load(QStringLiteral(":/i18n/ro-control_tr.qm")))
+    QSKIP(
+        "Qt Linguist translation fixtures are unavailable in this local build");
+  const QString translated = translator.translate("Main", "Driver");
+  QVERIFY(!translated.isEmpty());
+  QVERIFY(translated != QStringLiteral("Driver"));
+  QVERIFY(QCoreApplication::installTranslator(&translator));
+  QCOMPARE(QCoreApplication::translate("Main", "Driver"), translated);
+  QEvent event(QEvent::LanguageChange);
+  QCoreApplication::sendEvent(QCoreApplication::instance(), &event);
+  QCOMPARE(QCoreApplication::translate("Main", "Driver"), translated);
+  QCoreApplication::removeTranslator(&translator);
+}
+
+void TestPreferences::testSystemTranslationStartup_data() {
+  QTest::addColumn<QString>("locale");
+  QTest::newRow("Turkish") << QStringLiteral("tr_TR.UTF-8");
+  QTest::newRow("German") << QStringLiteral("de_DE.UTF-8");
+  QTest::newRow("Spanish") << QStringLiteral("es_ES.UTF-8");
+}
+
+void TestPreferences::testSystemTranslationStartup() {
+  QFETCH(QString, locale);
+  if (!QFile::exists(QStringLiteral(":/i18n/ro-control_tr.qm")))
+    QSKIP(
+        "Qt Linguist translation fixtures are unavailable in this local build");
+  QProcess child;
+  auto environment = QProcessEnvironment::systemEnvironment();
+  for (const QString &key : {QStringLiteral("LANG"), QStringLiteral("LC_ALL"),
+                             QStringLiteral("LC_MESSAGES")})
+    environment.insert(key, locale);
+  environment.insert(QStringLiteral("LANGUAGE"), locale.left(2));
+  child.setProcessEnvironment(environment);
+  child.start(QCoreApplication::applicationFilePath(),
+              {QStringLiteral("--translation-startup"), locale.left(2)});
+  QVERIFY(child.waitForStarted());
+  QVERIFY2(child.waitForFinished(10000), "Localized startup did not terminate");
+#ifndef Q_OS_LINUX
+  if (child.exitCode() == 77)
+    QSKIP("This platform ignores POSIX locale overrides; Linux CI runs this "
+          "case");
+#endif
+  const QByteArray output = child.readAllStandardError();
+  QVERIFY2(child.exitStatus() == QProcess::NormalExit, output.constData());
+  QVERIFY2(child.exitCode() == 0, output.constData());
+}
+
+int main(int argc, char **argv) {
+  QApplication application(argc, argv);
+  if (application.arguments().size() == 3 &&
+      application.arguments()[1] == QStringLiteral("--translation-startup")) {
+    const QString language = application.arguments()[2];
+    if (QLocale::system().name().left(2) != language) {
+      QTextStream(stderr) << "Requested locale " << language << "; actual "
+                          << QLocale::system().name() << Qt::endl;
+      return 77;
+    }
+    QTemporaryDir directory;
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope,
+                       directory.path());
+    application.setOrganizationName("Project-Ro-ASD-TestSuite");
+    application.setApplicationName("language-startup");
+    QQmlEngine engine;
+    QTranslator translator;
+    LanguageManager manager(&application, &engine, &translator);
+    if (translator.isEmpty() || manager.currentLanguage() != language ||
+        engine.uiLanguage() != language)
+      return 1;
+    for (int i = 0; i < 3; ++i) {
+      QEvent event(QEvent::LocaleChange);
+      QCoreApplication::sendEvent(&application, &event);
+      application.processEvents();
+    }
+    return manager.followsSystem() && manager.currentLanguage() == language ? 0
+                                                                            : 2;
+  }
+  TestPreferences test;
+  return QTest::qExec(&test, argc, argv);
+}
 
 #include "test_preferences.moc"

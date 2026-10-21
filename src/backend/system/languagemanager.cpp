@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QLocale>
 #include <QQmlEngine>
+#include <QScopedValueRollback>
 #include <QSettings>
 #include <QTranslator>
 #include <utility>
@@ -84,11 +85,11 @@ LanguageManager::~LanguageManager() {
 }
 
 bool LanguageManager::eventFilter(QObject *watched, QEvent *event) {
-  if (event != nullptr && (event->type() == QEvent::LocaleChange ||
-                           event->type() == QEvent::LanguageChange)) {
-    if (m_followsSystem) {
-      applySystemLanguage();
-    }
+  // Çevirici kurulumu LanguageChange üretir; bunu tekrar yükleme isteği sayma.
+  if (watched == m_application && event != nullptr &&
+      event->type() == QEvent::LocaleChange && m_followsSystem &&
+      !m_changingLanguage) {
+    applySystemLanguage();
   }
   return QObject::eventFilter(watched, event);
 }
@@ -241,11 +242,12 @@ LanguageManager::effectiveLanguageCode(const QString &languageCode) const {
 
 bool LanguageManager::loadLanguage(const QString &languageCode) {
   if (m_application == nullptr || m_engine == nullptr ||
-      m_translator == nullptr) {
+      m_translator == nullptr || m_changingLanguage) {
     return false;
   }
 
   const QString effectiveLanguage = effectiveLanguageCode(languageCode);
+  QScopedValueRollback<bool> changingLanguage(m_changingLanguage, true);
 
   m_application->removeTranslator(m_translator);
 
