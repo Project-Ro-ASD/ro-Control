@@ -3,7 +3,7 @@ _ro_control()
     local cur prev words cword
     _init_completion || return
 
-    local commands="help version status diagnostics driver fan power processes kill-process gpus select-gpu"
+    local commands="help version status diagnostics driver fan power processes kill-process process-list renice disk network resources gpus select-gpu"
     local driver_commands="install remove update deep-clean"
     local fan_commands="status set-speed set-mode set-smoothing reset"
     local power_commands="status set-limit set-preset set-clocks set-persistence"
@@ -18,7 +18,7 @@ _ro_control()
     fi
 
     case "${words[1]}" in
-        status|diagnostics|processes|gpus)
+        status|diagnostics|processes|gpus|process-list|disk|network|resources)
             COMPREPLY=( $(compgen -W "--json" -- "${cur}") )
             return
             ;;

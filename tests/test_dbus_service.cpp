@@ -4,7 +4,9 @@
 
 #include "fan/fancontroller.h"
 #include "monitor/cpumonitor.h"
+#include "monitor/diskmonitor.h"
 #include "monitor/gpumonitor.h"
+#include "monitor/networkmonitor.h"
 #include "monitor/rammonitor.h"
 #include "power/powercontroller.h"
 #include "system/dbusservice.h"
@@ -18,11 +20,13 @@ private slots:
     CpuMonitor cpu;
     GpuMonitor gpu;
     RamMonitor ram;
+    DiskMonitor disk;
+    NetworkMonitor network;
     FanController fan;
     PowerController power;
     HealthGuard guard;
 
-    RoControlDBusAdaptor adaptor(this, &cpu, &gpu, &ram, &fan, &power, &guard);
+    RoControlDBusAdaptor adaptor(this, &cpu, &gpu, &ram, &disk, &network, &fan, &power, &guard);
 
     const QString telemetryJson = adaptor.GetTelemetry();
     QVERIFY(!telemetryJson.isEmpty());
@@ -41,11 +45,13 @@ private slots:
     CpuMonitor cpu;
     GpuMonitor gpu;
     RamMonitor ram;
+    DiskMonitor disk;
+    NetworkMonitor network;
     FanController fan;
     PowerController power;
     HealthGuard guard;
 
-    RoControlDBusAdaptor adaptor(this, &cpu, &gpu, &ram, &fan, &power, &guard);
+    RoControlDBusAdaptor adaptor(this, &cpu, &gpu, &ram, &disk, &network, &fan, &power, &guard);
 
     const QString thermalJson = adaptor.GetThermalStatus();
     QVERIFY(!thermalJson.isEmpty());
@@ -63,11 +69,13 @@ private slots:
     CpuMonitor cpu;
     GpuMonitor gpu;
     RamMonitor ram;
+    DiskMonitor disk;
+    NetworkMonitor network;
     FanController fan;
     PowerController power;
     HealthGuard guard;
 
-    RoControlDBusAdaptor adaptor(this, &cpu, &gpu, &ram, &fan, &power, &guard);
+    RoControlDBusAdaptor adaptor(this, &cpu, &gpu, &ram, &disk, &network, &fan, &power, &guard);
 
     const QString healthJson = adaptor.GetGpuHealth();
     QVERIFY(!healthJson.isEmpty());
@@ -80,11 +88,13 @@ private slots:
     CpuMonitor cpu;
     GpuMonitor gpu;
     RamMonitor ram;
+    DiskMonitor disk;
+    NetworkMonitor network;
     FanController fan;
     PowerController power;
     HealthGuard guard;
 
-    RoControlDBusAdaptor adaptor(this, &cpu, &gpu, &ram, &fan, &power, &guard);
+    RoControlDBusAdaptor adaptor(this, &cpu, &gpu, &ram, &disk, &network, &fan, &power, &guard);
 
     const QString procJson = adaptor.GetGpuProcesses();
     QVERIFY(!procJson.isEmpty());

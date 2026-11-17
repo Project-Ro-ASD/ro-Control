@@ -63,6 +63,18 @@ UiPreferencesManager::UiPreferencesManager(QObject *parent) : QObject(parent) {
   m_showAdvancedInfo =
       settings.value(QStringLiteral("ui/showAdvancedInfo"), m_showAdvancedInfo)
           .toBool();
+  m_monitorRefreshInterval = settings
+                                 .value(QStringLiteral("ui/monitorRefreshInterval"),
+                                        m_monitorRefreshInterval)
+                                 .toInt();
+  m_processRefreshInterval = settings
+                                 .value(QStringLiteral("ui/processRefreshInterval"),
+                                        m_processRefreshInterval)
+                                 .toInt();
+  m_processListLimit = settings
+                           .value(QStringLiteral("ui/processListLimit"),
+                                  m_processListLimit)
+                           .toInt();
 }
 
 qreal UiPreferencesManager::animationDurationFactor() const {
@@ -103,6 +115,18 @@ bool UiPreferencesManager::showAdvancedInfo() const {
   return m_showAdvancedInfo;
 }
 
+int UiPreferencesManager::monitorRefreshInterval() const {
+  return m_monitorRefreshInterval;
+}
+
+int UiPreferencesManager::processRefreshInterval() const {
+  return m_processRefreshInterval;
+}
+
+int UiPreferencesManager::processListLimit() const {
+  return m_processListLimit;
+}
+
 void UiPreferencesManager::setThemeMode(const QString &themeMode) {
   const QString normalizedThemeMode = normalizeThemeMode(themeMode);
   if (normalizedThemeMode == m_themeMode) {
@@ -124,9 +148,44 @@ void UiPreferencesManager::setShowAdvancedInfo(bool showAdvancedInfo) {
   emit showAdvancedInfoChanged();
 }
 
+void UiPreferencesManager::setMonitorRefreshInterval(int intervalMs) {
+  if (intervalMs < 250 || intervalMs == m_monitorRefreshInterval) {
+    return;
+  }
+  m_monitorRefreshInterval = intervalMs;
+  persistValue(QStringLiteral("ui/monitorRefreshInterval"),
+               m_monitorRefreshInterval);
+  emit monitorRefreshIntervalChanged();
+}
+
+void UiPreferencesManager::setProcessRefreshInterval(int intervalMs) {
+  if (intervalMs < 250 || intervalMs == m_processRefreshInterval) {
+    return;
+  }
+  m_processRefreshInterval = intervalMs;
+  persistValue(QStringLiteral("ui/processRefreshInterval"),
+               m_processRefreshInterval);
+  emit processRefreshIntervalChanged();
+}
+
+void UiPreferencesManager::setProcessListLimit(int limit) {
+  if (limit < 10 || limit > 500 || limit == m_processListLimit) {
+    return;
+  }
+  m_processListLimit = limit;
+  persistValue(QStringLiteral("ui/processListLimit"), m_processListLimit);
+  emit processListLimitChanged();
+}
+
 void UiPreferencesManager::resetToDefaults() {
   setThemeMode(QStringLiteral("system"));
   setShowAdvancedInfo(true);
+  m_monitorRefreshInterval = 1000;
+  m_processRefreshInterval = 2000;
+  m_processListLimit = 50;
+  emit monitorRefreshIntervalChanged();
+  emit processRefreshIntervalChanged();
+  emit processListLimitChanged();
 }
 
 QString

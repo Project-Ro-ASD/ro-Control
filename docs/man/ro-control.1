@@ -77,6 +77,21 @@ List all detected GPU devices and active index.
 .TP
 .BI "select-gpu " "<index>"
 Select active GPU device by index for multi-GPU systems.
+.TP
+.B process-list [--json]
+List all system processes with CPU percentage, RSS, I/O counters and state.
+.TP
+.BI "renice " "<nice> <pid>"
+Adjust the scheduling priority (nice) of a process. Nice must be in the range -20 to 19.
+.TP
+.B disk [--json]
+List mounted filesystems with total, used and free space, usage percentage, and per-device I/O counters from /proc/diskstats.
+.TP
+.B network [--json]
+List network interfaces with rx/tx bytes-per-second throughput, packet counts, error and drop counters.
+.TP
+.B resources [--json]
+Show a consolidated overview of CPU, RAM, disk and network telemetry alongside the system process count.
 .SH OPTIONS
 .TP
 .B \-h, \-\-help
@@ -98,8 +113,13 @@ Render
 .BR diagnostics ,
 .BR power ,
 .BR fan ,
-or
-.BR processes
+.BR processes ,
+.BR gpus ,
+.BR process-list ,
+.BR disk ,
+.BR network ,
+and
+.BR resources
 output as JSON.
 .TP
 .B \-\-proprietary

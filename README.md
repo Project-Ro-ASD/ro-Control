@@ -13,6 +13,7 @@
 - **Automated Driver Lifecycle:** One-click NVIDIA graphics driver detection, installation, updates, MOK Secure Boot validation, and kernel module recompilation (`akmods`, `dracut`).
 - **Intelligent Cooling & Multi-Fan Suite:** Hardware-aware discovery across GPU, CPU, and chassis fans. Features 6 cooling modes (`auto`, `silent`, `balanced`, `performance`, `manual`, `custom`), custom temperature curves with hysteresis, 0 RPM zero-noise idle detection, and emergency thermal overrides.
 - **Real-Time Hardware Diagnostics:** Sub-second telemetry tracking for GPU/CPU clock frequencies, VRAM allocation, power draw (TDP), thermals, and per-process GPU memory maps.
+- **System Control Center:** Windows Task Manager–style system monitoring with live process list (CPU/RSS/I/O per process), per-mount disk usage and I/O counters, and per-interface network throughput — accessible from both the GUI and the CLI.
 - **Headless CLI & Scripting:** Full command-line interface with structured `--json` output for automated system maintenance and telemetry piping.
 - **Native D-Bus IPC Service:** Standardized desktop integration via `io.github.ProjectRoASD.rocontrol` for shell widgets, scripts, and status monitors.
 
@@ -39,6 +40,11 @@ When launched without arguments, `ro-control` opens the graphical desktop interf
 | `ro-control power set-persistence <on\|off>` | Toggles NVIDIA driver persistence daemon mode |
 | `ro-control processes [--json]` | Lists active applications using GPU VRAM |
 | `ro-control kill-process <pid>` | Terminates a running GPU process via Polkit helper |
+| `ro-control process-list [--json]` | Lists all system processes with CPU %, RSS, I/O and state |
+| `ro-control renice <nice> <pid>` | Adjusts the scheduling priority (nice value) of a process |
+| `ro-control disk [--json]` | Lists mounted filesystems with usage % and I/O counters |
+| `ro-control network [--json]` | Lists network interfaces with rx/tx throughput and error counters |
+| `ro-control resources [--json]` | Consolidated CPU / RAM / disk / network / process overview |
 | `ro-control gpus [--json]` | Enumerates all detected graphics cards |
 | `ro-control select-gpu <index>` | Selects active target GPU for monitoring and tuning |
 | `ro-control diagnostics [--json]` | Generates comprehensive hardware, kernel, and driver report |

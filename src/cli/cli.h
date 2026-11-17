@@ -39,6 +39,15 @@ enum class CommandAction {
   SelectGpu,
   FanSetSmoothing,
   RunDaemon,
+  PrintProcessListText,
+  PrintProcessListJson,
+  PrintDiskStatsText,
+  PrintDiskStatsJson,
+  PrintNetworkStatsText,
+  PrintNetworkStatsJson,
+  PrintResourcesText,
+  PrintResourcesJson,
+  SetProcessPriority,
   Invalid,
 };
 
@@ -109,6 +118,15 @@ struct DiagnosticsSnapshot {
   QString powerPreset;
   int coreClockOffsetMHz = 0;
   int memoryClockOffsetMHz = 0;
+
+  bool processMonitorAvailable = false;
+  int processCount = 0;
+
+  bool diskAvailable = false;
+  QStringList diskSummaryLines;
+
+  bool networkAvailable = false;
+  QStringList networkInterfaceLines;
 };
 
 ParsedCommand parseArguments(const QStringList &arguments,

@@ -11,6 +11,11 @@ commands=(
   'power:Manage GPU power limits and profiles'
   'processes:List GPU compute and display processes'
   'kill-process:Terminate a GPU process'
+  'process-list:List all system processes sorted by CPU usage'
+  'renice:Adjust the scheduling priority (nice) of a process'
+  'disk:List mounted filesystems, I/O counters and usage'
+  'network:List network interfaces with rx/tx throughput and errors'
+  'resources:Show a consolidated CPU / RAM / disk / network / process overview'
   'gpus:List detected GPU devices'
   'select-gpu:Select active GPU index'
 )
@@ -82,7 +87,7 @@ if (( CURRENT == 2 )); then
 fi
 
 case "${words[2]}" in
-  status|diagnostics|processes|gpus)
+  status|diagnostics|processes|gpus|process-list|disk|network|resources)
     _describe 'option' '--json[Render output as JSON]'
     ;;
   driver)

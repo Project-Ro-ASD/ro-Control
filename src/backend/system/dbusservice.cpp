@@ -1,5 +1,4 @@
 #include "dbusservice.h"
-
 #include <QDBusConnection>
 #include <QDateTime>
 #include <QJsonArray>
@@ -9,7 +8,9 @@
 #include "fan/fancontroller.h"
 #include "healthguard.h"
 #include "monitor/cpumonitor.h"
+#include "monitor/diskmonitor.h"
 #include "monitor/gpumonitor.h"
+#include "monitor/networkmonitor.h"
 #include "monitor/rammonitor.h"
 #include "power/powercontroller.h"
 
@@ -21,12 +22,12 @@ constexpr auto kObjectPath = "/io/github/ProjectRoASD/rocontrol";
 } // namespace
 
 RoControlDBusAdaptor::RoControlDBusAdaptor(QObject *parent, CpuMonitor *cpu,
-                                           GpuMonitor *gpu, RamMonitor *ram,
-                                           FanController *fan,
-                                           PowerController *power,
-                                           HealthGuard *guard)
+                                            GpuMonitor *gpu, RamMonitor *ram,
+                                            DiskMonitor *disk, NetworkMonitor *network,
+                                            FanController *fan, PowerController *power,
+                                            HealthGuard *guard)
     : QDBusAbstractAdaptor(parent), m_cpu(cpu), m_gpu(gpu), m_ram(ram),
-      m_fan(fan), m_power(power), m_guard(guard) {
+      m_disk(disk), m_network(network), m_fan(fan), m_power(power), m_guard(guard) {
   setAutoRelaySignals(true);
 
   if (m_guard) {
@@ -34,20 +35,20 @@ RoControlDBusAdaptor::RoControlDBusAdaptor(QObject *parent, CpuMonitor *cpu,
             [this](const QString &title, const QString &message,
                    const QString &severity) {
               Q_UNUSED(message);
+              const bool isGpu = title.contains(QStringLiteral("GPU"),
+                                                Qt::CaseInsensitive);
               const int temp =
-                  (title.contains(QStringLiteral("GPU"), Qt::CaseInsensitive))
-                      ? (m_gpu ? m_gpu->temperatureC() : 0)
-                      : (m_cpu ? m_cpu->temperatureC() : 0);
-              const int threshold =
-                  (title.contains(QStringLiteral("GPU"), Qt::CaseInsensitive))
-                      ? (m_guard ? (severity == QStringLiteral("critical")
-                                        ? m_guard->gpuCriticalThresholdC()
-                                        : m_guard->gpuWarningThresholdC())
-                                 : 85)
-                      : (m_guard ? (severity == QStringLiteral("critical")
-                                        ? m_guard->cpuCriticalThresholdC()
-                                        : m_guard->cpuWarningThresholdC())
-                                 : 85);
+                  isGpu ? (m_gpu ? m_gpu->temperatureC() : 0)
+                        : (m_cpu ? m_cpu->temperatureC() : 0);
+              int threshold = 85;
+              if (m_guard) {
+                threshold =
+                    severity == QStringLiteral("critical")
+                        ? (isGpu ? m_guard->gpuCriticalThresholdC()
+                                 : m_guard->cpuCriticalThresholdC())
+                        : (isGpu ? m_guard->gpuWarningThresholdC()
+                                 : m_guard->cpuWarningThresholdC());
+              }
               emit ThermalAlert(title, temp, threshold);
             });
   }
@@ -56,6 +57,46 @@ RoControlDBusAdaptor::RoControlDBusAdaptor(QObject *parent, CpuMonitor *cpu,
     connect(m_gpu, &GpuMonitor::temperatureCChanged, this,
             &RoControlDBusAdaptor::TelemetryUpdated);
   }
+
+  if (m_disk) {
+    connect(m_disk, &DiskMonitor::diskStatsChanged, this, &RoControlDBusAdaptor::TelemetryUpdated);
+  }
+
+  if (m_network) {
+    connect(m_network, &NetworkMonitor::networkStatsChanged, this, &RoControlDBusAdaptor::TelemetryUpdated);
+  }
+}
+
+RoControlDBusService::RoControlDBusService(QObject *parent, CpuMonitor *cpu,
+                                            GpuMonitor *gpu, RamMonitor *ram,
+                                            DiskMonitor *disk,
+                                            NetworkMonitor *network,
+                                            FanController *fan,
+                                            PowerController *power,
+                                            HealthGuard *guard)
+    : QObject(parent), m_registered(false), m_adaptor(nullptr) {
+  m_adaptor = new RoControlDBusAdaptor(this, cpu, gpu, ram, disk, network, fan,
+                                       power, guard);
+  QDBusConnection bus = QDBusConnection::sessionBus();
+  m_registered = bus.registerObject(kObjectPath, m_adaptor);
+  m_registered = bus.registerService(kServiceName) && m_registered;
+}
+
+RoControlDBusService::~RoControlDBusService() {
+  if (m_adaptor) {
+    QDBusConnection::sessionBus().unregisterObject(kObjectPath);
+    delete m_adaptor;
+    m_adaptor = nullptr;
+  }
+
+  if (m_registered) {
+    QDBusConnection::sessionBus().unregisterService(kServiceName);
+    m_registered = false;
+  }
+}
+
+bool RoControlDBusService::isRegistered() const {
+  return m_registered;
 }
 
 QString RoControlDBusAdaptor::GetTelemetry() {
@@ -93,14 +134,14 @@ QString RoControlDBusAdaptor::GetTelemetry() {
     gpuObj.insert(QStringLiteral("powerLimitW"), m_gpu->powerLimitW());
     gpuObj.insert(QStringLiteral("graphicsClockMHz"),
                   m_gpu->graphicsClockMHz());
-    gpuObj.insert(QStringLiteral("memoryClockMHz"), m_gpu->memoryClockMHz());
+    gpuObj.insert(QStringLiteral("memoryClockMHz"),
+                  m_gpu->memoryClockMHz());
     gpuObj.insert(QStringLiteral("pcieLinkStatus"), m_gpu->pcieLinkStatus());
     gpuObj.insert(QStringLiteral("processCount"), m_gpu->gpuProcessCount());
     gpuObj.insert(QStringLiteral("gpuCount"), m_gpu->gpuCount());
     gpuObj.insert(QStringLiteral("selectedGpuIndex"),
                   m_gpu->selectedGpuIndex());
   }
-  root.insert(QStringLiteral("gpu"), gpuObj);
 
   // RAM
   QJsonObject ramObj;
@@ -109,8 +150,38 @@ QString RoControlDBusAdaptor::GetTelemetry() {
     ramObj.insert(QStringLiteral("totalMiB"), m_ram->totalMiB());
     ramObj.insert(QStringLiteral("usedMiB"), m_ram->usedMiB());
     ramObj.insert(QStringLiteral("usagePercent"), m_ram->usagePercent());
+    ramObj.insert(QStringLiteral("zramAvailable"), m_ram->zramAvailable());
+    ramObj.insert(QStringLiteral("zramTotalMiB"), m_ram->zramTotalMiB());
+    ramObj.insert(QStringLiteral("zramUsedMiB"), m_ram->zramUsedMiB());
+    ramObj.insert(QStringLiteral("zramPhysicalMiB"), m_ram->zramPhysicalMiB());
+    ramObj.insert(QStringLiteral("zramCompressionRatio"),
+                  m_ram->zramCompressionRatio());
+    ramObj.insert(QStringLiteral("zswapEnabled"), m_ram->zswapEnabled());
   }
-  root.insert(QStringLiteral("ram"), ramObj);
+
+  // Disk
+  QJsonObject diskObj;
+  if (m_disk) {
+    const auto diskStats = m_disk->diskStats();
+    QJsonArray diskArray;
+    for (const auto &stat : diskStats) {
+      diskArray.append(QJsonObject::fromVariantMap(stat.toMap()));
+    }
+    diskObj.insert(QStringLiteral("available"), m_disk->available());
+    diskObj.insert(QStringLiteral("disks"), diskArray);
+  }
+
+  // Network
+  QJsonObject netObj;
+  if (m_network) {
+    const auto netIfaces = m_network->interfaces();
+    QJsonArray netArray;
+    for (const auto &stat : netIfaces) {
+      netArray.append(QJsonObject::fromVariantMap(stat.toMap()));
+    }
+    netObj.insert(QStringLiteral("available"), m_network->available());
+    netObj.insert(QStringLiteral("interfaces"), netArray);
+  }
 
   // Fan
   QJsonObject fanObj;
@@ -128,7 +199,6 @@ QString RoControlDBusAdaptor::GetTelemetry() {
                   m_fan->smoothingEnabled());
     fanObj.insert(QStringLiteral("hysteresisTempC"), m_fan->hysteresisTempC());
   }
-  root.insert(QStringLiteral("fan"), fanObj);
 
   // Power
   QJsonObject powerObj;
@@ -148,7 +218,14 @@ QString RoControlDBusAdaptor::GetTelemetry() {
     powerObj.insert(QStringLiteral("memoryClockOffsetMHz"),
                     m_power->memoryClockOffsetMHz());
   }
+
+  root.insert(QStringLiteral("cpu"), cpuObj);
+  root.insert(QStringLiteral("gpu"), gpuObj);
+  root.insert(QStringLiteral("ram"), ramObj);
+  root.insert(QStringLiteral("fan"), fanObj);
   root.insert(QStringLiteral("power"), powerObj);
+  root.insert(QStringLiteral("disk"), diskObj);
+  root.insert(QStringLiteral("network"), netObj);
 
   return QString::fromUtf8(QJsonDocument(root).toJson(QJsonDocument::Indented));
 }
@@ -192,15 +269,6 @@ QString RoControlDBusAdaptor::GetGpuHealth() {
     root.insert(QStringLiteral("pcieLinkStatus"), m_gpu->pcieLinkStatus());
     root.insert(QStringLiteral("processCount"), m_gpu->gpuProcessCount());
     root.insert(QStringLiteral("gpuCount"), m_gpu->gpuCount());
-  }
-  if (m_power) {
-    root.insert(QStringLiteral("persistenceMode"),
-                m_power->persistenceModeEnabled());
-    root.insert(QStringLiteral("powerPreset"), m_power->powerPreset());
-    root.insert(QStringLiteral("coreClockOffsetMHz"),
-                m_power->coreClockOffsetMHz());
-    root.insert(QStringLiteral("memoryClockOffsetMHz"),
-                m_power->memoryClockOffsetMHz());
   }
   return QString::fromUtf8(QJsonDocument(root).toJson(QJsonDocument::Indented));
 }
@@ -303,7 +371,7 @@ bool RoControlDBusAdaptor::SetClockOffsets(int coreMhz, int memMhz) {
 }
 
 bool RoControlDBusAdaptor::SetFanSmoothing(bool enabled, int rampUp,
-                                           int rampDown, int hysteresis) {
+                                            int rampDown, int hysteresis) {
   if (!m_fan) {
     return false;
   }
@@ -319,32 +387,3 @@ bool RoControlDBusAdaptor::SetFanSmoothing(bool enabled, int rampUp,
   }
   return true;
 }
-
-RoControlDBusService::RoControlDBusService(QObject *parent, CpuMonitor *cpu,
-                                           GpuMonitor *gpu, RamMonitor *ram,
-                                           FanController *fan,
-                                           PowerController *power,
-                                           HealthGuard *guard)
-    : QObject(parent) {
-  m_adaptor = new RoControlDBusAdaptor(this, cpu, gpu, ram, fan, power, guard);
-
-  QDBusConnection connection = QDBusConnection::sessionBus();
-  if (connection.isConnected()) {
-    if (connection.registerObject(QString::fromLatin1(kObjectPath), this)) {
-      if (connection.registerService(QString::fromLatin1(kServiceName))) {
-        m_registered = true;
-      }
-    }
-  }
-}
-
-RoControlDBusService::~RoControlDBusService() {
-  if (m_registered) {
-    QDBusConnection::sessionBus().unregisterService(
-        QString::fromLatin1(kServiceName));
-    QDBusConnection::sessionBus().unregisterObject(
-        QString::fromLatin1(kObjectPath));
-  }
-}
-
-bool RoControlDBusService::isRegistered() const { return m_registered; }

@@ -7,6 +7,8 @@
 class CpuMonitor;
 class GpuMonitor;
 class RamMonitor;
+class DiskMonitor;
+class NetworkMonitor;
 class FanController;
 class PowerController;
 class HealthGuard;
@@ -18,6 +20,7 @@ class RoControlDBusAdaptor : public QDBusAbstractAdaptor {
 public:
   explicit RoControlDBusAdaptor(QObject *parent, CpuMonitor *cpu,
                                 GpuMonitor *gpu, RamMonitor *ram,
+                                DiskMonitor *disk, NetworkMonitor *network,
                                 FanController *fan, PowerController *power,
                                 HealthGuard *guard);
 
@@ -46,6 +49,8 @@ private:
   CpuMonitor *m_cpu;
   GpuMonitor *m_gpu;
   RamMonitor *m_ram;
+  DiskMonitor *m_disk;
+  NetworkMonitor *m_network;
   FanController *m_fan;
   PowerController *m_power;
   HealthGuard *m_guard;
@@ -57,6 +62,7 @@ class RoControlDBusService : public QObject {
 public:
   explicit RoControlDBusService(QObject *parent, CpuMonitor *cpu,
                                 GpuMonitor *gpu, RamMonitor *ram,
+                                DiskMonitor *disk, NetworkMonitor *network,
                                 FanController *fan, PowerController *power,
                                 HealthGuard *guard);
   ~RoControlDBusService() override;

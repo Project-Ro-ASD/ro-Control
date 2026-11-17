@@ -17,6 +17,12 @@ class UiPreferencesManager : public QObject {
   Q_PROPERTY(QVariantList availableThemeModes READ availableThemeModes CONSTANT)
   Q_PROPERTY(bool showAdvancedInfo READ showAdvancedInfo WRITE
                  setShowAdvancedInfo NOTIFY showAdvancedInfoChanged)
+  Q_PROPERTY(int monitorRefreshInterval READ monitorRefreshInterval WRITE
+                 setMonitorRefreshInterval NOTIFY monitorRefreshIntervalChanged)
+  Q_PROPERTY(int processRefreshInterval READ processRefreshInterval WRITE
+                 setProcessRefreshInterval NOTIFY processRefreshIntervalChanged)
+  Q_PROPERTY(int processListLimit READ processListLimit WRITE
+                 setProcessListLimit NOTIFY processListLimitChanged)
 
 public:
   explicit UiPreferencesManager(QObject *parent = nullptr);
@@ -28,13 +34,23 @@ public:
 
   bool showAdvancedInfo() const;
 
+  int monitorRefreshInterval() const;
+  int processRefreshInterval() const;
+  int processListLimit() const;
+
   Q_INVOKABLE void setThemeMode(const QString &themeMode);
   Q_INVOKABLE void setShowAdvancedInfo(bool showAdvancedInfo);
+  Q_INVOKABLE void setMonitorRefreshInterval(int intervalMs);
+  Q_INVOKABLE void setProcessRefreshInterval(int intervalMs);
+  Q_INVOKABLE void setProcessListLimit(int limit);
   Q_INVOKABLE void resetToDefaults();
 
 signals:
   void themeModeChanged();
   void showAdvancedInfoChanged();
+  void monitorRefreshIntervalChanged();
+  void processRefreshIntervalChanged();
+  void processListLimitChanged();
 
 private:
   QString normalizeThemeMode(const QString &themeMode) const;
@@ -45,4 +61,7 @@ private:
   QString m_themeMode = QStringLiteral("light");
   bool m_systemDarkMode = false;
   bool m_showAdvancedInfo = true;
+  int m_monitorRefreshInterval = 1000;
+  int m_processRefreshInterval = 2000;
+  int m_processListLimit = 50;
 };

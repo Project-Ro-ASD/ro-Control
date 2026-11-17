@@ -21,6 +21,7 @@
 │ • GpuMonitor       • FanController    • PowerController│
 │ • CpuMonitor       • HealthGuard      • SystemInfo     │
 │ • RamMonitor       • DBusService      • UiPreferences  │
+│ • ProcessMonitor   • DiskMonitor      • NetworkMonitor │
 └────────────┬────────────────────────────┬──────────────┘
              │                            │
              ▼                            ▼
@@ -28,7 +29,8 @@
 │     Linux Kernel & Sysfs   │ │     Polkit Helper       │
 │ • /sys/class/hwmon         │ │ • /usr/libexec/         │
 │ • /sys/class/thermal       │ │   ro-control-helper     │
-│ • NVIDIA NVML & NV-CONTROL │ │ • dnf, akmods, dracut   │
+│ • /proc                    │ │ • dnf, akmods, dracut   │
+│ • NVIDIA NVML & NV-CONTROL │ │                         │
 └────────────────────────────┘ └─────────────────────────┘
 ```
 
@@ -41,6 +43,9 @@
 - **`PowerController`:** Manages GPU TDP power limits, clock offsets, and driver persistence state.
 - **`HealthGuard`:** Evaluates thermal safety thresholds (GPU warning at 82°C, GPU critical at 88°C; CPU warning at 85°C, CPU critical at 95°C). Dispatches system desktop notifications and triggers emergency 100% cooling overrides.
 - **`SystemInfoProvider`:** Collects kernel version, display server (Wayland / X11), CPU model, motherboard, and secure boot status.
+- **`ProcessMonitor`:** Reads `/proc/<pid>/stat`, `/proc/<pid>/cmdline`, and `/proc/<pid>/io` to expose live process telemetry (PID, user, CPU %, RSS, VSZ, I/O bytes, state, nice, threads) with Task Manager–style top-N sorting by CPU and memory. Process termination (`kill -<signal> <pid>`) and priority changes (`renice -n <nice> -p <pid>`) are routed through `CommandRunner`.
+- **`DiskMonitor`:** Enumerates real block-device mount points from `/proc/mounts`, reports capacity/usage via `statvfs`, and reads `/proc/diskstats` sector counters to compute per-device read/write throughput.
+- **`NetworkMonitor`:** Parses `/proc/net/dev` counters per interface and computes rx/tx bytes-per-second deltas alongside packet, error, and drop statistics.
 - **`DBusService`:** Exposes hardware telemetry and control endpoints on the session bus.
 
 ---

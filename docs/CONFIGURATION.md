@@ -68,6 +68,10 @@ Stored under the `ui` group.
 | :--- | :--- | :--- | :--- |
 | `ui/showAdvancedInfo` | bool | `true` | Shows advanced diagnostics information |
 | `ui/language` | string | `en` | Interface language code (e.g. `en`, `tr`, `de`, `es`); empty means system locale |
+| `ui/themeMode` | string | `system` | Selected theme mode (`system`, `light`, `dark`) |
+| `ui/monitorRefreshInterval` | int | `1000` | Refresh interval (ms) for CPU / GPU / RAM / disk / network telemetry. Minimum: 250 |
+| `ui/processRefreshInterval` | int | `2000` | Refresh interval (ms) for the live system process list. Minimum: 250 |
+| `ui/processListLimit` | int | `50` | Maximum rows displayed in the System Monitor processes table. Constraint: 10–500 |
 
 ---
 

@@ -4,6 +4,7 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QEventLoop>
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QLocale>
 #include <QTextStream>
@@ -11,7 +12,10 @@
 
 #include "backend/fan/fancontroller.h"
 #include "backend/monitor/cpumonitor.h"
+#include "backend/monitor/diskmonitor.h"
 #include "backend/monitor/gpumonitor.h"
+#include "backend/monitor/networkmonitor.h"
+#include "backend/monitor/processmonitor.h"
 #include "backend/monitor/rammonitor.h"
 #include "backend/nvidia/detector.h"
 #include "backend/nvidia/updater.h"
@@ -95,7 +99,17 @@ QString buildHelpText(const QString &applicationName,
   stream << "  kill-process <pid>         Terminate a running GPU process.\n";
   stream << "  gpus [--json]              List detected GPU adapters.\n";
   stream
-      << "  select-gpu <index>         Select active GPU device by index.\n\n";
+      << "  select-gpu <index>         Select active GPU device by index.\n";
+  stream << "  renice <nice> <pid>        Adjust the scheduling priority "
+            "(nice) of a process (-20 to 19).\n";
+  stream << "  process-list [--json]      List all system processes sorted by "
+            "CPU usage.\n";
+  stream << "  disk [--json]              List mounted filesystems, I/O counters "
+            "and usage.\n";
+  stream << "  network [--json]           List network interfaces with "
+            "rx/tx throughput and errors.\n";
+  stream << "  resources [--json]         Show a consolidated CPU / RAM / disk "
+            "/ network / process overview.\n\n";
   stream << "Driver install options:\n";
   stream << "  --proprietary              Install the proprietary akmod-nvidia "
             "stack.\n";
@@ -108,7 +122,8 @@ QString buildHelpText(const QString &applicationName,
   stream << "  -v, --version              Show version and exit.\n";
   stream << "  -d, --diagnostics          Legacy alias for `diagnostics`.\n";
   stream << "  --json                     Render output as JSON (status, "
-            "diagnostics, fan status, power status, processes, gpus).\n";
+            "diagnostics, fan status, power status, processes, gpus, "
+            "process-list, disk, network, resources).\n";
   stream << "  --daemon                   Run headless in background with "
             "D-Bus service.\n\n";
   stream << "Examples:\n";
@@ -176,7 +191,8 @@ ParsedCommand invalidCommand(const QString &message) {
 ParsedCommand invalidJsonOption() {
   return invalidCommand(QStringLiteral(
       "--json can only be used with `status`, `diagnostics`, `fan status`, "
-      "`power status`, `processes`, or `gpus`."));
+      "`power status`, `processes`, `gpus`, `process-list`, `disk`, "
+      "`network`, or `resources`."));
 }
 
 bool hasConflictingInstallModeOptions(const QCommandLineParser &parser) {
@@ -285,6 +301,10 @@ ParsedCommand parseArguments(const QStringList &arguments,
       commandName != QStringLiteral("processes") &&
       commandName != QStringLiteral("gpus") &&
       commandName != QStringLiteral("fan-status") &&
+      commandName != QStringLiteral("process-list") &&
+      commandName != QStringLiteral("disk") &&
+      commandName != QStringLiteral("network") &&
+      commandName != QStringLiteral("resources") &&
       !(commandName == QStringLiteral("fan") &&
         subcommand == QStringLiteral("status")) &&
       !(commandName == QStringLiteral("power") &&
@@ -662,6 +682,73 @@ ParsedCommand parseArguments(const QStringList &arguments,
     return command;
   }
 
+  if (commandName == QStringLiteral("process-list")) {
+    if (positional.size() != 1) {
+      return invalidCommand(
+          QStringLiteral("`process-list` does not take arguments."));
+    }
+    ParsedCommand command;
+    command.action = json ? CommandAction::PrintProcessListJson
+                          : CommandAction::PrintProcessListText;
+    return command;
+  }
+
+  if (commandName == QStringLiteral("disk")) {
+    if (positional.size() != 1) {
+      return invalidCommand(QStringLiteral("`disk` does not take arguments."));
+    }
+    ParsedCommand command;
+    command.action = json ? CommandAction::PrintDiskStatsJson
+                          : CommandAction::PrintDiskStatsText;
+    return command;
+  }
+
+  if (commandName == QStringLiteral("network")) {
+    if (positional.size() != 1) {
+      return invalidCommand(
+          QStringLiteral("`network` does not take arguments."));
+    }
+    ParsedCommand command;
+    command.action = json ? CommandAction::PrintNetworkStatsJson
+                          : CommandAction::PrintNetworkStatsText;
+    return command;
+  }
+
+  if (commandName == QStringLiteral("resources")) {
+    if (positional.size() != 1) {
+      return invalidCommand(
+          QStringLiteral("`resources` does not take arguments."));
+    }
+    ParsedCommand command;
+    command.action = json ? CommandAction::PrintResourcesJson
+                          : CommandAction::PrintResourcesText;
+    return command;
+  }
+
+  if (commandName == QStringLiteral("renice")) {
+    if (positional.size() != 3) {
+      return invalidCommand(
+          QStringLiteral("`renice` requires a nice value argument (-20 to 19) "
+                         "and a PID argument."));
+    }
+    bool niceOk = false;
+    const int niceValue = positional.at(1).toInt(&niceOk);
+    if (!niceOk || niceValue < -20 || niceValue > 19) {
+      return invalidCommand(
+          QStringLiteral("Nice value must be an integer between -20 and 19."));
+    }
+    bool pidOk = false;
+    const int pid = positional.at(2).toInt(&pidOk);
+    if (!pidOk || pid <= 0) {
+      return invalidCommand(
+          QStringLiteral("PID must be a valid process ID > 0."));
+    }
+    ParsedCommand command;
+    command.action = CommandAction::SetProcessPriority;
+    command.payload = QStringLiteral("%1:%2").arg(niceValue).arg(pid);
+    return command;
+  }
+
   if (commandName != QStringLiteral("driver")) {
     return invalidCommand(
         QStringLiteral("Unknown command: %1").arg(commandName));
@@ -816,6 +903,39 @@ DiagnosticsSnapshot collectDiagnostics(const QString &applicationName,
   snapshot.ramUsedMiB = ramMonitor.usedMiB();
   snapshot.ramUsagePercent = ramMonitor.usagePercent();
 
+  ProcessMonitor processMonitor;
+  processMonitor.stop();
+  processMonitor.refresh();
+  snapshot.processMonitorAvailable = processMonitor.available();
+  snapshot.processCount = processMonitor.processCount();
+
+  DiskMonitor diskMonitor;
+  diskMonitor.stop();
+  diskMonitor.refresh();
+  snapshot.diskAvailable = diskMonitor.available();
+  for (const auto &disk : diskMonitor.diskStats()) {
+    const auto map = disk.toMap();
+    snapshot.diskSummaryLines.append(
+        QStringLiteral("%1 %2 %3%")
+            .arg(map.value(QStringLiteral("device")).toString())
+            .arg(map.value(QStringLiteral("mountPoint")).toString())
+            .arg(map.value(QStringLiteral("usagePercent")).toDouble(), 0, 'f',
+                 1));
+  }
+
+  NetworkMonitor networkMonitor;
+  networkMonitor.stop();
+  networkMonitor.refresh();
+  snapshot.networkAvailable = networkMonitor.available();
+  for (const auto &iface : networkMonitor.interfaces()) {
+    const auto map = iface.toMap();
+    snapshot.networkInterfaceLines.append(
+        QStringLiteral("%1 rx=%2 tx=%3")
+            .arg(map.value(QStringLiteral("name")).toString())
+            .arg(map.value(QStringLiteral("rxBytes")).toULongLong())
+            .arg(map.value(QStringLiteral("txBytes")).toULongLong()));
+  }
+
   PowerController powerController;
   powerController.refresh();
   snapshot.powerSupported = powerController.supported();
@@ -918,6 +1038,25 @@ QString renderDiagnosticsText(const DiagnosticsSnapshot &snapshot) {
   output += QStringLiteral("ram_used_mib: %1\n").arg(snapshot.ramUsedMiB);
   output +=
       QStringLiteral("ram_usage_percent: %1\n").arg(snapshot.ramUsagePercent);
+  output += QStringLiteral("process_monitor_available: %1\n")
+                .arg(boolText(snapshot.processMonitorAvailable));
+  output += QStringLiteral("process_count: %1\n").arg(snapshot.processCount);
+  output += QStringLiteral("disk_available: %1\n")
+                .arg(boolText(snapshot.diskAvailable));
+  if (!snapshot.diskSummaryLines.isEmpty()) {
+    output += QStringLiteral("disks:\n");
+    for (const auto &line : snapshot.diskSummaryLines) {
+      output += QStringLiteral("  %1\n").arg(line);
+    }
+  }
+  output += QStringLiteral("network_available: %1\n")
+                .arg(boolText(snapshot.networkAvailable));
+  if (!snapshot.networkInterfaceLines.isEmpty()) {
+    output += QStringLiteral("network_interfaces:\n");
+    for (const auto &line : snapshot.networkInterfaceLines) {
+      output += QStringLiteral("  %1\n").arg(line);
+    }
+  }
   output += QStringLiteral("power_supported: %1\n")
                 .arg(boolText(snapshot.powerSupported));
   output += QStringLiteral("power_control_supported: %1\n")
@@ -1023,6 +1162,21 @@ QJsonObject renderDiagnosticsJsonObject(const DiagnosticsSnapshot &snapshot) {
   object.insert(QStringLiteral("ramTotalMiB"), snapshot.ramTotalMiB);
   object.insert(QStringLiteral("ramUsedMiB"), snapshot.ramUsedMiB);
   object.insert(QStringLiteral("ramUsagePercent"), snapshot.ramUsagePercent);
+  object.insert(QStringLiteral("processMonitorAvailable"),
+                snapshot.processMonitorAvailable);
+  object.insert(QStringLiteral("processCount"), snapshot.processCount);
+  object.insert(QStringLiteral("diskAvailable"), snapshot.diskAvailable);
+  QJsonArray diskLines;
+  for (const auto &line : snapshot.diskSummaryLines) {
+    diskLines.append(line);
+  }
+  object.insert(QStringLiteral("diskSummaryLines"), diskLines);
+  object.insert(QStringLiteral("networkAvailable"), snapshot.networkAvailable);
+  QJsonArray networkLines;
+  for (const auto &line : snapshot.networkInterfaceLines) {
+    networkLines.append(line);
+  }
+  object.insert(QStringLiteral("networkInterfaceLines"), networkLines);
   object.insert(QStringLiteral("powerSupported"), snapshot.powerSupported);
   object.insert(QStringLiteral("powerControlSupported"),
                 snapshot.powerControlSupported);
