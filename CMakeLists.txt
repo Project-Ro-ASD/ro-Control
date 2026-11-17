@@ -432,3 +432,6 @@ message(STATUS "  Install to : ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "")
 
 include(CPack)
+    src/backend/monitor/processmonitor.cpp
+    src/backend/monitor/diskmonitor.cpp
+    src/backend/monitor/networkmonitor.cpp

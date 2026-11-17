@@ -61,6 +61,48 @@ target_link_libraries(test_monitor PRIVATE
 
 ro_control_register_test(test_monitor)
 
+# ─── Process Monitor Tests ───────────────────────────────────────────────────
+qt_add_executable(test_processmonitor
+    test_processmonitor.cpp
+)
+
+ro_control_configure_test(test_processmonitor)
+
+target_link_libraries(test_processmonitor PRIVATE
+    Qt6::Test
+    ro-control-backend
+)
+
+ro_control_register_test(test_processmonitor)
+
+# ─── Disk Monitor Tests ─────────────────────────────────────────────────────
+qt_add_executable(test_diskmonitor
+    test_diskmonitor.cpp
+)
+
+ro_control_configure_test(test_diskmonitor)
+
+target_link_libraries(test_diskmonitor PRIVATE
+    Qt6::Test
+    ro-control-backend
+)
+
+ro_control_register_test(test_diskmonitor)
+
+# ─── Network Monitor Tests ───────────────────────────────────────────────────
+qt_add_executable(test_networkmonitor
+    test_networkmonitor.cpp
+)
+
+ro_control_configure_test(test_networkmonitor)
+
+target_link_libraries(test_networkmonitor PRIVATE
+    Qt6::Test
+    ro-control-backend
+)
+
+ro_control_register_test(test_networkmonitor)
+
 # ─── Fan Controller Tests ───────────────────────────────────────────────────
 qt_add_executable(test_fan_controller
     test_fan_controller.cpp
