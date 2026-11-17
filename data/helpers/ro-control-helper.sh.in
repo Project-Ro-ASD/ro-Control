@@ -39,6 +39,18 @@ run_allowed_command() {
     nvidia-smi|/usr/bin/nvidia-smi)
       resolved_path="$(command -v nvidia-smi 2>/dev/null || true)"
       ;;
+    kill|/usr/bin/kill|/bin/kill)
+      resolved_path="$(command -v kill 2>/dev/null || true)"
+      ;;
+    renice|/usr/bin/renice)
+      resolved_path="$(command -v renice 2>/dev/null || true)"
+      ;;
+    systemctl|/usr/bin/systemctl)
+      resolved_path="$(command -v systemctl 2>/dev/null || true)"
+      ;;
+    reboot|/usr/sbin/reboot|/usr/bin/reboot)
+      resolved_path="$(command -v reboot 2>/dev/null || true)"
+      ;;
     *)
       echo "ro-control-helper: command not allowed: ${command_name}" >&2
       exit 64

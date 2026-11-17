@@ -10,14 +10,8 @@
 GuiInstance::GuiInstance(const QString &directory, QObject *parent)
     : QObject(parent), m_lock(directory + QStringLiteral("/gui.lock")),
       m_directory(directory),
-      m_serverName(QStringLiteral("ro-control-gui-") +
-                   QString::fromLatin1(
-                       QCryptographicHash::hash(directory.toUtf8(),
-                                                QCryptographicHash::Sha256)
-                           .toHex()
-                           .left(32))) {
+      m_serverName(directory + QStringLiteral("/instance.sock")) {
   m_lock.setStaleLockTime(0);
-  m_server.setSocketOptions(QLocalServer::UserAccessOption);
   connect(&m_server, &QLocalServer::newConnection, this, [this]() {
     while (auto *socket = m_server.nextPendingConnection()) {
       socket->setParent(this);
