@@ -15,6 +15,9 @@ ApplicationWindow {
     required property var cpuMonitor
     required property var gpuMonitor
     required property var ramMonitor
+    required property var processMonitor
+    required property var diskMonitor
+    required property var networkMonitor
     required property var fanController
     required property var powerController
     required property var healthGuard
@@ -327,6 +330,38 @@ ApplicationWindow {
                             }
                             border.width: systemTab.visualFocus ? 2 : 1
                             border.color: systemTab.visualFocus ? colors.accentA : tabBar.currentIndex === 3 ? colors.accentA : (systemTab.hovered ? colors.border : "transparent")
+                        }
+                    }
+
+                    TabButton {
+                        id: monitor2Tab
+                        text: qsTr("System Monitor")
+                        hoverEnabled: true
+                        implicitHeight: Math.round(38 * root.uiScale)
+                        implicitWidth: Math.max(Math.round(128 * root.uiScale), monitor2TabText.implicitWidth + Math.round(24 * root.uiScale))
+                        contentItem: Text {
+                            id: monitor2TabText
+                            text: monitor2Tab.text
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            color: tabBar.currentIndex === 4 ? colors.onAccent : colors.textMuted
+                            font.pixelSize: Math.round(13 * root.uiScale)
+                            font.weight: tabBar.currentIndex === 4 ? Font.DemiBold : Font.Medium
+                        }
+                        background: Rectangle {
+                            radius: Math.round(Style.RoTokens.radiusSm * root.uiScale)
+                            color: tabBar.currentIndex === 4 ? colors.accentA : (monitor2Tab.hovered ? colors.cardStrong : "transparent")
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -Style.RoTokens.spaceXs
+                                radius: Style.RoTokens.radiusMd
+                                color: "transparent"
+                                border.width: 2 * Style.RoTokens.borderWidth
+                                border.color: colors.accentA
+                                visible: monitor2Tab.visualFocus
+                            }
+                            border.width: monitor2Tab.visualFocus ? 2 : 1
+                            border.color: monitor2Tab.visualFocus ? colors.accentA : tabBar.currentIndex === 4 ? colors.accentA : (monitor2Tab.hovered ? colors.border : "transparent")
                         }
                     }
                 }
@@ -695,6 +730,17 @@ ApplicationWindow {
                     ramMonitor: root.ramMonitor
                     nvidiaDetector: root.nvidiaDetector
                     powerController: root.powerController
+                }
+
+                Pages.SystemMonitorPage {
+                    theme: colors
+                    darkMode: root.darkMode
+                    showAdvancedInfo: root.showAdvancedInfo
+                    uiScale: root.uiScale
+                    processMonitor: root.processMonitor
+                    diskMonitor: root.diskMonitor
+                    networkMonitor: root.networkMonitor
+                    uiPreferences: root.uiPreferences
                 }
 
             }

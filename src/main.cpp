@@ -21,6 +21,7 @@
 #include <QtConcurrent>
 #include <QtQuickControls2/QQuickStyle>
 
+#include <algorithm>
 #include <functional>
 
 #include <QMenu>
@@ -28,7 +29,10 @@
 
 #include "backend/fan/fancontroller.h"
 #include "backend/monitor/cpumonitor.h"
+#include "backend/monitor/diskmonitor.h"
 #include "backend/monitor/gpumonitor.h"
+#include "backend/monitor/networkmonitor.h"
+#include "backend/monitor/processmonitor.h"
 #include "backend/monitor/rammonitor.h"
 #include "backend/nvidia/detector.h"
 #include "backend/nvidia/installer.h"
@@ -475,6 +479,242 @@ CliExecutionResult executeCliCommand(const RoControlCli::ParsedCommand &command,
     return result;
   }
 
+  if (command.action == RoControlCli::CommandAction::PrintProcessListText ||
+      command.action == RoControlCli::CommandAction::PrintProcessListJson) {
+    ProcessMonitor processMonitor;
+    processMonitor.stop();
+    processMonitor.refresh();
+    // CPU% on first sample is 0; do a second sample to get real numbers.
+    processMonitor.refresh();
+    const auto all = processMonitor.allProcesses();
+    if (command.action == RoControlCli::CommandAction::PrintProcessListJson) {
+      QJsonObject obj;
+      QJsonArray arr;
+      for (const auto &p : all) {
+        arr.append(QJsonObject::fromVariantMap(p.toMap()));
+      }
+      obj.insert(QStringLiteral("command"), QStringLiteral("process-list"));
+      obj.insert(QStringLiteral("count"), all.size());
+      obj.insert(QStringLiteral("processes"), arr);
+      result.stdoutText =
+          QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Indented));
+    } else {
+      if (all.isEmpty()) {
+        result.stdoutText = QStringLiteral("No processes detected.\n");
+      } else {
+        // Sort by CPU% descending for the text output.
+        QVariantList sorted = all;
+        std::sort(sorted.begin(), sorted.end(),
+                  [](const QVariant &a, const QVariant &b) {
+                    return a.toMap()
+                               .value(QStringLiteral("cpuPercent"))
+                               .toDouble() >
+                           b.toMap()
+                               .value(QStringLiteral("cpuPercent"))
+                               .toDouble();
+                  });
+        result.stdoutText = QStringLiteral(
+            "PID\tNAME\t\t\tCPU%\tMEM (MiB)\n"
+            "───────────────────────────────────────────────────\n");
+        const int limit = std::min(static_cast<int>(sorted.size()), 40);
+        for (int i = 0; i < limit; ++i) {
+          const auto m = sorted.at(i).toMap();
+          result.stdoutText +=
+              QStringLiteral("%1\t%2\t%3\t%4\n")
+                  .arg(m.value(QStringLiteral("pid")).toInt(), -6)
+                  .arg(m.value(QStringLiteral("name")).toString().left(20), -20)
+                  .arg(m.value(QStringLiteral("cpuPercent")).toDouble(), 0, 'f',
+                       1)
+                  .arg(m.value(QStringLiteral("memoryMiB")).toInt());
+        }
+      }
+    }
+    return result;
+  }
+
+  if (command.action == RoControlCli::CommandAction::PrintDiskStatsText ||
+      command.action == RoControlCli::CommandAction::PrintDiskStatsJson) {
+    DiskMonitor diskMonitor;
+    diskMonitor.stop();
+    diskMonitor.refresh();
+    const auto disks = diskMonitor.diskStats();
+    if (command.action == RoControlCli::CommandAction::PrintDiskStatsJson) {
+      QJsonObject obj;
+      QJsonArray arr;
+      for (const auto &d : disks) {
+        arr.append(QJsonObject::fromVariantMap(d.toMap()));
+      }
+      obj.insert(QStringLiteral("command"), QStringLiteral("disk"));
+      obj.insert(QStringLiteral("count"), disks.size());
+      obj.insert(QStringLiteral("disks"), arr);
+      result.stdoutText =
+          QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Indented));
+    } else {
+      if (disks.isEmpty()) {
+        result.stdoutText = QStringLiteral("No mounted block devices found.\n");
+      } else {
+        result.stdoutText = QStringLiteral(
+            "DEVICE\t\t\tMOUNT\t\t\tFS\t\tTOTAL\tUSED\tUSE%\n"
+            "───────────────────────────────────────────────────"
+            "───────────────────\n");
+        for (const auto &d : disks) {
+          const auto m = d.toMap();
+          const quint64 total = m.value(QStringLiteral("totalBytes")).toULongLong();
+          const quint64 used = m.value(QStringLiteral("usedBytes")).toULongLong();
+          const double usage = m.value(QStringLiteral("usagePercent")).toDouble();
+          const double totalGiB = static_cast<double>(total) / (1024.0 * 1024.0 * 1024.0);
+          const double usedGiB = static_cast<double>(used) / (1024.0 * 1024.0 * 1024.0);
+          result.stdoutText +=
+              QStringLiteral("%1\t%2\t%3\t%4\t%5\t%6%\n")
+                  .arg(m.value(QStringLiteral("device")).toString().left(15), -15)
+                  .arg(m.value(QStringLiteral("mountPoint")).toString().left(15), -15)
+                  .arg(m.value(QStringLiteral("fsType")).toString().left(8), -8)
+                  .arg(totalGiB, 0, 'f', 1)
+                  .arg(usedGiB, 0, 'f', 1)
+                  .arg(usage, 0, 'f', 1);
+        }
+      }
+    }
+    return result;
+  }
+
+  if (command.action == RoControlCli::CommandAction::PrintNetworkStatsText ||
+      command.action == RoControlCli::CommandAction::PrintNetworkStatsJson) {
+    NetworkMonitor networkMonitor;
+    networkMonitor.stop();
+    networkMonitor.refresh();
+    const auto ifaces = networkMonitor.interfaces();
+    if (command.action == RoControlCli::CommandAction::PrintNetworkStatsJson) {
+      QJsonObject obj;
+      QJsonArray arr;
+      for (const auto &n : ifaces) {
+        arr.append(QJsonObject::fromVariantMap(n.toMap()));
+      }
+      obj.insert(QStringLiteral("command"), QStringLiteral("network"));
+      obj.insert(QStringLiteral("count"), ifaces.size());
+      obj.insert(QStringLiteral("interfaces"), arr);
+      result.stdoutText =
+          QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Indented));
+    } else {
+      if (ifaces.isEmpty()) {
+        result.stdoutText = QStringLiteral("No network interfaces found.\n");
+      } else {
+        result.stdoutText = QStringLiteral(
+            "INTERFACE\t\tRX (MB/s)\tTX (MB/s)\tERRORS\n"
+            "───────────────────────────────────────────────\n");
+        for (const auto &n : ifaces) {
+          const auto m = n.toMap();
+          const double rxMbps =
+              static_cast<double>(m.value(QStringLiteral("rxBytesPerSec")).toULongLong())
+              / (1024.0 * 1024.0);
+          const double txMbps =
+              static_cast<double>(m.value(QStringLiteral("txBytesPerSec")).toULongLong())
+              / (1024.0 * 1024.0);
+          const quint64 errors = m.value(QStringLiteral("rxErrors")).toULongLong() +
+                                 m.value(QStringLiteral("txErrors")).toULongLong();
+          result.stdoutText +=
+              QStringLiteral("%1\t%2\t%3\t%4\n")
+                  .arg(m.value(QStringLiteral("name")).toString().left(15), -15)
+                  .arg(rxMbps, 0, 'f', 2)
+                  .arg(txMbps, 0, 'f', 2)
+                  .arg(errors);
+        }
+      }
+    }
+    return result;
+  }
+
+  if (command.action == RoControlCli::CommandAction::PrintResourcesText ||
+      command.action == RoControlCli::CommandAction::PrintResourcesJson) {
+    const auto snapshot =
+        RoControlCli::collectDiagnostics(applicationName, applicationVersion);
+    DiskMonitor diskMonitor;
+    diskMonitor.stop();
+    NetworkMonitor networkMonitor;
+    networkMonitor.stop();
+    diskMonitor.refresh();
+    networkMonitor.refresh();
+
+    if (command.action == RoControlCli::CommandAction::PrintResourcesJson) {
+      QJsonObject obj;
+      obj.insert(QStringLiteral("command"), QStringLiteral("resources"));
+      obj.insert(QStringLiteral("cpuUsagePercent"), snapshot.cpuUsagePercent);
+      obj.insert(QStringLiteral("cpuTemperatureC"), snapshot.cpuTemperatureC);
+      obj.insert(QStringLiteral("ramUsedMiB"), snapshot.ramUsedMiB);
+      obj.insert(QStringLiteral("ramTotalMiB"), snapshot.ramTotalMiB);
+      obj.insert(QStringLiteral("ramUsagePercent"), snapshot.ramUsagePercent);
+      obj.insert(QStringLiteral("diskCount"),
+                 static_cast<int>(diskMonitor.diskStats().size()));
+      obj.insert(QStringLiteral("networkInterfaceCount"),
+                 static_cast<int>(networkMonitor.interfaces().size()));
+      obj.insert(QStringLiteral("processCount"), snapshot.processCount);
+      result.stdoutText =
+          QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Indented));
+    } else {
+      result.stdoutText =
+          QStringLiteral("CPU: %1% (%2 C)\n"
+                         "RAM: %3 / %4 MiB (%5%)\n")
+              .arg(snapshot.cpuUsagePercent, 0, 'f', 1)
+              .arg(snapshot.cpuTemperatureC)
+              .arg(snapshot.ramUsedMiB)
+              .arg(snapshot.ramTotalMiB)
+              .arg(snapshot.ramUsagePercent);
+      result.stdoutText += QStringLiteral("Disks:\n");
+      for (const auto &d : diskMonitor.diskStats()) {
+        const auto m = d.toMap();
+        result.stdoutText += QStringLiteral("  %1 %2 (%3%)\n")
+                                 .arg(m.value(QStringLiteral("device")).toString())
+                                 .arg(m.value(QStringLiteral("mountPoint")).toString())
+                                 .arg(m.value(QStringLiteral("usagePercent")).toDouble(),
+                                      0, 'f', 1);
+      }
+      result.stdoutText += QStringLiteral("Network:\n");
+      for (const auto &n : networkMonitor.interfaces()) {
+        const auto m = n.toMap();
+        result.stdoutText += QStringLiteral("  %1 rx=%2 bytes tx=%3 bytes\n")
+                                 .arg(m.value(QStringLiteral("name")).toString())
+                                 .arg(m.value(QStringLiteral("rxBytes")).toULongLong())
+                                 .arg(m.value(QStringLiteral("txBytes")).toULongLong());
+      }
+    }
+    return result;
+  }
+
+  if (command.action == RoControlCli::CommandAction::SetProcessPriority) {
+    const int colon = command.payload.indexOf(QLatin1Char(':'));
+    if (colon <= 0) {
+      result.stderrText = QStringLiteral("Error: Invalid `renice` payload.\n");
+      result.exitCode = 2;
+      return result;
+    }
+    bool ok = false;
+    const int niceValue = command.payload.left(colon).toInt(&ok);
+    if (!ok) {
+      result.stderrText = QStringLiteral("Error: Invalid nice value.\n");
+      result.exitCode = 2;
+      return result;
+    }
+    const int pid = command.payload.mid(colon + 1).toInt(&ok);
+    if (!ok || pid <= 0) {
+      result.stderrText = QStringLiteral("Error: Invalid PID.\n");
+      result.exitCode = 2;
+      return result;
+    }
+    ProcessMonitor processMonitor;
+    if (processMonitor.setProcessPriority(pid, niceValue)) {
+      result.stdoutText =
+          QStringLiteral("Process %1 reniced to %2.\n").arg(pid).arg(niceValue);
+      result.exitCode = 0;
+    } else {
+      const QString reason = processMonitor.statusMessage();
+      result.stderrText = reason.isEmpty()
+                              ? QStringLiteral("Error: Failed to renice process %1.\n").arg(pid)
+                              : QStringLiteral("Error: %1\n").arg(reason);
+      result.exitCode = 1;
+    }
+    return result;
+  }
+
   QTextStream progressStream(&result.stdoutText);
   auto appendProgress = [&](const QString &message) {
     if (!message.trimmed().isEmpty()) {
@@ -646,6 +886,9 @@ int main(int argc, char *argv[]) {
     CpuMonitor cpuMonitor;
     GpuMonitor gpuMonitor;
     RamMonitor ramMonitor;
+    ProcessMonitor processMonitor;
+    DiskMonitor diskMonitor;
+    NetworkMonitor networkMonitor;
     FanController fanController;
     PowerController powerController;
     HealthGuard healthGuard;
@@ -668,7 +911,8 @@ int main(int argc, char *argv[]) {
         [&]() { powerController.updatePowerDraw(gpuMonitor.powerDrawW()); });
 
     RoControlDBusService dbusService(&daemonApp, &cpuMonitor, &gpuMonitor,
-                                     &ramMonitor, &fanController,
+                                     &ramMonitor, &diskMonitor, &networkMonitor,
+                                     &fanController,
                                      &powerController, &healthGuard);
 
     out << "ro-Control daemon active. D-Bus interface: "
@@ -737,12 +981,16 @@ int main(int argc, char *argv[]) {
   CpuMonitor cpuMonitor;
   GpuMonitor gpuMonitor;
   RamMonitor ramMonitor;
+  ProcessMonitor processMonitor;
+  DiskMonitor diskMonitor;
+  NetworkMonitor networkMonitor;
   FanController fanController;
   PowerController powerController;
   HealthGuard healthGuard;
   SystemInfoProvider systemInfo;
 
   RoControlDBusService dbusService(&app, &cpuMonitor, &gpuMonitor, &ramMonitor,
+                                   &diskMonitor, &networkMonitor,
                                    &fanController, &powerController,
                                    &healthGuard);
 
@@ -789,6 +1037,32 @@ int main(int argc, char *argv[]) {
   QQmlApplicationEngine engine;
   LanguageManager languageManager(&app, &engine, &translator);
   UiPreferencesManager uiPreferencesManager;
+
+  // Apply persisted monitor refresh preferences at startup and keep the live
+  // monitors in sync when the user changes them at runtime.
+  auto applyMonitorRefreshInterval = [&](int intervalMs) {
+    cpuMonitor.setUpdateInterval(intervalMs);
+    gpuMonitor.setUpdateInterval(intervalMs);
+    ramMonitor.setUpdateInterval(intervalMs);
+    diskMonitor.setUpdateInterval(intervalMs);
+    networkMonitor.setUpdateInterval(intervalMs);
+  };
+  applyMonitorRefreshInterval(uiPreferencesManager.monitorRefreshInterval());
+  processMonitor.setUpdateInterval(uiPreferencesManager.processRefreshInterval());
+  QObject::connect(&uiPreferencesManager,
+                   &UiPreferencesManager::monitorRefreshIntervalChanged,
+                   &uiPreferencesManager,
+                   [&]() {
+                     applyMonitorRefreshInterval(
+                         uiPreferencesManager.monitorRefreshInterval());
+                   });
+  QObject::connect(&uiPreferencesManager,
+                   &UiPreferencesManager::processRefreshIntervalChanged,
+                   &uiPreferencesManager,
+                   [&]() {
+                     processMonitor.setUpdateInterval(
+                         uiPreferencesManager.processRefreshInterval());
+                   });
 
   // System Tray Setup
   QSystemTrayIcon trayIcon(
@@ -951,6 +1225,12 @@ int main(int argc, char *argv[]) {
                            QVariant::fromValue(&gpuMonitor));
   initialProperties.insert(QStringLiteral("ramMonitor"),
                            QVariant::fromValue(&ramMonitor));
+  initialProperties.insert(QStringLiteral("processMonitor"),
+                           QVariant::fromValue(&processMonitor));
+  initialProperties.insert(QStringLiteral("diskMonitor"),
+                           QVariant::fromValue(&diskMonitor));
+  initialProperties.insert(QStringLiteral("networkMonitor"),
+                           QVariant::fromValue(&networkMonitor));
   initialProperties.insert(QStringLiteral("fanController"),
                            QVariant::fromValue(&fanController));
   initialProperties.insert(QStringLiteral("powerController"),
@@ -980,9 +1260,15 @@ int main(int argc, char *argv[]) {
       cpuMonitor.stop();
       gpuMonitor.stop();
       ramMonitor.stop();
+      processMonitor.stop();
+      diskMonitor.stop();
+      networkMonitor.stop();
       QTimer::singleShot(0, &gpuMonitor, &GpuMonitor::start);
       QTimer::singleShot(333, &cpuMonitor, &CpuMonitor::start);
       QTimer::singleShot(666, &ramMonitor, &RamMonitor::start);
+      QTimer::singleShot(111, &processMonitor, &ProcessMonitor::start);
+      QTimer::singleShot(444, &diskMonitor, &DiskMonitor::start);
+      QTimer::singleShot(999, &networkMonitor, &NetworkMonitor::start);
 
       // Throttle telemetry to 5s when the window is hidden (tray mode); the
       // daemon path never touches these monitors, so D-Bus clients keep a
@@ -990,7 +1276,10 @@ int main(int argc, char *argv[]) {
       const QList<std::function<void(int)>> throttlers{
           [&](int ms) { cpuMonitor.setUpdateInterval(ms); },
           [&](int ms) { gpuMonitor.setUpdateInterval(ms); },
-          [&](int ms) { ramMonitor.setUpdateInterval(ms); }};
+          [&](int ms) { ramMonitor.setUpdateInterval(ms); },
+          [&](int ms) { processMonitor.setUpdateInterval(ms); },
+          [&](int ms) { diskMonitor.setUpdateInterval(ms); },
+          [&](int ms) { networkMonitor.setUpdateInterval(ms); }};
       const auto applyVisibility = [throttlers](bool visible) {
         for (const auto &throttler : throttlers) {
           throttler(visible ? 1000 : 5000);
