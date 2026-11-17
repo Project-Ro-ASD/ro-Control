@@ -101,6 +101,9 @@ set(BACKEND_SOURCES
     src/backend/monitor/gpumonitor.cpp
     src/backend/monitor/cpumonitor.cpp
     src/backend/monitor/rammonitor.cpp
+    src/backend/monitor/processmonitor.cpp
+    src/backend/monitor/diskmonitor.cpp
+    src/backend/monitor/networkmonitor.cpp
     src/backend/system/polkit.cpp
     src/backend/system/dnfmanager.cpp
     src/backend/system/commandrunner.cpp
@@ -209,6 +212,7 @@ qt_add_qml_module(ro-control
         src/qml/pages/MonitorPage.qml
         src/qml/pages/FanPage.qml
         src/qml/pages/SystemPage.qml
+        src/qml/pages/SystemMonitorPage.qml
         src/qml/components/InfoBadge.qml
         src/qml/components/RefreshToolButton.qml
         src/qml/components/ActionButton.qml
@@ -432,6 +436,3 @@ message(STATUS "  Install to : ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "")
 
 include(CPack)
-    src/backend/monitor/processmonitor.cpp
-    src/backend/monitor/diskmonitor.cpp
-    src/backend/monitor/networkmonitor.cpp

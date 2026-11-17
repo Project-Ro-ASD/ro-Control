@@ -1,3 +1,5 @@
 DriverPage 1.0 DriverPage.qml
 MonitorPage 1.0 MonitorPage.qml
 FanPage 1.0 FanPage.qml
+SystemPage 1.0 SystemPage.qml
+SystemMonitorPage 1.0 SystemMonitorPage.qml
